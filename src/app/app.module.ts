@@ -8,10 +8,12 @@ import { DialogModule } from 'primeng/dialog';
 import { InputTextModule } from 'primeng/inputtext';
 import { TableModule } from 'primeng/table';
 import { AppComponent } from './app.component';
+import { AddNewDialogComponent } from './add-new-dialog/add-new-dialog.component';
 
 @NgModule({
   declarations: [
-    AppComponent
+    AppComponent,
+    AddNewDialogComponent
   ],
   imports: [
     BrowserModule,

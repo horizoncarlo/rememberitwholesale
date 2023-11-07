@@ -8,7 +8,7 @@ const BASE_URL = 'http://localhost:4333/';
 @Injectable({
   providedIn: 'root'
 })
-export class BackendService {
+export class StorageService {
   
   defaultHeaders = { headers: { 'Content-Type': 'application/json' }};
   

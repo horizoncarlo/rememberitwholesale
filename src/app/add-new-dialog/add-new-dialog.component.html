@@ -1,0 +1,12 @@
+<p-dialog header="Add New Thing" [(visible)]="show" [modal]="true" [maximizable]="true" [style]="{width: '50vw'}"
+          (onShow)="handleFocus($event, nameField)">
+  <br/><br/>
+  <span class="p-float-label">
+    <input id="name" #nameField pInputText [(ngModel)]="toAdd.name" />
+    <label htmlFor="name">Name</label>
+  </span>
+  <ng-template pTemplate="footer">
+    <p-button (onClick)="toggleAddNewDialog()" label="Cancel" icon="pi pi-times" iconPos="left" severity="secondary"/>
+    <p-button (onClick)="submitAddNew()" label="Save Thing" icon="pi pi-check" iconPos="left"/>
+  </ng-template>
+</p-dialog>

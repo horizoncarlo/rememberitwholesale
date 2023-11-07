@@ -1,11 +1,16 @@
+
 export class Thing {
-  id: number;
+  id: string;
   name: string;
   time?: Date;
   
-  constructor(id: number, name: string, time?: Date) {
+  constructor(id: string, name: string, time?: Date) {
       this.id = id;
       this.name = name;
       this.time = time;
+  }
+  
+  toString(): string {
+    return this.name;
   }
 }

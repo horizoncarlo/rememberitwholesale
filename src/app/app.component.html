@@ -1,10 +1,11 @@
-<p-button (onClick)="getData()" label="Test Get" severity="help"/>
+<p-button (onClick)="things.getData()" label="Test Get" severity="help"/>
 &nbsp;
-<p-button (onClick)="submitData()" label="Test Submit" severity="help"/>
+<p-button (onClick)="things.submitData()" label="Test Submit" severity="help"/>
 <br /><hr />
-<p-button (onClick)="toggleAddNewDialog()" label="Add New"/>
+<p-button (onClick)="addNew.toggleAddNewDialog()" label="Add New"/>
+<add-new-dialog #addNew/>
 
-<p-table [value]="data" [tableStyle]="{ 'min-width': '50rem' }">
+<p-table [value]="things.data" [tableStyle]="{ 'min-width': '50rem' }">
   <ng-template pTemplate="header">
     <tr>
       <th>ID</th>
@@ -20,16 +21,3 @@
     </tr>
   </ng-template>
 </p-table>
-
-<p-dialog header="Header" [(visible)]="showAddNew" [modal]="true" [maximizable]="true" [style]="{width: '50vw'}"
-          (onShow)="handleFocus($event, nameField)">
-  <br/><br/>
-  <span class="p-float-label">
-    <input id="name" #nameField pInputText [(ngModel)]="nameIn" />
-    <label htmlFor="name">Name</label>
-  </span>
-  <ng-template pTemplate="footer">
-    <p-button (onClick)="toggleAddNewDialog()" label="Cancel" icon="pi pi-times" iconPos="left" severity="secondary"/>
-    <p-button (onClick)="submitAddNew()" label="Save Thing" icon="pi pi-check" iconPos="left"/>
-  </ng-template>
-</p-dialog>

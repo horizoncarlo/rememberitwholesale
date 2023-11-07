@@ -1,0 +1,1 @@
+- Add loading across p-buttons in the app: https://primeng.org/button#loading

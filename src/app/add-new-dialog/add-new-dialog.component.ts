@@ -3,7 +3,7 @@ import { Thing } from '../model/thing';
 import { ThingService } from '../service/thing.service';
 
 @Component({
-  selector: 'add-new-dialog',
+  selector: 'riw-add-new-dialog',
   templateUrl: './add-new-dialog.component.html',
   styleUrls: ['./add-new-dialog.component.css']
 })

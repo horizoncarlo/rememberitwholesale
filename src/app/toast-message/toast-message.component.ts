@@ -2,7 +2,7 @@ import { Component, OnDestroy, OnInit } from '@angular/core';
 import { MessageService } from 'primeng/api';
 
 @Component({
-  selector: 'toast',
+  selector: 'riw-global-toast',
   templateUrl: './toast-message.component.html',
   styleUrls: ['./toast-message.component.css'],
   providers: [MessageService]

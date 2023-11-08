@@ -1,5 +1,5 @@
 <p-progressBar [mode]="things.loading ? 'indeterminate' : 'determinate'" class="loading-bar"/>
-<toast/>
+<riw-global-toast/>
 
 <div class="main-wrap">
 
@@ -10,7 +10,7 @@
   <p-confirmPopup></p-confirmPopup>
   <p-progressSpinner *ngIf="things.loading"/>
 </div>
-<add-new-dialog #addNew/>
+<riw-add-new-dialog #addNew/>
 
 <p-table [value]="things.data" styleClass="p-datatable-striped" [tableStyle]="{ 'min-width': '50rem' }"
          selectionMode="multiple" [(selection)]="selectedRows">

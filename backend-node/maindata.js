@@ -60,7 +60,7 @@ function getInMemoryData() {
 }
 
 function saveMemoryToFile() {
-  console.error("WRITE", inMemory.data);
+  console.log("WRITE", inMemory.data);
   fs.writeFileSync(DATA_FILE, JSON.stringify(inMemory.data));
 }
 

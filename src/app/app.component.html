@@ -4,13 +4,13 @@
 <div class="main-wrap">
 
 <div class="button-row">
-  <p-button (onClick)="things.getAll()" icon="pi pi-refresh" severity="info"/>
+  <p-button (onClick)="things.getAll()" icon="pi pi-refresh" [loading]="things.loading" severity="info"/>
   <p-button (onClick)="addNew.toggleAddNewDialog()" icon="pi pi-plus-circle" label="Add New"/>
   <p-progressSpinner *ngIf="things.loading"/>
 </div>
 <add-new-dialog #addNew/>
 
-<p-table [value]="things.data" [tableStyle]="{ 'min-width': '50rem' }">
+<p-table [value]="things.data" styleClass="p-datatable-striped" [tableStyle]="{ 'min-width': '50rem' }">
   <ng-template pTemplate="header">
     <tr>
       <th>ID</th>
@@ -23,6 +23,13 @@
       <td>{{ data.id }}</td>
       <td>{{ data.name }}</td>
       <td>{{ data.time | date: 'medium' }}</td>
+    </tr>
+  </ng-template>
+  <ng-template pTemplate="emptymessage" let-columns>
+    <tr>
+      <td colspan="3" class="center">
+        No data found yet
+      </td>
     </tr>
   </ng-template>
 </p-table>

@@ -14,7 +14,42 @@ export class StorageService {
   
   constructor(private http: HttpClient) { }
   
-  getData(): Observable<any> {
+  getAllTemplates(): Observable<any> {
+    // TODO Build Node functionality to get templates
+    //return this.http.get(BASE_URL + 'templates');
+    return new Observable((subscriber) => {
+      // TODO For the real call we'd prepend our automatic, default, preset fields, like Milestone. For now return them as part of the test array
+      return subscriber.next([
+        {
+          "name": "Milestone", // Note every template includes Name and Date/Time automatically. 'fields' array is optional
+        },
+        {
+          "name": "Longboard",
+          "fields": [
+            {
+              "property": "distance",
+              "label": "Distance",
+              "required": false,
+              "type": "text"
+            }
+          ]
+        },
+        {
+          "name": "Boardgame",
+          "fields": [
+            {
+              "property": "numPlayers",
+              "label": "Number of Players",
+              "required": false,
+              "type": "text"
+            }
+          ]
+        }
+      ]);
+    });
+  }
+  
+  getAllData(): Observable<any> {
     return this.http.get(BASE_URL + 'data');
   }
   

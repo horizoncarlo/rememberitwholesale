@@ -45,7 +45,6 @@ export class AppComponent implements OnInit {
         reject:() => {
           this.clearSelectedRows();
         },
-        
       });
     }
     else {

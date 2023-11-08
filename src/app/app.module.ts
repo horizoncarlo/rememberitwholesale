@@ -7,6 +7,7 @@ import { ButtonModule } from 'primeng/button';
 import { CalendarModule } from 'primeng/calendar';
 import { ConfirmPopupModule } from 'primeng/confirmpopup';
 import { DialogModule } from 'primeng/dialog';
+import { DropdownModule } from 'primeng/dropdown';
 import { InputTextModule } from 'primeng/inputtext';
 import { ProgressBarModule } from 'primeng/progressbar';
 import { ProgressSpinnerModule } from 'primeng/progressspinner';
@@ -14,13 +15,15 @@ import { TableModule } from 'primeng/table';
 import { ToastModule } from 'primeng/toast';
 import { AddNewDialogComponent } from './add-new-dialog/add-new-dialog.component';
 import { AppComponent } from './app.component';
+import { TemplateDropdownComponent } from './template-dropdown/template-dropdown.component';
 import { ToastMessageComponent } from './toast-message/toast-message.component';
 
 @NgModule({
   declarations: [
     AppComponent,
     AddNewDialogComponent,
-    ToastMessageComponent
+    ToastMessageComponent,
+    TemplateDropdownComponent
   ],
   imports: [
     BrowserModule,
@@ -31,6 +34,7 @@ import { ToastMessageComponent } from './toast-message/toast-message.component';
     CalendarModule,
     ConfirmPopupModule,
     DialogModule,
+    DropdownModule,
     InputTextModule,
     ProgressBarModule,
     ProgressSpinnerModule,

@@ -1,0 +1,24 @@
+[
+  {
+    "name": "Longboard",
+    "fields": [
+      {
+        "property": "distance",
+        "label": "Distance",
+        "required": false,
+        "type": "text"
+      }
+    ]
+  },
+  {
+    "name": "Boardgame",
+    "fields": [
+      {
+        "property": "numPlayers",
+        "label": "Number of Players",
+        "required": false,
+        "type": "text"
+      }
+    ]
+  }
+]

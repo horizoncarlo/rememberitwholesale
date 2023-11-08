@@ -60,7 +60,7 @@ export class ThingService  {
 
   getAll(): void {
     this.loading = true;
-    this.backend.getData().subscribe({
+    this.backend.getAllData().subscribe({
       next: res => {
         this.data = res;
       },

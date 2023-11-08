@@ -1,6 +1,6 @@
-import { Component } from '@angular/core';
-import { v4 as uuidv4 } from 'uuid';
+import { Component, inject } from '@angular/core';
 import { Thing } from '../model/thing';
+import { ThingService } from '../service/thing.service';
 
 @Component({
   selector: 'add-new-dialog',
@@ -8,7 +8,8 @@ import { Thing } from '../model/thing';
   styleUrls: ['./add-new-dialog.component.css']
 })
 export class AddNewDialogComponent {
-  toAdd: Thing = new Thing(uuidv4(), '');
+  things: ThingService = inject(ThingService);
+  toAdd: Thing = new Thing('');
   show: boolean = false;
   
   toggleAddNewDialog(): void {
@@ -16,6 +17,7 @@ export class AddNewDialogComponent {
   }
   
   submitAddNew(): void {
+    this.things.saveNew(this.toAdd);
     console.log("ADD NEW", this.toAdd);
   }
   

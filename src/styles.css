@@ -1,1 +1,25 @@
-/* You can add global styles to this file, and also import other style files */
+html, body {
+  margin: 0;
+  padding: 0;
+}
+
+.loading-bar .p-progressbar {
+  height: 3px;
+  border-radius: 0;
+  background-color: transparent;
+}
+
+.loading-bar .p-progressbar .p-progressbar-value::before {
+  animation-duration: 1.8s;
+}
+
+.p-progress-spinner {
+  width: 45px;
+  height: 45px;
+}
+
+@media (min-width: 500px) {
+  .p-progress-spinner-circle {
+    stroke-width: 8;
+  }
+}

@@ -6,14 +6,19 @@ import { BrowserAnimationsModule } from '@angular/platform-browser/animations';
 import { ButtonModule } from 'primeng/button';
 import { DialogModule } from 'primeng/dialog';
 import { InputTextModule } from 'primeng/inputtext';
+import { ProgressBarModule } from 'primeng/progressbar';
+import { ProgressSpinnerModule } from 'primeng/progressspinner';
 import { TableModule } from 'primeng/table';
-import { AppComponent } from './app.component';
+import { ToastModule } from 'primeng/toast';
 import { AddNewDialogComponent } from './add-new-dialog/add-new-dialog.component';
+import { AppComponent } from './app.component';
+import { ToastMessageComponent } from './toast-message/toast-message.component';
 
 @NgModule({
   declarations: [
     AppComponent,
-    AddNewDialogComponent
+    AddNewDialogComponent,
+    ToastMessageComponent
   ],
   imports: [
     BrowserModule,
@@ -23,7 +28,10 @@ import { AddNewDialogComponent } from './add-new-dialog/add-new-dialog.component
     ButtonModule,
     DialogModule,
     InputTextModule,
-    TableModule
+    ProgressBarModule,
+    ProgressSpinnerModule,
+    TableModule,
+    ToastModule
   ],
   providers: [],
   bootstrap: [AppComponent]

@@ -1,0 +1,15 @@
+.main-wrap {
+  padding: 10px;
+}
+
+.button-row {
+  padding-bottom: 10px;
+}
+
+.button-row p-button {
+  margin-right: 5px;
+}
+
+.button-row p-progressSpinner {
+  float: right;
+}

@@ -5,7 +5,7 @@ import { ThingService } from './service/thing.service';
 @Component({
   selector: 'app-root',
   templateUrl: './app.component.html',
-  styleUrls: ['./app.component.css']
+  styleUrls: ['./app.component.css'],
 })
 export class AppComponent implements OnInit {
   things: ThingService = inject(ThingService);
@@ -16,6 +16,6 @@ export class AppComponent implements OnInit {
     this.primengConfig.ripple = true;
     
     // Get our initial data load
-    this.things.getData();
+    this.things.getAll();
   }
 }

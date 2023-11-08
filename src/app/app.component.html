@@ -1,8 +1,13 @@
-<p-button (onClick)="things.getData()" label="Test Get" severity="help"/>
-&nbsp;
-<p-button (onClick)="things.submitData()" label="Test Submit" severity="help"/>
-<br /><hr />
-<p-button (onClick)="addNew.toggleAddNewDialog()" label="Add New"/>
+<p-progressBar [mode]="things.loading ? 'indeterminate' : 'determinate'" class="loading-bar"/>
+<toast/>
+
+<div class="main-wrap">
+
+<div class="button-row">
+  <p-button (onClick)="things.getAll()" icon="pi pi-refresh" severity="info"/>
+  <p-button (onClick)="addNew.toggleAddNewDialog()" icon="pi pi-plus-circle" label="Add New"/>
+  <p-progressSpinner *ngIf="things.loading"/>
+</div>
 <add-new-dialog #addNew/>
 
 <p-table [value]="things.data" [tableStyle]="{ 'min-width': '50rem' }">
@@ -21,3 +26,4 @@
     </tr>
   </ng-template>
 </p-table>
+</div>

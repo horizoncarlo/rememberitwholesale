@@ -1,10 +1,27 @@
-<p-dialog header="Add New Thing" [(visible)]="show" [modal]="true" [maximizable]="true" [style]="{width: '50vw'}"
+<p-dialog header="Add New Thing" [(visible)]="show" [modal]="true" [maximizable]="true" class="add-new-dialog" [contentStyle]="{ width: '50vw' }"
           (onShow)="handleFocus($event, nameField)">
-  <br/><br/>
-  <span class="p-float-label">
-    <input id="name" #nameField pInputText [(ngModel)]="toAdd.name" (keyup.enter)="handleEnterKey(submitAddNew.bind(this))"/>
-    <label htmlFor="name">Name</label>
-  </span>
+  
+  <div class="content-form">
+    <table cellpadding="10">
+      <tr>
+        <td>
+          <label htmlFor="name">Name</label>
+        </td>
+        <td>
+          <input id="name" #nameField pInputText [(ngModel)]="toAdd.name" (keyup.enter)="handleEnterKey(submitAddNew.bind(this))"/>
+        </td>
+      </tr>
+      <tr>
+        <td>
+          <label htmlFor="time">Date</label>
+        </td>
+        <td>
+          <p-calendar id="time" [(ngModel)]="toAdd.time" [showTime]="true" [showIcon]="true" appendTo="body" ></p-calendar>
+        </td>
+      </tr>
+    </table>
+  </div>
+  
   <ng-template pTemplate="footer">
     <p-button (onClick)="toggleAddNewDialog()" label="Cancel" icon="pi pi-times" iconPos="left" severity="secondary"/>
     <p-button (onClick)="submitAddNew()" label="Save Thing" icon="pi pi-check" iconPos="left"/>

@@ -1,0 +1,12 @@
+.add-new-dialog {
+  display: block;
+  width: 50vw;
+}
+
+.content-form {
+  margin-top: 20px;
+}
+
+.content-form label {
+  padding-right: 15px;
+}

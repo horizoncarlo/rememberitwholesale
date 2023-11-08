@@ -21,6 +21,8 @@
       <th>Date</th>
     </tr>
   </ng-template>
+  <!-- TODO Style width of columns as we fill them out -->
+  <!-- TODO Add sorting, filtering, etc. -->
   <ng-template pTemplate="body" let-data let-rowIndex="rowIndex">
     <tr [pSelectableRow]="data" [pSelectableRowIndex]="rowIndex">
       <td>{{ data.id }}</td>
@@ -28,7 +30,7 @@
       <td>{{ data.time | date: 'medium' }}</td>
     </tr>
   </ng-template>
-  <ng-template pTemplate="emptymessage" let-columns>
+  <ng-template *ngIf="!things.loading" pTemplate="emptymessage" let-columns>
     <tr>
       <td colspan="3" class="center">
         No data found yet

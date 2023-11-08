@@ -17,6 +17,10 @@ export class ThingService  {
     if (toAdd && toAdd.isValid()) {
       toAdd.prepareForSave();
     }
+    else {
+      Utility.showError('Invalid Thing, ensure all fields are filled');
+      return;
+    }
     
     this.loading = true;
     this.backend.submitData(toAdd).subscribe({

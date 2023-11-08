@@ -1,6 +1,7 @@
 import { Component, inject } from '@angular/core';
 import { Thing } from '../model/thing';
 import { ThingService } from '../service/thing.service';
+import { Utility } from '../util/utility';
 
 @Component({
   selector: 'riw-add-new-dialog',
@@ -22,6 +23,11 @@ export class AddNewDialogComponent {
   }
   
   submitAddNew(): void {
+    if (!this.toAdd || !this.toAdd.isValid()) {
+      Utility.showError('Enter a name for this Thing');
+      return;
+    }
+    
     this.things.saveNew(this.toAdd);
     this.toggleAddNewDialog(); // Close our dialog
   }

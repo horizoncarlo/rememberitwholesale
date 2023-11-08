@@ -2,7 +2,7 @@
           (onShow)="handleFocus($event, nameField)">
   <br/><br/>
   <span class="p-float-label">
-    <input id="name" #nameField pInputText [(ngModel)]="toAdd.name" />
+    <input id="name" #nameField pInputText [(ngModel)]="toAdd.name" (keyup.enter)="handleEnterKey(submitAddNew.bind(this))"/>
     <label htmlFor="name">Name</label>
   </span>
   <ng-template pTemplate="footer">

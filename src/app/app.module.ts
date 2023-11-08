@@ -4,6 +4,7 @@ import { FormsModule } from '@angular/forms';
 import { BrowserModule } from '@angular/platform-browser';
 import { BrowserAnimationsModule } from '@angular/platform-browser/animations';
 import { ButtonModule } from 'primeng/button';
+import { ConfirmPopupModule } from 'primeng/confirmpopup';
 import { DialogModule } from 'primeng/dialog';
 import { InputTextModule } from 'primeng/inputtext';
 import { ProgressBarModule } from 'primeng/progressbar';
@@ -26,6 +27,7 @@ import { ToastMessageComponent } from './toast-message/toast-message.component';
     HttpClientModule,
     FormsModule,
     ButtonModule,
+    ConfirmPopupModule,
     DialogModule,
     InputTextModule,
     ProgressBarModule,

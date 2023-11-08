@@ -18,6 +18,10 @@ export class StorageService {
     return this.http.get(BASE_URL + 'data');
   }
   
+  deleteData(deleteId: string): Observable<any> {
+    return this.http.delete(BASE_URL + 'data/' + deleteId);
+  }
+  
   submitData(body: Thing): Observable<any> {
     return this.http.post(BASE_URL + 'data', body, this.defaultHeaders);
   }

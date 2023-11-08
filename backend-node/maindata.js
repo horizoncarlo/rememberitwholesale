@@ -59,6 +59,11 @@ function getInMemoryData() {
   return inMemory.data;
 }
 
+function saveMemoryToFile() {
+  console.error("WRITE", inMemory.data);
+  fs.writeFileSync(DATA_FILE, JSON.stringify(inMemory.data));
+}
+
 app.get("/data", (req, res) => {
   console.log("GET", getInMemoryData()); // TODO TEMPORARY Logging
   res.send(getInMemoryData()).end();
@@ -73,6 +78,19 @@ app.post("/data", (req, res) => {
   
   // TODO Write more safely - temp file first, once that is complete move it over the original
   // TODO Also handle errors
-  fs.writeFileSync(DATA_FILE, JSON.stringify(inMemory.data));
+  saveMemoryToFile();
+  res.status(200).end();
+});
+
+app.delete("/data/:id", (req, res) => {
+  console.log("DELETE", req.params.id);
+  
+  let toWork = getInMemoryData();
+  for (let i = toWork.length-1; i >= 0; i--) {
+    if (req.params.id === toWork[i].id) {
+      toWork.splice(i, 1);
+    }
+  }
+  saveMemoryToFile();
   res.status(200).end();
 });

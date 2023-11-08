@@ -14,16 +14,27 @@ export class AddNewDialogComponent {
   
   toggleAddNewDialog(): void {
     this.show = !this.show;
+    
+    // If we're just opening the dialog, reset our state
+    if (this.show) {
+      this.toAdd = new Thing('');
+    }
   }
   
   submitAddNew(): void {
     this.things.saveNew(this.toAdd);
-    console.log("ADD NEW", this.toAdd);
+    this.toggleAddNewDialog(); // Close our dialog
   }
   
   handleFocus(event: any, inputEl: HTMLElement) {
     if (inputEl) {
       inputEl.focus();
+    }
+  }
+  
+  handleEnterKey(toCall: Function) {
+    if (toCall) {
+      toCall();
     }
   }
 }

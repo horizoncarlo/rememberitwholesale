@@ -22,6 +22,7 @@ export class ThingService  {
     this.backend.submitData(toAdd).subscribe({
       next: res => {
         Utility.showSuccess('Successfully saved your new Thing', toAdd.name);
+        this.getAll();
       },
       error: err => {
         Utility.showError('Failed to save your new Thing');
@@ -29,6 +30,28 @@ export class ThingService  {
       },
       complete: () => this.loading = false
     });
+  }
+  
+  deleteThings(toDelete: Array<Thing>) {
+    this.loading = true;
+    let isMultiple = toDelete.length > 1;
+    for (let i = 0; i < toDelete.length; i++) {
+      this.backend.deleteData(toDelete[i].id).subscribe({
+        next: res => {
+          // Ensure we only refresh our data once
+          if (!isMultiple ||
+              isMultiple && i === toDelete.length-1) {
+            Utility.showSuccess("Successfully deleted " + toDelete.length + " Thing" + Utility.plural(toDelete));
+            this.getAll();
+          }
+        },
+        error: err => {
+          Utility.showError('Failed to delete "' + toDelete[i].name + '"');
+          console.error(err);
+          this.loading = false;
+        }
+      });
+    }
   }
 
   getAll(): void {

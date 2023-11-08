@@ -18,6 +18,9 @@ export class Thing {
     if (!this.id || this.id === DEFAULT_ID) {
       this.id = uuidv4();
     }
+    if (!this.time) {
+      this.time = new Date();
+    }
   }
   
   isValid(): boolean {

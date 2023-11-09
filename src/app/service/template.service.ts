@@ -8,17 +8,26 @@ import { StorageService } from './storage.service';
 })
 export class TemplateService  {
   loading: boolean = false;
-  data: Array<Thing> = [];
+  data: Thing[] = [];
   backend: StorageService = inject(StorageService);
   
   constructor() { }
   
-  getAll(): void {
+  static getCreateNewName(): string {
+    return 'CREATE NEW';
+  }
+  
+  static getMilestoneName(): string {
+    return 'Milestone';
+  }
+  
+  getAllTemplates(): void {
     this.loading = true;
     this.backend.getAllTemplates().subscribe({
       next: res => {
         this.data = res;
-        console.error("GOT TEMPLATES", this.data);
+        // TODO Probably have to cast these to actual Template objects, just like our thing.service.ts
+        console.log("Get Templates", this.data);
       },
       error: err => {
         Utility.showError('Failed to retrieve your templates');

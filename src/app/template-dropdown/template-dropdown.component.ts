@@ -1,6 +1,8 @@
 import { Component, EventEmitter, Input, OnInit, Output, inject } from '@angular/core';
 import { Template } from '../model/template';
+import { TemplateField } from '../model/template-field';
 import { TemplateService } from '../service/template.service';
+import { Utility } from '../util/utility';
 
 @Component({
   selector: 'riw-template-dropdown',
@@ -16,10 +18,18 @@ export class TemplateDropdownComponent implements OnInit {
   
   ngOnInit(): void {
     // TODO TEMPORARY Test template service
-    this.templateService.getAll();
+    this.templateService.getAllTemplates();
   }
   
   selectedTemplateChanged() {
+    // Reset any fields of the template after changing
+    if (this.selectedTemplate && Utility.hasItems(this.selectedTemplate.fields)) {
+      this.selectedTemplate.fields = this.selectedTemplate.fields?.map((currentField: TemplateField) => {
+        currentField.value = null;
+        return currentField;
+      });
+    }
+    
     this.selectedTemplateChange.emit(this.selectedTemplate);
   }
 }

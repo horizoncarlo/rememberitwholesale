@@ -1,8 +1,3 @@
-.add-new-dialog {
-  display: block;
-  width: 50vw;
-}
-
 .add-new-dialog input {
   min-width: 300px;
 }

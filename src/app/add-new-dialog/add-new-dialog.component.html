@@ -1,4 +1,4 @@
-<p-dialog header="Add New Thing" [(visible)]="show" [modal]="true" [maximizable]="true" class="add-new-dialog" [contentStyle]="{ width: '50vw' }"
+<p-dialog header="Add New Thing" [(visible)]="show" [modal]="true" [maximizable]="true" class="add-new-dialog"
           (onShow)="handleFocus($event, nameField)">
   <div class="content-form">
     <table cellpadding="10">
@@ -23,7 +23,18 @@
           <label htmlFor="time">Date</label>
         </td>
         <td>
-          <p-calendar id="time" [(ngModel)]="toAdd.time" [showTime]="true" [showIcon]="true" appendTo="body" ></p-calendar>
+          <p-calendar id="time" [(ngModel)]="toAdd.time"
+                      [showTime]="true" [showIcon]="true"
+                      [inputStyle]="{'min-width': '300px'}" appendTo="body" ></p-calendar>
+        </td>
+      </tr>
+      <tr *ngFor="let field of selectedTemplate?.fields">
+        <td>
+          <label [htmlFor]="field.property">{{ field.getLabel() }}</label>
+        </td>
+        <td>
+          <!-- TODO Use different types for fields, like radio buttons, etc. as needed in the future -->
+          <input [id]="field.property" pInputText [type]="field.type" [required]="field.required" [(ngModel)]="field.value"/>
         </td>
       </tr>
     </table>

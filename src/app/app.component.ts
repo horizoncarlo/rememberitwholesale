@@ -21,10 +21,10 @@ export class AppComponent implements OnInit {
     this.primengConfig.ripple = true;
     
     // Get our initial data load
-    this.things.getAll();
+    this.things.getAllThings();
   }
   
-  getDeleteLabel() {
+  getDeleteLabel(): string {
     let toReturn = 'Delete';
     if (this.hasSelectedRows()) {
       toReturn += ' ' + this.selectedRows.length + ' Thing' + Utility.plural(this.selectedRows);
@@ -32,7 +32,7 @@ export class AppComponent implements OnInit {
     return toReturn;
   }
   
-  confirmDeleteSelected(event: Event) {
+  confirmDeleteSelected(event: Event): void {
     if (this.hasSelectedRows()) {
       this.confirmationService.confirm({
         target: event.target as EventTarget,
@@ -52,11 +52,11 @@ export class AppComponent implements OnInit {
     }
   }
   
-  clearSelectedRows() {
+  clearSelectedRows(): void {
     this.selectedRows = [];
   }
   
-  hasSelectedRows() {
+  hasSelectedRows(): boolean {
     return Utility.hasItems(this.selectedRows);
   }
 }

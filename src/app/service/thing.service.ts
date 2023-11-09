@@ -8,7 +8,7 @@ import { StorageService } from './storage.service';
 })
 export class ThingService  {
   loading: boolean = false;
-  data: Array<Thing> = [];
+  data: Thing[] = [];
   backend: StorageService = inject(StorageService);
   
   constructor() { }
@@ -22,11 +22,13 @@ export class ThingService  {
       return;
     }
     
+    console.log("Going to save new Thing", toAdd);
+    
     this.loading = true;
     this.backend.submitData(toAdd).subscribe({
       next: res => {
         Utility.showSuccess('Successfully saved your new Thing', toAdd.name);
-        this.getAll();
+        this.getAllThings();
       },
       error: err => {
         Utility.showError('Failed to save your new Thing');
@@ -36,7 +38,7 @@ export class ThingService  {
     });
   }
   
-  deleteThings(toDelete: Array<Thing>) {
+  deleteThings(toDelete: Thing[]) {
     this.loading = true;
     let isMultiple = toDelete.length > 1;
     for (let i = 0; i < toDelete.length; i++) {
@@ -46,7 +48,7 @@ export class ThingService  {
           if (!isMultiple ||
               isMultiple && i === toDelete.length-1) {
             Utility.showSuccess("Successfully deleted " + toDelete.length + " Thing" + Utility.plural(toDelete));
-            this.getAll();
+            this.getAllThings();
           }
         },
         error: err => {
@@ -58,11 +60,14 @@ export class ThingService  {
     }
   }
 
-  getAll(): void {
+  getAllThings(): void {
     this.loading = true;
     this.backend.getAllData().subscribe({
       next: res => {
-        this.data = res;
+        this.data = res.map((current: Thing) => {
+          return Thing.cloneFrom(current);
+        });
+        console.log("Get Things", this.data);
       },
       error: err => {
         Utility.showError('Failed to retrieve your data');

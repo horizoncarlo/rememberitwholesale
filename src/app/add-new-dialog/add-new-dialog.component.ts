@@ -1,6 +1,7 @@
 import { Component, inject } from '@angular/core';
 import { Template } from '../model/template';
 import { Thing } from '../model/thing';
+import { TemplateService } from '../service/template.service';
 import { ThingService } from '../service/thing.service';
 import { Utility } from '../util/utility';
 
@@ -12,7 +13,7 @@ import { Utility } from '../util/utility';
 export class AddNewDialogComponent {
   things: ThingService = inject(ThingService);
   toAdd: Thing = new Thing('');
-  selectedTemplate: Template | null = new Template('Milestone');
+  selectedTemplate: Template | null = null;
   show: boolean = false;
   
   toggleAddNewDialog(): void {
@@ -21,6 +22,7 @@ export class AddNewDialogComponent {
     // If we're just opening the dialog, reset our state
     if (this.show) {
       this.toAdd = new Thing('');
+      this.selectedTemplate = new Template(TemplateService.getMilestoneName());
     }
   }
   
@@ -28,6 +30,14 @@ export class AddNewDialogComponent {
     if (!this.toAdd || !this.toAdd.isValid()) {
       Utility.showError('Enter a name for this Thing');
       return;
+    }
+    
+    // Set in our template type as well
+    this.toAdd.templateType = this.selectedTemplate?.name as string;
+    
+    // Store the template fields into the Thing as well
+    if (this.selectedTemplate?.fields) {
+      this.toAdd.fields = this.selectedTemplate?.fields;
     }
     
     this.things.saveNew(this.toAdd);

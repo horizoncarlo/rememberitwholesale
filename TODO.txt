@@ -1,0 +1,13 @@
+- PrimeNG is only free for the latest version, afterwards previous versions move to LTS which is paid. So forced to keep up to date.
+-- See https://primeng.org/lts
+
+- Could use the PrimeNG Speed Dial component for a simple popout menu or something? On mobile maybe?
+- Tree Select could be a richer alternative to plain select for multiple templates, if we go the heirarchy way
+-- Org Chart could help in the organizing and creation of the heirarchy
+- Would Tree Table be better for our main table?
+- Wrap our top buttons in a Toolbar?
+- Instead of directly using charts could leverage ChartModule from PrimeNG
+
+TODO:
+- Update to Angular 17 (need PrimeNG to update first)
+-- Try server side rendering

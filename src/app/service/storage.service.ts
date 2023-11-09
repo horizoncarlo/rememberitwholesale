@@ -21,7 +21,10 @@ export class StorageService {
       // TODO For the real call we'd prepend our automatic, default, preset fields, like Milestone. For now return them as part of the test array
       return subscriber.next([
         {
-          "name": "Milestone", // Note every template includes Name and Date/Time automatically. 'fields' array is optional
+          "name": "CREATE NEW"
+        },
+        {
+          "name": "Milestone" // Note every template includes Name and Date/Time automatically. 'fields' array is optional
         },
         {
           "name": "Longboard",

@@ -12,7 +12,7 @@ export class Thing {
   id: string;
   time?: Date;
   
-  constructor(name: string, templateType: string = TemplateService.getMilestoneName(), id?: string, time?: Date, fields?: TemplateField[]) {
+  constructor(name: string, templateType: string = TemplateService.getDefaultName(), id?: string, time?: Date, fields?: TemplateField[]) {
       this.name = name;
       this.templateType = templateType;
       this.id = id ? id : DEFAULT_ID;
@@ -39,7 +39,7 @@ export class Thing {
       this.time = new Date();
     }
     if (!Utility.isValidString(this.templateType)) {
-      this.templateType = TemplateService.getMilestoneName();
+      this.templateType = TemplateService.getDefaultName();
     }
   }
   

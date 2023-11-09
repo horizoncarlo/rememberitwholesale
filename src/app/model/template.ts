@@ -6,6 +6,11 @@ export class Template {
   
   constructor(name: string, fields?: TemplateField[]) {
       this.name = name;
-      this.fields = fields;
+      this.fields = fields || [];
   }
+}
+
+export interface TemplateEvent {
+  type: 'create' | 'edit' | 'delete',
+  actOn?: Template | null
 }

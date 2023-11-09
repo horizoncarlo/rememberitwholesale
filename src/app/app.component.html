@@ -1,17 +1,19 @@
-<p-progressBar [mode]="things.loading ? 'indeterminate' : 'determinate'" class="loading-bar"/>
-<riw-global-toast/>
+<p-progressBar [mode]="things.loading ? 'indeterminate' : 'determinate'" class="loading-bar" />
+<riw-global-toast />
 
 <div class="main-wrap">
 
 <div class="button-row">
-  <!-- TODO Edit a single selected row, try to leverage existing Add New dialog? -->
-  <p-button (onClick)="things.getAllThings()" icon="pi pi-refresh" [loading]="things.loading" severity="info"/>
-  <p-button (onClick)="addNew.toggleAddNewDialog()" icon="pi pi-plus-circle" label="Add New"/>
-  <p-button (onClick)="confirmDeleteSelected($event)" icon="pi pi-trash" [label]="getDeleteLabel()" [disabled]="!hasSelectedRows()"/>
-  <p-confirmPopup></p-confirmPopup>
-  <p-progressSpinner *ngIf="things.loading"/>
+  <!-- TODO Edit a single selected row, try to leverage existing New Thing dialog? -->
+  <p-button (onClick)="things.getAllThings()" icon="pi pi-refresh" [loading]="things.loading" severity="info" />
+  <p-button (onClick)="addNew.show()" icon="pi pi-plus-circle" label="New Thing" />
+  <p-button (onClick)="manageTemplate.show()" icon="pi pi-list" label="Manage Templates" />
+  <p-button (onClick)="confirmDeleteSelected($event)" icon="pi pi-trash" [label]="getDeleteLabel()" [disabled]="!hasSelectedRows()" />
+  <p-confirmPopup />
+  <p-progressSpinner *ngIf="things.loading" />
 </div>
-<riw-add-new-dialog #addNew/>
+<riw-add-new-dialog #addNew (manageTemplateEvent)="manageTemplate.show($event)" />
+<riw-manage-template-dialog #manageTemplate />
 
 <!-- TODO Add sorting, filtering, etc. -->
 <p-table [value]="things.data" styleClass="p-datatable-striped" [tableStyle]="{ 'min-width': '50rem' }"

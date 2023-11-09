@@ -1,0 +1,33 @@
+<p-dialog header="Manage Templates" [(visible)]="isShowing" [modal]="true" [maximizable]="true" class="manage-template-dialog">
+  <div class="content-form">
+    <div class="center">
+      Template:&nbsp;
+      <p-radioButton value="create" [(ngModel)]="operation" inputId="createIn"></p-radioButton>
+      <label for="createIn"> Create</label>
+      &nbsp;
+      <p-radioButton value="edit" [(ngModel)]="operation" inputId="editIn"></p-radioButton>
+      <label for="editIn"> Edit</label>
+      &nbsp;
+      <p-radioButton value="delete" [(ngModel)]="operation" inputId="deleteIn"></p-radioButton>
+      <label for="deleteIn"> Delete</label>
+    </div>
+    
+    <!-- TODO Name input - autocomplete, as the name has to be unique between all Templates
+              Then field management to define multiple TemplateFields as desired -->
+    <ng-container *ngIf="operation === 'create'">
+      CREATE
+    </ng-container>
+    
+    <ng-container *ngIf="operation === 'edit'">
+      EDIT
+    </ng-container>
+    
+    <ng-container *ngIf="operation === 'delete'">
+      DELETE
+    </ng-container>
+  </div>
+  <ng-template pTemplate="footer">
+    <p-button (onClick)="hide()" label="Cancel" icon="pi pi-times" iconPos="left" severity="secondary"/>
+    <p-button (onClick)="hide()" label="Save Template" icon="pi pi-check" iconPos="left"/>
+  </ng-template>
+</p-dialog>

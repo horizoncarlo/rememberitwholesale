@@ -1,5 +1,5 @@
-import { Component, inject } from '@angular/core';
-import { Template } from '../model/template';
+import { Component, EventEmitter, Output, inject } from '@angular/core';
+import { Template, TemplateEvent } from '../model/template';
 import { Thing } from '../model/thing';
 import { TemplateService } from '../service/template.service';
 import { ThingService } from '../service/thing.service';
@@ -14,16 +14,23 @@ export class AddNewDialogComponent {
   things: ThingService = inject(ThingService);
   toAdd: Thing = new Thing('');
   selectedTemplate: Template | null = null;
-  show: boolean = false;
+  isShowing: boolean = false;
+  @Output() manageTemplateEvent = new EventEmitter<TemplateEvent>();
+  
+  show(): void {
+    this.isShowing = true;
+    
+    // Reset our state as well
+    this.toAdd = new Thing('');
+    this.selectedTemplate = new Template(TemplateService.getDefaultName());
+  }
+  
+  hide(): void { 
+    this.isShowing = false;
+  }
   
   toggleAddNewDialog(): void {
-    this.show = !this.show;
-    
-    // If we're just opening the dialog, reset our state
-    if (this.show) {
-      this.toAdd = new Thing('');
-      this.selectedTemplate = new Template(TemplateService.getMilestoneName());
-    }
+    this.isShowing ? this.hide() : this.show();
   }
   
   submitAddNew(): void {
@@ -44,13 +51,18 @@ export class AddNewDialogComponent {
     this.toggleAddNewDialog(); // Close our dialog
   }
   
-  handleFocus(event: any, inputEl: HTMLElement) {
+  handleTemplateEvent(event: any): void {
+    this.hide();
+    this.manageTemplateEvent.emit(event as TemplateEvent);
+  }
+  
+  handleFocus(event: Event, inputEl: HTMLElement): void {
     if (inputEl) {
       inputEl.focus();
     }
   }
   
-  handleEnterKey(toCall: Function) {
+  handleEnterKey(toCall: Function): void {
     if (toCall) {
       toCall();
     }

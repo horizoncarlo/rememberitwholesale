@@ -17,7 +17,7 @@ export class StorageService {
   
   constructor(private http: HttpClient) { }
   
-  // TODO Have a way to define default templates if the file isn't initialized yet. Might be in our Node service itself instead
+  // TODO Have a way to define default templates if the file isn't initialized yet. Likely in our Node service itself instead
   
   getAllTemplates(): Observable<any> {
     // TODO Build Node functionality to get templates
@@ -26,12 +26,16 @@ export class StorageService {
       // TODO For the real call we'd prepend our automatic, default, preset fields, like Milestone. For now return them as part of the test array
       return subscriber.next([
         // Note every template includes Name and Date/Time automatically. 'fields' array is optional
-        new Template(TemplateService.getCreateNewName()),
         new Template(TemplateService.getMilestoneName()),
         new Template('Longboard', [ new TemplateField('distance', 'Distance (km)', false, 'number') ]),
         new Template('Boardgame', [ new TemplateField('numPlayers', 'Number of Players', true), new TemplateField('winner', 'Winner') ])
       ]);
     });
+  }
+  
+  deleteTemplate(nameToDelete: string): Observable<any> {
+    // TODO Node functionality to delete a template: return this.http.delete(BASE_URL + 'data/' + deleteId);
+    return new Observable();
   }
   
   getAllData(): Observable<any> {

@@ -11,10 +11,12 @@ import { DropdownModule } from 'primeng/dropdown';
 import { InputTextModule } from 'primeng/inputtext';
 import { ProgressBarModule } from 'primeng/progressbar';
 import { ProgressSpinnerModule } from 'primeng/progressspinner';
+import { RadioButtonModule } from 'primeng/radiobutton';
 import { TableModule } from 'primeng/table';
 import { ToastModule } from 'primeng/toast';
 import { AddNewDialogComponent } from './add-new-dialog/add-new-dialog.component';
 import { AppComponent } from './app.component';
+import { ManageTemplateDialogComponent } from './manage-template-dialog/manage-template-dialog.component';
 import { TemplateDropdownComponent } from './template-dropdown/template-dropdown.component';
 import { ToastMessageComponent } from './toast-message/toast-message.component';
 
@@ -23,7 +25,8 @@ import { ToastMessageComponent } from './toast-message/toast-message.component';
     AppComponent,
     AddNewDialogComponent,
     ToastMessageComponent,
-    TemplateDropdownComponent
+    TemplateDropdownComponent,
+    ManageTemplateDialogComponent
   ],
   imports: [
     BrowserModule,
@@ -38,6 +41,7 @@ import { ToastMessageComponent } from './toast-message/toast-message.component';
     InputTextModule,
     ProgressBarModule,
     ProgressSpinnerModule,
+    RadioButtonModule,
     TableModule,
     ToastModule
   ],

@@ -1,5 +1,5 @@
 import { Injectable, inject } from '@angular/core';
-import { Thing } from '../model/thing';
+import { Template } from '../model/template';
 import { Utility } from '../util/utility';
 import { StorageService } from './storage.service';
 
@@ -8,17 +8,17 @@ import { StorageService } from './storage.service';
 })
 export class TemplateService  {
   loading: boolean = false;
-  data: Thing[] = [];
+  data: Template[] = [];
   backend: StorageService = inject(StorageService);
   
   constructor() { }
   
-  static getCreateNewName(): string {
-    return 'CREATE NEW';
-  }
-  
   static getMilestoneName(): string {
     return 'Milestone';
+  }
+  
+  static getDefaultName(): string {
+    return this.getMilestoneName();
   }
   
   getAllTemplates(): void {
@@ -35,5 +35,23 @@ export class TemplateService  {
       },
       complete: () => this.loading = false
     });
+  }
+  
+  deleteTemplate(nameToDelete: string): void {
+    // TODO Temporarily just remove from our local list
+    this.data = this.data.filter((template) => template.name !== nameToDelete);
+    Utility.showSuccess('Removed template "' + nameToDelete + '"');
+    
+    /*
+    this.backend.deleteTemplate(nameToDelete).subscribe({
+      next: res => {
+      },
+      error: err => {
+        Utility.showError('Failed to retrieve your templates');
+        console.error(err);
+      },
+      complete: () => this.loading = false
+    });
+    */
   }
 }

@@ -24,8 +24,12 @@ html, body {
   height: 45px;
 }
 
-.add-new-dialog .p-dialog {
+.add-new-dialog .p-dialog,
+.manage-template-dialog .p-dialog {
   min-width: 50vw;
+}
+
+.add-new-dialog .p-dialog {
   height: 90vh;
 }
 

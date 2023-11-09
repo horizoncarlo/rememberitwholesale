@@ -1,5 +1,5 @@
 import { Component, EventEmitter, Input, OnInit, Output, inject } from '@angular/core';
-import { Template } from '../model/template';
+import { Template, TemplateEvent } from '../model/template';
 import { TemplateField } from '../model/template-field';
 import { TemplateService } from '../service/template.service';
 import { Utility } from '../util/utility';
@@ -12,16 +12,15 @@ import { Utility } from '../util/utility';
 export class TemplateDropdownComponent implements OnInit {
   @Input() selectedTemplate: Template | null = null;
   @Output() selectedTemplateChange = new EventEmitter<Template | null>();
+  @Output() manageTemplateEvent = new EventEmitter<TemplateEvent>();
   templateService: TemplateService = inject(TemplateService);
-  
-  constructor() { }
   
   ngOnInit(): void {
     // TODO TEMPORARY Test template service
     this.templateService.getAllTemplates();
   }
   
-  selectedTemplateChanged() {
+  selectedTemplateChanged(): void {
     // Reset any fields of the template after changing
     if (this.selectedTemplate && Utility.hasItems(this.selectedTemplate.fields)) {
       this.selectedTemplate.fields = this.selectedTemplate.fields?.map((currentField: TemplateField) => {
@@ -32,4 +31,16 @@ export class TemplateDropdownComponent implements OnInit {
     
     this.selectedTemplateChange.emit(this.selectedTemplate);
   }
+  
+  requestCreateTemplate(): void {
+    this.manageTemplateEvent.emit({ type: 'create' });
+  }
+  
+  requestEditTemplate(): void {
+    this.manageTemplateEvent.emit({ type: 'edit', actOn: this.selectedTemplate });
+  }
+  
+  requestDeleteTemplate(): void {
+    this.manageTemplateEvent.emit({ type: 'delete', actOn: this.selectedTemplate });
+  }  
 }

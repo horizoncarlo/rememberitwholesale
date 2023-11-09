@@ -1,4 +1,4 @@
-<p-dialog header="Add New Thing" [(visible)]="show" [modal]="true" [maximizable]="true" class="add-new-dialog"
+<p-dialog header="Add New Thing" [(visible)]="isShowing" [modal]="true" [maximizable]="true" class="add-new-dialog"
           (onShow)="handleFocus($event, nameField)">
   <div class="content-form">
     <table cellpadding="10">
@@ -7,7 +7,8 @@
           Template
         </td>
         <td>
-          <riw-template-dropdown [(selectedTemplate)]="selectedTemplate"/>
+          <riw-template-dropdown [(selectedTemplate)]="selectedTemplate"
+                                 (manageTemplateEvent)="handleTemplateEvent($event)"/>
         </td>
       </tr>
       <tr>
@@ -41,7 +42,7 @@
   </div>
   
   <ng-template pTemplate="footer">
-    <p-button (onClick)="toggleAddNewDialog()" label="Cancel" icon="pi pi-times" iconPos="left" severity="secondary"/>
+    <p-button (onClick)="hide()" label="Cancel" icon="pi pi-times" iconPos="left" severity="secondary"/>
     <p-button (onClick)="submitAddNew()" label="Save Thing" icon="pi pi-check" iconPos="left"/>
   </ng-template>
 </p-dialog>

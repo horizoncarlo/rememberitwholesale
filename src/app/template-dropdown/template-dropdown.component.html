@@ -1,1 +1,5 @@
-<p-dropdown [options]="templateService.data" [(ngModel)]="selectedTemplate" optionLabel="name" [showClear]="true" placeholder="Select a Template"></p-dropdown>
+<p-dropdown [options]="templateService.data" optionLabel="name"
+            [(ngModel)]="selectedTemplate"
+            (onChange)="selectedTemplateChanged()"
+            [showClear]="true" placeholder="Select a Template"
+            [style]="{'min-width': '300px'}"/>

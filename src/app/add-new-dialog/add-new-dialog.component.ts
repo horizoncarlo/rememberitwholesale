@@ -1,4 +1,5 @@
 import { Component, inject } from '@angular/core';
+import { Template } from '../model/template';
 import { Thing } from '../model/thing';
 import { ThingService } from '../service/thing.service';
 import { Utility } from '../util/utility';
@@ -11,6 +12,7 @@ import { Utility } from '../util/utility';
 export class AddNewDialogComponent {
   things: ThingService = inject(ThingService);
   toAdd: Thing = new Thing('');
+  selectedTemplate: Template | null = new Template('Milestone');
   show: boolean = false;
   
   toggleAddNewDialog(): void {

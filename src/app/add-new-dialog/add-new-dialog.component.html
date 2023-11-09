@@ -1,6 +1,5 @@
 <p-dialog header="Add New Thing" [(visible)]="show" [modal]="true" [maximizable]="true" class="add-new-dialog" [contentStyle]="{ width: '50vw' }"
           (onShow)="handleFocus($event, nameField)">
-  
   <div class="content-form">
     <table cellpadding="10">
       <tr>
@@ -8,7 +7,7 @@
           Template
         </td>
         <td>
-          <riw-template-dropdown/>
+          <riw-template-dropdown [(selectedTemplate)]="selectedTemplate"/>
         </td>
       </tr>
       <tr>

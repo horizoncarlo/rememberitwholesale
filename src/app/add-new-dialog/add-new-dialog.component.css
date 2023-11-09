@@ -3,6 +3,10 @@
   width: 50vw;
 }
 
+.add-new-dialog input {
+  min-width: 300px;
+}
+
 .content-form {
   margin-top: 20px;
 }

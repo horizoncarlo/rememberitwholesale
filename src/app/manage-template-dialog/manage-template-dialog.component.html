@@ -33,7 +33,7 @@
         </tr>
         <ng-container *ngIf="actOn">
         <tr>
-          <td colspan="5">
+          <td colspan="3">
             <span class="p-float-label">
               <input #nameField pInputText [(ngModel)]="actOn.name" (keyup.enter)="handleEnterKey(submit.bind(this))"
                      (ngModelChange)="createNameChanged($event)"/>
@@ -42,6 +42,16 @@
                 <span *ngIf="nameIsDuplicate" class="red-error subtext">&nbsp;&nbsp;* Name exists already</span>
                 <span *ngIf="!nameIsDuplicate" class="green-success subtext">&nbsp;&nbsp;* Name is unique</span>
               </ng-container>
+            </span>
+          </td>
+          <td colspan="2">
+            <span class="p-float-label">
+              <input pInputText *ngIf="actOn.color === 'inherit'" value="default (change to the right)"/>
+              <input pInputText *ngIf="actOn.color !== 'inherit'" [(ngModel)]="actOn.color"/>
+              <label>Optional Color coding</label>
+              &nbsp;
+              <p-colorPicker [(ngModel)]="actOn.color" />
+              <p-button icon="pi pi-ban" title="Reset the color" severity="secondary" size="small" [rounded]="true" [text]="true" (onClick)="resetColor()" />
             </span>
           </td>
         </tr>

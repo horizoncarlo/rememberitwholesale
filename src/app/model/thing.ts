@@ -1,6 +1,7 @@
 import { v4 as uuidv4 } from 'uuid';
 import { TemplateService } from '../service/template.service';
 import { Utility } from '../util/utility';
+import { Template } from './template';
 import { TemplateField } from './template-field';
 
 export const DEFAULT_ID = "progress";
@@ -11,11 +12,13 @@ export class Thing {
   fields: TemplateField[] = [];
   id: string;
   time?: Date;
+  color?: string;
   
-  constructor(name: string, templateType: string = TemplateService.getDefaultName(), id?: string, time?: Date, fields?: TemplateField[]) {
+  constructor(name: string, templateType: string = TemplateService.getDefaultName(), id?: string, color?: string, time?: Date, fields?: TemplateField[]) {
     this.name = name;
     this.templateType = templateType;
     this.id = id ? id : DEFAULT_ID;
+    this.color = color || 'inherit';
     this.time = time;
     this.fields = fields || [];
     
@@ -27,8 +30,15 @@ export class Thing {
     }
   }
   
-  static cloneFrom(source: Thing) {
-    return new Thing(source.name, source.templateType, source.id, source.time, source.fields);
+  static cloneFrom(source: Thing): Thing {
+    return new Thing(source.name, source.templateType, source.id, source.color, source.time, source.fields);
+  }
+  
+  applyTemplateTo(source: Template | null): void {
+    if (source) {
+      this.templateType = source.name;
+      this.color = source.color;
+    }
   }
   
   prepareForSave(): void {

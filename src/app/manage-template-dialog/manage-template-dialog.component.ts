@@ -3,6 +3,7 @@ import { ConfirmationService } from 'primeng/api';
 import { Template, TemplateEvent } from '../model/template';
 import { TemplateField } from '../model/template-field';
 import { TemplateService } from '../service/template.service';
+import { ThingService } from '../service/thing.service';
 import { Utility } from '../util/utility';
 
 const DEFAULT_TEMPLATE_NAME = "Basic";
@@ -14,6 +15,7 @@ const DEFAULT_TEMPLATE_NAME = "Basic";
   providers: [ConfirmationService]
 })
 export class ManageTemplateDialogComponent {
+  thingService: ThingService = inject(ThingService);
   templateService: TemplateService = inject(TemplateService);
   nextFieldIndex: number = 0;
   operation: TemplateEvent['type'] = 'create';
@@ -106,7 +108,13 @@ export class ManageTemplateDialogComponent {
   
   checkForThings(): void {
     if (this.actOn) {
-      this.lastCheckCount = this.templateService.countThingsForTemplate(this.actOn, true);
+      this.lastCheckCount = this.thingService.countThingsUsingTemplate(this.actOn, true);
+    }
+  }
+  
+  resetColor(): void {
+    if (this.actOn) {
+      this.actOn.color = 'inherit';
     }
   }
   
@@ -129,9 +137,13 @@ export class ManageTemplateDialogComponent {
         return Utility.showError("Template name must be unique");
       }
       
-      console.log("TODO Create a new template", this.actOn);
+      // TODO Ensure our fields have unique IDs between themselves
+      
+      this.templateService.saveNew(this.actOn);
+      this.hide();
     }
     else if (this.operation === 'edit') {
+      // TODO What will we do to any Things using an existing Template we just changed? Try to match fields? Delete data? Warn and overwrite? Wild idea: just remove Edit entirely?
       console.log("TODO Update an existing template", this.actOn);
     }
     if (this.operation === 'delete') {

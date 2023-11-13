@@ -31,6 +31,22 @@ export class TemplateService  {
     return null;
   }
   
+  filteredData(hideDefaults: boolean = false): Template[] {
+    return this.data.filter((template) => {
+      if (hideDefaults) {
+        return !template.isDefault;
+      }
+      return true;
+    });
+  }
+  
+  isNameUnique(nameToCheck: string): boolean {
+    if (Utility.hasItems(this.data)) {
+      return this.data.filter((template) => nameToCheck.toLowerCase() === template.name.toLowerCase()).length === 0;
+    }
+    return true;
+  }
+  
   getAllTemplates(): void {
     this.loading = true;
     this.backend.getAllTemplates().subscribe({
@@ -47,29 +63,32 @@ export class TemplateService  {
     });
   }
   
-  countThingsForTemplate(toCount: Template, showNotif?: boolean): number {
-    let count = this.data.filter((template) => toCount.name.toLowerCase() === template.name.toLowerCase()).length;
+  saveNew(toAdd: Template): void {
+    if (toAdd && toAdd.isValid()) {
+      toAdd.prepareForSave();
+    }
+    else {
+      Utility.showError('Invalid Thing, ensure all fields are filled');
+      return;
+    }
     
-    if (showNotif) {
-      Utility.showInfo('Template "' + toCount.name + '" used in ' + count + ' Thing' + Utility.pluralNum(count));
-    }
-    return count;
-  }
-  
-  filteredData(hideDefaults: boolean = false) {
-    return this.data.filter((template) => {
-      if (hideDefaults) {
-        return !template.isDefault;
-      }
-      return true;
+    console.log("Going to save new Template", toAdd);
+    
+    this.data.push(toAdd);
+    /* TODO Actually persist the new template
+    this.loading = true;
+    this.backend.submitData(toAdd).subscribe({
+      next: res => {
+        Utility.showSuccess('Successfully saved your new Thing', toAdd.name);
+        this.getAllThings();
+      },
+      error: err => {
+        Utility.showError('Failed to save your new Thing');
+        console.error(err);
+      },
+      complete: () => this.loading = false
     });
-  }
-  
-  isNameUnique(nameToCheck: string): boolean {
-    if (Utility.hasItems(this.data)) {
-      return this.data.filter((template) => nameToCheck.toLowerCase() === template.name.toLowerCase()).length === 0;
-    }
-    return true;
+    */
   }
   
   deleteTemplate(nameToDelete: string, deleteThingsToo: boolean = false): void {

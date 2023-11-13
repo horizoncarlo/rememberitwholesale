@@ -29,8 +29,8 @@ export class StorageService {
       return subscriber.next([
         // Note every template includes Name and Date/Time automatically. 'fields' array is optional
         milestoneTemplate,
-        new Template('Longboard', [ new TemplateField('distance', 'Distance (km)', false, 'number') ]),
-        new Template('Boardgame', [ new TemplateField('numPlayers', 'Number of Players', true), new TemplateField('winner', 'Winner') ])
+        new Template('Longboard', 'pink', [ new TemplateField('distance', 'Distance (km)', false, 'number') ]),
+        new Template('Boardgame', 'goldenrod', [ new TemplateField('numPlayers', 'Number of Players', true), new TemplateField('winner', 'Winner') ])
       ]);
     });
   }

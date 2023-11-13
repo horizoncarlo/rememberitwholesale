@@ -1,4 +1,5 @@
 import { Injectable, inject } from '@angular/core';
+import { Template } from '../model/template';
 import { Thing } from '../model/thing';
 import { Utility } from '../util/utility';
 import { StorageService } from './storage.service';
@@ -6,12 +7,12 @@ import { StorageService } from './storage.service';
 @Injectable({
   providedIn: 'root'
 })
-export class ThingService  {
+export class ThingService {
   loading: boolean = false;
   data: Thing[] = [];
   backend: StorageService = inject(StorageService);
   
-  saveNew(toAdd: Thing) {
+  saveNew(toAdd: Thing): void {
     if (toAdd && toAdd.isValid()) {
       toAdd.prepareForSave();
     }
@@ -36,7 +37,7 @@ export class ThingService  {
     });
   }
   
-  deleteThings(toDelete: Thing[]) {
+  deleteThings(toDelete: Thing[]): void {
     this.loading = true;
     let isMultiple = toDelete.length > 1;
     for (let i = 0; i < toDelete.length; i++) {
@@ -73,5 +74,14 @@ export class ThingService  {
       },
       complete: () => this.loading = false
     });
+  }
+  
+  countThingsUsingTemplate(toCount: Template, showNotif?: boolean): number {
+    let count = this.data.filter((thing: Thing) => toCount.name.toLowerCase() === thing.templateType.toLowerCase()).length;
+    
+    if (showNotif) {
+      Utility.showInfo('Template "' + toCount.name + '" used in ' + count + ' Thing' + Utility.pluralNum(count));
+    }
+    return count;
   }
 }

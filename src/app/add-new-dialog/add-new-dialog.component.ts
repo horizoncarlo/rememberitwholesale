@@ -40,8 +40,8 @@ export class AddNewDialogComponent {
       return;
     }
     
-    // Set in our template type as well
-    this.toAdd.templateType = this.selectedTemplate?.name as string;
+    // Set in our template type and color as well
+    this.toAdd.applyTemplateTo(this.selectedTemplate);
     
     // Store the template fields into the Thing as well
     if (this.selectedTemplate?.fields) {

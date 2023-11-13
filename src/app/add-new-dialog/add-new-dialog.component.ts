@@ -12,6 +12,7 @@ import { Utility } from '../util/utility';
 })
 export class AddNewDialogComponent {
   things: ThingService = inject(ThingService);
+  templateService: TemplateService = inject(TemplateService);
   toAdd: Thing = new Thing('');
   selectedTemplate: Template | null = null;
   isShowing: boolean = false;
@@ -22,10 +23,10 @@ export class AddNewDialogComponent {
     
     // Reset our state as well
     this.toAdd = new Thing('');
-    this.selectedTemplate = new Template(TemplateService.getDefaultName());
+    this.selectedTemplate = this.templateService.getFirstDefaultTemplate();
   }
   
-  hide(): void { 
+  hide(): void {
     this.isShowing = false;
   }
   

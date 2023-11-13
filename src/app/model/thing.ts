@@ -13,18 +13,18 @@ export class Thing {
   time?: Date;
   
   constructor(name: string, templateType: string = TemplateService.getDefaultName(), id?: string, time?: Date, fields?: TemplateField[]) {
-      this.name = name;
-      this.templateType = templateType;
-      this.id = id ? id : DEFAULT_ID;
-      this.time = time;
-      this.fields = fields || [];
-      
-      // If we have fields get them as actual TemplateField objects
-      if (Utility.hasItems(this.fields)) {
-        this.fields = this.fields.map((field) => {
-          return TemplateField.cloneFrom(field);
-        });
-      }
+    this.name = name;
+    this.templateType = templateType;
+    this.id = id ? id : DEFAULT_ID;
+    this.time = time;
+    this.fields = fields || [];
+    
+    // If we have fields get them as actual TemplateField objects
+    if (Utility.hasItems(this.fields)) {
+      this.fields = this.fields.map((field) => {
+        return TemplateField.cloneFrom(field);
+      });
+    }
   }
   
   static cloneFrom(source: Thing) {

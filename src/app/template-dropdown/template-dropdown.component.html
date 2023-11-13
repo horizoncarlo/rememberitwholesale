@@ -1,10 +1,17 @@
-<p-dropdown [options]="templateService.data"
+<p-dropdown [options]="templateService.filteredData(hideDefaults)"
             optionLabel="name"
             appendTo="body"
             [(ngModel)]="selectedTemplate"
+            placeholder="Select a Template"
             (onChange)="selectedTemplateChanged()"
             [style]="{'min-width': '300px'}"/>
-&nbsp;
-<p-button (onClick)="requestCreateTemplate()" icon="pi pi-plus" [rounded]="true" severity="success" title="Create a new template" />
-<p-button (onClick)="requestEditTemplate()" icon="pi pi-pencil" [rounded]="true" severity="primary" title="Edit this template"/>
-<p-button *ngIf="!!selectedTemplate" (onClick)="requestDeleteTemplate()" icon="pi pi-trash" [rounded]="true" severity="danger" title="Delete this template" />
+<ng-container *ngIf="!hideControls">
+  &nbsp;
+  <p-button (onClick)="requestCreateTemplate()" icon="pi pi-plus" [rounded]="true" severity="success" title="Create a new template" />
+  &nbsp;
+  <ng-container *ngIf="selectedTemplate && !selectedTemplate.isDefault">
+    <p-button (onClick)="requestEditTemplate()" icon="pi pi-pencil" [rounded]="true" severity="primary" title="Edit this template"/>
+    &nbsp;
+    <p-button *ngIf="!!selectedTemplate" (onClick)="requestDeleteTemplate()" icon="pi pi-trash" [rounded]="true" severity="danger" title="Delete this template" />
+  </ng-container>
+</ng-container>

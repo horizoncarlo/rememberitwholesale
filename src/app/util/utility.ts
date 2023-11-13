@@ -20,6 +20,10 @@ export class Utility {
   static plural(toCheck: Array<any>): string {
     return this.getLength(toCheck) === 1 ? '' : 's';
   }
+  
+  static pluralNum(count: number): string {
+    return count === 1 ? '' : 's';
+  }
 
   static isString(str: any): boolean {
     return !!(str && typeof str === 'string');

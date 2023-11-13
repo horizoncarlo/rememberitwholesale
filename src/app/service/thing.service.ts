@@ -11,8 +11,6 @@ export class ThingService  {
   data: Thing[] = [];
   backend: StorageService = inject(StorageService);
   
-  constructor() { }
-  
   saveNew(toAdd: Thing) {
     if (toAdd && toAdd.isValid()) {
       toAdd.prepareForSave();

@@ -11,14 +11,24 @@ export class TemplateService  {
   data: Template[] = [];
   backend: StorageService = inject(StorageService);
   
-  constructor() { }
-  
   static getMilestoneName(): string {
     return 'Milestone';
   }
   
   static getDefaultName(): string {
     return this.getMilestoneName();
+  }
+  
+  getFirstDefaultTemplate(): Template | null {
+    if (Utility.hasItems(this.data)) {
+      for (let i = 0; i < this.data.length; i++) {
+        if (this.data[i].isDefault) {
+          return this.data[i];
+        }
+      }
+    }
+    
+    return null;
   }
   
   getAllTemplates(): void {
@@ -37,10 +47,32 @@ export class TemplateService  {
     });
   }
   
-  deleteTemplate(nameToDelete: string): void {
+  countThingsForTemplate(toCount: Template, showNotif?: boolean): number {
+    let count = this.data.filter((template) => toCount.name.toLowerCase() === template.name.toLowerCase()).length;
+    
+    if (showNotif) {
+      Utility.showInfo('Template "' + toCount.name + '" used in ' + count + ' Thing' + Utility.pluralNum(count));
+    }
+    return count;
+  }
+  
+  filteredData(hideDefaults: boolean = false) {
+    return this.data.filter((template) => {
+      if (hideDefaults) {
+        return !template.isDefault;
+      }
+      return true;
+    });
+  }
+  
+  deleteTemplate(nameToDelete: string, deleteThingsToo: boolean = false): void {
     // TODO Temporarily just remove from our local list
     this.data = this.data.filter((template) => template.name !== nameToDelete);
     Utility.showSuccess('Removed template "' + nameToDelete + '"');
+    
+    if (deleteThingsToo) {
+      // TODO ThingService.deleteThing, or realistically have a part of our Node call take our flag and handle it in a single call
+    }
     
     /*
     this.backend.deleteTemplate(nameToDelete).subscribe({

@@ -27,10 +27,15 @@ html, body {
 .add-new-dialog .p-dialog,
 .manage-template-dialog .p-dialog {
   min-width: 50vw;
+  height: 90vh;
 }
 
-.add-new-dialog .p-dialog {
-  height: 90vh;
+.checkbox-label-on-left {
+  flex-direction: row-reverse;
+}
+
+.checkbox-label-on-left .p-checkbox {
+  margin-left: 8px;
 }
 
 @media (min-width: 500px) {

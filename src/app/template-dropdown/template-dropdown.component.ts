@@ -10,13 +10,14 @@ import { Utility } from '../util/utility';
   styleUrls: ['./template-dropdown.component.css']
 })
 export class TemplateDropdownComponent implements OnInit {
+  @Input() hideControls?: boolean = false;
+  @Input() hideDefaults?: boolean = false;
   @Input() selectedTemplate: Template | null = null;
   @Output() selectedTemplateChange = new EventEmitter<Template | null>();
   @Output() manageTemplateEvent = new EventEmitter<TemplateEvent>();
   templateService: TemplateService = inject(TemplateService);
   
   ngOnInit(): void {
-    // TODO TEMPORARY Test template service
     this.templateService.getAllTemplates();
   }
   

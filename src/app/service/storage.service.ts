@@ -12,7 +12,6 @@ const BASE_URL = 'http://localhost:4333/';
   providedIn: 'root'
 })
 export class StorageService {
-  
   defaultHeaders = { headers: { 'Content-Type': 'application/json' }};
   
   constructor(private http: HttpClient) { }
@@ -22,11 +21,14 @@ export class StorageService {
   getAllTemplates(): Observable<any> {
     // TODO Build Node functionality to get templates
     //return this.http.get(BASE_URL + 'templates');
+    const milestoneTemplate = new Template(TemplateService.getMilestoneName());
+    milestoneTemplate.isDefault = true;
+    
     return new Observable((subscriber) => {
       // TODO For the real call we'd prepend our automatic, default, preset fields, like Milestone. For now return them as part of the test array
       return subscriber.next([
         // Note every template includes Name and Date/Time automatically. 'fields' array is optional
-        new Template(TemplateService.getMilestoneName()),
+        milestoneTemplate,
         new Template('Longboard', [ new TemplateField('distance', 'Distance (km)', false, 'number') ]),
         new Template('Boardgame', [ new TemplateField('numPlayers', 'Number of Players', true), new TemplateField('winner', 'Winner') ])
       ]);

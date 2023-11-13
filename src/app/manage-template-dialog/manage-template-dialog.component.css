@@ -5,3 +5,11 @@
 .template-table tr td {
   padding: 10px 0 10px 0;
 }
+
+.delete-wrap {
+  padding: 15px 5px 15px 5px;
+}
+
+.manage-radio-font > label {
+  font-size: 20px;
+}

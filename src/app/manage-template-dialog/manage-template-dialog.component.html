@@ -1,6 +1,6 @@
 <p-dialog header="Manage Templates" [(visible)]="isShowing" [modal]="true" [maximizable]="true" class="manage-template-dialog">
   <div class="content-form">
-    <div class="center">
+    <div class="center manage-radio-font">
       Template:&nbsp;
       <p-radioButton value="create" [(ngModel)]="operation" (onClick)="operationRadioClicked()" inputId="createIn"></p-radioButton>
       <label for="createIn"> Create</label>
@@ -13,8 +13,6 @@
     </div>
     <br/>
     
-    <!-- TODO Name input - autocomplete, as the name has to be unique between all Templates
-              Then field management to define multiple TemplateFields as desired -->
     <ng-container *ngIf="operation === 'create' || operation === 'edit'">
       <ng-container *ngIf="operation === 'create'">
         <p>Setup the <b>Name</b> of your template (must be unique between all templates).</p>
@@ -27,6 +25,7 @@
         <tr *ngIf="operation === 'edit'">
           <td colspan="5">
             <label>Template to Edit:&nbsp;</label>
+            <!-- TODO Perhaps need to clone actOn so that the dropdown doesn't auto-update as we change the Edit - Name field, for example-->
             <riw-template-dropdown [(selectedTemplate)]="actOn"
                                    [hideDefaults]="true"
                                    [hideControls]="true" />
@@ -36,8 +35,13 @@
         <tr>
           <td colspan="5">
             <span class="p-float-label">
-              <input #nameField pInputText [(ngModel)]="actOn.name" (keyup.enter)="handleEnterKey(submit.bind(this))"/>
+              <input #nameField pInputText [(ngModel)]="actOn.name" (keyup.enter)="handleEnterKey(submit.bind(this))"
+                     (ngModelChange)="createNameChanged($event)"/>
               <label>Template Name</label>
+              <ng-container *ngIf="operation === 'create'">
+                <span *ngIf="nameIsDuplicate" class="red-error subtext">&nbsp;&nbsp;* Name exists already</span>
+                <span *ngIf="!nameIsDuplicate" class="green-success subtext">&nbsp;&nbsp;* Name is unique</span>
+              </ng-container>
             </span>
           </td>
         </tr>
@@ -76,18 +80,20 @@
     </ng-container>
     
     <ng-container *ngIf="operation === 'delete'">
-      <label>Template to Delete:&nbsp;</label>
-      <riw-template-dropdown [(selectedTemplate)]="actOn"
-                             (selectedTemplateChange)="deleteTargetChanged()"
-                             [hideDefaults]="true"
-                             [hideControls]="true" />
-      <br/>
-      <p>By default deleting a template <b>will NOT</b> clear or remove any related Things that used the template.</p>
-      <ng-container *ngIf="actOn">
-        <p>Note that you <i>can</i> choose to delete all related Things.<br/>Check a count of the selected template to see how far reaching this would be:</p>
-        <p-button (onClick)="checkForThings()" [label]="'Count Things using \'' + actOn.name + '\''" icon="pi pi-search" iconPos="left" severity="secondary"/>
-        <p-checkbox *ngIf="lastCheckCount" [(ngModel)]="deleteThings" [binary]="true" [label]="'Delete ' + lastCheckCount + ' Things as well'" class="checkbox-label-on-left"/>
-      </ng-container>
+      <div class="delete-wrap">
+        <label>Template to Delete:&nbsp;</label>
+        <riw-template-dropdown [(selectedTemplate)]="actOn"
+                              (selectedTemplateChange)="deleteTargetChanged()"
+                              [hideDefaults]="true"
+                              [hideControls]="true" />
+        <br/>
+        <p>By default deleting a template <b>will NOT</b> clear or remove any related Things that used the template.</p>
+        <ng-container *ngIf="actOn">
+          <p>Note that you <i>can</i> choose to delete all related Things.<br/>Check a count of the selected template to see how far reaching this would be:</p>
+          <p-button (onClick)="checkForThings()" [label]="'Count Things using \'' + actOn.name + '\''" icon="pi pi-search" iconPos="left" severity="secondary"/>
+          <p-checkbox *ngIf="lastCheckCount" [(ngModel)]="deleteThings" [binary]="true" [label]="'Delete ' + lastCheckCount + ' Things as well'" class="checkbox-label-on-left"/>
+        </ng-container>
+      </div>
     </ng-container>
   </div>
   <ng-template pTemplate="footer">

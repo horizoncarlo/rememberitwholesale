@@ -38,6 +38,18 @@ html, body {
   margin-left: 8px;
 }
 
+.subtext {
+  font-size: 12px;
+}
+
+.red-error {
+  color: #DD0000;
+}
+
+.green-success {
+  color: #00DD00;
+}
+
 @media (min-width: 500px) {
   .p-progress-spinner-circle {
     stroke-width: 8;

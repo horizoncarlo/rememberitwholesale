@@ -54,4 +54,13 @@ export class Utility {
       (this.isObject(arrOrObj) && Object.keys(arrOrObj).length > 0)
     );
   }
+  
+  static debounceTimer: any = null;
+  static debounce(func: Function, delay: number = 400) { 
+    const args = arguments;
+    if (this.debounceTimer) {
+      clearTimeout(this.debounceTimer);
+    }
+    this.debounceTimer = setTimeout(() => func.apply(args), delay);
+  }
 }

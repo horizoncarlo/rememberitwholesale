@@ -65,6 +65,13 @@ export class TemplateService  {
     });
   }
   
+  isNameUnique(nameToCheck: string): boolean {
+    if (Utility.hasItems(this.data)) {
+      return this.data.filter((template) => nameToCheck.toLowerCase() === template.name.toLowerCase()).length === 0;
+    }
+    return true;
+  }
+  
   deleteTemplate(nameToDelete: string, deleteThingsToo: boolean = false): void {
     // TODO Temporarily just remove from our local list
     this.data = this.data.filter((template) => template.name !== nameToDelete);

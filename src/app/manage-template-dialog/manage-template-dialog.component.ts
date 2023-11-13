@@ -19,6 +19,7 @@ export class ManageTemplateDialogComponent {
   operation: TemplateEvent['type'] = 'create';
   actOn: Template | null = new Template(DEFAULT_TEMPLATE_NAME);
   isShowing: boolean = false;
+  nameIsDuplicate: boolean = false; // Is a create new template Name unique or not?
   lastCheckCount: number = 0;
   deleteThings: boolean = false;
   typeOptions: string[] = [
@@ -88,6 +89,16 @@ export class ManageTemplateDialogComponent {
     }
   }
   
+  createNameChanged(event: Event): void {
+    // Determine if our current name is unique among templates or not
+    const nameToCheck: string = this.actOn ? this.actOn.name : '';
+    if (Utility.isValidString(nameToCheck)) {
+      Utility.debounce(() => {
+        this.nameIsDuplicate = !this.templateService.isNameUnique(nameToCheck);
+      });
+    }
+  }
+  
   deleteTargetChanged(): void {
     this.lastCheckCount = 0;
     this.deleteThings = false;
@@ -114,6 +125,10 @@ export class ManageTemplateDialogComponent {
     
     // Determine what part of CRUD were doing and apply the persistence changes
     if (this.operation ==='create') {
+      if (!this.templateService.isNameUnique(this.actOn.name)) {
+        return Utility.showError("Template name must be unique");
+      }
+      
       console.log("TODO Create a new template", this.actOn);
     }
     else if (this.operation === 'edit') {

@@ -11,3 +11,4 @@
 TODO:
 - Update to Angular 17 (need PrimeNG to update first)
 -- Try server side rendering
+- Do optional reminders if a date is set in the future - load them as a list at the top of the page?

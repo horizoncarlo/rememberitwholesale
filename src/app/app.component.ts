@@ -36,7 +36,7 @@ export class AppComponent implements OnInit {
     if (this.hasSelectedRows()) {
       this.confirmationService.confirm({
         target: event.target as EventTarget,
-        message: 'Are you sure that you want to proceed?',
+        message: 'Are you sure you want to delete ' + this.selectedRows.length + ' Thing' + Utility.plural(this.selectedRows) + '?',
         icon: 'pi pi-exclamation-triangle',
         accept: () => {
           this.things.deleteThings(this.selectedRows);

@@ -18,6 +18,7 @@ export class TemplateDropdownComponent implements OnInit {
   templateService: TemplateService = inject(TemplateService);
   
   ngOnInit(): void {
+    // TODO We should just get all the templates once on app load, and use a local cached version we update on any related operation. Currently this is over-calling as the dropdown shows. Note it IS handy to reset data, such as editing and removing fields from a template, and not wanting to keep those changes
     this.templateService.getAllTemplates();
   }
   

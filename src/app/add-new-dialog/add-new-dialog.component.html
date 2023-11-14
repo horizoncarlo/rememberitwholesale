@@ -26,6 +26,8 @@
         <td>
           <p-calendar id="time" [(ngModel)]="toAdd.time"
                       [showTime]="true" [showIcon]="true"
+                      hourFormat="12" [stepMinute]="5"
+                      [hideOnDateTimeSelect]="false"
                       [inputStyle]="{'min-width': '300px'}" appendTo="body" ></p-calendar>
         </td>
       </tr>
@@ -35,7 +37,7 @@
         </td>
         <td>
           <!-- TODO Use different types for fields, like radio buttons, etc. as needed in the future -->
-          <input [id]="field.property" pInputText [type]="field.type" [required]="field.required" [(ngModel)]="field.value"/>
+          <input [id]="field.property" pInputText [type]="field.type" [required]="field.required || false" [(ngModel)]="field.value"/>
         </td>
       </tr>
     </table>

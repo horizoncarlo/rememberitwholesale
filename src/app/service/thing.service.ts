@@ -24,7 +24,7 @@ export class ThingService {
     console.log("Going to save new Thing", toAdd);
     
     this.loading = true;
-    this.backend.submitData(toAdd).subscribe({
+    this.backend.submitThing(toAdd).subscribe({
       next: res => {
         Utility.showSuccess('Successfully saved your new Thing', toAdd.name);
         this.getAllThings();
@@ -41,7 +41,7 @@ export class ThingService {
     this.loading = true;
     let isMultiple = toDelete.length > 1;
     for (let i = 0; i < toDelete.length; i++) {
-      this.backend.deleteData(toDelete[i].id).subscribe({
+      this.backend.deleteThing(toDelete[i].id).subscribe({
         next: res => {
           // Ensure we only refresh our data once
           if (!isMultiple ||
@@ -61,7 +61,7 @@ export class ThingService {
 
   getAllThings(): void {
     this.loading = true;
-    this.backend.getAllData().subscribe({
+    this.backend.getAllThings().subscribe({
       next: res => {
         this.data = res.map((current: Thing) => {
           return Thing.cloneFrom(current);

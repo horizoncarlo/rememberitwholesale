@@ -4,14 +4,16 @@
             [(ngModel)]="selectedTemplate"
             placeholder="Select a Template"
             (onChange)="selectedTemplateChanged()"
-            [style]="{'min-width': '300px'}"/>
+            [style]="{'min-width': '300px'}">
+  <ng-template let-template pTemplate="item">
+    <span [style.color]="template.color">{{template.name}}</span>
+  </ng-template>
+</p-dropdown>
 <ng-container *ngIf="!hideControls">
   &nbsp;
-  <p-button (onClick)="requestCreateTemplate()" icon="pi pi-plus" [rounded]="true" severity="success" title="Create a new template" />
-  &nbsp;
+  <p-button (onClick)="requestCreateTemplate()" icon="pi pi-plus" [rounded]="true" severity="success" pTooltip="Create a new template" />
   <ng-container *ngIf="selectedTemplate && !selectedTemplate.isDefault">
-    <p-button (onClick)="requestEditTemplate()" icon="pi pi-pencil" [rounded]="true" severity="primary" title="Edit this template"/>
     &nbsp;
-    <p-button *ngIf="!!selectedTemplate" (onClick)="requestDeleteTemplate()" icon="pi pi-trash" [rounded]="true" severity="danger" title="Delete this template" />
+    <p-button *ngIf="!!selectedTemplate" (onClick)="requestDeleteTemplate()" icon="pi pi-trash" [rounded]="true" severity="danger" pTooltip="Delete this template" />
   </ng-container>
 </ng-container>

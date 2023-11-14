@@ -19,8 +19,12 @@ export class Thing {
     this.templateType = templateType;
     this.id = id ? id : DEFAULT_ID;
     this.color = color || 'inherit';
-    this.time = time;
     this.fields = fields || [];
+    
+    if (time && typeof time !== 'object') {
+      time = new Date(time);
+    }
+    this.time = this.roundToHour(time || new Date());
     
     // If we have fields get them as actual TemplateField objects
     if (Utility.hasItems(this.fields)) {
@@ -32,6 +36,16 @@ export class Thing {
   
   static cloneFrom(source: Thing): Thing {
     return new Thing(source.name, source.templateType, source.id, source.color, source.time, source.fields);
+  }
+  
+  roundToHour(time: Date): Date {
+    if (!time) {
+      time = new Date();
+    }
+    time.setHours(time.getHours() + Math.floor(time.getMinutes()/60));
+    time.setMinutes(0, 0, 0); // Resets also seconds and milliseconds
+
+    return time;
   }
   
   applyTemplateTo(source: Template | null): void {
@@ -46,10 +60,23 @@ export class Thing {
       this.id = uuidv4();
     }
     if (!this.time) {
-      this.time = new Date();
+      this.time = this.roundToHour(new Date());
     }
     if (!Utility.isValidString(this.templateType)) {
       this.templateType = TemplateService.getDefaultName();
+    }
+    
+    // Can slightly trim down the object by removing false/empty values
+    if (Utility.hasItems(this.fields)) {
+      this.fields?.forEach((currentField) => {
+        if (!Utility.isValidString(currentField.value)) {
+          delete currentField.value;
+        }
+        
+        if (!currentField.required) {
+          delete currentField.required;
+        }
+      });
     }
   }
   

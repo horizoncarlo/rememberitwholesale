@@ -16,6 +16,7 @@ import { ProgressSpinnerModule } from 'primeng/progressspinner';
 import { RadioButtonModule } from 'primeng/radiobutton';
 import { TableModule } from 'primeng/table';
 import { ToastModule } from 'primeng/toast';
+import { TooltipModule } from 'primeng/tooltip';
 import { AddNewDialogComponent } from './add-new-dialog/add-new-dialog.component';
 import { AppComponent } from './app.component';
 import { ManageTemplateDialogComponent } from './manage-template-dialog/manage-template-dialog.component';
@@ -47,7 +48,8 @@ import { ToastMessageComponent } from './toast-message/toast-message.component';
     ProgressSpinnerModule,
     RadioButtonModule,
     TableModule,
-    ToastModule
+    ToastModule,
+    TooltipModule
   ],
   providers: [],
   bootstrap: [AppComponent]

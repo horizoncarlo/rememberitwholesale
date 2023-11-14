@@ -2,11 +2,13 @@ import { Injectable, inject } from '@angular/core';
 import { Template } from '../model/template';
 import { Utility } from '../util/utility';
 import { StorageService } from './storage.service';
+import { ThingService } from './thing.service';
 
 @Injectable({
   providedIn: 'root'
 })
 export class TemplateService  {
+  things: ThingService = inject(ThingService);
   loading: boolean = false;
   data: Template[] = [];
   backend: StorageService = inject(StorageService);
@@ -51,8 +53,9 @@ export class TemplateService  {
     this.loading = true;
     this.backend.getAllTemplates().subscribe({
       next: res => {
-        this.data = res;
-        // TODO Probably have to cast these to actual Template objects, just like our thing.service.ts
+        this.data = res.map((current: Template) => {
+          return Template.cloneFrom(current);
+        });
         console.log("Get Templates", this.data);
       },
       error: err => {
@@ -68,48 +71,44 @@ export class TemplateService  {
       toAdd.prepareForSave();
     }
     else {
-      Utility.showError('Invalid Thing, ensure all fields are filled');
+      Utility.showError('Invalid Template, ensure all fields are filled');
       return;
     }
     
     console.log("Going to save new Template", toAdd);
     
-    this.data.push(toAdd);
-    /* TODO Actually persist the new template
     this.loading = true;
-    this.backend.submitData(toAdd).subscribe({
+    this.backend.submitTemplate(toAdd).subscribe({
       next: res => {
-        Utility.showSuccess('Successfully saved your new Thing', toAdd.name);
-        this.getAllThings();
+        Utility.showSuccess('Successfully saved your new Template', toAdd.name);
+        this.getAllTemplates();
       },
       error: err => {
-        Utility.showError('Failed to save your new Thing');
+        Utility.showError('Failed to save your new Template');
         console.error(err);
       },
       complete: () => this.loading = false
     });
-    */
   }
   
-  deleteTemplate(nameToDelete: string, deleteThingsToo: boolean = false): void {
-    // TODO Temporarily just remove from our local list
-    this.data = this.data.filter((template) => template.name !== nameToDelete);
-    Utility.showSuccess('Removed template "' + nameToDelete + '"');
-    
-    if (deleteThingsToo) {
-      // TODO ThingService.deleteThing, or realistically have a part of our Node call take our flag and handle it in a single call
-    }
-    
-    /*
-    this.backend.deleteTemplate(nameToDelete).subscribe({
+  deleteTemplate(nameToDelete: string, deleteThingsToo?: boolean): void {
+    this.loading = true;
+    this.backend.deleteTemplate(nameToDelete, deleteThingsToo).subscribe({
       next: res => {
+        // Ensure we only refresh our data once
+        Utility.showSuccess("Successfully deleted Template", nameToDelete);
+        this.getAllTemplates();
+        
+        // Refresh our Things too if we deleted them
+        if (deleteThingsToo) {
+          this.things.getAllThings();
+        }
       },
       error: err => {
-        Utility.showError('Failed to retrieve your templates');
+        Utility.showError('Failed to delete "' + nameToDelete + '"');
         console.error(err);
-      },
-      complete: () => this.loading = false
+        this.loading = false;
+      }
     });
-    */
   }
 }

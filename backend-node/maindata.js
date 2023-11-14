@@ -4,93 +4,200 @@ const cors = require('cors');
 const fs = require("fs");
 const os = require("os");
 
+const DEFAULT_TEMPLATES = [
+  {
+    "name": "Milestone",
+    "isDefault": true
+  },
+  { // TODO TEMPORARY Template data
+    "name": "Longboard",
+    "color": "pink",
+    "fields": [
+      {
+        "property": "distance",
+        "label": "Distance",
+        "required": true,
+        "type": "number"
+      },
+    ]
+  },
+  { // TODO TEMPORARY Template data
+    "name": "Boardgame",
+    "color": "goldenrod",
+    "fields": [
+      {
+        "property": "numPlayers",
+        "label": "Number of Players",
+        "type": "number"
+      },
+      {
+        "property": "whoWon",
+        "label": "Winner Name",
+        "type": "text"
+      }
+    ]
+  }
+];
+
 const PORT_NUM = 4333;
 const FILE_DIR = os.homedir() + '/.rememberitwholesale/';
-const DATA_FILE = FILE_DIR + 'data.json';
+
+// TODO Combine files and property into an object, and then centralize functions so we don't have to duplicate read/write?
+const THINGS_FILE = FILE_DIR + 'things.json';
+const TEMPLATES_FILE = FILE_DIR + 'templates.json';
+
+// TODO Need login functionality to protect our APIs
 
 // TODO Configure CORS to just be from our website, instead of global/public access
 app.use(cors());
 app.use(express.json());
 
 // Maintain our JSON data in memory, and read/write as needed as a whole chunk. Realistically don't need to overthink appending or streaming files for the sizes involved
-// Children elements should correspond to each "table" in our JSON pseudo-database
+// Each file should correspond to a "table" in our JSON pseudo-database
 // TODO Will eventually need to maintain each of these on a per-user basis. Just assuming singleton access per user to avoid a lot of complexity and over engineering
 let inMemory = {
-  data: null
+  things: null,
+  templates: null
 };
 
 // Fire up the server
 app.listen(PORT_NUM, () => {
   console.log("Server running on port " + PORT_NUM);
   
-  checkFilesSetup();
+  ensureFilesAreSetup();
 });
 
-function checkFilesSetup() {
+function ensureFilesAreSetup() {
   // Ensure our initial files are ready
+  setupSingleFile(THINGS_FILE);
+  setupSingleFile(TEMPLATES_FILE);
+}
+
+function setupSingleFile(name) {
   try{
-    fs.readFileSync(DATA_FILE);
+    fs.readFileSync(name);
   }catch(err) {
     fs.mkdirSync(FILE_DIR, { recursive: true });
-    fs.writeFileSync(DATA_FILE, '', { flag: 'wx' });
+    fs.writeFileSync(name, '', { flag: 'wx' });
   }
 }
 
-function refreshInMemoryData() {
+function readSingleFile(name, property) {
   try{
     // Determine if our file is empty, in which case we'll use an empty array
-    if (fs.readFileSync(DATA_FILE)?.length <= 0) {
-      inMemory.data = [];
+    if (fs.readFileSync(name)?.length <= 0) {
+      inMemory[property] = [];
     }
     // Otherwise read our file
     else {
-      inMemory.data = JSON.parse(fs.readFileSync(DATA_FILE));
+      inMemory[property] = JSON.parse(fs.readFileSync(name));
     }
   }catch(err) {
-    checkFilesSetup();
-    inMemory.data = [];
+    setupSingleFile(name);
+    inMemory[property] = [];
   }
 }
 
-function getInMemoryData() {
-  if (inMemory.data === null) {
-    refreshInMemoryData();
+function getInMemoryThings() {
+  if (inMemory.things === null) {
+    readSingleFile(THINGS_FILE, 'things');
   }
-  return inMemory.data;
+  return inMemory.things;
 }
 
-function saveMemoryToFile() {
-  console.log("WRITE", inMemory.data);
-  fs.writeFileSync(DATA_FILE, JSON.stringify(inMemory.data));
+function getInMemoryTemplates() {
+  if (inMemory.templates === null) {
+    readSingleFile(TEMPLATES_FILE, 'templates');
+  }
+  
+  // Default our templates if we have none, to ensure we at least have some preset
+  if (!inMemory.templates || inMemory.templates.length === 0) {
+    inMemory.templates = DEFAULT_TEMPLATES;
+    saveTemplatesMemoryToFile();
+  }
+  
+  return inMemory.templates;
 }
 
-app.get("/data", (req, res) => {
-  console.log("GET", getInMemoryData()); // TODO TEMPORARY Logging
-  res.send(getInMemoryData()).end();
+// TODO Write more safely - temp file first, once that is complete move it over the original. Also handle errors
+function saveThingsMemoryToFile() {
+  console.log("WRITE Things", inMemory.things);
+  fs.writeFileSync(THINGS_FILE, JSON.stringify(inMemory.things));
+}
+
+function saveTemplatesMemoryToFile() {
+  console.log("WRITE Templates", inMemory.templates);
+  fs.writeFileSync(TEMPLATES_FILE, JSON.stringify(inMemory.templates));
+}
+
+/***** API Endpoints *****/
+app.get("/things", (req, res) => {
+  console.log("GET Things", getInMemoryThings());
+  return res.send(getInMemoryThings()).end();
 });
 
-app.post("/data", (req, res) => {
-  console.log("POST", req.body);
+app.post("/things", (req, res) => {
+  console.log("POST Thing", req.body);
   
   // TODO Safely check req.body for validity
-  // Add to our in memory data and write to JSON
-  getInMemoryData().push(req.body);
-  
-  // TODO Write more safely - temp file first, once that is complete move it over the original
-  // TODO Also handle errors
-  saveMemoryToFile();
-  res.status(200).end();
+  getInMemoryThings().push(req.body);
+  saveThingsMemoryToFile();
+  return res.status(200).end();
 });
 
-app.delete("/data/:id", (req, res) => {
-  console.log("DELETE", req.params.id);
+app.delete("/things/:id", (req, res) => {
+  console.log("DELETE Thing", req.params.id);
   
-  let toWork = getInMemoryData();
+  let toWork = getInMemoryThings();
   for (let i = toWork.length-1; i >= 0; i--) {
     if (req.params.id === toWork[i].id) {
       toWork.splice(i, 1);
     }
   }
-  saveMemoryToFile();
-  res.status(200).end();
+  
+  saveThingsMemoryToFile();
+  return res.status(200).end();
+});
+
+app.get("/templates", (req, res) => {
+  console.log("GET Templates", getInMemoryTemplates()); // TODO TEMPORARY Logging
+  return res.send(getInMemoryTemplates()).end();
+});
+
+app.post("/templates", (req, res) => {
+  console.log("POST Template", req.body);
+  
+  // TODO Safely check req.body for validity
+  getInMemoryTemplates().push(req.body);
+  saveTemplatesMemoryToFile();
+  return res.status(200).end();
+});
+
+app.post("/templates/delete", (req, res) => {
+  console.log("POST Template Delete", req.body);
+  
+  if (req.body && req.body.templateNameToDelete) {
+    const toSearch = getInMemoryTemplates();
+    const withDeleted = toSearch.filter((template) => template.name.toLowerCase() !== req.body.templateNameToDelete.toLowerCase());
+    if (withDeleted.length !== toSearch.length) {
+      inMemory.templates = withDeleted;
+      
+      // If requested, clean up related Things as well
+      if (req.body.deleteThingsToo) {
+        const cleanupThings = getInMemoryThings();
+        const newThings = cleanupThings.filter((things) => {
+          return things.templateType &&
+                 things.templateType.toLowerCase() !== req.body.templateNameToDelete.toLowerCase();
+        });
+        inMemory.things = newThings;
+        saveThingsMemoryToFile();
+      }
+      
+      saveTemplatesMemoryToFile();
+      return res.status(200).end();
+    }
+    else {
+      return res.status(404).end();
+    }
+  }
 });

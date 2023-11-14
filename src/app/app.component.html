@@ -7,6 +7,7 @@
   <!-- TODO Edit a single selected row, try to leverage existing New Thing dialog? -->
   <p-button (onClick)="things.getAllThings()" icon="pi pi-refresh" [loading]="things.loading" severity="info" />
   <p-button (onClick)="addNew.show()" icon="pi pi-plus-circle" label="New Thing" />
+  <!-- TODO Put a count of templates in this button, like "Manage X Templates", also fits well with our global retrieval instead of ngOnInit in our template dropdown -->
   <p-button (onClick)="manageTemplate.show()" icon="pi pi-list" label="Manage Templates" />
   <p-button (onClick)="confirmDeleteSelected($event)" icon="pi pi-trash" [label]="getDeleteLabel()" [disabled]="!hasSelectedRows()" />
   <p-confirmPopup />
@@ -30,7 +31,7 @@
   <ng-template pTemplate="body" let-data let-rowIndex="rowIndex">
     <tr [pSelectableRow]="data" [pSelectableRowIndex]="rowIndex">
       <td><span [style]="'color:' + data.color">{{ data.name }}</span></td>
-      <td><span [style]="'color:' + data.color">{{ data.time | date: 'medium' }}</span></td>
+      <td><span [style]="'color:' + data.color">{{ data.time | date: 'MMM d &rsquo;yy \'at\' h:mm a' }}</span></td>
       <td><span [style]="'color:' + data.color">{{ data.templateType }}</span></td>
       <td>{{ data.getFieldsAsString() }}</td>
     </tr>

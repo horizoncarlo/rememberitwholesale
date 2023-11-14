@@ -3,7 +3,7 @@ import { Utility } from "../util/utility";
 export class TemplateField {
   property: string = '';
   label?: string = '';
-  required: boolean = false;
+  required?: boolean = false;
   type?: string = 'text';
   value?: string | null = null;
   
@@ -17,7 +17,7 @@ export class TemplateField {
   
   static cloneFrom(source: TemplateField) {
     return new TemplateField(source.property, source.label, source.required, source.type, source.value);
-  }  
+  }
   
   getLabel(): string {
     if (Utility.isValidString(this.label)) {

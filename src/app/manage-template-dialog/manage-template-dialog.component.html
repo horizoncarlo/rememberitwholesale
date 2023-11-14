@@ -5,32 +5,20 @@
       <p-radioButton value="create" [(ngModel)]="operation" (onClick)="operationRadioClicked()" inputId="createIn"></p-radioButton>
       <label for="createIn"> Create</label>
       &nbsp;
-      <p-radioButton value="edit" [(ngModel)]="operation" (onClick)="operationRadioClicked()" inputId="editIn"></p-radioButton>
-      <label for="editIn"> Edit</label>
-      &nbsp;
       <p-radioButton value="delete" [(ngModel)]="operation" (onClick)="operationRadioClicked()" inputId="deleteIn"></p-radioButton>
       <label for="deleteIn"> Delete</label>
     </div>
     <br/>
     
-    <ng-container *ngIf="operation === 'create' || operation === 'edit'">
-      <ng-container *ngIf="operation === 'create'">
-        <p>Setup the <b>Name</b> of your template (must be unique between all templates).</p>
-        <p>Then you can add as many fields related to the template you want.<br/>
-        Each field has a <b>Property/ID</b> which must be unique in this template, and won't be shown to the user.<br/>
-        The <b>Label</b> is assigned to the input the user enters when using this template.</p>
-        <p>Each template also automatically provides a name input for the user to fill in, and an optional date.</p>
-      </ng-container>
+    <ng-container *ngIf="operation === 'create'">
+      <!-- TODO Auto hide (with an option to expand) this help text based on the user account, once they've logged in X number of times, or show again if they haven't logged in in a while-->
+      <p>Setup the <b>Name</b> of your template (must be unique between all templates).</p>
+      <p>Then you can add as many fields related to the template you want.<br/>
+      Each field has a <b>Property/ID</b> which must be unique in this template, and won't be shown to the user.<br/>
+      The <b>Label</b> is assigned to the input the user enters when using this template.</p>
+      <p>Each template also automatically provides a name input for the user to fill in, and an optional date.</p>
+      <p>Note for the sake of data integrity you cannot edit a template after creation.</p>
       <table cellspacing="5" cellpading="0" class="template-table">
-        <tr *ngIf="operation === 'edit'">
-          <td colspan="5">
-            <label>Template to Edit:&nbsp;</label>
-            <!-- TODO Perhaps need to clone actOn so that the dropdown doesn't auto-update as we change the Edit - Name field, for example-->
-            <riw-template-dropdown [(selectedTemplate)]="actOn"
-                                   [hideDefaults]="true"
-                                   [hideControls]="true" />
-          </td>
-        </tr>
         <ng-container *ngIf="actOn">
         <tr>
           <td colspan="3">
@@ -50,8 +38,8 @@
               <input pInputText *ngIf="actOn.color !== 'inherit'" [(ngModel)]="actOn.color"/>
               <label>Optional Color coding</label>
               &nbsp;
-              <p-colorPicker [(ngModel)]="actOn.color" />
-              <p-button icon="pi pi-ban" title="Reset the color" severity="secondary" size="small" [rounded]="true" [text]="true" (onClick)="resetColor()" />
+              <p-colorPicker [(ngModel)]="actOn.color" appendTo="body"/>
+              <p-button icon="pi pi-ban" pTooltip="Reset the color" severity="secondary" size="small" [rounded]="true" [text]="true" (onClick)="resetColor()" />
             </span>
           </td>
         </tr>
@@ -85,7 +73,7 @@
         </ng-container>
       </table>
       <ng-container *ngIf="operation === 'create'">
-        <p-button (onClick)="addField()" icon="pi pi-plus" [rounded]="true" severity="success" title="Add a new field" />
+        <p-button (onClick)="addField()" icon="pi pi-plus" [rounded]="true" severity="success" pTooltip="Add a new field" />
       </ng-container>
     </ng-container>
     
@@ -93,14 +81,14 @@
       <div class="delete-wrap">
         <label>Template to Delete:&nbsp;</label>
         <riw-template-dropdown [(selectedTemplate)]="actOn"
-                              (selectedTemplateChange)="deleteTargetChanged()"
-                              [hideDefaults]="true"
-                              [hideControls]="true" />
+                               (selectedTemplateChange)="deleteTargetChanged()"
+                               [hideDefaults]="true"
+                               [hideControls]="true" />
         <br/>
-        <p>By default deleting a template <b>will NOT</b> clear or remove any related Things that used the template.</p>
+        <p>By default deleting a template <b>will NOT</b> remove or clear any related Things that used the template.</p>
         <ng-container *ngIf="actOn">
           <p>Note that you <i>can</i> choose to delete all related Things.<br/>Check a count of the selected template to see how far reaching this would be:</p>
-          <p-button (onClick)="checkForThings()" [label]="'Count Things using \'' + actOn.name + '\''" icon="pi pi-search" iconPos="left" severity="secondary"/>
+          <p-button (onClick)="checkForThings()" label="Count Things" icon="pi pi-search" iconPos="left" severity="secondary"/>
           <p-checkbox *ngIf="lastCheckCount" [(ngModel)]="deleteThings" [binary]="true" [label]="'Delete ' + lastCheckCount + ' Things as well'" class="checkbox-label-on-left"/>
         </ng-container>
       </div>

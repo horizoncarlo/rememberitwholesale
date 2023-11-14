@@ -2,9 +2,7 @@ import { HttpClient } from '@angular/common/http';
 import { Injectable } from '@angular/core';
 import { Observable } from 'rxjs';
 import { Template } from '../model/template';
-import { TemplateField } from '../model/template-field';
 import { Thing } from '../model/thing';
-import { TemplateService } from './template.service';
 
 const BASE_URL = 'http://localhost:4333/';
 
@@ -16,39 +14,30 @@ export class StorageService {
   
   constructor(private http: HttpClient) { }
   
-  // TODO Have a way to define default templates if the file isn't initialized yet. Likely in our Node service itself instead
+  getAllThings(): Observable<any> {
+    return this.http.get(BASE_URL + 'things');
+  }
+  
+  deleteThing(deleteId: string): Observable<any> {
+    return this.http.delete(BASE_URL + 'things/' + deleteId);
+  }
+  
+  submitThing(body: Thing): Observable<any> {
+    return this.http.post(BASE_URL + 'things', body, this.defaultHeaders);
+  }
   
   getAllTemplates(): Observable<any> {
-    // TODO Build Node functionality to get templates
-    //return this.http.get(BASE_URL + 'templates');
-    const milestoneTemplate = new Template(TemplateService.getMilestoneName());
-    milestoneTemplate.isDefault = true;
-    
-    return new Observable((subscriber) => {
-      // TODO For the real call we'd prepend our automatic, default, preset fields, like Milestone. For now return them as part of the test array
-      return subscriber.next([
-        // Note every template includes Name and Date/Time automatically. 'fields' array is optional
-        milestoneTemplate,
-        new Template('Longboard', 'pink', [ new TemplateField('distance', 'Distance (km)', false, 'number') ]),
-        new Template('Boardgame', 'goldenrod', [ new TemplateField('numPlayers', 'Number of Players', true), new TemplateField('winner', 'Winner') ])
-      ]);
-    });
+    return this.http.get(BASE_URL + 'templates');
   }
   
-  deleteTemplate(nameToDelete: string): Observable<any> {
-    // TODO Node functionality to delete a template: return this.http.delete(BASE_URL + 'data/' + deleteId);
-    return new Observable();
+  deleteTemplate(nameToDelete: string, deleteThingsToo?: boolean): Observable<any> {
+    return this.http.post(BASE_URL + 'templates/delete', {
+      templateNameToDelete: nameToDelete,
+      deleteThingsToo: deleteThingsToo || false
+    }, this.defaultHeaders);
   }
   
-  getAllData(): Observable<any> {
-    return this.http.get(BASE_URL + 'data');
-  }
-  
-  deleteData(deleteId: string): Observable<any> {
-    return this.http.delete(BASE_URL + 'data/' + deleteId);
-  }
-  
-  submitData(body: Thing): Observable<any> {
-    return this.http.post(BASE_URL + 'data', body, this.defaultHeaders);
+  submitTemplate(body: Template): Observable<any> {
+    return this.http.post(BASE_URL + 'templates', body, this.defaultHeaders);
   }
 }

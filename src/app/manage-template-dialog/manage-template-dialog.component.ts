@@ -62,12 +62,8 @@ export class ManageTemplateDialogComponent {
     if (this.operation === 'create') {
       this.actOn = new Template(DEFAULT_TEMPLATE_NAME);
     }
-    else if (this.operation === 'edit' ||
-             this.operation === 'delete') {
+    else if (this.operation === 'delete') {
       this.actOn = null;
-    }
-    
-    if (this.operation === 'delete') {
       this.deleteTargetChanged();
     }
   }
@@ -121,7 +117,6 @@ export class ManageTemplateDialogComponent {
   getSubmitLabel(): string {
     switch (this.operation) {
       case 'create': return 'Save New Template';
-      case 'edit': return 'Save Changes';
       case 'delete': return 'Request Delete';
     }
   }
@@ -137,29 +132,42 @@ export class ManageTemplateDialogComponent {
         return Utility.showError("Template name must be unique");
       }
       
-      // TODO Ensure our fields have unique IDs between themselves
+      // Ensure our fields have unique IDs between themselves
+      if (this.actOn && this.actOn.fields && Utility.hasItems(this.actOn.fields)) {
+        for (let i = 0; i < this.actOn.fields?.length; i++) {
+          const fieldToCheck = this.actOn.fields[i];
+          const isDuplicate = this.actOn.fields?.filter((field) => {
+            return (fieldToCheck.property.toLowerCase() === field.property.toLowerCase());
+          }).length > 1;
+          
+          if (isDuplicate) {
+            Utility.showWarn('Found a duplicate Property/ID field "' + fieldToCheck.property + '"');
+            return;
+          }
+        };
+      }
       
       this.templateService.saveNew(this.actOn);
       this.hide();
     }
-    else if (this.operation === 'edit') {
-      // TODO What will we do to any Things using an existing Template we just changed? Try to match fields? Delete data? Warn and overwrite? Wild idea: just remove Edit entirely?
-      console.log("TODO Update an existing template", this.actOn);
-    }
-    if (this.operation === 'delete') {
+    else if (this.operation === 'delete') {
       let message = 'Are you sure you want to delete "' + this.actOn.name + "'";
       if (this.deleteThings) {
         message += ' and ' + this.lastCheckCount + ' related Thing' + Utility.pluralNum(this.lastCheckCount);
       }
       message += '?';
       
+      // Note we can't delete things if there's nothing to delete, so toggle the flag back
+      if (this.lastCheckCount === 0) {
+        this.deleteThings = false;
+      }
       this.confirmationService.confirm({
         target: event.target as EventTarget,
         message: message,
         icon: 'pi pi-exclamation-triangle',
         accept: () => {
           if (this.actOn) {
-            this.templateService.deleteTemplate(this.actOn.name);
+            this.templateService.deleteTemplate(this.actOn.name, this.deleteThings);
             this.hide();
           }
         },

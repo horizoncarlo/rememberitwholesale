@@ -24,6 +24,11 @@ html, body {
   height: 45px;
 }
 
+.p-datepicker-today span {
+  font-weight: bold;
+  font-size: 22px;
+}
+
 .add-new-dialog .p-dialog,
 .manage-template-dialog .p-dialog {
   min-width: 50vw;

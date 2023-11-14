@@ -41,6 +41,7 @@ const DEFAULT_TEMPLATES = [
 
 const PORT_NUM = 4333;
 const FILE_DIR = os.homedir() + '/.rememberitwholesale/';
+const BACKUP_FILE = FILE_DIR + 'backup.json';
 
 // TODO Combine files and property into an object, and then centralize functions so we don't have to duplicate read/write?
 const THINGS_FILE = FILE_DIR + 'things.json';
@@ -113,21 +114,45 @@ function getInMemoryTemplates() {
   // Default our templates if we have none, to ensure we at least have some preset
   if (!inMemory.templates || inMemory.templates.length === 0) {
     inMemory.templates = DEFAULT_TEMPLATES;
-    saveTemplatesMemoryToFile();
+    try{
+      saveTemplatesMemoryToFile();
+    }catch (err) {
+      console.error("Failed to save default templates", err);
+    }
   }
   
   return inMemory.templates;
 }
 
-// TODO Write more safely - temp file first, once that is complete move it over the original. Also handle errors
 function saveThingsMemoryToFile() {
   console.log("WRITE Things", inMemory.things);
-  fs.writeFileSync(THINGS_FILE, JSON.stringify(inMemory.things));
+  writeSafeFile(THINGS_FILE, inMemory.things);
 }
 
 function saveTemplatesMemoryToFile() {
   console.log("WRITE Templates", inMemory.templates);
-  fs.writeFileSync(TEMPLATES_FILE, JSON.stringify(inMemory.templates));
+  writeSafeFile(TEMPLATES_FILE, inMemory.templates);
+}
+
+function writeSafeFile(name, data, retryCount = 0) {
+  try{
+    // Write to a temporary file first
+    fs.writeFileSync(BACKUP_FILE, JSON.stringify(data));
+    
+    // Write to our actual file
+    fs.writeFileSync(name, JSON.stringify(data));
+  }catch (err) {
+    console.error("Failed to write a safe file", err);
+    
+    // Retry up to 5 times
+    retryCount++;
+    if (retryCount < 5) {
+      writeSafeFile(name, data, retryCount);
+    }
+    else {
+      throw new Error('Failed to write the file');
+    }
+  }
 }
 
 /***** API Endpoints *****/

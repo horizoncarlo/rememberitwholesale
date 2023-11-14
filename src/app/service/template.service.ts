@@ -49,6 +49,10 @@ export class TemplateService  {
     return true;
   }
   
+  getTemplateCount(): number {
+    return Utility.hasItems(this.data) ? this.data.length : 0;
+  }
+  
   getAllTemplates(): void {
     this.loading = true;
     this.backend.getAllTemplates().subscribe({

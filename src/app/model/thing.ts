@@ -83,7 +83,7 @@ export class Thing {
   getFieldsAsString(): string {
     if (Utility.hasItems(this.fields)) {
       let toReturn: string = this.fields.map((field) => {
-        return field.getLabel() + ' = ' + field.value;
+        return field.getLabel() + ' = ' + (field.value || 'N/A');
       }).join(', ');
       
       return toReturn;

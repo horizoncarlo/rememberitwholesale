@@ -1,6 +1,7 @@
 import { Component, OnInit, inject } from '@angular/core';
 import { ConfirmationService, PrimeNGConfig } from 'primeng/api';
 import { Thing } from './model/thing';
+import { TemplateService } from './service/template.service';
 import { ThingService } from './service/thing.service';
 import { Utility } from './util/utility';
 
@@ -12,6 +13,7 @@ import { Utility } from './util/utility';
 })
 export class AppComponent implements OnInit {
   things: ThingService = inject(ThingService);
+  templateService: TemplateService = inject(TemplateService);
   selectedRows: Thing[] = [];
   
   constructor(private primengConfig: PrimeNGConfig,

@@ -10,26 +10,45 @@
   <p-button (onClick)="manageTemplate.show()" icon="pi pi-list" [label]="'Manage ' + templateService.getTemplateCount() + ' Templates'" />
   <p-button (onClick)="confirmDeleteSelected($event)" icon="pi pi-trash" [label]="getDeleteLabel()" [disabled]="!hasSelectedRows()" />
   <p-confirmPopup />
-  <p-progressSpinner *ngIf="things.loading" />
+  
+  <!-- TODO Switch this button and search and loading layout to flex or a Toolbar component -->
+  <div class="float-right">
+    <span class="p-input-icon-left">
+      <i class="pi pi-search"></i>
+      <input pInputText type="text" (input)="globalFilterTable($event)" placeholder="Search Things" />
+    </span>
+    <p-progressSpinner *ngIf="things.loading" />
+  </div>
 </div>
 <riw-add-new-dialog #addNew (manageTemplateEvent)="manageTemplate.show($event)" />
 <riw-manage-template-dialog #manageTemplate />
 
-<!-- TODO Add sorting, filtering, etc. -->
-<p-table [value]="things.data" styleClass="p-datatable-striped"
+<p-table #thingTable
+         [value]="things.data" styleClass="p-datatable-striped"
          class="thing-table"
          selectionMode="multiple" [(selection)]="selectedRows"
          (sortFunction)="customSort($event)" [customSort]="true"
          sortField="time" [sortOrder]="-1"
-         [resizableColumns]="true" columnResizeMode="fit"
          [loading]="things.loading"
-         >
+         [globalFilterFields]="['name', 'time', 'templateType']"> <!-- TODO Need to filter on Fields As Strings globally too-->
   <ng-template pTemplate="header">
     <tr>
-      <th pResizableColumn pSortableColumn="name">Name <p-sortIcon field="name"></p-sortIcon></th>
-      <th pResizableColumn pSortableColumn="time">Date <p-sortIcon field="time"></p-sortIcon></th>
-      <th pResizableColumn pSortableColumn="templateType">Type <p-sortIcon field="templateType"></p-sortIcon></th>
-      <th pResizableColumn pSortableColumn="fields">Fields <p-sortIcon field="fields"></p-sortIcon></th>
+      <!-- TODO Using pResizableColumn here causes the table content to overlap with our filters, namely the date filter -->
+      <th pSortableColumn="name">Name <p-sortIcon field="name" /></th>
+      <th pSortableColumn="time">Date <p-sortIcon field="time" /></th>
+      <th pSortableColumn="templateType">Type <p-sortIcon field="templateType" /></th>
+      <th pSortableColumn="fields">Fields <p-sortIcon field="fields" /></th>
+    </tr>
+    <tr>
+      <th><p-columnFilter type="text" field="name" matchMode="contains" /></th>
+      <!-- TODO Currently the calendar causes .p-datatable .p-datatable-wrapper to trigger scrolling and jars the view -->
+      <th><p-columnFilter type="date" field="time" appendTo="body" /></th>
+      <th><p-columnFilter type="text" field="templateType" matchMode="contains" /></th>
+      <!-- TODO Have this filter apply properly to the string version of the fields -->
+      <!-- <th><p-columnFilter type="text" (change)="filterFields($event)" /></th> -->
+      <th>
+        <input pInputText type="text" (change)="filterFields($event)" style="height: 30px;" />
+      </th>
     </tr>
   </ng-template>
   <!-- TODO Style width of columns as we fill them out -->

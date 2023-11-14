@@ -1,5 +1,6 @@
-import { Component, OnInit, inject } from '@angular/core';
+import { Component, OnInit, ViewChild, inject } from '@angular/core';
 import { ConfirmationService, PrimeNGConfig, SortEvent } from 'primeng/api';
+import { Table } from 'primeng/table';
 import { Thing } from './model/thing';
 import { TemplateService } from './service/template.service';
 import { ThingService } from './service/thing.service';
@@ -12,6 +13,7 @@ import { Utility } from './util/utility';
   providers: [ConfirmationService]
 })
 export class AppComponent implements OnInit {
+  @ViewChild('thingTable') thingTable!: Table;
   things: ThingService = inject(ThingService);
   templateService: TemplateService = inject(TemplateService);
   selectedRows: Thing[] = [];
@@ -24,6 +26,17 @@ export class AppComponent implements OnInit {
     
     // Get our initial data load
     this.things.getAllThings();
+  }
+  
+  globalFilterTable(event: any): void {
+    console.error("FILTER", event);
+    console.error("WITH VAL", this.thingTable);
+    this.thingTable.filterGlobal(event.target.value, 'contains');
+  }
+  
+  filterFields(event: any): void {
+    console.error("FILTER FIELDS", event.target.value);
+    this.thingTable.filteredValue = this.things.data.filter((thing: Thing) => thing.getFieldsAsString().toLocaleLowerCase().indexOf(event.target.value.toLowerCase()) !== -1);
   }
   
   getDeleteLabel(): string {

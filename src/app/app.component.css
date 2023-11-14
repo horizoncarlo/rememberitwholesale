@@ -2,6 +2,10 @@
   padding: 10px;
 }
 
+.thing-table {
+  min-width: 50rem;
+}
+
 .button-row {
   padding-bottom: 10px;
 }

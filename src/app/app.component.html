@@ -16,21 +16,27 @@
 <riw-manage-template-dialog #manageTemplate />
 
 <!-- TODO Add sorting, filtering, etc. -->
-<p-table [value]="things.data" styleClass="p-datatable-striped" [tableStyle]="{ 'min-width': '50rem' }"
-         selectionMode="multiple" [(selection)]="selectedRows">
+<p-table [value]="things.data" styleClass="p-datatable-striped"
+         class="thing-table"
+         selectionMode="multiple" [(selection)]="selectedRows"
+         (sortFunction)="customSort($event)" [customSort]="true"
+         sortField="time" [sortOrder]="-1"
+         [resizableColumns]="true" columnResizeMode="fit"
+         [loading]="things.loading"
+         >
   <ng-template pTemplate="header">
     <tr>
-      <th>Name</th>
-      <th>Date</th>
-      <th>Type</th>
-      <th>Fields</th>
+      <th pResizableColumn pSortableColumn="name">Name <p-sortIcon field="name"></p-sortIcon></th>
+      <th pResizableColumn pSortableColumn="time">Date <p-sortIcon field="time"></p-sortIcon></th>
+      <th pResizableColumn pSortableColumn="templateType">Type <p-sortIcon field="templateType"></p-sortIcon></th>
+      <th pResizableColumn pSortableColumn="fields">Fields <p-sortIcon field="fields"></p-sortIcon></th>
     </tr>
   </ng-template>
   <!-- TODO Style width of columns as we fill them out -->
   <ng-template pTemplate="body" let-data let-rowIndex="rowIndex">
     <tr [pSelectableRow]="data" [pSelectableRowIndex]="rowIndex">
       <td><span [style]="'color:' + data.color">{{ data.name }}</span></td>
-      <td><span [style]="'color:' + data.color">{{ data.time | date: 'MMM d &rsquo;yy \'at\' h:mm a' }}</span></td>
+      <td><span [style]="'color:' + data.color">{{ data.time | date: 'MMM dd &rsquo;yy \'at\' h:mm a' }}</span></td>
       <td><span [style]="'color:' + data.color">{{ data.templateType }}</span></td>
       <td>{{ data.getFieldsAsString() }}</td>
     </tr>

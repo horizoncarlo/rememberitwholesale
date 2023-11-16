@@ -17,3 +17,23 @@
 .button-row .float-right {
   float: right;
 }
+
+.name-col, .time-col, .type-col {
+  min-width: 250px;
+}
+
+.name-col {
+  width: 350px;
+}
+
+.time-col {
+  width: 250px;
+}
+
+.type-col {
+  width: 300px;
+}
+
+.fields-col {
+  width: calc(100% - 350px - 300px - 500px);
+}

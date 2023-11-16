@@ -34,8 +34,8 @@
           </td>
           <td colspan="2">
             <span class="p-float-label">
-              <input pInputText *ngIf="actOn.color === 'inherit'" value="default (change to the right)"/>
-              <input pInputText *ngIf="actOn.color !== 'inherit'" [(ngModel)]="actOn.color"/>
+              <input pInputText *ngIf="actOn.color === 'inherit'" value="default (change to the right)" readonly />
+              <input pInputText *ngIf="actOn.color !== 'inherit'" [(ngModel)]="actOn.color" />
               <label>Optional Color coding</label>
               &nbsp;
               <p-colorPicker [(ngModel)]="actOn.color" appendTo="body"/>

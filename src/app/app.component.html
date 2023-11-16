@@ -30,33 +30,26 @@
          (sortFunction)="customSort($event)" [customSort]="true"
          sortField="time" [sortOrder]="-1"
          [loading]="things.loading"
-         [globalFilterFields]="['name', 'time', 'templateType']"> <!-- TODO Need to filter on Fields As Strings globally too-->
+         [globalFilterFields]="['name', 'time', 'templateType']">
   <ng-template pTemplate="header">
     <tr>
-      <!-- TODO Using pResizableColumn here causes the table content to overlap with our filters, namely the date filter -->
-      <th pSortableColumn="name">Name <p-sortIcon field="name" /></th>
-      <th pSortableColumn="time">Date <p-sortIcon field="time" /></th>
-      <th pSortableColumn="templateType">Type <p-sortIcon field="templateType" /></th>
-      <th pSortableColumn="fields">Fields <p-sortIcon field="fields" /></th>
+      <th pSortableColumn="name" class="name-col">Name <p-sortIcon field="name" /></th>
+      <th pSortableColumn="templateType" class="type-col">Type <p-sortIcon field="templateType" /></th>
+      <th pSortableColumn="time" class="time-col">Date <p-sortIcon field="time" /></th>
+      <th pSortableColumn="fields" class="fields-col">Fields <p-sortIcon field="fields" /></th>
     </tr>
     <tr>
       <th><p-columnFilter type="text" field="name" matchMode="contains" /></th>
-      <!-- TODO Currently the calendar causes .p-datatable .p-datatable-wrapper to trigger scrolling and jars the view -->
-      <th><p-columnFilter type="date" field="time" appendTo="body" /></th>
       <th><p-columnFilter type="text" field="templateType" matchMode="contains" /></th>
-      <!-- TODO Have this filter apply properly to the string version of the fields -->
-      <!-- <th><p-columnFilter type="text" (change)="filterFields($event)" /></th> -->
-      <th>
-        <input pInputText type="text" (change)="filterFields($event)" style="height: 30px;" />
-      </th>
+      <th><p-columnFilter type="date" field="time" appendTo="body" /></th>
+      <th><input pInputText type="text" (change)="filterFields($event)" style="height: 30px;" /></th>
     </tr>
   </ng-template>
-  <!-- TODO Style width of columns as we fill them out -->
   <ng-template pTemplate="body" let-data let-rowIndex="rowIndex">
     <tr [pSelectableRow]="data" [pSelectableRowIndex]="rowIndex">
       <td><span [style]="'color:' + data.color">{{ data.name }}</span></td>
-      <td><span [style]="'color:' + data.color">{{ data.time | date: 'MMM dd &rsquo;yy \'at\' h:mm a' }}</span></td>
       <td><span [style]="'color:' + data.color">{{ data.templateType }}</span></td>
+      <td class="center"><span [style]="'color:' + data.color">{{ data.time | date: 'MMM dd &rsquo;yy \'at\' h:mm a' }}</span></td>
       <td>{{ data.getFieldsAsString() }}</td>
     </tr>
   </ng-template>

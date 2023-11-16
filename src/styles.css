@@ -26,8 +26,10 @@ body {
 }
 
 .p-progress-spinner {
-  width: 45px;
-  height: 45px;
+  width: 32px;
+  height: 32px;
+  vertical-align: middle;
+  margin-left: 10px;
 }
 
 .p-datepicker-today span {

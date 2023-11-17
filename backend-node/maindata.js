@@ -164,7 +164,27 @@ app.get("/things", (req, res) => {
 app.post("/things", (req, res) => {
   console.log("POST Thing", req.body);
   
-  // TODO Safely check req.body for validity
+  // Check our body for errors
+  let failError = '';
+  if (req.body) {
+    if (!req.body.name || req.body.name.trim().length === 0) {
+      failError = 'Missing name';
+    }
+    if (!req.body.templateType || req.body.templateType.trim().length === 0) {
+      failError = 'Missing template type';
+    }
+  }
+  else {
+    failError = 'Incorrect or no data sent';
+  }
+  
+  if (failError && failError.trim().length > 0) {
+    console.error("INVALID, 400");
+    return res.status(400).json({ status: 400, message: failError }).end();
+  }
+  
+  console.error("RETURNING NORMALLY");
+  
   getInMemoryThings().push(req.body);
   saveThingsMemoryToFile();
   return res.status(200).end();

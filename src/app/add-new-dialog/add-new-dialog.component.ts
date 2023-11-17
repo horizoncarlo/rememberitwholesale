@@ -3,7 +3,6 @@ import { Template, TemplateEvent } from '../model/template';
 import { Thing } from '../model/thing';
 import { TemplateService } from '../service/template.service';
 import { ThingService } from '../service/thing.service';
-import { Utility } from '../util/utility';
 
 @Component({
   selector: 'riw-add-new-dialog',
@@ -35,10 +34,12 @@ export class AddNewDialogComponent {
   }
   
   submitAddNew(): void {
+    /* QUIDEL
     if (!this.toAdd || !this.toAdd.isValid()) {
       Utility.showError('Enter a name for this Thing');
       return;
     }
+    */
     
     // Set in our template type and color as well
     this.toAdd.applyTemplateTo(this.selectedTemplate);

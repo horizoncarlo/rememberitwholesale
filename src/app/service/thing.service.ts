@@ -16,13 +16,16 @@ export class ThingService {
     if (toAdd && toAdd.isValid()) {
       toAdd.prepareForSave();
     }
+    /* QUIDEL
     else {
       Utility.showError('Invalid Thing, ensure all fields are filled');
       return;
     }
+    */
     
     console.log("Going to save new Thing", toAdd);
     
+    // TODO On error try to use "finally" or "finalize" instead of "complete" so that loading stops
     this.loading = true;
     this.backend.submitThing(toAdd).subscribe({
       next: res => {

@@ -29,14 +29,12 @@ export class AppComponent implements OnInit {
   }
   
   globalFilterTable(event: any): void {
-    console.error("FILTER", event);
-    console.error("WITH VAL", this.thingTable);
     this.thingTable.filterGlobal(event.target.value, 'contains');
   }
   
   filterFields(event: any): void {
-    console.error("FILTER FIELDS", event.target.value);
-    this.thingTable.filteredValue = this.things.data.filter((thing: Thing) => thing.getFieldsAsString().toLocaleLowerCase().indexOf(event.target.value.toLowerCase()) !== -1);
+    this.thingTable.filteredValue =
+      this.things.data.filter((thing: Thing) => thing.getFieldsAsString().toLocaleLowerCase().indexOf(event.target.value.toLowerCase()) !== -1);
   }
   
   getDeleteLabel(): string {

@@ -12,28 +12,26 @@ export class ThingService {
   data: Thing[] = [];
   backend: StorageService = inject(StorageService);
   
-  saveNew(toAdd: Thing): void {
+  saveThing(toAdd: Thing): void {
     if (toAdd && toAdd.isValid()) {
       toAdd.prepareForSave();
     }
-    /* QUIDEL
     else {
       Utility.showError('Invalid Thing, ensure all fields are filled');
       return;
     }
-    */
     
-    console.log("Going to save new Thing", toAdd);
+    console.log("Going to save Thing", toAdd);
     
-    // TODO On error try to use "finally" or "finalize" instead of "complete" so that loading stops
     this.loading = true;
     this.backend.submitThing(toAdd).subscribe({
       next: res => {
-        Utility.showSuccess('Successfully saved your new Thing', toAdd.name);
+        Utility.showSuccess('Successfully saved your Thing', toAdd.name);
         this.getAllThings();
       },
       error: err => {
-        Utility.showError('Failed to save your new Thing');
+        this.loading = false;
+        Utility.showError('Failed to save your Thing');
         console.error(err);
       },
       complete: () => this.loading = false
@@ -54,9 +52,9 @@ export class ThingService {
           }
         },
         error: err => {
+          this.loading = false;
           Utility.showError('Failed to delete "' + toDelete[i].name + '"');
           console.error(err);
-          this.loading = false;
         }
       });
     }
@@ -72,6 +70,7 @@ export class ThingService {
         console.log("Get Things", this.data);
       },
       error: err => {
+        this.loading = false;
         Utility.showError('Failed to retrieve your data');
         console.error(err);
       },

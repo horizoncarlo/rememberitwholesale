@@ -13,6 +13,7 @@ export class TemplateDropdownComponent implements OnInit {
   @Input() hideControls?: boolean = false;
   @Input() hideDefaults?: boolean = false;
   @Input() selectedTemplate: Template | null = null;
+  @Input() keepValue: boolean = false;
   @Output() selectedTemplateChange = new EventEmitter<Template | null>();
   @Output() manageTemplateEvent = new EventEmitter<TemplateEvent>();
   templateService: TemplateService = inject(TemplateService);
@@ -24,12 +25,14 @@ export class TemplateDropdownComponent implements OnInit {
   }
   
   selectedTemplateChanged(): void {
-    // Reset any fields of the template after changing
-    if (this.selectedTemplate && Utility.hasItems(this.selectedTemplate.fields)) {
-      this.selectedTemplate.fields = this.selectedTemplate.fields?.map((currentField: TemplateField) => {
-        currentField.value = null;
-        return currentField;
-      });
+    // Reset any fields of the template after changing, unless asked not too
+    if (!this.keepValue) {
+      if (this.selectedTemplate && Utility.hasItems(this.selectedTemplate.fields)) {
+        this.selectedTemplate.fields = this.selectedTemplate.fields?.map((currentField: TemplateField) => {
+          currentField.value = null;
+          return currentField;
+        });
+      }
     }
     
     this.selectedTemplateChange.emit(this.selectedTemplate);

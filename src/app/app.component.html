@@ -6,8 +6,9 @@
 <div class="button-row">
   <!-- TODO Edit a single selected row, try to leverage existing New Thing dialog? -->
   <p-button (onClick)="things.getAllThings()" icon="pi pi-refresh" [loading]="things.loading" severity="info" />
-  <p-button (onClick)="addNew.show()" icon="pi pi-plus-circle" label="New Thing" />
   <p-button (onClick)="manageTemplate.show()" icon="pi pi-list" [label]="'Manage ' + templateService.getTemplateCount() + ' Templates'" />
+  <p-button (onClick)="manageThing.showAdd()" icon="pi pi-plus-circle" label="New Thing" />
+  <p-button (onClick)="manageThing.showEdit(selectedRows)" icon="pi pi-plus-circle" label="Edit Thing" [disabled]="!hasOneSelectedRow()" />
   <p-button (onClick)="confirmDeleteSelected($event)" icon="pi pi-trash" [label]="getDeleteLabel()" [disabled]="!hasSelectedRows()" />
   <p-confirmPopup />
   
@@ -20,7 +21,7 @@
     <p-progressSpinner *ngIf="things.loading" />
   </div>
 </div>
-<riw-add-new-dialog #addNew (manageTemplateEvent)="manageTemplate.show($event)" />
+<riw-manage-thing-dialog #manageThing (manageTemplateEvent)="manageTemplate.show($event)" />
 <riw-manage-template-dialog #manageTemplate />
 
 <p-table #thingTable

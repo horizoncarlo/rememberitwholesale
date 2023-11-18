@@ -1,4 +1,4 @@
-<p-dialog header="Add New Thing" [(visible)]="isShowing" [modal]="true" [maximizable]="true" class="add-new-dialog"
+<p-dialog [header]="(isAdd() ? 'Add' : 'Edit') + ' New Thing'" [(visible)]="isShowing" [modal]="true" [maximizable]="true" class="add-new-dialog"
           (onShow)="handleFocus($event, nameField)">
   <div class="content-form">
     <table cellpadding="10">
@@ -7,7 +7,7 @@
           Template
         </td>
         <td>
-          <riw-template-dropdown [(selectedTemplate)]="selectedTemplate"
+          <riw-template-dropdown [(selectedTemplate)]="selectedTemplate" [keepValue]="isEdit()"
                                  (manageTemplateEvent)="handleTemplateEvent($event)"/>
         </td>
       </tr>
@@ -16,7 +16,7 @@
           <label htmlFor="name">Name</label>
         </td>
         <td>
-          <input id="name" #nameField pInputText [(ngModel)]="toAdd.name" (keyup.enter)="handleEnterKey(submitAddNew.bind(this))"/>
+          <input id="name" #nameField pInputText [(ngModel)]="actOn.name" (keyup.enter)="handleEnterKey(submit.bind(this))"/>
         </td>
       </tr>
       <tr>
@@ -24,7 +24,7 @@
           <label htmlFor="time">Date</label>
         </td>
         <td>
-          <p-calendar id="time" [(ngModel)]="toAdd.time"
+          <p-calendar id="time" [(ngModel)]="actOn.time"
                       [showTime]="true" [showIcon]="true"
                       hourFormat="12" [stepMinute]="5"
                       [hideOnDateTimeSelect]="false"
@@ -46,6 +46,6 @@
   
   <ng-template pTemplate="footer">
     <p-button (onClick)="hide()" label="Cancel" icon="pi pi-times" iconPos="left" severity="secondary"/>
-    <p-button (onClick)="submitAddNew()" label="Save Thing" icon="pi pi-check" iconPos="left"/>
+    <p-button (onClick)="submit()" label="Save Thing" icon="pi pi-check" iconPos="left"/>
   </ng-template>
 </p-dialog>

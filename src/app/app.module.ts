@@ -17,19 +17,19 @@ import { RadioButtonModule } from 'primeng/radiobutton';
 import { TableModule } from 'primeng/table';
 import { ToastModule } from 'primeng/toast';
 import { TooltipModule } from 'primeng/tooltip';
-import { AddNewDialogComponent } from './add-new-dialog/add-new-dialog.component';
 import { AppComponent } from './app.component';
 import { ManageTemplateDialogComponent } from './manage-template-dialog/manage-template-dialog.component';
+import { ManageThingDialogComponent } from './manage-thing-dialog/manage-thing-dialog.component';
 import { TemplateDropdownComponent } from './template-dropdown/template-dropdown.component';
 import { ToastMessageComponent } from './toast-message/toast-message.component';
 
 @NgModule({
   declarations: [
     AppComponent,
-    AddNewDialogComponent,
     ToastMessageComponent,
     TemplateDropdownComponent,
-    ManageTemplateDialogComponent
+    ManageTemplateDialogComponent,
+    ManageThingDialogComponent
   ],
   imports: [
     BrowserModule,

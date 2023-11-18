@@ -73,6 +73,10 @@ export class AppComponent implements OnInit {
     return Utility.hasItems(this.selectedRows);
   }
   
+  hasOneSelectedRow(): boolean {
+    return this.hasSelectedRows() && this.selectedRows.length === 1;
+  }
+  
   customSort(event: SortEvent) {
     if (event && event.data && event.field) {
       event.data.sort((thing1: any, thing2: any) => {

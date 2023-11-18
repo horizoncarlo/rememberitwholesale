@@ -33,6 +33,16 @@ export class TemplateService  {
     return null;
   }
   
+  getTemplateByName(name: string): Template | null {
+    if (Utility.hasItems(this.data)) {
+      const toReturn: Template[] = this.data.filter((template) => name === template.name);
+      if (Utility.hasItems(toReturn)) {
+        return toReturn[0];
+      }
+    }
+    return null;
+  }
+  
   filteredData(hideDefaults: boolean = false): Template[] {
     return this.data.filter((template) => {
       if (hideDefaults) {
@@ -63,6 +73,7 @@ export class TemplateService  {
         console.log("Get Templates", this.data);
       },
       error: err => {
+        this.loading = false;
         Utility.showError('Failed to retrieve your templates');
         console.error(err);
       },
@@ -88,6 +99,7 @@ export class TemplateService  {
         this.getAllTemplates();
       },
       error: err => {
+        this.loading = false;
         Utility.showError('Failed to save your new Template');
         console.error(err);
       },
@@ -109,9 +121,9 @@ export class TemplateService  {
         }
       },
       error: err => {
+        this.loading = false;
         Utility.showError('Failed to delete "' + nameToDelete + '"');
         console.error(err);
-        this.loading = false;
       }
     });
   }

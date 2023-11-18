@@ -167,6 +167,9 @@ app.post("/things", (req, res) => {
   // Check our body for errors
   let failError = '';
   if (req.body) {
+    if (!req.body.id) {
+      failError = 'Missing ID';
+    }
     if (!req.body.name || req.body.name.trim().length === 0) {
       failError = 'Missing name';
     }
@@ -185,7 +188,20 @@ app.post("/things", (req, res) => {
   
   console.error("RETURNING NORMALLY");
   
-  getInMemoryThings().push(req.body);
+  // Determine if our object exists by ID or not
+  let justAdd = true;
+  const things = getInMemoryThings();
+  for (let i = things.length-1; i >= 0; i--) {
+    if (req.body.id === things[i].id) {
+      justAdd = false;
+      things.splice(i, 1, req.body);
+    }
+  }
+  
+  if (justAdd) {
+    getInMemoryThings().push(req.body);
+  }
+  
   saveThingsMemoryToFile();
   return res.status(200).end();
 });

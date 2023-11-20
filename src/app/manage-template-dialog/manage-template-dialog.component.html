@@ -24,7 +24,7 @@
             <td colspan="3">
               <span class="p-float-label">
                 <input #nameField pInputText [(ngModel)]="actOn.name" (keyup.enter)="handleEnterKey(submit.bind(this))"
-                      (ngModelChange)="createNameChanged($event)"/>
+                      (ngModelChange)="createNameChanged()"/>
                 <label>Template Name</label>
                 <ng-container *ngIf="operation === 'create'">
                   <span *ngIf="nameIsDuplicate" class="red-error subtext">&nbsp;&nbsp;* Name exists already</span>

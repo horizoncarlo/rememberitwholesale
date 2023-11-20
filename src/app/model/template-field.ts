@@ -2,10 +2,10 @@ import { Utility } from "../util/utility";
 
 enum TemplateFieldTypes {
   Text = 'text',
-  Number = 'number',
   Textarea = 'textarea',
-  Radio = 'radio',
+  Number = 'number',
   Dropdown = 'dropdown',
+  Radio = 'radio',
   Date = 'date',
   Datetime = 'datetime'
 };

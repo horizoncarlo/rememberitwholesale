@@ -45,6 +45,7 @@ export class ManageTemplateDialogComponent {
       this.operationRadioClicked();
     }
     
+    this.createNameChanged(true); // Do an initial name change to check for uniqueness (without debounce)
     this.isShowing = true;
   }
   
@@ -85,13 +86,13 @@ export class ManageTemplateDialogComponent {
     }
   }
   
-  createNameChanged(event: Event): void {
+  createNameChanged(skipDebounce?: boolean): void {
     // Determine if our current name is unique among templates or not
     const nameToCheck: string = this.actOn ? this.actOn.name : '';
     if (Utility.isValidString(nameToCheck)) {
       Utility.debounce(() => {
         this.nameIsDuplicate = !this.templateService.isNameUnique(nameToCheck);
-      });
+      }, skipDebounce ? 0 : undefined);
     }
   }
   

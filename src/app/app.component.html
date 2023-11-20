@@ -33,7 +33,7 @@
          [globalFilterFields]="['name', 'time', 'templateType']">
   <ng-template pTemplate="header">
     <tr>
-      <th pSortableColumn="name" class="name-col">Name <p-sortIcon field="name" /></th>
+      <th pSortableColumn="name" class="name-col">Name ({{things.data.length}}) <p-sortIcon field="name" /></th>
       <th pSortableColumn="templateType" class="type-col">Type <p-sortIcon field="templateType" /></th>
       <th pSortableColumn="time" class="time-col">Date <p-sortIcon field="time" /></th>
       <th pSortableColumn="fields" class="fields-col">Fields <p-sortIcon field="fields" /></th>

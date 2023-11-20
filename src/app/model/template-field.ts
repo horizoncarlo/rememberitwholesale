@@ -1,17 +1,25 @@
 import { Utility } from "../util/utility";
 
+enum TemplateFieldTypes {
+  Text = 'text',
+  Number = 'number',
+  Textarea = 'textarea'
+};
+
 export class TemplateField {
+  static TYPES = TemplateFieldTypes;
   property: string = '';
   label?: string = '';
   required?: boolean = false;
-  type?: string = 'text';
+  type?: TemplateFieldTypes = TemplateFieldTypes.Text;
+  // TODO Need an "options" param for type=radio or type=dropdown, and then UI to support in Add New Thing for defining those options
   value?: string | null = null;
   
-  constructor(property: string, label?: string, required?: boolean, type?: string, value?: string | null) {
+  constructor(property: string, label?: string, required?: boolean, type?: any, value?: string | null) {
     this.property = property;
     this.label = label || property;
     this.required = required || false;
-    this.type = type || 'text';
+    this.type = type || TemplateFieldTypes.Text;
     this.value = value || null;
   }
   

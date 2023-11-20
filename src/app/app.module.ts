@@ -11,6 +11,7 @@ import { ConfirmPopupModule } from 'primeng/confirmpopup';
 import { DialogModule } from 'primeng/dialog';
 import { DropdownModule } from 'primeng/dropdown';
 import { InputTextModule } from 'primeng/inputtext';
+import { InputTextareaModule } from 'primeng/inputtextarea';
 import { ProgressBarModule } from 'primeng/progressbar';
 import { ProgressSpinnerModule } from 'primeng/progressspinner';
 import { RadioButtonModule } from 'primeng/radiobutton';
@@ -44,6 +45,7 @@ import { ToastMessageComponent } from './toast-message/toast-message.component';
     DialogModule,
     DropdownModule,
     InputTextModule,
+    InputTextareaModule,
     ProgressBarModule,
     ProgressSpinnerModule,
     RadioButtonModule,

@@ -1,4 +1,4 @@
-<p-dialog [header]="(isAdd() ? 'Add' : 'Edit') + ' New Thing'" [(visible)]="isShowing" [modal]="true" [maximizable]="true" class="add-new-dialog"
+<p-dialog [header]="(isAdd() ? 'Add New' : 'Edit') + ' Thing'" [(visible)]="isShowing" [modal]="true" [maximizable]="true" class="manage-thing-dialog"
           (onShow)="handleFocus($event, nameField)">
   <div class="content-form">
     <table cellpadding="10">
@@ -38,7 +38,12 @@
         </td>
         <td>
           <!-- TODO Use different types for fields, like radio buttons, etc. as needed in the future -->
-          <input [id]="field.property" pInputText [type]="field.type" [required]="field.required || false" [(ngModel)]="field.value"/>
+          <ng-container *ngIf="field.type === fieldTypes.Text || field.type === fieldTypes.Number">
+            <input [id]="field.property" pInputText [type]="field.type" [required]="field.required || false" [(ngModel)]="field.value"/>
+          </ng-container>
+          <ng-container *ngIf="field.type === fieldTypes.Textarea">
+            <textarea [id]="field.property" rows="3" pInputTextarea [(ngModel)]="field.value" [required]="field.required || false"></textarea>
+          </ng-container>
         </td>
       </tr>
     </table>

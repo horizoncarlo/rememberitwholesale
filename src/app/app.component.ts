@@ -1,6 +1,7 @@
 import { Component, OnInit, ViewChild, inject } from '@angular/core';
 import { ConfirmationService, PrimeNGConfig, SortEvent } from 'primeng/api';
 import { Table } from 'primeng/table';
+import { ManageThingDialogComponent } from './manage-thing-dialog/manage-thing-dialog.component';
 import { Thing } from './model/thing';
 import { TemplateService } from './service/template.service';
 import { ThingService } from './service/thing.service';
@@ -35,6 +36,22 @@ export class AppComponent implements OnInit {
   filterFields(event: any): void {
     this.thingTable.filteredValue =
       this.things.data.filter((thing: Thing) => thing.getFieldsAsString().toLocaleLowerCase().indexOf(event.target.value.toLowerCase()) !== -1);
+  }
+  
+  requestEditRow(editDialog: ManageThingDialogComponent): void {
+    if (!editDialog) {
+      Utility.showError("Couldn't find dialog to show");
+      console.error("Edit Dialog was not passed to the edit request");
+      return;
+    }
+    
+    if (this.hasOneSelectedRow()) {
+      editDialog.showEdit(this.selectedRows);
+      this.clearSelectedRows();
+    }
+    else {
+      Utility.showWarn('Select a single Thing row to edit');
+    }
   }
   
   getDeleteLabel(): string {

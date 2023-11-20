@@ -1,4 +1,5 @@
-.add-new-dialog input {
+.manage-thing-dialog input,
+.manage-thing-dialog textarea {
   min-width: 300px;
 }
 

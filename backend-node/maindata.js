@@ -182,11 +182,8 @@ app.post("/things", (req, res) => {
   }
   
   if (failError && failError.trim().length > 0) {
-    console.error("INVALID, 400");
     return res.status(400).json({ status: 400, message: failError }).end();
   }
-  
-  console.error("RETURNING NORMALLY");
   
   // Determine if our object exists by ID or not
   let justAdd = true;
@@ -221,17 +218,21 @@ app.delete("/things/:id", (req, res) => {
 });
 
 app.get("/templates", (req, res) => {
-  console.log("GET Templates", getInMemoryTemplates()); // TODO TEMPORARY Logging
+  console.log("GET Templates", getInMemoryTemplates());
   return res.send(getInMemoryTemplates()).end();
 });
 
 app.post("/templates", (req, res) => {
   console.log("POST Template", req.body);
   
-  // TODO Safely check req.body for validity
-  getInMemoryTemplates().push(req.body);
-  saveTemplatesMemoryToFile();
-  return res.status(200).end();
+  if (req.body && req.body.name) {
+    getInMemoryTemplates().push(req.body);
+    saveTemplatesMemoryToFile();
+    return res.status(200).end();
+  }
+  else {
+    return res.status(400).end();
+  }
 });
 
 app.post("/templates/delete", (req, res) => {
@@ -260,5 +261,8 @@ app.post("/templates/delete", (req, res) => {
     else {
       return res.status(404).end();
     }
+  }
+  else {
+    return res.status(400).end();
   }
 });

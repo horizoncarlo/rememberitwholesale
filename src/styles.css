@@ -54,7 +54,7 @@ p-columnfilterformelement .p-inputtext {
   height: 30px;
 }
 
-.add-new-dialog .p-dialog,
+.manage-thing-dialog .p-dialog,
 .manage-template-dialog .p-dialog {
   min-width: 50vw;
   height: 90vh;

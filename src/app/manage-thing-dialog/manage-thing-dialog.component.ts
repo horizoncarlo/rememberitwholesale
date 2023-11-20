@@ -1,5 +1,6 @@
 import { Component, EventEmitter, Output, inject } from '@angular/core';
 import { Template, TemplateEvent } from '../model/template';
+import { TemplateField } from '../model/template-field';
 import { Thing } from '../model/thing';
 import { TemplateService } from '../service/template.service';
 import { ThingService } from '../service/thing.service';
@@ -17,6 +18,7 @@ export class ManageThingDialogComponent {
   actOn: Thing = new Thing('');
   selectedTemplate: Template | null = null;
   isShowing: boolean = false;
+  fieldTypes = TemplateField.TYPES;
   @Output() manageTemplateEvent = new EventEmitter<TemplateEvent>();
   
   isAdd(): boolean {
@@ -40,18 +42,11 @@ export class ManageThingDialogComponent {
     if (Utility.hasItems(selectedRows)) {
       this.type = 'edit';
       this.actOn = Thing.cloneFrom(selectedRows[0]);
-      console.error("EDIT", this.actOn);
-      //this.selectedTemplate = new Template(this.actOn.templateType, 'inherit', this.actOn.fields);
       const template = this.templateService.getTemplateByName(this.actOn.templateType);
       if (template) {
         this.selectedTemplate = Template.cloneFrom(template);
         this.selectedTemplate.fields = this.actOn.fields;
       }
-      
-      // this.selectedTemplate = this.templateService.getTemplateByName(this.toAdd.templateType);
-      // if (this.selectedTemplate) {
-      //   this.selectedTemplate.fields = this.toAdd.fields;
-      // }
       
       this.isShowing = true;
     }

@@ -20,56 +20,68 @@
       <p>Note for the sake of data integrity you cannot edit a template after creation.</p>
       <table cellspacing="5" cellpading="0" class="template-table">
         <ng-container *ngIf="actOn">
-        <tr>
-          <td colspan="3">
-            <span class="p-float-label">
-              <input #nameField pInputText [(ngModel)]="actOn.name" (keyup.enter)="handleEnterKey(submit.bind(this))"
-                     (ngModelChange)="createNameChanged($event)"/>
-              <label>Template Name</label>
-              <ng-container *ngIf="operation === 'create'">
-                <span *ngIf="nameIsDuplicate" class="red-error subtext">&nbsp;&nbsp;* Name exists already</span>
-                <span *ngIf="!nameIsDuplicate" class="green-success subtext">&nbsp;&nbsp;* Name is unique</span>
-              </ng-container>
-            </span>
-          </td>
-          <td colspan="2">
-            <span class="p-float-label">
-              <input pInputText *ngIf="actOn.color === 'inherit'" value="default (change to the right)" readonly />
-              <input pInputText *ngIf="actOn.color !== 'inherit'" [(ngModel)]="actOn.color" />
-              <label>Optional Color coding</label>
-              &nbsp;
-              <p-colorPicker [(ngModel)]="actOn.color" appendTo="body"/>
-              <p-button icon="pi pi-ban" pTooltip="Reset the color" severity="secondary" size="small" [rounded]="true" [text]="true" (onClick)="resetColor()" />
-            </span>
-          </td>
-        </tr>
-        
-        <tr *ngFor="let field of actOn?.fields">
-          <td>
-            <p-button icon="pi pi-times" severity="danger" size="small" (onClick)="removeField(field)" />
-          </td>
-          <td>
-            <span class="p-float-label">
-              <input pInputText [(ngModel)]="field.property"/>
-              <label>Property/ID</label>
-            </span>
-          </td>
-          <td>
-            <span class="p-float-label">
-              <input pInputText [(ngModel)]="field.label"/>
-              <label>Label</label>
-            </span>
-          </td>
-          <td>
-            <label>Type&nbsp;</label>
-            <p-dropdown [options]="typeOptions"
-                        appendTo="body"
-                        [(ngModel)]="field.type"/>
-          </td>
-          <td>
-            <p-checkbox [(ngModel)]="field.required" [binary]="true" label="Is Required?" class="checkbox-label-on-left"/>
-          </td>
-        </tr>
+          <tr>
+            <td colspan="3">
+              <span class="p-float-label">
+                <input #nameField pInputText [(ngModel)]="actOn.name" (keyup.enter)="handleEnterKey(submit.bind(this))"
+                      (ngModelChange)="createNameChanged($event)"/>
+                <label>Template Name</label>
+                <ng-container *ngIf="operation === 'create'">
+                  <span *ngIf="nameIsDuplicate" class="red-error subtext">&nbsp;&nbsp;* Name exists already</span>
+                  <span *ngIf="!nameIsDuplicate" class="green-success subtext">&nbsp;&nbsp;* Name is unique</span>
+                </ng-container>
+              </span>
+            </td>
+            <td colspan="2">
+              <span class="p-float-label">
+                <input pInputText *ngIf="actOn.color === 'inherit'" value="default (change to the right)" readonly />
+                <input pInputText *ngIf="actOn.color !== 'inherit'" [(ngModel)]="actOn.color" />
+                <label>Optional Color coding</label>
+                &nbsp;
+                <p-colorPicker [(ngModel)]="actOn.color" appendTo="body"/>
+                <p-button icon="pi pi-ban" pTooltip="Reset the color" severity="secondary" size="small" [rounded]="true" [text]="true" (onClick)="resetColor()" />
+              </span>
+            </td>
+          </tr>
+          
+          <ng-container *ngFor="let field of actOn?.fields">
+            <tr>
+              <td>
+                <p-button icon="pi pi-times" severity="danger" size="small" (onClick)="removeField(field)" />
+              </td>
+              <td>
+                <span class="p-float-label">
+                  <input pInputText [(ngModel)]="field.property"/>
+                  <label>Property/ID</label>
+                </span>
+              </td>
+              <td>
+                <span class="p-float-label">
+                  <input pInputText [(ngModel)]="field.label"/>
+                  <label>Label</label>
+                </span>
+              </td>
+              <td>
+                <label>Type&nbsp;</label>
+                <p-dropdown [options]="typeOptions"
+                            appendTo="body"
+                            [(ngModel)]="field.type"/>
+              </td>
+              <td>
+                <p-checkbox [(ngModel)]="field.required" [binary]="true" label="Is Required?" class="checkbox-label-on-left"/>
+              </td>
+            </tr>
+            <tr *ngIf="field.type === fieldTypes.Radio || field.type === fieldTypes.Dropdown">
+              <td>&nbsp;</td>
+              <td colspan="4">
+                <span class="p-float-label">
+                  <p-chips [(ngModel)]="field.options" [allowDuplicate]="false" [addOnBlur]="true"/>
+                  <label>List of Options</label>
+                </span>
+                &nbsp;<span class="subtext">Type in a unique option and press Enter to add to the list</span>
+              </td>
+            </tr>
+          </ng-container>
         </ng-container>
       </table>
       <ng-container *ngIf="operation === 'create'">

@@ -24,7 +24,8 @@ export class ManageTemplateDialogComponent {
   nameIsDuplicate: boolean = false; // Is a create new template Name unique or not?
   lastCheckCount: number = 0;
   deleteThings: boolean = false;
-  typeOptions = Object.values(TemplateField.TYPES);
+  fieldTypes = TemplateField.TYPES;
+  typeOptions = Object.values(this.fieldTypes);
   
   constructor(private confirmationService: ConfirmationService) { }
   

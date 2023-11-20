@@ -29,7 +29,7 @@
                       hourFormat="12" [stepMinute]="5"
                       [hideOnDateTimeSelect]="false"
                       [tabindex]="-1"
-                      [inputStyle]="{'min-width': '300px'}" appendTo="body" ></p-calendar>
+                      class="consistent-field" appendTo="body" ></p-calendar>
         </td>
       </tr>
       <tr *ngFor="let field of selectedTemplate?.fields">
@@ -37,12 +37,35 @@
           <label [htmlFor]="field.property">{{ field.getLabel() }}</label>
         </td>
         <td>
-          <!-- TODO Use different types for fields, like radio buttons, etc. as needed in the future -->
+          <!-- TODO Do we need any other field types for Things? Checkbox? Slider? -->
           <ng-container *ngIf="field.type === fieldTypes.Text || field.type === fieldTypes.Number">
             <input [id]="field.property" pInputText [type]="field.type" [required]="field.required || false" [(ngModel)]="field.value"/>
           </ng-container>
           <ng-container *ngIf="field.type === fieldTypes.Textarea">
             <textarea [id]="field.property" rows="3" pInputTextarea [(ngModel)]="field.value" [required]="field.required || false"></textarea>
+          </ng-container>
+          <ng-container *ngIf="field.type === fieldTypes.Radio">
+            <div [id]="field.property">
+              <ng-container *ngFor="let option of field.options; index as i">
+                <p-radioButton [value]="option" [(ngModel)]="field.value" [inputId]="'option' + i" [required]="field.required || false" />
+                <label [for]="'option' + i"> {{option}}</label>
+              </ng-container>
+            </div>
+          </ng-container>
+          <ng-container *ngIf="field.type === fieldTypes.Dropdown">
+            <p-dropdown [id]="field.property" [(ngModel)]="field.value"
+                        [options]="field.options"
+                        [required]="field.required || false"
+                        class="consistent-field" appendTo="body"/>
+          </ng-container>
+          <ng-container *ngIf="field.type === fieldTypes.Date || field.type === fieldTypes.Datetime">
+            <p-calendar [id]="field.property" [(ngModel)]="field.value" dataType="string"
+                        [required]="field.required || false"
+                        [showTime]="field.type === fieldTypes.Datetime" [showIcon]="true"
+                        hourFormat="12" [stepMinute]="5"
+                        [hideOnDateTimeSelect]="field.type === fieldTypes.Date"
+                        [tabindex]="-1"
+                        class="consistent-field" appendTo="body" ></p-calendar>
           </ng-container>
         </td>
       </tr>

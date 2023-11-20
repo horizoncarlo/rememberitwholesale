@@ -4,7 +4,7 @@
             [(ngModel)]="selectedTemplate"
             placeholder="Select a Template"
             (onChange)="selectedTemplateChanged()"
-            [style]="{'min-width': '300px'}">
+            class="consistent-field">
   <ng-template let-template pTemplate="item">
     <span [style.color]="template.color">{{template.name}}</span>
   </ng-template>

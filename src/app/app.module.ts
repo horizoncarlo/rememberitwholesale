@@ -6,6 +6,7 @@ import { BrowserAnimationsModule } from '@angular/platform-browser/animations';
 import { ButtonModule } from 'primeng/button';
 import { CalendarModule } from 'primeng/calendar';
 import { CheckboxModule } from 'primeng/checkbox';
+import { ChipsModule } from 'primeng/chips';
 import { ColorPickerModule } from 'primeng/colorpicker';
 import { ConfirmPopupModule } from 'primeng/confirmpopup';
 import { DialogModule } from 'primeng/dialog';
@@ -42,6 +43,7 @@ import { ToastMessageComponent } from './toast-message/toast-message.component';
     ColorPickerModule,
     ConfirmPopupModule,
     CheckboxModule,
+    ChipsModule,
     DialogModule,
     DropdownModule,
     InputTextModule,

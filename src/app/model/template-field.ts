@@ -3,7 +3,11 @@ import { Utility } from "../util/utility";
 enum TemplateFieldTypes {
   Text = 'text',
   Number = 'number',
-  Textarea = 'textarea'
+  Textarea = 'textarea',
+  Radio = 'radio',
+  Dropdown = 'dropdown',
+  Date = 'date',
+  Datetime = 'datetime'
 };
 
 export class TemplateField {
@@ -12,19 +16,20 @@ export class TemplateField {
   label?: string = '';
   required?: boolean = false;
   type?: TemplateFieldTypes = TemplateFieldTypes.Text;
-  // TODO Need an "options" param for type=radio or type=dropdown, and then UI to support in Add New Thing for defining those options
+  options?: string[] | undefined; // Defined if type is radio or dropdown, to give a list of available options for the user
   value?: string | null = null;
   
-  constructor(property: string, label?: string, required?: boolean, type?: any, value?: string | null) {
+  constructor(property: string, label?: string, required?: boolean, type?: any, value?: string | null, options?: string[] | undefined) {
     this.property = property;
     this.label = label || property;
     this.required = required || false;
     this.type = type || TemplateFieldTypes.Text;
     this.value = value || null;
+    this.options = options;
   }
   
   static cloneFrom(source: TemplateField) {
-    return new TemplateField(source.property, source.label, source.required, source.type, source.value);
+    return new TemplateField(source.property, source.label, source.required, source.type, source.value, source.options);
   }
   
   getLabel(): string {

@@ -80,6 +80,17 @@ p-columnfilterformelement .p-inputtext {
   color: #00DD00;
 }
 
+.consistent-field,
+.consistent-field .p-dropdown,
+.consistent-field .p-calendar input {
+  min-width: 300px;
+}
+
+.p-chips-multiple-container {
+  /* Setup a max width so a ton of chips will wrap to multiline */
+  max-width: 750px;
+}
+
 @media (min-width: 500px) {
   .p-progress-spinner-circle {
     stroke-width: 8;

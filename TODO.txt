@@ -12,3 +12,5 @@ TODO:
 - Update to Angular 17 (need PrimeNG to update first)
 -- Try server side rendering
 - Do optional reminders if a date is set in the future - load them as a list at the top of the page?
+- Update Readme.md once the app is close to done
+- Remove old-Utility.js once anything of value has been copied over

@@ -1,6 +1,8 @@
 .main-wrap {
+  /* TODO Figure out toolbar vs speed dial
   margin-top: var(--fixed-toolbar-height);
   padding: 10px 0 0 0;
+  */
 }
 
 .thing-table {
@@ -65,4 +67,12 @@
 
 .toolbar-right {
   float: right;
+}
+
+.menu-dial {
+  position: fixed;
+  right: 80px;
+  top: 20px;
+  z-index: 5;
+  opacity: 0.9;
 }

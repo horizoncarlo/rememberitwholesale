@@ -2,6 +2,7 @@ import { Component, OnInit, ViewChild, inject } from '@angular/core';
 import { formatDistanceToNow } from 'date-fns';
 import { ConfirmationService, MenuItem, PrimeNGConfig, SortEvent } from 'primeng/api';
 import { Table } from 'primeng/table';
+import { ManageTemplateDialogComponent } from './manage-template-dialog/manage-template-dialog.component';
 import { ManageThingDialogComponent } from './manage-thing-dialog/manage-thing-dialog.component';
 import { Thing } from './model/thing';
 import { TemplateService } from './service/template.service';
@@ -18,6 +19,8 @@ const DEBUG_SIMULATE_LATENCY = false; // Debug toggle to delay our initial call 
 })
 export class AppComponent implements OnInit {
   @ViewChild('thingTable') thingTable!: Table;
+  @ViewChild('manageTemplate') manageTemplateDialog!: ManageTemplateDialogComponent;
+  @ViewChild('manageThing') manageThingDialog!: ManageThingDialogComponent;
   things: ThingService = inject(ThingService);
   templateService: TemplateService = inject(TemplateService);
   selectedRows: Thing[] = [];
@@ -43,11 +46,56 @@ export class AppComponent implements OnInit {
     }
   }
   
-  dynamicLabel(text: string): string {
-    if (document.body.getBoundingClientRect().width <= 700) { // TODO Hook into a single mobile breakpoint for widths
-      return '';
-    }
-    return text;
+  getDialItems(): MenuItem[] {
+    return [
+        {
+          icon: "pi pi-refresh",
+          command: () => {
+              this.things.getAllThings();
+          },
+        },
+        {
+          icon: "pi pi-plus-circle",
+          command: () => {
+              this.clearSelectedRows();
+              this.manageThingDialog.showAdd();
+          },
+        },
+        {
+          icon: "pi pi-pencil",
+          disabled: !this.hasOneSelectedRow(),
+          command: () => {
+              this.requestEditRow(this.manageThingDialog);
+          },
+        },
+        {
+          icon: "pi pi-trash",
+          disabled: !this.hasSelectedRows(),
+          command: () => {
+              // TODO Would need a separate confirm dialog instead of inline on the speed dial - this.confirmDeleteSelected();
+          },
+        },
+        {
+          icon: "pi pi-list",
+          command: () => {
+              this.clearSelectedRows();
+              this.manageTemplateDialog.show();
+          },
+        },
+        {
+          icon: "pi pi-clock",
+          visible: this.things.hasReminders(),
+          command: () => {
+              this.toggleShowReminders();
+          },
+        },
+        {
+          icon: "pi pi-search",
+          command: () => {
+              Utility.showWarn("TODO - Show a search dialog");
+          },
+        },
+    ];
   }
   
   globalFilterTable(event: any): void {
@@ -71,7 +119,7 @@ export class AppComponent implements OnInit {
       this.clearSelectedRows();
     }
     else {
-      Utility.showWarn('Select a single Thing row to edit');
+      Utility.showWarn('Select a single row to edit');
     }
   }
   
@@ -96,7 +144,7 @@ export class AppComponent implements OnInit {
     if (this.hasSelectedRows()) {
       toReturn += ' ' + this.selectedRows.length + ' Thing' + Utility.plural(this.selectedRows);
     }
-    return this.dynamicLabel(toReturn);
+    return toReturn;
   }
   
   getReminderLabel(): string {
@@ -104,7 +152,7 @@ export class AppComponent implements OnInit {
     if (Utility.hasItems(this.things.reminders)) {
       toReturn += this.things.reminders.length + ' Reminder' + Utility.plural(this.things.reminders);
     }
-    return this.dynamicLabel(toReturn);
+    return toReturn;
   }
   
   confirmDeleteSelected(event: Event): void {

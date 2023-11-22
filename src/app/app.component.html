@@ -1,16 +1,19 @@
 <riw-global-toast />
 
+<!-- TODO QUIDEL Decide on Speed Dial or not, fit better into mobile, remove datatable top padding, remove dynamic labels on buttons, etc. -->
+<p-speedDial [model]="getDialItems()" direction="down" type="linear" class="menu-dial" />
+
+<ng-container *ngIf="false"> <!-- TODO QUIDEL Temporary disable main toolbar until we can sort out speed dial implementation -->
 <div class="fixed-toolbar">
   <p-progressBar [mode]="things.loading ? 'indeterminate' : 'determinate'" class="loading-bar" />
   <div class="toolbar-content">
     <div class="toolbar-left">
       <!-- TODO Have the option to "quick fill" a Template that has been marked as "Pinned", which means it will show up on the toolbar, and be a 1-click and 1-fill of a field to quickly enter things. Example would be Reminder/Note, Work Commute, etc. Something repetitive that you don't want to have to keep manually re-entering -->
       <!-- TODO When refreshing our data we should clear our filters, or fix them to re-apply, as currently the content resets and all rows are shown -->
-      <!-- TODO Instead of the dynamicLabel approach, perhaps just use a Speed Dial PrimeNG component on mobile for buttons? Could float in top right, don't even need the toolbar -->
       <p-button (onClick)="things.getAllThings()" icon="pi pi-refresh" [loading]="things.loading" severity="info" />
-      <p-button (onClick)="clearSelectedRows(); manageTemplate.show()" icon="pi pi-list" [label]="dynamicLabel('Manage ' + templateService.getTemplateCount() + ' Templates')" />
-      <p-button (onClick)="clearSelectedRows(); manageThing.showAdd()" icon="pi pi-plus-circle" [label]="dynamicLabel('New Thing')" />
-      <p-button (onClick)="requestEditRow(manageThing)" icon="pi pi-pencil" [label]="dynamicLabel('Edit Thing')" [disabled]="!hasOneSelectedRow()" />
+      <p-button (onClick)="clearSelectedRows(); manageTemplate.show()" icon="pi pi-list" [label]="'Manage ' + templateService.getTemplateCount() + ' Templates'" />
+      <p-button (onClick)="clearSelectedRows(); manageThing.showAdd()" icon="pi pi-plus-circle" label="New Thing" />
+      <p-button (onClick)="requestEditRow(manageThing)" icon="pi pi-pencil" label="Edit Thing" [disabled]="!hasOneSelectedRow()" />
       <p-button (onClick)="confirmDeleteSelected($event)" icon="pi pi-trash" [label]="getDeleteLabel()" [disabled]="!hasSelectedRows()" />
       <p-confirmPopup />
     </div>
@@ -31,6 +34,7 @@
     </div>
   </div>
 </div>
+</ng-container>
 
 <div class="main-wrap">
 

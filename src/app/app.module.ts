@@ -16,6 +16,7 @@ import { InputTextareaModule } from 'primeng/inputtextarea';
 import { ProgressBarModule } from 'primeng/progressbar';
 import { ProgressSpinnerModule } from 'primeng/progressspinner';
 import { RadioButtonModule } from 'primeng/radiobutton';
+import { SpeedDialModule } from 'primeng/speeddial';
 import { SplitButtonModule } from 'primeng/splitbutton';
 import { TableModule } from 'primeng/table';
 import { ToastModule } from 'primeng/toast';
@@ -54,6 +55,7 @@ import { ToastMessageComponent } from './toast-message/toast-message.component';
     ProgressBarModule,
     ProgressSpinnerModule,
     RadioButtonModule,
+    SpeedDialModule,
     SplitButtonModule,
     TableModule,
     ToastModule,

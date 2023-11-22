@@ -4,7 +4,7 @@ import { Observable } from 'rxjs';
 import { Template } from '../model/template';
 import { Thing } from '../model/thing';
 
-const BASE_URL = 'http://localhost:4333/'; // TODO Will need to pull these from environment.ts and put to live URL
+const BASE_URL = 'http://localhost:4333/'; // TODO Will need to pull these from environment.ts and put to a live URL (instead of localhost) for deploy
 
 @Injectable({
   providedIn: 'root'

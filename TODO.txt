@@ -18,3 +18,5 @@ TODO:
 - Might be nice to highlight any newly added Thing, especially if there are ones in the future, as sorting by date means it's hard to tell what was added
 -- Alternatively do we need an "Update/Create Date" field in thing.ts and we sort under the hood by that?
 - Put our revision or version number somewhere on the page?
+- Detect browser resume on mobile devices
+- "Demo mode" (once we have user login) that lets you explore the app without changing data, with a free/auto account, and a bunch of default stuff. Could swap Storage Service for this case?

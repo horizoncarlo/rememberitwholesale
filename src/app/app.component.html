@@ -1,6 +1,6 @@
 <riw-global-toast />
 
-<!-- TODO QUIDEL Decide on Speed Dial or not, fit better into mobile, remove datatable top padding, remove dynamic labels on buttons, etc. -->
+<!-- TODO QUIDEL Decide on Speed Dial or not, fit better into mobile, remove datatable top padding, remove dynamic labels on buttons, etc. Perhaps toggleable on desktop with a user setting? -->
 <p-speedDial [model]="getDialItems()" direction="down" type="linear" class="menu-dial" />
 
 <ng-container *ngIf="false"> <!-- TODO QUIDEL Temporary disable main toolbar until we can sort out speed dial implementation -->
@@ -24,7 +24,7 @@
                     [label]="getReminderLabel()"
                     *ngIf="things.hasReminders()"
                     class="reminder-button" styleClass="p-button-secondary p-button-sm"/>
-      <!-- TODO Handle a flag for if we're mobile or not, which just means we're at a set CSS breakpoint, not related to browser string -->
+      <!-- TODO Handle a flag for if we're mobile or not (which just means we're at a set CSS breakpoint, not related to browser string) -->
       <!-- TODO Convert global search into an icon button and dialog input on mobile -->
       <span class="p-input-icon-left">
         <i class="pi pi-search"></i>
@@ -94,6 +94,8 @@
 
 <div *ngIf="!things.loadedAndHasData()" class="no-things-wrap">
   <span *ngIf="!things.loading">
+    <!-- TODO If we have a speed dial, we should just put Add Thing / Template button here as well, to simplify for the user -->
+    <!-- TODO More verbose message too, some basic instructions and description of app, etc. -->
     Add something to get started
   </span>
 </div>

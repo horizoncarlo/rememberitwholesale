@@ -3,11 +3,11 @@ import { differenceInHours, formatDistanceToNow, formatRelative } from 'date-fns
 import { Thing } from '../model/thing';
 
 @Component({
-  selector: 'riw-inline-message',
-  templateUrl: './inline-message.component.html',
-  styleUrls: ['./inline-message.component.css']
+  selector: 'riw-reminder-message',
+  templateUrl: './reminder-message.component.html',
+  styleUrls: ['./reminder-message.component.css']
 })
-export class InlineMessageComponent {
+export class ReminderMessageComponent {
   @Input() thing!: Thing;
   type: 'info' | 'warn' | 'error' = 'info';
   

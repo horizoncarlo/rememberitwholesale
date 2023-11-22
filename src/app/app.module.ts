@@ -22,9 +22,9 @@ import { ToastModule } from 'primeng/toast';
 import { ToolbarModule } from 'primeng/toolbar';
 import { TooltipModule } from 'primeng/tooltip';
 import { AppComponent } from './app.component';
-import { InlineMessageComponent } from './inline-message/inline-message.component';
 import { ManageTemplateDialogComponent } from './manage-template-dialog/manage-template-dialog.component';
 import { ManageThingDialogComponent } from './manage-thing-dialog/manage-thing-dialog.component';
+import { ReminderMessageComponent } from './reminder-message/reminder-message.component';
 import { TemplateDropdownComponent } from './template-dropdown/template-dropdown.component';
 import { ToastMessageComponent } from './toast-message/toast-message.component';
 
@@ -35,7 +35,7 @@ import { ToastMessageComponent } from './toast-message/toast-message.component';
     TemplateDropdownComponent,
     ManageTemplateDialogComponent,
     ManageThingDialogComponent,
-    InlineMessageComponent
+    ReminderMessageComponent
   ],
   imports: [
     BrowserModule,

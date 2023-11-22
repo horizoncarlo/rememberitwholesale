@@ -33,7 +33,7 @@
 
 <!-- TODO Have a way to automatically clean up Reminders, done in the Node service itself, which will automatically strip the reminder flag if the time is passed. Don't worry about timezones for now -->
 <ng-container *ngIf="showReminders">
-  <riw-inline-message *ngFor="let reminder of things.reminders" [thing]="reminder" />
+  <riw-reminder-message *ngFor="let reminder of things.reminders" [thing]="reminder" />
 </ng-container>
 
 <p-table #thingTable

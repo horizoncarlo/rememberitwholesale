@@ -10,6 +10,7 @@ import { StorageService } from './storage.service';
 export class ThingService {
   loading: boolean = false;
   data: Thing[] = [];
+  reminders: string[] = [];
   backend: StorageService = inject(StorageService);
   
   saveThing(toAdd: Thing): void {
@@ -62,12 +63,23 @@ export class ThingService {
 
   getAllThings(): void {
     this.loading = true;
+    this.reminders = [];
+    
+    const nowDate = new Date();
     this.backend.getAllThings().subscribe({
       next: res => {
         this.data = res.map((current: Thing) => {
-          return Thing.cloneFrom(current);
+          const toReturn = Thing.cloneFrom(current);
+          
+          if (toReturn.reminder && toReturn.time &&
+              toReturn.time < nowDate) { // TODO QUIDEL Clean up check on whether reminders should show
+              this.reminders.push(toReturn.name); // TODO Format reminder
+          }
+          
+          return toReturn;
         });
         console.log("Get Things", this.data);
+        console.log("Reminders", this.reminders);
       },
       error: err => {
         this.loading = false;

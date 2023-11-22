@@ -1,3 +1,8 @@
+:root {
+  --fixed-toolbar-height: 60px;
+  --standard-field-width: 300px;
+}
+
 html, body {
   margin: 0;
   padding: 0;
@@ -23,6 +28,18 @@ body {
 
 .loading-bar .p-progressbar .p-progressbar-value::before {
   animation-duration: 1.8s;
+}
+
+.p-toolbar {
+  padding: 0 10px 0 10px;
+  border: 0;
+  border-radius: 0;
+  box-shadow: 0 5px 5px var(--primary-color);
+  z-index: 5;
+  position: fixed;
+  top: 0;
+  width: 100%;
+  height: var(--fixed-toolbar-height);
 }
 
 .p-progress-spinner {
@@ -83,7 +100,7 @@ p-columnfilterformelement .p-inputtext {
 .consistent-field,
 .consistent-field .p-dropdown,
 .consistent-field .p-calendar input {
-  min-width: 300px;
+  min-width: var(--standard-field-width);
 }
 
 .p-chips-multiple-container {

@@ -1,27 +1,39 @@
 <p-progressBar [mode]="things.loading ? 'indeterminate' : 'determinate'" class="loading-bar" />
 <riw-global-toast />
 
-<div class="main-wrap">
-
-<div class="button-row">
-  <p-button (onClick)="things.getAllThings()" icon="pi pi-refresh" [loading]="things.loading" severity="info" />
-  <p-button (onClick)="clearSelectedRows(); manageTemplate.show()" icon="pi pi-list" [label]="'Manage ' + templateService.getTemplateCount() + ' Templates'" />
-  <p-button (onClick)="clearSelectedRows(); manageThing.showAdd()" icon="pi pi-plus-circle" label="New Thing" />
-  <p-button (onClick)="requestEditRow(manageThing)" icon="pi pi-plus-circle" label="Edit Thing" [disabled]="!hasOneSelectedRow()" />
-  <p-button (onClick)="confirmDeleteSelected($event)" icon="pi pi-trash" [label]="getDeleteLabel()" [disabled]="!hasSelectedRows()" />
-  <p-confirmPopup />
+<p-toolbar>
+  <div class="p-toolbar-group-start">
+    <p-button (onClick)="things.getAllThings()" icon="pi pi-refresh" [loading]="things.loading" severity="info" />
+    <p-button (onClick)="clearSelectedRows(); manageTemplate.show()" icon="pi pi-list" [label]="'Manage ' + templateService.getTemplateCount() + ' Templates'" />
+    <p-button (onClick)="clearSelectedRows(); manageThing.showAdd()" icon="pi pi-plus-circle" label="New Thing" />
+    <p-button (onClick)="requestEditRow(manageThing)" icon="pi pi-plus-circle" label="Edit Thing" [disabled]="!hasOneSelectedRow()" />
+    <p-button (onClick)="confirmDeleteSelected($event)" icon="pi pi-trash" [label]="getDeleteLabel()" [disabled]="!hasSelectedRows()" />
+    <!-- TODO Have the option to "quick fill" a Template that has been marked as "Pinned", which means it will show up on the toolbar, and be a 1-click and 1-fill of a field to quickly enter things. Example would be Reminder/Note, Work Commute, etc. Something repetitive that you don't want to have to keep manually re-entering -->
+    <p-confirmPopup />
+  </div>
   
-  <!-- TODO Switch this button and search and loading layout to flex or a Toolbar component -->
-  <div class="float-right">
+  <div class="p-toolbar-group-end">
     <span class="p-input-icon-left">
       <i class="pi pi-search"></i>
       <input pInputText type="text" (input)="globalFilterTable($event)" placeholder="Search Things" />
     </span>
     <p-progressSpinner *ngIf="things.loading" />
   </div>
-</div>
+</p-toolbar>
+
+<div class="main-wrap">
+
 <riw-manage-thing-dialog #manageThing (manageTemplateEvent)="manageTemplate.show($event)" />
 <riw-manage-template-dialog #manageTemplate />
+
+<div *ngFor="let reminder of things.reminders">
+  <!-- TODO - Can do similar styling to PrimeNG Messages elements, but we need our own custom wrap to change how the Close button works
+            - Allow each reminder to be closed, either for this session or forever (local variable or in user record, both as ignoredReminders: string[ids])
+            - Also make Reminders interface/class with id, title, description, time left (calculated dynamically), etc.
+  -->
+  <!-- TODO Have a way to automatically clean up Reminders, done in the Node service itself, which will automatically strip the reminder flag if the time is passed. Don't worry about timezones for now -->
+  Reminder: {{reminder}}
+</div>
 
 <p-table #thingTable
          [value]="things.data" styleClass="p-datatable-striped"

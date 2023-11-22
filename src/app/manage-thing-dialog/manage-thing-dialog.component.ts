@@ -29,6 +29,10 @@ export class ManageThingDialogComponent {
     return this.type === 'edit';
   }
   
+  timeInFuture(): boolean {
+    return (this.actOn && this.actOn.time && this.actOn.time > new Date()) ? true : false;
+  }
+  
   showAdd(): void {
     this.type = 'add';
     // Reset our state as well

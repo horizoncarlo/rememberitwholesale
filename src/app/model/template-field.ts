@@ -3,6 +3,7 @@ import { Utility } from "../util/utility";
 enum TemplateFieldTypes {
   Text = 'text',
   Textarea = 'textarea',
+  // TODO Add the concept of an "infinite text" that let's a user keep adding to a single Thing. Basically sub-things, such as "Work Commute", then you mark each day & status for an entire month under the same Thing, instead of creating 30 individual Things
   Number = 'number',
   Dropdown = 'dropdown',
   Radio = 'radio',

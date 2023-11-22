@@ -13,18 +13,24 @@ export class Thing {
   id: string;
   time?: Date;
   color?: string;
+  reminder: boolean = false;
   
-  constructor(name: string, templateType: string = TemplateService.getDefaultName(), id?: string, color?: string, time?: Date, fields?: TemplateField[]) {
+  constructor(name: string, templateType: string = TemplateService.getDefaultName(), id?: string, color?: string, time?: Date, reminder: boolean = false, fields?: TemplateField[]) {
     this.name = name;
     this.templateType = templateType;
     this.id = id ? id : DEFAULT_ID;
     this.color = color || 'inherit';
+    this.reminder = reminder;
     this.fields = fields || [];
     
-    if (time && typeof time !== 'object') {
-      time = new Date(time);
+    // If we have an existing date just cast it
+    if (time) {
+      this.time = Utility.isValidString(time) ? new Date(time) : time;
     }
-    this.time = this.roundToHour(time || new Date());
+    // Otherwise round down to the nearest hour on a new Date
+    else {
+      this.time = this.roundDownToHour(new Date());
+    }
     
     // If we have fields get them as actual TemplateField objects
     if (Utility.hasItems(this.fields)) {
@@ -35,10 +41,10 @@ export class Thing {
   }
   
   static cloneFrom(source: Thing): Thing {
-    return new Thing(source.name, source.templateType, source.id, source.color, source.time, source.fields);
+    return new Thing(source.name, source.templateType, source.id, source.color, source.time, source.reminder, source.fields);
   }
   
-  roundToHour(time: Date): Date {
+  roundDownToHour(time: Date): Date {
     if (!time) {
       time = new Date();
     }
@@ -60,7 +66,7 @@ export class Thing {
       this.id = uuidv4();
     }
     if (!this.time) {
-      this.time = this.roundToHour(new Date());
+      this.time = this.roundDownToHour(new Date());
     }
     if (!Utility.isValidString(this.templateType)) {
       this.templateType = TemplateService.getDefaultName();

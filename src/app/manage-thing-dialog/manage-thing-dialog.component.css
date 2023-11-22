@@ -1,6 +1,6 @@
 .manage-thing-dialog input,
 .manage-thing-dialog textarea {
-  min-width: 300px;
+  min-width: var(--standard-field-width);
 }
 
 .content-form {

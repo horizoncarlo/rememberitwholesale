@@ -1,21 +1,18 @@
 .main-wrap {
+  margin-top: var(--fixed-toolbar-height);
   padding: 10px;
 }
 
 .thing-table {
   min-width: 50rem;
+  --name-col-width: 350px;
+  --time-col-width: 250px;
+  --type-col-width: 300px;
+  --name-col-width: 350px;
 }
 
-.button-row {
-  padding-bottom: 10px;
-}
-
-.button-row p-button {
+.p-toolbar-group-start p-button {
   margin-right: 10px;
-}
-
-.button-row .float-right {
-  float: right;
 }
 
 .name-col, .time-col, .type-col {
@@ -23,17 +20,17 @@
 }
 
 .name-col {
-  width: 350px;
+  width: var(--name-col-width);
 }
 
 .time-col {
-  width: 250px;
+  width: var(--time-col-width);
 }
 
 .type-col {
-  width: 300px;
+  width: var(--type-col-width);
 }
 
 .fields-col {
-  width: calc(100% - 350px - 300px - 500px);
+  width: calc(100% - var(--name-col-width) - var(--time-col-width) - var(--type-col-width));
 }

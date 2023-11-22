@@ -6,7 +6,7 @@
         <td>
           Template
         </td>
-        <td>
+        <td colspan="2">
           <riw-template-dropdown [(selectedTemplate)]="selectedTemplate" [keepValue]="isEdit()"
                                  (manageTemplateEvent)="handleTemplateEvent($event)"/>
         </td>
@@ -15,7 +15,7 @@
         <td>
           <label htmlFor="name">Name</label>
         </td>
-        <td>
+        <td colspan="2">
           <input id="name" #nameField pInputText [(ngModel)]="actOn.name" (keyup.enter)="handleEnterKey(submit.bind(this))"/>
         </td>
       </tr>
@@ -31,12 +31,17 @@
                       [tabindex]="-1"
                       class="consistent-field" appendTo="body" ></p-calendar>
         </td>
+        <td>
+          <p-checkbox [(ngModel)]="actOn.reminder" [binary]="true" label="Reminder?"
+                      [disabled]="!timeInFuture()"
+                      pTooltip="Click to show a reminder at the top of the page for this Thing"/>
+        </td>
       </tr>
       <tr *ngFor="let field of selectedTemplate?.fields">
         <td>
           <label [htmlFor]="field.property">{{ field.getLabel() }}</label>
         </td>
-        <td>
+        <td colspan="2">
           <!-- TODO Do we need any other field types for Things? Checkbox? Slider? -->
           <ng-container *ngIf="field.type === fieldTypes.Text || field.type === fieldTypes.Number">
             <input [id]="field.property" pInputText [type]="field.type" [required]="field.required || false" [(ngModel)]="field.value"/>
@@ -69,6 +74,7 @@
           </ng-container>
         </td>
       </tr>
+      <!-- TODO Add an option to include new fields JUST for this thing when adding/editing it? Unrelated to Template, but for special corner cases or one-offs -->
     </table>
   </div>
   

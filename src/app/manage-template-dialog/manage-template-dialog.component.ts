@@ -45,6 +45,7 @@ export class ManageTemplateDialogComponent {
       this.operationRadioClicked();
     }
     
+    this.nextFieldIndex = 0; // Reset our index on hide
     this.createNameChanged(true); // Do an initial name change to check for uniqueness (without debounce)
     this.isShowing = true;
   }

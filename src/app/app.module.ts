@@ -8,8 +8,10 @@ import { CalendarModule } from 'primeng/calendar';
 import { CheckboxModule } from 'primeng/checkbox';
 import { ChipsModule } from 'primeng/chips';
 import { ColorPickerModule } from 'primeng/colorpicker';
+import { ConfirmDialogModule } from 'primeng/confirmdialog';
 import { ConfirmPopupModule } from 'primeng/confirmpopup';
 import { DialogModule } from 'primeng/dialog';
+import { DragDropModule } from 'primeng/dragdrop';
 import { DropdownModule } from 'primeng/dropdown';
 import { InputTextModule } from 'primeng/inputtext';
 import { InputTextareaModule } from 'primeng/inputtextarea';
@@ -27,6 +29,7 @@ import { ManageThingDialogComponent } from './manage-thing-dialog/manage-thing-d
 import { ReminderMessageComponent } from './reminder-message/reminder-message.component';
 import { TemplateDropdownComponent } from './template-dropdown/template-dropdown.component';
 import { ToastMessageComponent } from './toast-message/toast-message.component';
+import { GlobalSearchDialogComponent } from './global-search-dialog/global-search-dialog.component';
 
 @NgModule({
   declarations: [
@@ -35,7 +38,8 @@ import { ToastMessageComponent } from './toast-message/toast-message.component';
     TemplateDropdownComponent,
     ManageTemplateDialogComponent,
     ManageThingDialogComponent,
-    ReminderMessageComponent
+    ReminderMessageComponent,
+    GlobalSearchDialogComponent
   ],
   imports: [
     BrowserModule,
@@ -45,10 +49,12 @@ import { ToastMessageComponent } from './toast-message/toast-message.component';
     ButtonModule,
     CalendarModule,
     ColorPickerModule,
+    ConfirmDialogModule,
     ConfirmPopupModule,
     CheckboxModule,
     ChipsModule,
     DialogModule,
+    DragDropModule,
     DropdownModule,
     InputTextModule,
     InputTextareaModule,

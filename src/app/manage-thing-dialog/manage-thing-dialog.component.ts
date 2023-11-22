@@ -86,7 +86,7 @@ export class ManageThingDialogComponent {
     this.manageTemplateEvent.emit(event as TemplateEvent);
   }
   
-  handleFocus(event: Event, inputEl: HTMLElement): void {
+  handleFocus(inputEl: HTMLElement): void {
     if (inputEl) {
       inputEl.focus();
     }

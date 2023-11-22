@@ -1,8 +1,39 @@
-.main-wrap {
-  /* TODO Figure out toolbar vs speed dial
+.main-wrap-with-toolbar {
   margin-top: var(--fixed-toolbar-height);
-  padding: 10px 0 0 0;
-  */
+}
+
+.header-tiny-button {
+  cursor: pointer;
+}
+
+.header-clear-rows-button {
+  padding-left: 5px;
+  padding-right: 2px;
+  padding-bottom: 1px;
+  vertical-align: middle;
+}
+
+.header-tiny-button:hover {
+  color: var(--primary-color) !important;
+}
+
+.header-tiny-button-color {
+  color: rgba(255, 255, 255, 0.6); /* Match the other PrimeNG filter buttons */
+}
+
+.header-filter-button {
+  padding-left: 10px;
+  vertical-align: middle;
+}
+
+.header-filter-field {
+  width: 90%;
+  height: 30px;
+  max-width: var(--standard-field-width);
+}
+
+.reminder-wrap {
+  padding: 20px 20px 10px 20px;
 }
 
 .thing-table {
@@ -30,6 +61,7 @@
 }
 
 .fields-col {
+  min-width: 300px;
   width: calc(100% - var(--name-col-width) - var(--time-col-width) - var(--type-col-width));
 }
 
@@ -70,9 +102,21 @@
 }
 
 .menu-dial {
-  position: fixed;
-  right: 80px;
+  position: absolute;
+  right: var(--dial-right-pos);
   top: 20px;
   z-index: 5;
   opacity: 0.9;
+  width: 64px;
+  height: 64px;
+}
+
+.menu-dial-overlay {
+  opacity: 1;
+  background-color: transparent;
+  border-radius: 50%;
+  box-shadow: 0 0 5px white;
+  width: 64px;
+  height: 64px;
+  z-index: 6;
 }

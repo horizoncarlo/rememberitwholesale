@@ -1,3 +1,8 @@
+/* Define some PrimeNG specific variables */
+:root {
+  --table-paginator-height: 70px;
+}
+
 /* Make our top loading bar narrower, and speed it up slightly */
 .loading-bar .p-progressbar {
   height: var(--progress-bar-height);
@@ -22,16 +27,14 @@
   font-size: 22px;
 }
 
-/* Let the table always be visibile, as we handle scrolling elsewhere */
-/* ISSUE: If we hide the scrolling, mobile gets wrecked (dialogs open way in the middle of the page),
-          but if we leave the scrolling and don't have many rows, then opening the Date filter won't properly
-           show the calendar (it will open inside the table, even with appendTo, and need scrolling to access)
-          Likely leave this commented out, as a realistic scenario will have more rows and mobile is important */
+/* With all the headers and pagination we want a minimum number of viable rows to be shown */
 .p-datatable .p-datatable-wrapper {
-  /*
-  overflow-x: visible;
-  overflow-y: visible;
-  */
+  min-height: 300px;
+}
+
+/* Preset paginator height so it's easier to calculate our table scroll */
+.p-paginator {
+  height: var(--table-paginator-height);
 }
 
 /* Slightly narrower headers */
@@ -61,18 +64,17 @@ p-columnfilterformelement .p-inputtext {
 .manage-thing-dialog .p-dialog,
 .manage-template-dialog .p-dialog {
   min-width: 50vw;
-  max-width: 95vw;
   height: 90vh;
+}
+.manage-thing-dialog .p-dialog,
+.manage-template-dialog .p-dialog,
+.global-search-dialog .p-dialog {
+  max-width: 95vw;
 }
 
 /* Put a bit of a gap between the label and the checkbox */
 .checkbox-label-on-left .p-checkbox {
   margin-left: 8px;
-}
-
-/* To match the "always show a scrollbar" body style, do the same for any dialogs, to prevent the view from jumping */
-.p-dialog-mask {
-  overflow-y: scroll;
 }
 
 /* Ensure the toast messages don't wrap outside a mobile screen */
@@ -86,18 +88,6 @@ p-columnfilterformelement .p-inputtext {
   min-width: var(--standard-field-width);
 }
 
-/* TODO Proper speed dial styling
-.p-speeddial-item { // For ALL dial items
-#pn_id_5_1 { // For a specific item, can change _1 to _2 and so on
-  border: 10px solid purple;
-  background-color: red;
-}
-#pn_id_5_2 .p-speeddial-action { // Circle itself
-  background-color: red;
-  opacity: 1;
-}
-*/
-
 /* Make the spinner thicker on large screens */
 @media (min-width: 500px) {
   .p-progress-spinner-circle {
@@ -108,6 +98,6 @@ p-columnfilterformelement .p-inputtext {
 @media (max-width: 800px) { /* TODO Put any mobile breakpoints into a variable */
   .fixed-toolbar p-button .p-button-label,
   .fixed-toolbar .p-splitbutton-defaultbutton .p-button-label {
-    display: none;
+    display: none; /* TODO Should we still do this with buttons? Or just switch to speed dial? */
   }
 }

@@ -1,5 +1,5 @@
 <!-- Basically duplicate the styling of the p-messages component, but with built in styling/icons and formatting specifically for Reminders -->
-<div [class]="'p-message p-message-' + determineType()">
+<div [class]="'p-message p-message-' + determineType()" (click)="clickReminder()">
   <div class="p-message-wrapper">
     <span class="p-message-icon">
       <span class="pi pi-calendar" *ngIf="determineType() === 'info'"></span>

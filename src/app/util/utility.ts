@@ -1,5 +1,5 @@
 export class Utility {
-  loading: boolean = false;
+  static numberFormatter: Intl.NumberFormat = new Intl.NumberFormat();
 
   static showSuccess(message: string, header?: string): void {
     window.dispatchEvent(new CustomEvent('message-success', { detail: { summary: header, detail: message } }));
@@ -55,12 +55,30 @@ export class Utility {
     );
   }
   
+  static formatNumber(toFormat: number): string {
+    return this.numberFormatter.format(toFormat);
+  }
+  
   static debounceTimer: any = null;
-  static debounce(func: Function, delay: number = 400) { 
+  static debounce(func: Function, delay: number = 400): void { 
     const args = arguments;
     if (this.debounceTimer) {
       clearTimeout(this.debounceTimer);
     }
     this.debounceTimer = setTimeout(() => func.apply(args), delay);
+  }
+  
+  static getCSSVar(name: string): any {
+    if (this.isValidString(name)) {
+      if (name.indexOf('--') !== 0) {
+        name = '--' + name;
+      }
+      
+      const computed = getComputedStyle(document.body);
+      if (computed) {
+        return computed.getPropertyValue(name);
+      }
+    }
+    return null;
   }
 }

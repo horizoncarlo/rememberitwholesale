@@ -1,9 +1,16 @@
 <riw-global-toast />
 
-<!-- TODO QUIDEL Decide on Speed Dial or not, fit better into mobile, remove datatable top padding, remove dynamic labels on buttons, etc. Perhaps toggleable on desktop with a user setting? -->
-<p-speedDial [model]="getDialItems()" direction="down" type="linear" class="menu-dial" />
+<!-- TODO Clean up draggable approach for speed dial and test on mobile -->
+<ng-container *ngIf="useDial">
+  <div [draggable]="true" (dragstart)="dialDragStart($event, speedDial)" (dragend)="dialDragEnd($event, speedDial)"
+       class="menu-dial menu-dial-overlay"
+       (click)="dialOverlayClick($event, speedDial)"></div>
+  <p-speedDial #speedDial [model]="getDialItems()" direction="down" type="linear" class="menu-dial"
+                (onHide)="isDialOpen = false" (onShow)="isDialOpen = true"/>
+  <p-confirmDialog />
+</ng-container>
 
-<ng-container *ngIf="false"> <!-- TODO QUIDEL Temporary disable main toolbar until we can sort out speed dial implementation -->
+<ng-container *ngIf="!useDial">
 <div class="fixed-toolbar">
   <p-progressBar [mode]="things.loading ? 'indeterminate' : 'determinate'" class="loading-bar" />
   <div class="toolbar-content">
@@ -11,24 +18,23 @@
       <!-- TODO Have the option to "quick fill" a Template that has been marked as "Pinned", which means it will show up on the toolbar, and be a 1-click and 1-fill of a field to quickly enter things. Example would be Reminder/Note, Work Commute, etc. Something repetitive that you don't want to have to keep manually re-entering -->
       <!-- TODO When refreshing our data we should clear our filters, or fix them to re-apply, as currently the content resets and all rows are shown -->
       <p-button (onClick)="things.getAllThings()" icon="pi pi-refresh" [loading]="things.loading" severity="info" />
-      <p-button (onClick)="clearSelectedRows(); manageTemplate.show()" icon="pi pi-list" [label]="'Manage ' + templateService.getTemplateCount() + ' Templates'" />
+      <p-button (onClick)="clearSelectedRows(); manageTemplate.show()" icon="pi pi-list" [label]="getManageTemplateLabel()" />
       <p-button (onClick)="clearSelectedRows(); manageThing.showAdd()" icon="pi pi-plus-circle" label="New Thing" />
-      <p-button (onClick)="requestEditRow(manageThing)" icon="pi pi-pencil" label="Edit Thing" [disabled]="!hasOneSelectedRow()" />
+      <p-button (onClick)="requestEditSelected()" icon="pi pi-pencil" label="Edit Thing" [disabled]="!hasOneSelectedRow()" />
       <p-button (onClick)="confirmDeleteSelected($event)" icon="pi pi-trash" [label]="getDeleteLabel()" [disabled]="!hasSelectedRows()" />
       <p-confirmPopup />
     </div>
     <div class="toolbar-right">
       <!-- TODO Get Utility.plural and similar functions accessible from Angular templates -->
       <p-splitButton (onClick)="toggleShowReminders()"
-                    icon="pi pi-clock" [model]="getRemindersForSplitButton()"
-                    [label]="getReminderLabel()"
-                    *ngIf="things.hasReminders()"
-                    class="reminder-button" styleClass="p-button-secondary p-button-sm"/>
+                     icon="pi pi-clock" [model]="getRemindersForSplitButton()"
+                     [label]="getReminderLabel()"
+                     *ngIf="things.hasReminders()"
+                     class="reminder-button" styleClass="p-button-secondary p-button-sm"/>
       <!-- TODO Handle a flag for if we're mobile or not (which just means we're at a set CSS breakpoint, not related to browser string) -->
-      <!-- TODO Convert global search into an icon button and dialog input on mobile -->
       <span class="p-input-icon-left">
         <i class="pi pi-search"></i>
-        <input pInputText type="text" (input)="globalFilterTable($event)" placeholder="Search Things" />
+        <input pInputText type="text" (input)="globalFilterTableByEvent($event)" placeholder="Search Things" />
       </span>
       <p-progressSpinner *ngIf="things.loading" />
     </div>
@@ -36,12 +42,12 @@
 </div>
 </ng-container>
 
-<div class="main-wrap">
+<div [class]="'main-wrap' + (useDial ? '' : ' main-wrap-with-toolbar')">
 
 <!-- TODO Have a way to automatically clean up Reminders, done in the Node service itself, which will automatically strip the reminder flag if the time is passed. Don't worry about timezones for now -->
-<ng-container *ngIf="showReminders">
-  <riw-reminder-message *ngFor="let reminder of things.reminders" [thing]="reminder" />
-</ng-container>
+<div id="reminders" class="reminder-wrap" *ngIf="showReminders">
+  <riw-reminder-message *ngFor="let reminder of things.reminders" [thing]="reminder" (onClick)="requestEditReminder($event)" />
+</div>
 
 <p-table #thingTable *ngIf="things.loadedAndHasData()"
          [value]="things.data" [loading]="things.loading"
@@ -50,22 +56,40 @@
          (sortFunction)="customSort($event)" [customSort]="true"
          sortField="time" [sortOrder]="-1"
          [globalFilterFields]="['name', 'time', 'templateType']"
-         [paginator]="true" [rows]="100"
-         [pageLinks]="3" [alwaysShowPaginator]="false" [showFirstLastIcon]="false" [showCurrentPageReport]="true">
+         [paginator]="true" [rows]="50"
+         [pageLinks]="3" [alwaysShowPaginator]="false" [showFirstLastIcon]="false" [showCurrentPageReport]="true"
+         [scrollable]="true" [scrollHeight]="tableScrollHeight"
+         >
+         <!-- TODO Make 'scrollable' a user option, and tweak related calculations and style? -->
   <ng-template pTemplate="header">
     <tr>
-      <th pSortableColumn="name" class="name-col" >Name ({{things.data.length}}) <p-sortIcon field="name" /></th>
+      <th pSortableColumn="name" class="name-col">
+        <span class="pi pi-refresh header-refresh" (click)="things.getAllThings()" pTooltip="Refresh" *ngIf="useDial">&nbsp;</span>
+        {{ getNameColumnHeader() }} <p-sortIcon field="name" />
+      </th>
       <th pSortableColumn="templateType" class="type-col">Type <p-sortIcon field="templateType" /></th>
       <th pSortableColumn="time" class="time-col">Date <p-sortIcon field="time" /></th>
-      <th pSortableColumn="fields" class="fields-col">Fields <p-sortIcon field="fields" /></th>
+      <th pSortableColumn="fields" class="fields-col">
+        Fields
+        ({{ rowSelectedCount() }} selected rows<span class="pi pi-ban header-tiny-button header-tiny-button-color header-clear-rows-button" (click)="clearSelectedRows()" pTooltip="Clear Selections" *ngIf="hasSelectedRows()"></span>) <!-- TODO Plural -->
+        <!-- TODO Put these simple and small clickable icons into a component as they're used a few places -->
+        <p-sortIcon field="fields" />
+        <span class="pi pi-filter header-tiny-button header-filter-button header-tiny-button-color" (click)="toggleShowFilters()" pTooltip="Show Filters" *ngIf="!showFilters"></span>
+      </th>
     </tr>
-    <tr>
-      <th><p-columnFilter type="text" field="name" matchMode="contains" /></th>
-      <th><p-columnFilter type="text" field="templateType" matchMode="contains" /></th>
-      <!-- TODO Could add a custom filter option of "Reminder=true/false" for the time column -->
-      <th><p-columnFilter type="date" field="time" appendTo="body" /></th>
-      <th><input pInputText type="text" (change)="filterFields($event)" style="height: 30px;" /></th>
-    </tr>
+    <ng-container *ngIf="showFilters">
+      <tr>
+        <th><p-columnFilter type="text" field="name" matchMode="contains" /></th>
+        <th><p-columnFilter type="text" field="templateType" matchMode="contains" /></th>
+        <!-- TODO Could add a custom filter option of "Reminder=true/false" for the time column -->
+        <th><p-columnFilter type="date" field="time" appendTo="body" /></th>
+        <th>
+          <input pInputText type="text" (change)="filterFields($event)" class="header-filter-field" />
+          &nbsp;
+          <span class="pi pi-exclamation-triangle header-tiny-button header-tiny-button-color" (click)="toggleShowFilters()" pTooltip="Hide Filters"></span>
+        </th>
+      </tr>
+    </ng-container>
   </ng-template>
   <ng-template pTemplate="body" let-data let-rowIndex="rowIndex">
     <tr [pSelectableRow]="data" [pSelectableRowIndex]="rowIndex">
@@ -86,7 +110,7 @@
   <ng-template *ngIf="!things.loading" pTemplate="emptymessage" let-columns>
     <tr>
       <td colspan="4" class="center">
-        No data matches your query
+        No data matches your search
       </td>
     </tr>
   </ng-template>
@@ -104,3 +128,4 @@
 
 <riw-manage-thing-dialog #manageThing (manageTemplateEvent)="manageTemplate.show($event)" />
 <riw-manage-template-dialog #manageTemplate />
+<riw-global-search-dialog #globalSearch [searchFunction]="globalFilterTable.bind(this)"/>

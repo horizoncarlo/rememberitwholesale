@@ -1,13 +1,12 @@
 - PrimeNG is only free for the latest version, afterwards previous versions move to LTS which is paid. So forced to keep up to date.
 -- See https://primeng.org/lts
 
-- Could use the PrimeNG Speed Dial component for a simple popout menu or something? On mobile maybe?
 - Tree Select could be a richer alternative to plain select for multiple templates, if we go the heirarchy way
 -- Org Chart could help in the organizing and creation of the heirarchy
 - Would Tree Table be better for our main table?
 
 TODO:
-- Update to Angular 17 (need PrimeNG to update first)
+- Update to Angular 17 (need PrimeNG to update first https://github.com/primefaces/primeng/issues/14063)
 -- Try server side rendering
 - Reporting functionality to chart and do custom queries of data
 -- Instead of directly using charts could leverage ChartModule from PrimeNG
@@ -20,3 +19,4 @@ TODO:
 - Put our revision or version number somewhere on the page?
 - Detect browser resume on mobile devices
 - "Demo mode" (once we have user login) that lets you explore the app without changing data, with a free/auto account, and a bunch of default stuff. Could swap Storage Service for this case?
+- Eventually do lazy loading on pagination, for large amounts of records

@@ -1,4 +1,4 @@
-import { Component, Input } from '@angular/core';
+import { Component, EventEmitter, Input, Output } from '@angular/core';
 import { differenceInHours, formatDistanceToNow, formatRelative } from 'date-fns';
 import { Thing } from '../model/thing';
 
@@ -9,7 +9,12 @@ import { Thing } from '../model/thing';
 })
 export class ReminderMessageComponent {
   @Input() thing!: Thing;
+  @Output() onClick = new EventEmitter<Thing>();
   type: 'info' | 'warn' | 'error' = 'info';
+  
+  clickReminder(): void {
+    this.onClick.emit(this.thing);
+  }
   
   determineType(): string {
     // Based on the remaining time, change our severity. Note the severity just matches our component styling, so the names don't really make sense here

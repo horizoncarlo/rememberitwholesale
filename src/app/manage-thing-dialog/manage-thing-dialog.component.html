@@ -1,5 +1,5 @@
 <p-dialog [header]="(isAdd() ? 'Add New' : 'Edit') + ' Thing'" [(visible)]="isShowing" [modal]="true" [maximizable]="true" class="manage-thing-dialog"
-          (onShow)="handleFocus($event, nameField)">
+          (onShow)="handleFocus(nameField)">
   <div class="content-form">
     <table cellpadding="10">
       <tr>

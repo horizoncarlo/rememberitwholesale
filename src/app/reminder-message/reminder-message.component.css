@@ -1,5 +1,6 @@
 /* Wrap a pair of messages to each line */
 .p-message {
+  cursor: pointer;
   display: inline-block;
   width: calc(50% - 10px);
   margin: 0 10px 10px 0;

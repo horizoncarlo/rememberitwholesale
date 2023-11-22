@@ -1,6 +1,6 @@
 .main-wrap {
   margin-top: var(--fixed-toolbar-height);
-  padding: 10px;
+  padding: 10px 0 0 0;
 }
 
 .thing-table {
@@ -9,11 +9,6 @@
   --time-col-width: 250px;
   --type-col-width: 300px;
   --name-col-width: 350px;
-}
-
-.p-toolbar-group-start p-button,
-.reminder-button {
-  margin-right: 10px;
 }
 
 .name-col, .time-col, .type-col {
@@ -34,4 +29,40 @@
 
 .fields-col {
   width: calc(100% - var(--name-col-width) - var(--time-col-width) - var(--type-col-width));
+}
+
+.no-things-wrap {
+  font-size: 24px;
+  text-align: center;
+  width: 100%;
+  padding-top: 10px;
+}
+
+.fixed-toolbar {
+  z-index: 5;
+  position: fixed;
+  top: 0;
+  width: 100%;
+  min-height: var(--fixed-toolbar-height);
+  box-shadow: 0 5px 5px var(--primary-color);
+  background-color: var(--surface-ground);
+}
+
+.fixed-toolbar p-button,
+.reminder-button {
+  margin-right: 10px;
+}
+
+.toolbar-content {
+  padding: 5px 10px 5px 5px;
+}
+
+.toolbar-left,
+.toolbar-right {
+  display: inline-block;
+  vertical-align: middle;
+}
+
+.toolbar-right {
+  float: right;
 }

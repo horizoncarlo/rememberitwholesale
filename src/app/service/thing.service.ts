@@ -94,7 +94,12 @@ export class ThingService {
               this.reminders.push(toReturn);
               
               if (differenceInMinutes(toReturn.time, nowDate) <= REMINDER_MINUTES_TO_WATCH) {
-                const newTimer = setTimeout(function() {
+                const watchTimer = setTimeout(function() {
+                  // TODO Notify on reminder being done and needing to fire. Would be cool to do native app notification (vibrate, popup, etc.) to replace my need for a Reminder app
+                  Utility.showInfo(toReturn.name + ' (' + toReturn.templateType + ') is due', 'Reminder NOW');
+                  
+                  // TODO Should we show overdue timers until they are removed? Or for 1 day after (configurable later)?
+                  
                   if (Utility.hasItems(_this.reminders)) {
                     for (let i = _this.reminders.length-1; i >= 0; i--) {
                       if (toReturn && toReturn.id &&
@@ -105,7 +110,7 @@ export class ThingService {
                   }
                 }, differenceInMilliseconds(toReturn.time, nowDate));
                 
-                this.remindersCleanup.push(newTimer);
+                this.remindersCleanup.push(watchTimer);
               }
           }
           
@@ -120,7 +125,7 @@ export class ThingService {
       },
       error: err => {
         this.loading = false;
-        Utility.showError('Failed to retrieve your data');
+        Utility.showError('Failed to retrieve your Things');
         console.error(err);
       },
       complete: () => this.loading = false
@@ -134,6 +139,10 @@ export class ThingService {
       Utility.showInfo('Template "' + toCount.name + '" used in ' + count + ' Thing' + Utility.pluralNum(count));
     }
     return count;
+  }
+  
+  loadedAndHasData(): boolean {
+    return !this.loading && Utility.hasItems(this.data);
   }
   
   hasReminders(): boolean {

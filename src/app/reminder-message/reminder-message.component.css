@@ -4,3 +4,9 @@
   width: calc(50% - 10px);
   margin: 0 10px 10px 0;
 }
+
+@media (max-width: 800px) {
+  .p-message {
+    width: 100%;
+  }
+}

@@ -8,6 +8,8 @@ import { TemplateService } from './service/template.service';
 import { ThingService } from './service/thing.service';
 import { Utility } from './util/utility';
 
+const DEBUG_SIMULATE_LATENCY = false; // Debug toggle to delay our initial call for Things
+
 @Component({
   selector: 'app-root',
   templateUrl: './app.component.html',
@@ -19,16 +21,33 @@ export class AppComponent implements OnInit {
   things: ThingService = inject(ThingService);
   templateService: TemplateService = inject(TemplateService);
   selectedRows: Thing[] = [];
-  showReminders: boolean = false; // TODO Features like showing reminders by default or not should be remembered (or set) in user settings and their eventual record
+  // TODO Features like showing reminders by default or not should be remembered (or set) in user settings and their eventual record, or at least local/session storage
+  showReminders: boolean = false;
   
   constructor(private primengConfig: PrimeNGConfig,
               private confirmationService: ConfirmationService) { }
   
   ngOnInit(): void {
+    // As part of PrimeNG config we need to manually enable ripple across the components
     this.primengConfig.ripple = true;
     
     // Get our initial data load
-    this.things.getAllThings();
+    if (!DEBUG_SIMULATE_LATENCY) {
+      this.things.getAllThings();
+    }
+    else {
+      this.things.loading = true;
+      setTimeout(() => {
+        this.things.getAllThings();
+      }, 5000);
+    }
+  }
+  
+  dynamicLabel(text: string): string {
+    if (document.body.getBoundingClientRect().width <= 700) { // TODO Hook into a single mobile breakpoint for widths
+      return '';
+    }
+    return text;
   }
   
   globalFilterTable(event: any): void {
@@ -77,7 +96,15 @@ export class AppComponent implements OnInit {
     if (this.hasSelectedRows()) {
       toReturn += ' ' + this.selectedRows.length + ' Thing' + Utility.plural(this.selectedRows);
     }
-    return toReturn;
+    return this.dynamicLabel(toReturn);
+  }
+  
+  getReminderLabel(): string {
+    let toReturn = '';
+    if (Utility.hasItems(this.things.reminders)) {
+      toReturn += this.things.reminders.length + ' Reminder' + Utility.plural(this.things.reminders);
+    }
+    return this.dynamicLabel(toReturn);
   }
   
   confirmDeleteSelected(event: Event): void {

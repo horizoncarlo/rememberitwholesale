@@ -1,24 +1,11 @@
 /* Make our top loading bar narrower, and speed it up slightly */
 .loading-bar .p-progressbar {
-  height: 3px;
+  height: var(--progress-bar-height);
   border-radius: 0;
   background-color: transparent;
 }
 .loading-bar .p-progressbar .p-progressbar-value::before {
   animation-duration: 1.8s;
-}
-
-/* Pin our toolbar to the top as a fixed bar, and thin it a bit, add some shadowing */
-.p-toolbar {
-  padding: 0 10px 0 10px;
-  border: 0;
-  border-radius: 0;
-  box-shadow: 0 5px 5px var(--primary-color);
-  z-index: 5;
-  position: fixed;
-  top: 0;
-  width: 100%;
-  height: var(--fixed-toolbar-height);
 }
 
 /* Size our progress spinner to fit well in the toolbar */
@@ -36,9 +23,15 @@
 }
 
 /* Let the table always be visibile, as we handle scrolling elsewhere */
+/* ISSUE: If we hide the scrolling, mobile gets wrecked (dialogs open way in the middle of the page),
+          but if we leave the scrolling and don't have many rows, then opening the Date filter won't properly
+           show the calendar (it will open inside the table, even with appendTo, and need scrolling to access)
+          Likely leave this commented out, as a realistic scenario will have more rows and mobile is important */
 .p-datatable .p-datatable-wrapper {
+  /*
   overflow-x: visible;
   overflow-y: visible;
+  */
 }
 
 /* Slightly narrower headers */
@@ -64,14 +57,45 @@ p-columnfilterformelement .p-inputtext {
   max-width: 750px;
 }
 
-/* To match our "always show a scrollbar" body style, do the same for any dialogs, to prevent the view from jumping */
+/* Ensure the dialogs size nicely to the page, regardless of view and content */
+.manage-thing-dialog .p-dialog,
+.manage-template-dialog .p-dialog {
+  min-width: 50vw;
+  max-width: 95vw;
+  height: 90vh;
+}
+
+/* Put a bit of a gap between the label and the checkbox */
+.checkbox-label-on-left .p-checkbox {
+  margin-left: 8px;
+}
+
+/* To match the "always show a scrollbar" body style, do the same for any dialogs, to prevent the view from jumping */
 .p-dialog-mask {
   overflow-y: scroll;
 }
 
-/* Make the spinner more noticeable on a smaller screen */
+/* Ensure the toast messages don't wrap outside a mobile screen */
+.p-toast {
+  max-width: 90vw;
+}
+
+/* Size our various inputs to a consistent minimum width */
+.consistent-field .p-dropdown,
+.consistent-field .p-calendar input {
+  min-width: var(--standard-field-width);
+}
+
+/* Make the spinner thicker on large screens */
 @media (min-width: 500px) {
   .p-progress-spinner-circle {
     stroke-width: 8;
+  }
+}
+
+@media (max-width: 800px) { /* TODO Put any mobile breakpoints into a variable */
+  .fixed-toolbar p-button .p-button-label,
+  .fixed-toolbar .p-splitbutton-defaultbutton .p-button-label {
+    display: none;
   }
 }

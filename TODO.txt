@@ -14,3 +14,7 @@ TODO:
 - Update Readme.md once the app is close to done
 - Remove old-Utility.js once anything of value has been copied over
 - Timezone support for Reminders and general dates?
+- Do a proper pass and componentize any elements that need it
+- Might be nice to highlight any newly added Thing, especially if there are ones in the future, as sorting by date means it's hard to tell what was added
+-- Alternatively do we need an "Update/Create Date" field in thing.ts and we sort under the hood by that?
+- Put our revision or version number somewhere on the page?

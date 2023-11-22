@@ -1,5 +1,6 @@
 :root {
   --fixed-toolbar-height: 60px;
+  --progress-bar-height: 3px;
   --standard-field-width: 300px;
 }
 
@@ -20,18 +21,8 @@ body {
   margin-right: auto;
 }
 
-.manage-thing-dialog .p-dialog,
-.manage-template-dialog .p-dialog {
-  min-width: 50vw;
-  height: 90vh;
-}
-
 .checkbox-label-on-left {
   flex-direction: row-reverse;
-}
-
-.checkbox-label-on-left .p-checkbox {
-  margin-left: 8px;
 }
 
 .subtext {
@@ -46,8 +37,6 @@ body {
   color: #00DD00;
 }
 
-.consistent-field,
-.consistent-field .p-dropdown,
-.consistent-field .p-calendar input {
+.consistent-field {
   min-width: var(--standard-field-width);
 }

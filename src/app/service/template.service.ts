@@ -74,7 +74,7 @@ export class TemplateService  {
       },
       error: err => {
         this.loading = false;
-        Utility.showError('Failed to retrieve your templates');
+        Utility.showError('Failed to retrieve your Templates');
         console.error(err);
       },
       complete: () => this.loading = false

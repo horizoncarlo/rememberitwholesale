@@ -20,3 +20,4 @@ TODO:
 - Detect browser resume on mobile devices
 - "Demo mode" (once we have user login) that lets you explore the app without changing data, with a free/auto account, and a bunch of default stuff. Could swap Storage Service for this case?
 - Eventually do lazy loading on pagination, for large amounts of records
+- Manage tabIndex focus order, especially for mobile

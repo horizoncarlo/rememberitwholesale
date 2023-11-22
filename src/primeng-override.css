@@ -100,4 +100,8 @@ p-columnfilterformelement .p-inputtext {
   .fixed-toolbar .p-splitbutton-defaultbutton .p-button-label {
     display: none; /* TODO Should we still do this with buttons? Or just switch to speed dial? */
   }
+  
+  .hide-on-mobile {
+    display: none;
+  }
 }

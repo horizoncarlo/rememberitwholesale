@@ -71,10 +71,15 @@
       <th pSortableColumn="time" class="time-col">Date <p-sortIcon field="time" /></th>
       <th pSortableColumn="fields" class="fields-col">
         Fields
-        ({{ rowSelectedCount() }} selected rows<span class="pi pi-ban header-tiny-button header-tiny-button-color header-clear-rows-button" (click)="clearSelectedRows()" pTooltip="Clear Selections" *ngIf="hasSelectedRows()"></span>) <!-- TODO Plural -->
-        <!-- TODO Put these simple and small clickable icons into a component as they're used a few places -->
         <p-sortIcon field="fields" />
-        <span class="pi pi-filter header-tiny-button header-filter-button header-tiny-button-color" (click)="toggleShowFilters()" pTooltip="Show Filters" *ngIf="!showFilters"></span>
+      </th>
+      <th class="control-col">
+        {{ rowSelectedCount() }} Sel<span class="hide-on-mobile">ected Rows</span> <!-- TODO Plural -->
+        <!-- TODO Put these simple and small clickable icons into a component as they're used a few places -->
+        <span class="pi pi-ban header-tiny-button header-tiny-button-color header-clear-rows-button" (click)="clearSelectedRows()" pTooltip="Clear Selections" *ngIf="hasSelectedRows()"></span>
+        &nbsp;
+        <span class="pi pi-filter header-tiny-button header-tiny-button-color" (click)="toggleShowFilters()" pTooltip="Show Filters" *ngIf="!showFilters"></span>
+        <span class="pi pi-filter-slash header-tiny-button header-tiny-button-color" (click)="toggleShowFilters()" pTooltip="Hide Filters" *ngIf="showFilters"></span>
       </th>
     </tr>
     <ng-container *ngIf="showFilters">
@@ -83,10 +88,8 @@
         <th><p-columnFilter type="text" field="templateType" matchMode="contains" /></th>
         <!-- TODO Could add a custom filter option of "Reminder=true/false" for the time column -->
         <th><p-columnFilter type="date" field="time" appendTo="body" /></th>
-        <th>
+        <th colspan="2">
           <input pInputText type="text" (change)="filterFields($event)" class="header-filter-field" />
-          &nbsp;
-          <span class="pi pi-exclamation-triangle header-tiny-button header-tiny-button-color" (click)="toggleShowFilters()" pTooltip="Hide Filters"></span>
         </th>
       </tr>
     </ng-container>
@@ -104,12 +107,14 @@
           <span class="pi pi-clock" *ngIf="data.hasFutureReminder()" pTooltip="Thing is a Reminder"></span> {{ data.time | date: 'MMM dd &rsquo;yy \'at\' hh:mm a' }}
         </span>
       </td>
-      <td>{{ data.getFieldsAsString() }}</td>
+      <td colspan="2">
+        {{ data.getFieldsAsString() }}
+      </td>
     </tr>
   </ng-template>
   <ng-template *ngIf="!things.loading" pTemplate="emptymessage" let-columns>
     <tr>
-      <td colspan="4" class="center">
+      <td colspan="5" class="center">
         No data matches your search
       </td>
     </tr>

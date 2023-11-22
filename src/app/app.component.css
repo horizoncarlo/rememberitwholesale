@@ -4,13 +4,13 @@
 
 .header-tiny-button {
   cursor: pointer;
+  vertical-align: middle;
 }
 
 .header-clear-rows-button {
   padding-left: 5px;
   padding-right: 2px;
   padding-bottom: 1px;
-  vertical-align: middle;
 }
 
 .header-tiny-button:hover {
@@ -19,11 +19,6 @@
 
 .header-tiny-button-color {
   color: rgba(255, 255, 255, 0.6); /* Match the other PrimeNG filter buttons */
-}
-
-.header-filter-button {
-  padding-left: 10px;
-  vertical-align: middle;
 }
 
 .header-filter-field {
@@ -58,6 +53,11 @@
 
 .type-col {
   width: var(--type-col-width);
+}
+
+.control-col {
+  text-align: right;
+  min-width: 150px;
 }
 
 .fields-col {

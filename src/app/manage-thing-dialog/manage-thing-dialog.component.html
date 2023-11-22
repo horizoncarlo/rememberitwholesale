@@ -33,8 +33,8 @@
         </td>
         <td>
           <p-checkbox [(ngModel)]="actOn.reminder" [binary]="true" label="Reminder?"
-                      [disabled]="!timeInFuture()"
-                      pTooltip="Click to show a reminder at the top of the page for this Thing"/>
+                      [disabled]="!actOn.timeInFuture()"
+                      pTooltip="Click to make this Thing a reminder that will display time left and notify you when due"/>
         </td>
       </tr>
       <tr *ngFor="let field of selectedTemplate?.fields">

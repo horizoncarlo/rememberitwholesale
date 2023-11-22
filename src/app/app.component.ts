@@ -1,5 +1,6 @@
 import { Component, OnInit, ViewChild, inject } from '@angular/core';
-import { ConfirmationService, PrimeNGConfig, SortEvent } from 'primeng/api';
+import { formatDistanceToNow } from 'date-fns';
+import { ConfirmationService, MenuItem, PrimeNGConfig, SortEvent } from 'primeng/api';
 import { Table } from 'primeng/table';
 import { ManageThingDialogComponent } from './manage-thing-dialog/manage-thing-dialog.component';
 import { Thing } from './model/thing';
@@ -18,6 +19,7 @@ export class AppComponent implements OnInit {
   things: ThingService = inject(ThingService);
   templateService: TemplateService = inject(TemplateService);
   selectedRows: Thing[] = [];
+  showReminders: boolean = false; // TODO Features like showing reminders by default or not should be remembered (or set) in user settings and their eventual record
   
   constructor(private primengConfig: PrimeNGConfig,
               private confirmationService: ConfirmationService) { }
@@ -54,6 +56,22 @@ export class AppComponent implements OnInit {
     }
   }
   
+  getRemindersForSplitButton(): MenuItem[] {
+    if (Utility.hasItems(this.things.reminders)) {
+      return this.things.reminders.map((reminder): MenuItem => {
+        let message = '<b>' + reminder.name + '</b> in ';
+        if (reminder.time) {
+          message += formatDistanceToNow(reminder.time);
+        }
+        else {
+          message += '???';
+        }
+        return { label: message };
+      });
+    }
+    return [];
+  }
+  
   getDeleteLabel(): string {
     let toReturn = 'Delete';
     if (this.hasSelectedRows()) {
@@ -80,6 +98,10 @@ export class AppComponent implements OnInit {
     else {
       Utility.showWarn('Select a row to delete');
     }
+  }
+  
+  toggleShowReminders(): void {
+    this.showReminders = !this.showReminders;
   }
   
   clearSelectedRows(): void {

@@ -1,0 +1,77 @@
+/* Make our top loading bar narrower, and speed it up slightly */
+.loading-bar .p-progressbar {
+  height: 3px;
+  border-radius: 0;
+  background-color: transparent;
+}
+.loading-bar .p-progressbar .p-progressbar-value::before {
+  animation-duration: 1.8s;
+}
+
+/* Pin our toolbar to the top as a fixed bar, and thin it a bit, add some shadowing */
+.p-toolbar {
+  padding: 0 10px 0 10px;
+  border: 0;
+  border-radius: 0;
+  box-shadow: 0 5px 5px var(--primary-color);
+  z-index: 5;
+  position: fixed;
+  top: 0;
+  width: 100%;
+  height: var(--fixed-toolbar-height);
+}
+
+/* Size our progress spinner to fit well in the toolbar */
+.p-progress-spinner {
+  width: 32px;
+  height: 32px;
+  vertical-align: middle;
+  margin-left: 10px;
+}
+
+/* Make the current day more noticeable in the calendar */
+.p-datepicker-today span {
+  font-weight: bold;
+  font-size: 22px;
+}
+
+/* Let the table always be visibile, as we handle scrolling elsewhere */
+.p-datatable .p-datatable-wrapper {
+  overflow-x: visible;
+  overflow-y: visible;
+}
+
+/* Slightly narrower headers */
+.p-datatable .p-datatable-thead > tr > th:not(.p-sortable-column) {
+  padding: 10px;
+}
+.p-datatable .p-datatable-thead > tr > th.p-sortable-column {
+  padding: 15px;
+}
+
+/* Match our custom Fields filter input to the others */
+p-columnfilterformelement .p-inputtext {
+  height: 30px;
+}
+
+/* Use a bigger width for the menu on the Reminders split button*/
+.p-tieredmenu {
+  width: 200%;
+}
+
+/* Setup a max width so a lot of chips will automatically wrap to multiline */
+.p-chips-multiple-container {
+  max-width: 750px;
+}
+
+/* To match our "always show a scrollbar" body style, do the same for any dialogs, to prevent the view from jumping */
+.p-dialog-mask {
+  overflow-y: scroll;
+}
+
+/* Make the spinner more noticeable on a smaller screen */
+@media (min-width: 500px) {
+  .p-progress-spinner-circle {
+    stroke-width: 8;
+  }
+}

@@ -13,6 +13,11 @@
   </div>
   
   <div class="p-toolbar-group-end">
+    <p-splitButton (onClick)="toggleShowReminders()"
+                   icon="pi pi-clock" [model]="getRemindersForSplitButton()"
+                   [label]="things.reminders.length + ' Reminders'"
+                   *ngIf="things.hasReminders()"
+                   class="reminder-button" styleClass="p-button-secondary p-button-sm"/>
     <span class="p-input-icon-left">
       <i class="pi pi-search"></i>
       <input pInputText type="text" (input)="globalFilterTable($event)" placeholder="Search Things" />
@@ -26,14 +31,10 @@
 <riw-manage-thing-dialog #manageThing (manageTemplateEvent)="manageTemplate.show($event)" />
 <riw-manage-template-dialog #manageTemplate />
 
-<div *ngFor="let reminder of things.reminders">
-  <!-- TODO - Can do similar styling to PrimeNG Messages elements, but we need our own custom wrap to change how the Close button works
-            - Allow each reminder to be closed, either for this session or forever (local variable or in user record, both as ignoredReminders: string[ids])
-            - Also make Reminders interface/class with id, title, description, time left (calculated dynamically), etc.
-  -->
-  <!-- TODO Have a way to automatically clean up Reminders, done in the Node service itself, which will automatically strip the reminder flag if the time is passed. Don't worry about timezones for now -->
-  Reminder: {{reminder}}
-</div>
+<!-- TODO Have a way to automatically clean up Reminders, done in the Node service itself, which will automatically strip the reminder flag if the time is passed. Don't worry about timezones for now -->
+<ng-container *ngIf="showReminders">
+  <riw-inline-message *ngFor="let reminder of things.reminders" [thing]="reminder" />
+</ng-container>
 
 <p-table #thingTable
          [value]="things.data" styleClass="p-datatable-striped"
@@ -59,9 +60,17 @@
   </ng-template>
   <ng-template pTemplate="body" let-data let-rowIndex="rowIndex">
     <tr [pSelectableRow]="data" [pSelectableRowIndex]="rowIndex">
-      <td><span [style]="'color:' + data.color">{{ data.name }}</span></td>
-      <td><span [style]="'color:' + data.color">{{ data.templateType }}</span></td>
-      <td class="center"><span [style]="'color:' + data.color">{{ data.time | date: 'MMM dd &rsquo;yy \'at\' h:mm a' }}</span></td>
+      <td>
+        <span [style]="'color:' + data.color">{{ data.name }}</span>
+      </td>
+      <td>
+        <span [style]="'color:' + data.color">{{ data.templateType }}</span>
+      </td>
+      <td class="center">
+        <span [style]="'color:' + data.color">
+          <span class="pi pi-bell" *ngIf="data.hasFutureReminder()" pTooltip="Thing is a Reminder"></span> {{ data.time | date: 'MMM dd &rsquo;yy \'at\' h:mm a' }}
+        </span>
+      </td>
       <td>{{ data.getFieldsAsString() }}</td>
     </tr>
   </ng-template>

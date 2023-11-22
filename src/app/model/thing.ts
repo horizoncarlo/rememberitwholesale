@@ -1,3 +1,4 @@
+import { isAfter } from 'date-fns';
 import { v4 as uuidv4 } from 'uuid';
 import { TemplateService } from '../service/template.service';
 import { Utility } from '../util/utility';
@@ -13,14 +14,14 @@ export class Thing {
   id: string;
   time?: Date;
   color?: string;
-  reminder: boolean = false;
+  reminder?: boolean;
   
-  constructor(name: string, templateType: string = TemplateService.getDefaultName(), id?: string, color?: string, time?: Date, reminder: boolean = false, fields?: TemplateField[]) {
+  constructor(name: string, templateType: string = TemplateService.getDefaultName(), id?: string, color?: string, time?: Date, reminder?: boolean, fields?: TemplateField[]) {
     this.name = name;
     this.templateType = templateType;
     this.id = id ? id : DEFAULT_ID;
     this.color = color || 'inherit';
-    this.reminder = reminder;
+    this.reminder = reminder || false;
     this.fields = fields || [];
     
     // If we have an existing date just cast it
@@ -73,6 +74,7 @@ export class Thing {
     }
     
     // Can slightly trim down the object by removing false/empty values
+    if (!this.reminder) { delete this.reminder; }
     if (Utility.hasItems(this.fields)) {
       this.fields?.forEach((currentField) => {
         if (!Utility.isValidString(currentField.value)) {
@@ -95,6 +97,14 @@ export class Thing {
       return toReturn;
     }
     return '';
+  }
+  
+  timeInFuture(): boolean {
+    return (this.time && isAfter(this.time, new Date())) ? true : false;
+  }
+  
+  hasFutureReminder(): boolean {
+    return (this.reminder && this.timeInFuture()) ? true : false;
   }
   
   isValid(): boolean {

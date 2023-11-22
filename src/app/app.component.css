@@ -11,7 +11,8 @@
   --name-col-width: 350px;
 }
 
-.p-toolbar-group-start p-button {
+.p-toolbar-group-start p-button,
+.reminder-button {
   margin-right: 10px;
 }
 

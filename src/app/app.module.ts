@@ -16,11 +16,13 @@ import { InputTextareaModule } from 'primeng/inputtextarea';
 import { ProgressBarModule } from 'primeng/progressbar';
 import { ProgressSpinnerModule } from 'primeng/progressspinner';
 import { RadioButtonModule } from 'primeng/radiobutton';
+import { SplitButtonModule } from 'primeng/splitbutton';
 import { TableModule } from 'primeng/table';
 import { ToastModule } from 'primeng/toast';
 import { ToolbarModule } from 'primeng/toolbar';
 import { TooltipModule } from 'primeng/tooltip';
 import { AppComponent } from './app.component';
+import { InlineMessageComponent } from './inline-message/inline-message.component';
 import { ManageTemplateDialogComponent } from './manage-template-dialog/manage-template-dialog.component';
 import { ManageThingDialogComponent } from './manage-thing-dialog/manage-thing-dialog.component';
 import { TemplateDropdownComponent } from './template-dropdown/template-dropdown.component';
@@ -32,7 +34,8 @@ import { ToastMessageComponent } from './toast-message/toast-message.component';
     ToastMessageComponent,
     TemplateDropdownComponent,
     ManageTemplateDialogComponent,
-    ManageThingDialogComponent
+    ManageThingDialogComponent,
+    InlineMessageComponent
   ],
   imports: [
     BrowserModule,
@@ -52,6 +55,7 @@ import { ToastMessageComponent } from './toast-message/toast-message.component';
     ProgressBarModule,
     ProgressSpinnerModule,
     RadioButtonModule,
+    SplitButtonModule,
     TableModule,
     ToastModule,
     ToolbarModule,

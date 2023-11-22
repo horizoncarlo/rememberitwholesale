@@ -1,8 +1,11 @@
 import { Injectable, inject } from '@angular/core';
+import { differenceInMilliseconds, differenceInMinutes, isAfter } from 'date-fns';
 import { Template } from '../model/template';
 import { Thing } from '../model/thing';
 import { Utility } from '../util/utility';
 import { StorageService } from './storage.service';
+
+const REMINDER_MINUTES_TO_WATCH = 60; // Minimum number of minutes remaining on a reminder before we observe it for completion, in case of the app being idle
 
 @Injectable({
   providedIn: 'root'
@@ -10,7 +13,8 @@ import { StorageService } from './storage.service';
 export class ThingService {
   loading: boolean = false;
   data: Thing[] = [];
-  reminders: string[] = [];
+  reminders: Thing[] = [];
+  remindersCleanup: any[] = []; // List of setTimeout references for tracking and clearing
   backend: StorageService = inject(StorageService);
   
   saveThing(toAdd: Thing): void {
@@ -65,19 +69,52 @@ export class ThingService {
     this.loading = true;
     this.reminders = [];
     
+    // Clean up any existing timeouts that may be around from a previous fetch
+    if (Utility.hasItems(this.remindersCleanup)) {
+      for (let i = 0; i < this.remindersCleanup.length; i++) {
+        clearTimeout(this.remindersCleanup[i]);
+      }
+    }
+    this.remindersCleanup = [];
+    
+    const _this = this;
     const nowDate = new Date();
     this.backend.getAllThings().subscribe({
       next: res => {
         this.data = res.map((current: Thing) => {
           const toReturn = Thing.cloneFrom(current);
           
+          // Ensure that any reminders that are almost done clear properly in the app if left idle
+          // This is probably needlessly complex and pointless, as the things and reminders will be refetched
+          //  often enough through normal usage
+          // But in case a user leaves the app idle, and has reminders that are about to complete,
+          //  we want to track those and remove them and update the UI when they expire
           if (toReturn.reminder && toReturn.time &&
-              toReturn.time < nowDate) { // TODO QUIDEL Clean up check on whether reminders should show
-              this.reminders.push(toReturn.name); // TODO Format reminder
+              isAfter(toReturn.time, nowDate)) {
+              this.reminders.push(toReturn);
+              
+              if (differenceInMinutes(toReturn.time, nowDate) <= REMINDER_MINUTES_TO_WATCH) {
+                const newTimer = setTimeout(function() {
+                  if (Utility.hasItems(_this.reminders)) {
+                    for (let i = _this.reminders.length-1; i >= 0; i--) {
+                      if (toReturn && toReturn.id &&
+                          toReturn.id ===_this.reminders[i].id) {
+                        _this.reminders.splice(i, 1);
+                      }
+                    }
+                  }
+                }, differenceInMilliseconds(toReturn.time, nowDate));
+                
+                this.remindersCleanup.push(newTimer);
+              }
           }
           
           return toReturn;
         });
+        
+        // Sort our reminders with the closest to completion at the top
+        this.reminders.sort((a, b) => { return (a.time && b.time) ? a.time?.getTime() - b.time?.getTime() : 0 });
+        
         console.log("Get Things", this.data);
         console.log("Reminders", this.reminders);
       },
@@ -97,5 +134,9 @@ export class ThingService {
       Utility.showInfo('Template "' + toCount.name + '" used in ' + count + ' Thing' + Utility.pluralNum(count));
     }
     return count;
+  }
+  
+  hasReminders(): boolean {
+    return Utility.hasItems(this.reminders);
   }
 }

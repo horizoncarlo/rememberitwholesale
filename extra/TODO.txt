@@ -29,3 +29,4 @@ TODO:
 -- File a bug with PrimeNG?
 - Tweak loading states so the entire table doesn't disappear while fetching
 - Eventually have Photo as a type to upload images to Things
+- Better and more consistent and centralized logging, with levels depending on deployment/environment

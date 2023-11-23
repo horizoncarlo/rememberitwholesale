@@ -1,0 +1,15 @@
+Go to https://json-generator.com/ and paste the following to make ~30,000 records:
+
+[
+  '{{repeat(1, 50000)}}',
+  {
+    id: '{{objectId()}}',
+    name: '{{company()}}',
+    templateType: '{{random("Longboard", "Boardgame", "Milestone")}}',
+    time: '{{date(new Date(2014, 0, 1), new Date())}}',
+    color: function() {
+      return "#" + Math.floor(Math.random() * 16777215).toString(16).padEnd(6, "0");
+    },
+    reminder: '{{random(true, false)}}'
+  }
+]

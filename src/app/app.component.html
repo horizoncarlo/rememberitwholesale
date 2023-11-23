@@ -64,6 +64,7 @@
     <tr>
       <th pSortableColumn="name" class="name-col">
         <span class="pi pi-refresh header-refresh" (click)="things.getAllThings()" pTooltip="Refresh" *ngIf="useDial">&nbsp;</span>
+        <!-- TODO Style the name "X of Y" as a progress bar, as in fill up a percentage of the background? Any use? Confusing? -->
         {{ getNameColumnHeader() }} <p-sortIcon field="name" />
       </th>
       <th pSortableColumn="templateType" class="type-col">Type <p-sortIcon field="templateType" /></th>

@@ -125,12 +125,12 @@ function getInMemoryTemplates() {
 }
 
 function saveThingsMemoryToFile() {
-  console.log("WRITE Things", inMemory.things);
+  console.log("WRITE Things", inMemory.things.length);
   writeSafeFile(THINGS_FILE, inMemory.things);
 }
 
 function saveTemplatesMemoryToFile() {
-  console.log("WRITE Templates", inMemory.templates);
+  console.log("WRITE Templates", inMemory.templates.length);
   writeSafeFile(TEMPLATES_FILE, inMemory.templates);
 }
 
@@ -157,7 +157,7 @@ function writeSafeFile(name, data, retryCount = 0) {
 
 /***** API Endpoints *****/
 app.get("/things", (req, res) => {
-  console.log("GET Things", getInMemoryThings());
+  console.log("GET Things", getInMemoryThings().length);
   return res.send(getInMemoryThings()).end();
 });
 
@@ -218,7 +218,7 @@ app.delete("/things/:id", (req, res) => {
 });
 
 app.get("/templates", (req, res) => {
-  console.log("GET Templates", getInMemoryTemplates());
+  console.log("GET Templates", getInMemoryTemplates().length);
   return res.send(getInMemoryTemplates()).end();
 });
 

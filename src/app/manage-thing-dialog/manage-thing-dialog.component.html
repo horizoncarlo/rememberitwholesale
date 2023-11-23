@@ -79,6 +79,7 @@
   </div>
   
   <ng-template pTemplate="footer">
+    <p-button (onClick)="handleDeleteThing()" label="Delete" icon="pi pi-trash" iconPos="left" severity="danger"/>
     <p-button (onClick)="hide()" label="Cancel" icon="pi pi-times" iconPos="left" severity="secondary"/>
     <p-button (onClick)="submit()" label="Save Thing" icon="pi pi-check" iconPos="left"/>
   </ng-template>

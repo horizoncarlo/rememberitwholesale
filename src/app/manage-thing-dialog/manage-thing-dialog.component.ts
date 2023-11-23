@@ -20,6 +20,7 @@ export class ManageThingDialogComponent {
   isShowing: boolean = false;
   fieldTypes = TemplateField.TYPES;
   @Output() manageTemplateEvent = new EventEmitter<TemplateEvent>();
+  @Output() onDelete = new EventEmitter<Thing>();
   
   isAdd(): boolean {
     return this.type === 'add';
@@ -79,6 +80,10 @@ export class ManageThingDialogComponent {
     
     this.things.saveThing(this.actOn);
     this.toggleThingDialog(); // Close our dialog
+  }
+  
+  handleDeleteThing(): void {
+    this.onDelete.emit(this.actOn);
   }
   
   handleTemplateEvent(event: any): void {

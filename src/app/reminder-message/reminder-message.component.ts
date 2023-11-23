@@ -9,14 +9,20 @@ import { Thing } from '../model/thing';
 })
 export class ReminderMessageComponent {
   @Input() thing!: Thing;
+  @Input() overdue?: boolean = false;
   @Output() onClick = new EventEmitter<Thing>();
-  type: 'info' | 'warn' | 'error' = 'info';
+  type: 'info' | 'warn' | 'error' | 'success' = 'info';
   
   clickReminder(): void {
     this.onClick.emit(this.thing);
   }
   
   determineType(): string {
+    // If we're overdue, just go with success style
+    if (this.overdue) {
+      return 'success';
+    }
+    
     // Based on the remaining time, change our severity. Note the severity just matches our component styling, so the names don't really make sense here
     if (this.thing.time) {
       // Logic is 'error' is less than an hour, 'warn' is that day, and 'info' is everything else

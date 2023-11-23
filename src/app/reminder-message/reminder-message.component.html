@@ -5,8 +5,14 @@
       <span class="pi pi-calendar" *ngIf="determineType() === 'info'"></span>
       <span class="pi pi-clock" *ngIf="determineType() === 'warn'"></span>
       <span class="pi pi-bell" *ngIf="determineType() === 'error'"></span>
+      <span class="pi pi-calendar-minus" *ngIf="determineType() === 'success'"></span>
     </span>
-    <span class="p-message-summary">{{thing.name}} in {{distanceDate()}} ({{relativeDate()}})</span>
+    <span class="p-message-summary">
+      <span *ngIf="overdue" class="subtext">MISSED -</span>
+      {{thing.name}}
+      <span *ngIf="!overdue"> in {{distanceDate()}} ({{relativeDate()}})</span>
+      <span *ngIf="overdue"> {{relativeDate()}}</span>
+    </span>
     <span class="p-message-detail">{{thing.templateType}}<span *ngIf="thing.hasFields()">,</span> {{thing.getFieldsAsString()}}</span>
   </div>
 </div>

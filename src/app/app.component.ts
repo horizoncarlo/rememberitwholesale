@@ -59,7 +59,7 @@ export class AppComponent implements OnInit, OnDestroy {
     if (DEBUG_FORCE_USE_DIAL) {
       this.useDial = true;
     }
-    else if (document.body.getBoundingClientRect().width < 700 || isMobile()) {
+    else if (document.body.getBoundingClientRect().width < 700 || isMobile()) { // TODO Mobile breakpoints
       // TODO Also pull this from user settings
       this.useDial = true;
     }
@@ -67,7 +67,10 @@ export class AppComponent implements OnInit, OnDestroy {
     this.calcTableScrollHeight();
     window.addEventListener('resize', this.calcTableScrollHeight.bind(this));
     
-    this.setupDialTouchEvents();
+    // Setup touch events for our dial being draggable
+    if (this.useDial) {
+      this.setupDialTouchEvents();
+    }
   }
   
   ngOnDestroy(): void {
@@ -274,13 +277,13 @@ export class AppComponent implements OnInit, OnDestroy {
   
   calcTableScrollHeight(): void {
     setTimeout(() => { // Wait for the current table to resolve and then do our calculations
-      let toReturn = document.documentElement.getBoundingClientRect().height;
+      let calcHeight = document.documentElement.getBoundingClientRect().height;
       
       // If we're not using the dial calculate the toolbar
       if (!this.useDial) {
         const toolbarHeight = Utility.getCSSVar('fixed-toolbar-height');
         if (toolbarHeight && !isNaN(parseInt(toolbarHeight))) {
-          toReturn -= parseInt(toolbarHeight);
+          calcHeight -= parseInt(toolbarHeight);
         }
       }
       
@@ -293,7 +296,7 @@ export class AppComponent implements OnInit, OnDestroy {
       if (paginatorShowing) {
       const paginatorHeight = Utility.getCSSVar('table-paginator-height');
         if (paginatorHeight && !isNaN(parseInt(paginatorHeight))) {
-          toReturn -= parseInt(paginatorHeight);
+          calcHeight -= parseInt(paginatorHeight);
         }
       }
       
@@ -301,17 +304,17 @@ export class AppComponent implements OnInit, OnDestroy {
       if (this.showReminders) {
         const reminderEle = document.getElementById('reminders');
         if (reminderEle) {
-          toReturn -= reminderEle.getBoundingClientRect().height;
+          calcHeight -= reminderEle.getBoundingClientRect().height;
         }
       }
       
       // Have a minimum height, if we get below it, turn off internal scrolling, so we don't just have a super squished view
-      if (toReturn < 300) {
+      if (calcHeight < 300) {
         this.tableScrollHeight = '100%';
         return;
       }
       
-      this.tableScrollHeight = toReturn + 'px';
+      this.tableScrollHeight = calcHeight + 'px';
     }, 0);
   }
   
@@ -349,10 +352,34 @@ export class AppComponent implements OnInit, OnDestroy {
     }
   }
   
+  handleOverdueReminder(markDone: Thing): void {
+    this.confirmationService.confirm({
+      key: 'dialog',
+      header: 'Complete Reminder',
+      message: 'Did you want to mark this Reminder as done?',
+      icon: 'pi pi-question-circle',
+      accept: () => {
+        this.completeOverdueReminder(markDone);
+      },
+    });
+  }
+  
+  completeOverdueReminder(markDone: Thing): void {
+    const removeIndex = this.things.remindersOverdue.indexOf(markDone);
+    if (removeIndex !== -1) {
+      this.things.remindersOverdue.splice(removeIndex, 1);
+    }
+    
+    delete markDone.reminder;
+    this.things.saveThing(markDone, true);
+  }
+  
   getRemindersForSplitButton(): MenuItem[] {
+    let toReturn: MenuItem[] = [];
+    
     // TODO Keep a hardcoded list of MenuItems in sync when things.reminders changes with rxjs/ngrx, since then we could use "command" in the item, and show a toast with more details when a reminder is clicked
-    if (Utility.hasItems(this.things.reminders)) {
-      return this.things.reminders.map((reminder): MenuItem => {
+    if (this.things.hasReminders()) {
+      toReturn = toReturn.concat(this.things.reminders.map((reminder): MenuItem => {
         let message = '<b>' + reminder.name + '</b> in ';
         if (reminder.time) {
           message += formatDistanceToNow(reminder.time);
@@ -361,9 +388,16 @@ export class AppComponent implements OnInit, OnDestroy {
           message += '???';
         }
         return { label: message };
+      }));
+    }
+    
+    if (this.things.hasRemindersOverdue()) {
+      toReturn.push({
+        label: '* Missed ' + Utility.getLength(this.things.remindersOverdue) + ' Reminder' + Utility.plural(this.things.remindersOverdue)
       });
     }
-    return [];
+    
+    return toReturn;
   }
   
   getNameColumnHeader(): string {
@@ -400,10 +434,22 @@ export class AppComponent implements OnInit, OnDestroy {
   
   getReminderLabel(): string {
     let toReturn = '';
-    if (Utility.hasItems(this.things.reminders)) {
-      toReturn += this.things.reminders.length + ' Reminder' + Utility.plural(this.things.reminders);
+    if (this.things.hasReminders()) {
+      toReturn += Utility.getLength(this.things.reminders) + ' Reminder' + Utility.plural(this.things.reminders);
+    }
+    else if (this.things.hasRemindersOverdue()) {
+      toReturn += Utility.getLength(this.things.remindersOverdue) + ' Overdue';
     }
     return toReturn;
+  }
+  
+  confirmDeleteThing(toDelete: Thing): void {
+    if (this.manageThingDialog) {
+      this.manageThingDialog.hide();
+    }
+    
+    this.selectedRows = [toDelete];
+    this.confirmDeleteSelected(null, true);
   }
   
   confirmDeleteSelected(event: Event | null, isDialog?: boolean, header?: string): void {
@@ -423,11 +469,13 @@ export class AppComponent implements OnInit, OnDestroy {
       // Set a target if we got an event to use
       if (event) {
         opts.target = event.target as EventTarget;
+        opts.key = 'inline';
       }
       
       // If we're a dialog then put a generic header
       if (isDialog) {
         opts.header = header ? header : 'Confirmation';
+        opts.key = 'dialog';
       }
       
       this.confirmationService.confirm(opts);

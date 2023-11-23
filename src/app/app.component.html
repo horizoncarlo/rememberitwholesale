@@ -1,13 +1,13 @@
 <riw-global-toast />
+<p-confirmPopup key="inline" />
+<p-confirmDialog key="dialog"/>
 
-<!-- TODO Clean up draggable approach for speed dial and test on mobile -->
 <ng-container *ngIf="useDial">
   <div id="ddOverlay" [draggable]="true" (dragstart)="dialDragStart($event)" (dragend)="dialDragEnd($event)"
        class="menu-dial menu-dial-overlay"
        (click)="dialOverlayClickthru($event)"></div>
   <p-speedDial #speedDial id="speedDial" [model]="getDialItems()" direction="down" type="linear" class="menu-dial"
                 (onHide)="isDialOpen = false" (onShow)="isDialOpen = true"/>
-  <p-confirmDialog />
 </ng-container>
 
 <ng-container *ngIf="!useDial">
@@ -21,15 +21,14 @@
       <p-button (onClick)="clearSelectedRows(); manageTemplate.show()" icon="pi pi-list" [label]="getManageTemplateLabel()" />
       <p-button (onClick)="clearSelectedRows(); manageThing.showAdd()" icon="pi pi-plus-circle" label="New Thing" />
       <p-button (onClick)="requestEditSelected()" icon="pi pi-pencil" label="Edit Thing" [disabled]="!hasOneSelectedRow()" />
-      <p-button (onClick)="confirmDeleteSelected($event)" icon="pi pi-trash" [label]="getDeleteLabel()" [disabled]="!hasSelectedRows()" />
-      <p-confirmPopup />
+      <p-button (onClick)="confirmDeleteSelected($event)" icon="pi pi-trash" severity="danger" [label]="getDeleteLabel()" [disabled]="!hasSelectedRows()" />
     </div>
     <div class="toolbar-right">
       <!-- TODO Get Utility.plural and similar functions accessible from Angular templates -->
       <p-splitButton (onClick)="toggleShowReminders()"
                      icon="pi pi-clock" [model]="getRemindersForSplitButton()"
                      [label]="getReminderLabel()"
-                     *ngIf="things.hasReminders()"
+                     *ngIf="things.hasAnyReminders()"
                      class="reminder-button" styleClass="p-button-secondary p-button-sm"/>
       <!-- TODO Handle a flag for if we're mobile or not (which just means we're at a set CSS breakpoint, not related to browser string) -->
       <span class="p-input-icon-left">
@@ -46,6 +45,7 @@
 
 <!-- TODO Have a way to automatically clean up Reminders, done in the Node service itself, which will automatically strip the reminder flag if the time is passed. Don't worry about timezones for now -->
 <div id="reminders" class="reminder-wrap" *ngIf="showReminders">
+  <riw-reminder-message *ngFor="let reminder of things.remindersOverdue" [thing]="reminder" [overdue]="true" (onClick)="handleOverdueReminder($event)" />
   <riw-reminder-message *ngFor="let reminder of things.reminders" [thing]="reminder" (onClick)="requestEditReminder($event)" />
 </div>
 
@@ -131,6 +131,6 @@
 
 </div>
 
-<riw-manage-thing-dialog #manageThing (manageTemplateEvent)="manageTemplate.show($event)" />
+<riw-manage-thing-dialog #manageThing (manageTemplateEvent)="manageTemplate.show($event)" (onDelete)="confirmDeleteThing($event)"/>
 <riw-manage-template-dialog #manageTemplate />
 <riw-global-search-dialog #globalSearch [searchFunction]="globalFilterTable.bind(this)"/>

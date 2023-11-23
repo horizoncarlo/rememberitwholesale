@@ -1,5 +1,5 @@
 import { Injectable, inject } from '@angular/core';
-import { differenceInMilliseconds, differenceInMinutes, isAfter } from 'date-fns';
+import { differenceInMilliseconds, differenceInMinutes, isAfter, subDays } from 'date-fns';
 import { Template } from '../model/template';
 import { Thing } from '../model/thing';
 import { Utility } from '../util/utility';
@@ -14,10 +14,11 @@ export class ThingService {
   loading: boolean = false;
   data: Thing[] = [];
   reminders: Thing[] = [];
+  remindersOverdue: Thing[] = []; // Reminders that are a day or less old
   remindersCleanup: any[] = []; // List of setTimeout references for tracking and clearing
   backend: StorageService = inject(StorageService);
   
-  saveThing(toAdd: Thing): void {
+  saveThing(toAdd: Thing, silent?: boolean): void {
     if (toAdd && toAdd.isValid()) {
       toAdd.prepareForSave();
     }
@@ -31,7 +32,9 @@ export class ThingService {
     this.loading = true;
     this.backend.submitThing(toAdd).subscribe({
       next: res => {
-        Utility.showSuccess('Successfully saved your Thing', toAdd.name);
+        if (!silent) {
+          Utility.showSuccess('Successfully saved your Thing', toAdd.name);
+        }
         this.getAllThings();
       },
       error: err => {
@@ -68,6 +71,7 @@ export class ThingService {
   getAllThings(): void {
     this.loading = true;
     this.reminders = [];
+    this.remindersOverdue = [];
     
     // Clean up any existing timeouts that may be around from a previous fetch
     if (Utility.hasItems(this.remindersCleanup)) {
@@ -89,16 +93,15 @@ export class ThingService {
           //  often enough through normal usage
           // But in case a user leaves the app idle, and has reminders that are about to complete,
           //  we want to track those and remove them and update the UI when they expire
-          if (toReturn.reminder && toReturn.time &&
-              isAfter(toReturn.time, nowDate)) {
+          if (toReturn.reminder && toReturn.time) {
+            if (isAfter(toReturn.time, nowDate)) {
               this.reminders.push(toReturn);
               
               if (differenceInMinutes(toReturn.time, nowDate) <= REMINDER_MINUTES_TO_WATCH) {
                 const watchTimer = setTimeout(function() {
-                  // TODO Better notify on reminder being done and needing to fire. Would be cool to do native app notification (vibrate, popup, etc.) to replace my need for a Reminder app
+                  // TODO Better notify on reminder being done and needing to fire. Would be cool to do native app notification (vibrate, popup, etc.) to replace my need for a Reminder app. Not we need HTTPS to use JS native Notification
+                  // TODO Also have a way to mark reminder as complete as soon as it pops
                   Utility.showInfoSticky(toReturn.name + ' (' + toReturn.templateType + ') is due', 'Reminder NOW');
-                  
-                  // TODO Should we show overdue reminders until they are removed? Or for 1 day after (configurable later)? Very likely YES!
                   
                   if (Utility.hasItems(_this.reminders)) {
                     for (let i = _this.reminders.length-1; i >= 0; i--) {
@@ -112,6 +115,14 @@ export class ThingService {
                 
                 this.remindersCleanup.push(watchTimer);
               }
+            }
+            // Mark anything up to a day old as overdue. Anything older is ignored (and should have it's reminder flag cleared)
+            else {
+              const dayOld = subDays(new Date(), 1);
+              if (isAfter(toReturn.time, dayOld)) {
+                this.remindersOverdue.push(toReturn);
+              }
+            }
           }
           
           return toReturn;
@@ -150,5 +161,13 @@ export class ThingService {
   
   hasReminders(): boolean {
     return Utility.hasItems(this.reminders);
+  }
+  
+  hasRemindersOverdue(): boolean {
+    return Utility.hasItems(this.remindersOverdue);
+  }
+  
+  hasAnyReminders(): boolean {
+    return this.hasReminders() || this.hasRemindersOverdue();
   }
 }

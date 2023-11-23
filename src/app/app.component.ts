@@ -25,6 +25,7 @@ export class AppComponent implements OnInit, OnDestroy {
   @ViewChild('manageTemplate') manageTemplateDialog!: ManageTemplateDialogComponent;
   @ViewChild('manageThing') manageThingDialog!: ManageThingDialogComponent;
   @ViewChild('globalSearch') globalSearchDialog!: GlobalSearchDialogComponent;
+  @ViewChild('speedDial') speedDial!: any;
   things: ThingService = inject(ThingService);
   templateService: TemplateService = inject(TemplateService);
   selectedRows: Thing[] = [];
@@ -33,6 +34,7 @@ export class AppComponent implements OnInit, OnDestroy {
   showReminders: boolean = false;
   useDial: boolean = false;
   isDialOpen = false;
+  isDraggingDial: boolean = false;
   tableScrollHeight: string = '400px';
   
   constructor(private primengConfig: PrimeNGConfig,
@@ -64,24 +66,89 @@ export class AppComponent implements OnInit, OnDestroy {
     
     this.calcTableScrollHeight();
     window.addEventListener('resize', this.calcTableScrollHeight.bind(this));
+    
+    this.setupDialTouchEvents();
   }
   
   ngOnDestroy(): void {
     window.removeEventListener('resize', this.calcTableScrollHeight);
   }
   
+  setupDialTouchEvents(retryCount?: number): void {
+    // Since touch* events aren't naturally supported on Angular 16 components, like (touchstart), we have to manually add the listeners
+    // Support dragging the speed dial around
+    if (this.useDial) {
+      setTimeout(() => {
+        const ele = document.getElementById('ddOverlay');
+        if (ele) {
+          const middleSize = this.getDialBoxMiddleSize();
+          
+          ele.addEventListener('touchstart', (event: TouchEvent) => {
+            // TODO this.dialDragStart(e, null);
+          });
+          
+          ele.addEventListener('touchmove', (event: TouchEvent) => {
+            event.preventDefault();
+            this.isDraggingDial = true;
+            
+            if (Utility.hasItems(event.changedTouches)) {
+              ele.style.top = event.changedTouches[0].clientY - middleSize + 'px';
+              ele.style.left = event.changedTouches[0].clientX - middleSize + 'px';
+            }
+          });
+          
+          ele.addEventListener('touchend', (event: TouchEvent) => {
+            if (this.isDraggingDial) {
+              this.isDraggingDial = false;
+              
+              ele.style.backgroundColor = 'transparent';
+              
+              if (Utility.hasItems(event.changedTouches)) {
+                ele.style.top = event.changedTouches[0].clientY - middleSize + 'px';
+                ele.style.left = event.changedTouches[0].clientX - middleSize + 'px';
+                
+                if (this.speedDial && this.speedDial.el &&
+                    this.speedDial.el.nativeElement) {
+                  this.speedDial.el.nativeElement.style.top = ele.style.top;
+                  this.speedDial.el.nativeElement.style.left = ele.style.left;
+                }
+              }
+            }
+          });
+          
+          ele.addEventListener('touchcancel', (e: any) => {
+            this.isDraggingDial = false;
+          });
+        }
+        else {
+          if (typeof retryCount !== 'number') {
+            retryCount = 0;
+          }
+          
+          if (retryCount < 20) {
+            setTimeout(() => {
+              this.setupDialTouchEvents(retryCount);
+            }, 200);
+            retryCount++;
+          }
+        }
+      }, 0);
+    }
+  }
+  
+  getDialBoxMiddleSize(): number {
+    let middleSize = Utility.getCSSVar('dial-box-size');
+    if (middleSize) {
+      middleSize = parseInt(middleSize) / 2;
+    }
+    if (isNaN(middleSize) || typeof middleSize !== 'number') {
+      middleSize = 0;
+    }
+    return middleSize;
+  }
+  
   getDialItems(): MenuItem[] {
     return [
-        {
-          icon: "pi pi-refresh",
-          command: () => {
-              this.things.getAllThings();
-          },
-          tooltipOptions: {
-            tooltipLabel: 'Refresh',
-            tooltipPosition: 'bottom'
-          }
-        },
         {
           icon: "pi pi-plus-circle",
           command: () => {
@@ -95,7 +162,7 @@ export class AppComponent implements OnInit, OnDestroy {
         },
         {
           icon: "pi pi-pencil",
-          disabled: !this.hasOneSelectedRow(),
+          visible: this.hasOneSelectedRow(),
           command: () => {
               this.requestEditSelected();
           },
@@ -106,7 +173,7 @@ export class AppComponent implements OnInit, OnDestroy {
         },
         {
           icon: "pi pi-trash",
-          disabled: !this.hasSelectedRows(),
+          visible: this.hasSelectedRows(),
           command: () => {
             this.confirmDeleteSelected(null, true);
           },
@@ -150,34 +217,59 @@ export class AppComponent implements OnInit, OnDestroy {
     ];
   }
   
-  dialDragStart(event: DragEvent, dial: any): void {
+  dialDragStart(event: DragEvent): void {
     const ele = event.target as HTMLElement;
-    // TODO Fix drag cursor being not-allowed
-    // TODO Clean this dragStart up, and the dragEnd
-    // TODO Prevent dial from being dragged outside the window. See cascading window project
-    ele.style.backgroundColor = 'var(--primary-color)';
-  }
-  
-  dialDragEnd(event: DragEvent, dial: any): void {
-    const ele = event.target as HTMLElement;
-    ele.style.backgroundColor = 'transparent';
     
-    // TODO Need to account for original click location and element size and offset that from our new clientX/Y. And do this safer
-    ele.style.top = event.clientY + 'px';
-    ele.style.left = event.clientX + 'px';
-    ele.style.cursor = 'pointer';
-    dial.el.nativeElement.style.top = event.clientY + 'px';
-    dial.el.nativeElement.style.left = event.clientX + 'px';
+    // TODO Fix drag cursor being not-allowed
+    if (ele) {
+      ele.style.backgroundColor = 'var(--primary-color)';
+    }
   }
   
-  dialOverlayClick(event: Event, dial: any): void {
+  dialDragEnd(event: DragEvent): void {
+    const ele = event.target as HTMLElement;
+    if (ele) {
+      ele.style.backgroundColor = 'transparent';
+      
+      const middleSize = this.getDialBoxMiddleSize();
+      let newTop = event.clientY - middleSize;
+      let newLeft = event.clientX - middleSize;
+      
+      // Ensure we can't drag outside the browser
+      if (newTop < 0) {
+        newTop = 0;
+      }
+      if (newLeft < 0) {
+        newLeft = 0;
+      }
+      
+      ele.style.top = newTop + 'px';
+      ele.style.left = newLeft + 'px';
+      if (this.speedDial && this.speedDial.el &&
+          this.speedDial.el.nativeElement) {
+        this.speedDial.el.nativeElement.style.top = ele.style.top;
+        this.speedDial.el.nativeElement.style.left = ele.style.left;
+      }
+    }
+  }
+  
+  /**
+   * When clicking the overlay, pass through to click the speed dial underneath
+   */
+  dialOverlayClickthru(event: Event): void {
     event.preventDefault();
     
-    const ele = dial.el.nativeElement.querySelector('button');
     if (!this.isDialOpen) {
-      setTimeout(() => { ele.click(); }, 0); // Need to finish handling our current event before we try clicking on the underlying element
+      if (this.speedDial && this.speedDial.el &&
+          this.speedDial.el.nativeElement) {
+        const ele = this.speedDial.el.nativeElement.querySelector('button');
+        if (ele) {
+          setTimeout(() => { ele.click(); }, 0); // Need to finish handling our current event before we try clicking on the underlying element
+        }
+      }
+      
+      this.isDialOpen = !this.isDialOpen;
     }
-    this.isDialOpen = !this.isDialOpen;
   }
   
   calcTableScrollHeight(): void {

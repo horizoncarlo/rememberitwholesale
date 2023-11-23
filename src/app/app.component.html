@@ -2,10 +2,10 @@
 
 <!-- TODO Clean up draggable approach for speed dial and test on mobile -->
 <ng-container *ngIf="useDial">
-  <div [draggable]="true" (dragstart)="dialDragStart($event, speedDial)" (dragend)="dialDragEnd($event, speedDial)"
+  <div id="ddOverlay" [draggable]="true" (dragstart)="dialDragStart($event)" (dragend)="dialDragEnd($event)"
        class="menu-dial menu-dial-overlay"
-       (click)="dialOverlayClick($event, speedDial)"></div>
-  <p-speedDial #speedDial [model]="getDialItems()" direction="down" type="linear" class="menu-dial"
+       (click)="dialOverlayClickthru($event)"></div>
+  <p-speedDial #speedDial id="speedDial" [model]="getDialItems()" direction="down" type="linear" class="menu-dial"
                 (onHide)="isDialOpen = false" (onShow)="isDialOpen = true"/>
   <p-confirmDialog />
 </ng-container>

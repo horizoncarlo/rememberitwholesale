@@ -100,22 +100,24 @@
   float: right;
 }
 
-.menu-dial {
+.menu-dial,
+.menu-dial-overlay {
+  width: var(--dial-box-size);
+  height: var(--dial-box-size);
   position: absolute;
   right: var(--dial-right-pos);
-  top: 20px;
+  top: var(--fixed-toolbar-height);
+}
+
+.menu-dial {
   z-index: 5;
   opacity: 0.9;
-  width: 64px;
-  height: 64px;
 }
 
 .menu-dial-overlay {
-  opacity: 1;
   background-color: transparent;
   border-radius: 50%;
   box-shadow: 0 0 5px white;
-  width: 64px;
-  height: 64px;
   z-index: 6;
+  opacity: 1;
 }

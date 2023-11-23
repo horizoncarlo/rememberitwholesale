@@ -85,7 +85,7 @@ p-columnfilterformelement .p-inputtext {
 /* Size our various inputs to a consistent minimum width */
 .consistent-field .p-dropdown,
 .consistent-field .p-calendar input {
-  min-width: var(--standard-field-width);
+  width: var(--standard-field-width);
 }
 
 /* Make the spinner thicker on large screens */
@@ -103,5 +103,22 @@ p-columnfilterformelement .p-inputtext {
   
   .hide-on-mobile {
     display: none;
+  }
+  
+  .p-dialog .p-dialog-content {
+    padding: 10px;
+  }
+  
+  .p-dialog-header {
+    padding: 15px 15px 0 15px;
+  }
+  
+  .manage-thing-dialog .p-dialog,
+  .manage-template-dialog .p-dialog {
+    height: auto;
+  }
+  
+  .content-form {
+    margin-top: 0 !important;
   }
 }

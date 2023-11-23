@@ -3,6 +3,13 @@
   --progress-bar-height: 3px;
   --standard-field-width: 300px;
   --dial-right-pos: 40px;
+  --dial-box-size: 64px;
+}
+
+@media (max-width: 800px) {
+  :root {
+    --standard-field-width: 150px;
+  }
 }
 
 html, body {
@@ -38,5 +45,5 @@ html {
 }
 
 .consistent-field {
-  min-width: var(--standard-field-width);
+  width: var(--standard-field-width);
 }

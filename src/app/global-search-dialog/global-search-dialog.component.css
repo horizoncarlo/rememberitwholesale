@@ -1,3 +1,4 @@
 .global-search-dialog input {
   min-width: var(--standard-field-width);
+  max-width: 100%;
 }

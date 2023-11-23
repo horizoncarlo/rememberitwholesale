@@ -12,7 +12,7 @@ TODO:
 -- Instead of directly using charts could leverage ChartModule from PrimeNG
 - Update Readme.md once the app is close to done
 - Remove old-Utility.js once anything of value has been copied over
-- Timezone support for Reminders and general dates?
+- Timezone support for Reminders and general dates? Only necessary if we foresee acting on the server from a client in a different timezone
 - Do a proper pass and componentize any elements that need it
 - Might be nice to highlight any newly added Thing, especially if there are ones in the future, as sorting by date means it's hard to tell what was added
 -- Alternatively do we need an "Update/Create Date" field in thing.ts and we sort under the hood by that?
@@ -20,8 +20,12 @@ TODO:
 - Detect browser resume on mobile devices
 - "Demo mode" (once we have user login) that lets you explore the app without changing data, with a free/auto account, and a bunch of default stuff. Could swap Storage Service for this case?
 - Eventually do lazy loading on pagination, for large amounts of records
+-- Or dropdown of timeframe to pull data from - always simpler and cleaner in regards to sort/filter/etc.
+-- Could segment JSON our files by Year, to trim down the total number of records fetched, then have a dropdown of each year that will work against the relevant file
+--- Mostly also to stop write/updates from slowing down once you're at 10,000+ records in a single file
+--- Similarly should do monthly/yearly backups of our data files automatically on the backend
 - Manage tabIndex focus order, especially for mobile
 - Would be nice to not have to manually set `tooltipPosition="left"` (or bottom) in cases where the tooltip is smooshed along the right edge. Seems to autocalculate for some but not all
-- Fire resize when a reminde is cleared/removed
+-- File a bug with PrimeNG?
 - Tweak loading states so the entire table doesn't disappear while fetching
 - Eventually have Photo as a type to upload images to Things

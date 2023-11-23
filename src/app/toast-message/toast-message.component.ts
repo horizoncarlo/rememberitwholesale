@@ -1,11 +1,10 @@
 import { Component, OnDestroy, OnInit } from '@angular/core';
-import { MessageService } from 'primeng/api';
+import { Message, MessageService } from 'primeng/api';
 
 @Component({
   selector: 'riw-global-toast',
   templateUrl: './toast-message.component.html',
   styleUrls: ['./toast-message.component.css'],
-  providers: [MessageService]
 })
 export class ToastMessageComponent implements OnInit, OnDestroy {
   constructor(private messageService: MessageService) { }
@@ -25,33 +24,58 @@ export class ToastMessageComponent implements OnInit, OnDestroy {
   }
 
   showSuccess(event: CustomEvent): void {
-    this._showGeneric('success', event.detail.detail, event.detail.summary, event.detail.sticky);
+    this._showGeneric('success', event.detail);
   }
   
   showInfo(event: CustomEvent): void {
-    this._showGeneric('info', event.detail.detail, event.detail.summary, event.detail.sticky);
+    this._showGeneric('info', event.detail);
   }
   
   showWarn(event: CustomEvent): void {
-    this._showGeneric('warn', event.detail.detail, event.detail.summary, event.detail.sticky);
+    this._showGeneric('warn', event.detail);
   }
   
   showError(event: CustomEvent): void {
-    this._showGeneric('error', event.detail.detail, event.detail.summary, event.detail.sticky);
+    this._showGeneric('error', event.detail);
   }
   
-  private _showGeneric(type: string = 'info', detail: string, summary?: string, sticky?: boolean): void {
-    switch(type) {
-      case 'error': console.error(detail, summary); break;
-      case 'warn': console.warn(detail, summary); break;
-      default: console.log(detail, summary); break;
+  confirmResponse(toMark: Message): void {
+    // Fire our callback if we have one, and regardless clear the messages
+    if (toMark.data && toMark.data.callback &&
+        typeof toMark.data.callback === 'function') {
+      toMark.data.callback();
     }
     
-    this.messageService.add({
-      severity: type,
-      detail: detail,
-      summary: summary,
-      sticky: sticky || false
-    });    
+    this.messageService.clear();
+  }
+  
+  private _showGeneric(type: string = 'info', eventDetail: any): void {
+    if (eventDetail) {
+      const detail = eventDetail.detail || '';
+      const summary = eventDetail.summary || '';
+      const sticky = eventDetail.sticky || false;
+      switch(type) {
+        case 'error': console.error(detail, summary); break;
+        case 'warn': console.warn(detail, summary); break;
+        default: console.log(detail, summary); break;
+      }
+      
+      const key = (eventDetail.confirmCallback && typeof eventDetail.confirmCallback === 'function') ? 'reminderComplete' : 'basic';
+      const opts: Message = {
+        key: key || 'basic',
+        severity: type,
+        detail: detail,
+        summary: summary,
+        sticky: sticky,
+      };
+      
+      if (opts.key === 'reminderComplete') {
+        opts.data = {
+          callback: eventDetail.confirmCallback
+        };
+      }
+      
+      this.messageService.add(opts);
+    }
   }
 }

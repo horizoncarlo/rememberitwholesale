@@ -9,10 +9,8 @@ import { ManageThingDialogComponent } from './manage-thing-dialog/manage-thing-d
 import { Thing } from './model/thing';
 import { TemplateService } from './service/template.service';
 import { ThingService } from './service/thing.service';
+import { DebugFlags } from './util/debug-flags';
 import { Utility } from './util/utility';
-
-const DEBUG_SIMULATE_LATENCY = false; // Debug toggle to delay our initial call for Things
-const DEBUG_FORCE_USE_DIAL = false; // Debug to use the dial instead of toolbar regardless of screen size
 
 @Component({
   selector: 'app-root',
@@ -45,7 +43,7 @@ export class AppComponent implements OnInit, OnDestroy {
     this.primengConfig.ripple = true;
     
     // Get our initial data load
-    if (!DEBUG_SIMULATE_LATENCY) {
+    if (!DebugFlags.DEBUG_SIMULATE_LATENCY) {
       this.things.getAllThings();
     }
     else {
@@ -56,7 +54,7 @@ export class AppComponent implements OnInit, OnDestroy {
     }
     
     // Determine if we should default to the speed dial or not
-    if (DEBUG_FORCE_USE_DIAL) {
+    if (DebugFlags.DEBUG_FORCE_USE_DIAL) {
       this.useDial = true;
     }
     else if (document.body.getBoundingClientRect().width < 700 || isMobile()) { // TODO Mobile breakpoints
@@ -86,12 +84,8 @@ export class AppComponent implements OnInit, OnDestroy {
         if (ele) {
           const middleSize = this.getDialBoxMiddleSize();
           
-          ele.addEventListener('touchstart', (event: TouchEvent) => {
-            // TODO this.dialDragStart(e, null);
-          });
-          
           ele.addEventListener('touchmove', (event: TouchEvent) => {
-            event.preventDefault();
+            event.preventDefault(); // Necessary for performance, otherwise we get choppiness
             this.isDraggingDial = true;
             
             if (Utility.hasItems(event.changedTouches)) {
@@ -164,8 +158,8 @@ export class AppComponent implements OnInit, OnDestroy {
           }
         },
         {
-          icon: "pi pi-pencil",
           visible: this.hasOneSelectedRow(),
+          icon: "pi pi-pencil",
           command: () => {
               this.requestEditSelected();
           },
@@ -175,8 +169,8 @@ export class AppComponent implements OnInit, OnDestroy {
           }
         },
         {
-          icon: "pi pi-trash",
           visible: this.hasSelectedRows(),
+          icon: "pi pi-trash",
           command: () => {
             this.confirmDeleteSelected(null, true);
           },
@@ -197,8 +191,8 @@ export class AppComponent implements OnInit, OnDestroy {
           }
         },
         {
-          icon: "pi pi-clock",
           visible: this.things.hasReminders(),
+          icon: "pi pi-clock",
           command: () => {
               this.toggleShowReminders();
           },
@@ -208,6 +202,7 @@ export class AppComponent implements OnInit, OnDestroy {
           }
         },
         {
+          visible: !!this.thingTable,
           icon: "pi pi-search",
           command: () => {
             this.globalSearchDialog.show();
@@ -222,8 +217,6 @@ export class AppComponent implements OnInit, OnDestroy {
   
   dialDragStart(event: DragEvent): void {
     const ele = event.target as HTMLElement;
-    
-    // TODO Fix drag cursor being not-allowed
     if (ele) {
       ele.style.backgroundColor = 'var(--primary-color)';
     }
@@ -278,6 +271,12 @@ export class AppComponent implements OnInit, OnDestroy {
   calcTableScrollHeight(): void {
     setTimeout(() => { // Wait for the current table to resolve and then do our calculations
       let calcHeight = document.documentElement.getBoundingClientRect().height;
+      
+      // Always count the progress bar
+      const progressHeight = Utility.getCSSVar('progress-bar-height');
+      if (progressHeight && !isNaN(parseInt(progressHeight))) {
+        calcHeight -= parseInt(progressHeight);
+      }
       
       // If we're not using the dial calculate the toolbar
       if (!this.useDial) {
@@ -359,30 +358,20 @@ export class AppComponent implements OnInit, OnDestroy {
       message: 'Did you want to mark this Reminder as done?',
       icon: 'pi pi-question-circle',
       accept: () => {
-        this.completeOverdueReminder(markDone);
+        this.things.completeReminder(markDone);
       },
     });
-  }
-  
-  completeOverdueReminder(markDone: Thing): void {
-    const removeIndex = this.things.remindersOverdue.indexOf(markDone);
-    if (removeIndex !== -1) {
-      this.things.remindersOverdue.splice(removeIndex, 1);
-    }
-    
-    delete markDone.reminder;
-    this.things.saveThing(markDone, true);
   }
   
   getRemindersForSplitButton(): MenuItem[] {
     let toReturn: MenuItem[] = [];
     
-    // TODO Keep a hardcoded list of MenuItems in sync when things.reminders changes with rxjs/ngrx, since then we could use "command" in the item, and show a toast with more details when a reminder is clicked
+    // TODO Keep a hardcoded list of MenuItems in sync when things.reminders changes with Ang17 signals or rxjs/ngrx, since then we could use "command" in the item, and show a toast with more details when a reminder is clicked
     if (this.things.hasReminders()) {
       toReturn = toReturn.concat(this.things.reminders.map((reminder): MenuItem => {
-        let message = '<b>' + reminder.name + '</b> in ';
+        let message = '<b>' + reminder.name + '</b> ';
         if (reminder.time) {
-          message += formatDistanceToNow(reminder.time);
+          message += formatDistanceToNow(reminder.time, { addSuffix: true });
         }
         else {
           message += '???';
@@ -409,7 +398,7 @@ export class AppComponent implements OnInit, OnDestroy {
     
     if (this.thingTable && typeof this.thingTable.totalRecords === 'number') {
       const current = this.thingTable ? this.thingTable.totalRecords : 0;
-      if (current !== total) {
+      if (current !== total && total > current) {
         return 'Name (' + Utility.formatNumber(current) + ' of ' + Utility.formatNumber(total) + ')';
       }
     }
@@ -487,12 +476,12 @@ export class AppComponent implements OnInit, OnDestroy {
   
   toggleShowReminders(): void {
     this.showReminders = !this.showReminders;
-    this.calcTableScrollHeight();
+    Utility.fireWindowResize();
   }
   
   toggleShowFilters(): void {
     this.showFilters = !this.showFilters;
-    this.calcTableScrollHeight();
+    Utility.fireWindowResize();
   }
   
   clearSelectedRows(): void {

@@ -223,6 +223,7 @@ app.get("/templates", (req, res) => {
 });
 
 app.post("/templates", (req, res) => {
+  // TODO Our validation, like ensuring template names are unique, needs to be done on the backend as well, not just the front end. Look for similar with Things and other services
   console.log("POST Template", req.body);
   
   if (req.body && req.body.name) {

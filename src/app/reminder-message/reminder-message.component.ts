@@ -40,7 +40,7 @@ export class ReminderMessageComponent {
   distanceDate(): string {
     if (this.thing.time) {
       // Show how far away, such as "in about an hour"
-      return formatDistanceToNow(this.thing.time);
+      return formatDistanceToNow(this.thing.time, { addSuffix: true });
     }
     return '???';
   }

@@ -1,3 +1,6 @@
+import { formatDistanceToNow } from "date-fns";
+import { Thing } from "../model/thing";
+
 export class Utility {
   static numberFormatter: Intl.NumberFormat = new Intl.NumberFormat();
   
@@ -17,6 +20,26 @@ export class Utility {
     this._dispatchGenericShow('message-error', { message: message, header: header, sticky: sticky });
   }
   
+  static showReminderComplete(toMark: Thing, confirmCallback: Function): void {
+    this._dispatchGenericShow('message-info', {
+      message: toMark.name + ' (' + toMark.templateType + ') is due',
+      header: 'Reminder NOW',
+      sticky: true,
+      confirmCallback: confirmCallback,
+      thingId: toMark.id
+    });
+  }
+  
+  static showReminderOverdue(toMark: Thing, confirmCallback: Function): void {
+    this._dispatchGenericShow('message-success', {
+      message: toMark.name + ' (' + toMark.templateType + ') is overdue ' + (toMark.time ? formatDistanceToNow(toMark.time, { addSuffix: true }) : ''),
+      header: 'Reminder Overdue',
+      sticky: true,
+      confirmCallback: confirmCallback,
+      thingId: toMark.id
+    });
+  }
+  
   static showSuccessSticky(message: string, header?: string) {
     this.showSuccess(message, header, true);
   }
@@ -34,7 +57,12 @@ export class Utility {
   }
   
   private static _dispatchGenericShow(type: string, options?: any): void {
-    window.dispatchEvent(new CustomEvent(type, { detail: { summary: options.header, detail: options.message, sticky: options.sticky } }));
+    // Slightly rename our incoming variables to match what the component expects
+    window.dispatchEvent(new CustomEvent(type, { detail: { summary: options.header, detail: options.message, ...options } }));
+  }
+  
+  static fireWindowResize() {
+    window.dispatchEvent(new Event('resize'));
   }
 
   static plural(toCheck: Array<any>): string {

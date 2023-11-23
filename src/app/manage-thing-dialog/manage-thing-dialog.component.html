@@ -34,7 +34,7 @@
         <td>
           <p-checkbox [(ngModel)]="actOn.reminder" [binary]="true" label="Reminder?"
                       [disabled]="!actOn.timeInFuture()"
-                      pTooltip="Click to make this Thing a reminder that will display time left and notify you when due"/>
+                      pTooltip="Click to make this Thing a reminder that will display time left and notify you when due" />
         </td>
       </tr>
       <tr *ngFor="let field of selectedTemplate?.fields">
@@ -42,7 +42,7 @@
           <label [htmlFor]="field.property">{{ field.getLabel() }}</label>
         </td>
         <td colspan="2">
-          <!-- TODO Do we need any other field types for Things? Checkbox? Slider? -->
+          <!-- TODO Do we need any other field types for Things? Photos? Checkbox? Slider? -->
           <ng-container *ngIf="field.type === fieldTypes.Text || field.type === fieldTypes.Number">
             <input [id]="field.property" pInputText [type]="field.type" [required]="field.required || false" [(ngModel)]="field.value"/>
           </ng-container>
@@ -74,7 +74,7 @@
           </ng-container>
         </td>
       </tr>
-      <!-- TODO Add an option to include new fields JUST for this thing when adding/editing it? Unrelated to Template, but for special corner cases or one-offs -->
+      <!-- TODO Do we need an option to add a custom field for one-off tweaks to a Thing? Might feel like Template and Thing aren't different enough if that's the case, or make filling Things tedious and complicated -->
     </table>
   </div>
   

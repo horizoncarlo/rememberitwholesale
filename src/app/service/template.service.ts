@@ -116,6 +116,9 @@ export class TemplateService  {
         this.getAllTemplates();
         
         // Refresh our Things too if we deleted them
+        // Note from an optimization point of view we're stuck with this call, without a rework
+        // Because we don't know what Things the backend deleted alongside
+        // We COULD return a list of deleted Thing IDs from this.backend.deleteTemplate
         if (deleteThingsToo) {
           this.things.getAllThings();
         }

@@ -15,10 +15,13 @@
 
 /* Size our progress spinner to fit well in the toolbar */
 .p-progress-spinner {
-  width: 32px;
-  height: 32px;
+  width: 45px;
+  height: 45px;
   vertical-align: middle;
   margin-left: 10px;
+}
+.p-progress-spinner-circle {
+  stroke-width: 8;
 }
 
 /* Make the current day more noticeable in the calendar */
@@ -86,13 +89,6 @@ p-columnfilterformelement .p-inputtext {
 .consistent-field .p-dropdown,
 .consistent-field .p-calendar input {
   width: var(--standard-field-width);
-}
-
-/* Make the spinner thicker on large screens */
-@media (min-width: 500px) {
-  .p-progress-spinner-circle {
-    stroke-width: 8;
-  }
 }
 
 @media (max-width: 800px) { /* TODO Put any mobile breakpoints into a variable */

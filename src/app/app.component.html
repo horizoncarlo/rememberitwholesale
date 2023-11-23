@@ -2,6 +2,8 @@
 <p-confirmPopup key="inline" />
 <p-confirmDialog key="dialog"/>
 
+<p-progressBar [mode]="things.loading ? 'indeterminate' : 'determinate'" class="loading-bar" />
+
 <ng-container *ngIf="useDial">
   <div id="ddOverlay" [draggable]="true" (dragstart)="dialDragStart($event)" (dragend)="dialDragEnd($event)"
        class="menu-dial menu-dial-overlay"
@@ -12,11 +14,9 @@
 
 <ng-container *ngIf="!useDial">
 <div class="fixed-toolbar">
-  <p-progressBar [mode]="things.loading ? 'indeterminate' : 'determinate'" class="loading-bar" />
   <div class="toolbar-content">
     <div class="toolbar-left">
       <!-- TODO Have the option to "quick fill" a Template that has been marked as "Pinned", which means it will show up on the toolbar, and be a 1-click and 1-fill of a field to quickly enter things. Example would be Reminder/Note, Work Commute, etc. Something repetitive that you don't want to have to keep manually re-entering -->
-      <!-- TODO When refreshing our data we should clear our filters, or fix them to re-apply, as currently the content resets and all rows are shown -->
       <p-button (onClick)="things.getAllThings()" icon="pi pi-refresh" [loading]="things.loading" severity="info" />
       <p-button (onClick)="clearSelectedRows(); manageTemplate.show()" icon="pi pi-list" [label]="getManageTemplateLabel()" />
       <p-button (onClick)="clearSelectedRows(); manageThing.showAdd()" icon="pi pi-plus-circle" label="New Thing" />
@@ -31,7 +31,7 @@
                      *ngIf="things.hasAnyReminders()"
                      class="reminder-button" styleClass="p-button-secondary p-button-sm"/>
       <!-- TODO Handle a flag for if we're mobile or not (which just means we're at a set CSS breakpoint, not related to browser string) -->
-      <span class="p-input-icon-left">
+      <span class="p-input-icon-left" *ngIf="!things.loading">
         <i class="pi pi-search"></i>
         <input pInputText type="text" (input)="globalFilterTableByEvent($event)" placeholder="Search Things" />
       </span>
@@ -41,9 +41,8 @@
 </div>
 </ng-container>
 
-<div [class]="'main-wrap' + (useDial ? '' : ' main-wrap-with-toolbar')">
+<div [class]="'main-wrap' + (useDial ? '' : ' main-wrap-with-toolbar')" dropzone="true">
 
-<!-- TODO Have a way to automatically clean up Reminders, done in the Node service itself, which will automatically strip the reminder flag if the time is passed. Don't worry about timezones for now -->
 <div id="reminders" class="reminder-wrap" *ngIf="showReminders">
   <riw-reminder-message *ngFor="let reminder of things.remindersOverdue" [thing]="reminder" [overdue]="true" (onClick)="handleOverdueReminder($event)" />
   <riw-reminder-message *ngFor="let reminder of things.reminders" [thing]="reminder" (onClick)="requestEditReminder($event)" />
@@ -55,12 +54,12 @@
          selectionMode="multiple" [(selection)]="selectedRows"
          (sortFunction)="customSort($event)" [customSort]="true"
          sortField="time" [sortOrder]="-1"
-         [globalFilterFields]="['name', 'time', 'templateType']"
+         [globalFilterFields]="['name', 'time', 'templateType', 'reminder']"
          [paginator]="true" [rows]="50"
          [pageLinks]="3" [alwaysShowPaginator]="false" [showFirstLastIcon]="false" [showCurrentPageReport]="true"
          [scrollable]="true" [scrollHeight]="tableScrollHeight"
          >
-         <!-- TODO Make 'scrollable' a user option, and tweak related calculations and style? -->
+         <!-- TODO Make 'scrollable' and 'paginator' a user setting -->
   <ng-template pTemplate="header">
     <tr>
       <th pSortableColumn="name" class="name-col">
@@ -104,7 +103,7 @@
       </td>
       <td class="center">
         <span [style]="'color:' + data.color">
-          <span class="pi pi-clock" *ngIf="data.hasFutureReminder()" pTooltip="Thing is a Reminder"></span> {{ data.time | date: 'MMM dd &rsquo;yy \'at\' hh:mm a' }}
+          <span class="pi pi-clock" *ngIf="data.reminder" pTooltip="Thing is a Reminder"></span> {{ data.time | date: 'MMM dd &rsquo;yy \'at\' hh:mm a' }}
         </span>
       </td>
       <td colspan="2">

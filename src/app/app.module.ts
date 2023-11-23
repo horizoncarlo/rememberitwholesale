@@ -3,6 +3,7 @@ import { NgModule } from '@angular/core';
 import { FormsModule } from '@angular/forms';
 import { BrowserModule } from '@angular/platform-browser';
 import { BrowserAnimationsModule } from '@angular/platform-browser/animations';
+import { MessageService } from 'primeng/api';
 import { ButtonModule } from 'primeng/button';
 import { CalendarModule } from 'primeng/calendar';
 import { CheckboxModule } from 'primeng/checkbox';
@@ -24,12 +25,12 @@ import { TableModule } from 'primeng/table';
 import { ToastModule } from 'primeng/toast';
 import { TooltipModule } from 'primeng/tooltip';
 import { AppComponent } from './app.component';
+import { GlobalSearchDialogComponent } from './global-search-dialog/global-search-dialog.component';
 import { ManageTemplateDialogComponent } from './manage-template-dialog/manage-template-dialog.component';
 import { ManageThingDialogComponent } from './manage-thing-dialog/manage-thing-dialog.component';
 import { ReminderMessageComponent } from './reminder-message/reminder-message.component';
 import { TemplateDropdownComponent } from './template-dropdown/template-dropdown.component';
 import { ToastMessageComponent } from './toast-message/toast-message.component';
-import { GlobalSearchDialogComponent } from './global-search-dialog/global-search-dialog.component';
 
 @NgModule({
   declarations: [
@@ -67,7 +68,7 @@ import { GlobalSearchDialogComponent } from './global-search-dialog/global-searc
     ToastModule,
     TooltipModule
   ],
-  providers: [],
+  providers: [MessageService],
   bootstrap: [AppComponent]
 })
 export class AppModule { }

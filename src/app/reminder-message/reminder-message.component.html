@@ -10,7 +10,7 @@
     <span class="p-message-summary">
       <span *ngIf="overdue" class="subtext">MISSED -</span>
       {{thing.name}}
-      <span *ngIf="!overdue"> in {{distanceDate()}} ({{relativeDate()}})</span>
+      <span *ngIf="!overdue"> {{distanceDate()}} ({{relativeDate()}})</span>
       <span *ngIf="overdue"> {{relativeDate()}}</span>
     </span>
     <span class="p-message-detail">{{thing.templateType}}<span *ngIf="thing.hasFields()">,</span> {{thing.getFieldsAsString()}}</span>

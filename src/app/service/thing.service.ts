@@ -96,7 +96,7 @@ export class ThingService {
               if (differenceInMinutes(toReturn.time, nowDate) <= REMINDER_MINUTES_TO_WATCH) {
                 const watchTimer = setTimeout(function() {
                   // TODO Better notify on reminder being done and needing to fire. Would be cool to do native app notification (vibrate, popup, etc.) to replace my need for a Reminder app
-                  Utility.showInfo(toReturn.name + ' (' + toReturn.templateType + ') is due', 'Reminder NOW');
+                  Utility.showInfoSticky(toReturn.name + ' (' + toReturn.templateType + ') is due', 'Reminder NOW');
                   
                   // TODO Should we show overdue reminders until they are removed? Or for 1 day after (configurable later)? Very likely YES!
                   

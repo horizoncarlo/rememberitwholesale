@@ -1,20 +1,40 @@
 export class Utility {
   static numberFormatter: Intl.NumberFormat = new Intl.NumberFormat();
-
-  static showSuccess(message: string, header?: string): void {
-    window.dispatchEvent(new CustomEvent('message-success', { detail: { summary: header, detail: message } }));
+  
+  static showSuccess(message: string, header?: string, sticky?: boolean): void {
+    this._dispatchGenericShow('message-success', { message: message, header: header, sticky: sticky });
   }
 
-  static showInfo(message: string, header?: string): void {
-    window.dispatchEvent(new CustomEvent('message-info', { detail: { summary: header, detail: message } }));
+  static showInfo(message: string, header?: string, sticky?: boolean): void {
+    this._dispatchGenericShow('message-info', { message: message, header: header, sticky: sticky });
   }
 
-  static showWarn(message: string, header?: string): void {
-    window.dispatchEvent(new CustomEvent('message-warn', { detail: { summary: header, detail: message } }));
+  static showWarn(message: string, header?: string, sticky?: boolean): void {
+    this._dispatchGenericShow('message-warn', { message: message, header: header, sticky: sticky });
   }
 
-  static showError(message: string, header?: string): void {
-    window.dispatchEvent(new CustomEvent('message-error', { detail: { summary: header, detail: message } }));
+  static showError(message: string, header?: string, sticky?: boolean): void {
+    this._dispatchGenericShow('message-error', { message: message, header: header, sticky: sticky });
+  }
+  
+  static showSuccessSticky(message: string, header?: string) {
+    this.showSuccess(message, header, true);
+  }
+  
+  static showInfoSticky(message: string, header?: string) {
+    this.showInfo(message, header, true);
+  }
+  
+  static showWarnSticky(message: string, header?: string) {
+    this.showWarn(message, header, true);
+  }
+  
+  static showErrorSticky(message: string, header?: string) {
+    this.showError(message, header, true);
+  }
+  
+  private static _dispatchGenericShow(type: string, options?: any): void {
+    window.dispatchEvent(new CustomEvent(type, { detail: { summary: options.header, detail: options.message, sticky: options.sticky } }));
   }
 
   static plural(toCheck: Array<any>): string {

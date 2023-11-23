@@ -76,7 +76,7 @@
       <th class="control-col">
         {{ rowSelectedCount() }} Sel<span class="hide-on-mobile">ected Rows</span> <!-- TODO Plural -->
         <!-- TODO Put these simple and small clickable icons into a component as they're used a few places -->
-        <span class="pi pi-ban header-tiny-button header-tiny-button-color header-clear-rows-button" (click)="clearSelectedRows()" pTooltip="Clear Selections" *ngIf="hasSelectedRows()"></span>
+        <span class="pi pi-ban header-tiny-button header-tiny-button-color header-clear-rows-button" (click)="clearSelectedRows()" pTooltip="Clear Selections" tooltipPosition="left" *ngIf="hasSelectedRows()"></span>
         &nbsp;
         <span class="pi pi-filter header-tiny-button header-tiny-button-color" (click)="toggleShowFilters()" pTooltip="Show Filters" *ngIf="!showFilters"></span>
         <span class="pi pi-filter-slash header-tiny-button header-tiny-button-color" (click)="toggleShowFilters()" pTooltip="Hide Filters" *ngIf="showFilters"></span>

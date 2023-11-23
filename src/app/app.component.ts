@@ -78,7 +78,8 @@ export class AppComponent implements OnInit, OnDestroy {
               this.things.getAllThings();
           },
           tooltipOptions: {
-            tooltipLabel: 'Refresh'
+            tooltipLabel: 'Refresh',
+            tooltipPosition: 'bottom'
           }
         },
         {
@@ -88,7 +89,8 @@ export class AppComponent implements OnInit, OnDestroy {
               this.manageThingDialog.showAdd();
           },
           tooltipOptions: {
-            tooltipLabel: 'New Thing'
+            tooltipLabel: 'New Thing',
+            tooltipPosition: 'bottom'
           }
         },
         {
@@ -98,7 +100,8 @@ export class AppComponent implements OnInit, OnDestroy {
               this.requestEditSelected();
           },
           tooltipOptions: {
-            tooltipLabel: 'Edit Thing'
+            tooltipLabel: 'Edit Thing',
+            tooltipPosition: 'bottom'
           }
         },
         {
@@ -108,7 +111,8 @@ export class AppComponent implements OnInit, OnDestroy {
             this.confirmDeleteSelected(null, true);
           },
           tooltipOptions: {
-            tooltipLabel: 'Delete'
+            tooltipLabel: 'Delete',
+            tooltipPosition: 'bottom'
           }
         },
         {
@@ -118,7 +122,8 @@ export class AppComponent implements OnInit, OnDestroy {
               this.manageTemplateDialog.show();
           },
           tooltipOptions: {
-            tooltipLabel: this.getManageTemplateLabel()
+            tooltipLabel: this.getManageTemplateLabel(),
+            tooltipPosition: 'bottom'
           }
         },
         {
@@ -128,7 +133,8 @@ export class AppComponent implements OnInit, OnDestroy {
               this.toggleShowReminders();
           },
           tooltipOptions: {
-            tooltipLabel: this.things.reminders.length + ' Reminder' + Utility.plural(this.things.reminders)
+            tooltipLabel: this.things.reminders.length + ' Reminder' + Utility.plural(this.things.reminders),
+            tooltipPosition: 'bottom'
           }
         },
         {
@@ -137,7 +143,8 @@ export class AppComponent implements OnInit, OnDestroy {
             this.globalSearchDialog.show();
           },
           tooltipOptions: {
-            tooltipLabel: 'Global Search'
+            tooltipLabel: 'Global Search',
+            tooltipPosition: 'bottom'
           }
         },
     ];

@@ -89,7 +89,7 @@ export class Thing {
   }
   
   getFieldsAsString(): string {
-    if (Utility.hasItems(this.fields)) {
+    if (this.hasFields()) {
       let toReturn: string = this.fields.map((field) => {
         return field.getLabel() + ' = ' + (field.value || 'N/A');
       }).join(', ');
@@ -101,6 +101,10 @@ export class Thing {
   
   timeInFuture(): boolean {
     return (this.time && isAfter(this.time, new Date())) ? true : false;
+  }
+  
+  hasFields(): boolean {
+    return Utility.hasItems(this.fields);
   }
   
   hasFutureReminder(): boolean {

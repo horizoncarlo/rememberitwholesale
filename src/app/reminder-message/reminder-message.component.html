@@ -7,6 +7,6 @@
       <span class="pi pi-bell" *ngIf="determineType() === 'error'"></span>
     </span>
     <span class="p-message-summary">{{thing.name}} in {{distanceDate()}} ({{relativeDate()}})</span>
-    <span class="p-message-detail">{{thing.templateType}} {{thing.getFieldsAsString()}}</span>
+    <span class="p-message-detail">{{thing.templateType}}<span *ngIf="thing.hasFields()">,</span> {{thing.getFieldsAsString()}}</span>
   </div>
 </div>

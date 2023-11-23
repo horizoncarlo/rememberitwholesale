@@ -25,22 +25,22 @@ export class ToastMessageComponent implements OnInit, OnDestroy {
   }
 
   showSuccess(event: CustomEvent): void {
-    this._showGeneric('success', event.detail.detail, event.detail.summary);
+    this._showGeneric('success', event.detail.detail, event.detail.summary, event.detail.sticky);
   }
   
   showInfo(event: CustomEvent): void {
-    this._showGeneric('info', event.detail.detail, event.detail.summary);
+    this._showGeneric('info', event.detail.detail, event.detail.summary, event.detail.sticky);
   }
   
   showWarn(event: CustomEvent): void {
-    this._showGeneric('warn', event.detail.detail, event.detail.summary);
+    this._showGeneric('warn', event.detail.detail, event.detail.summary, event.detail.sticky);
   }
   
   showError(event: CustomEvent): void {
-    this._showGeneric('error', event.detail.detail, event.detail.summary);
+    this._showGeneric('error', event.detail.detail, event.detail.summary, event.detail.sticky);
   }
   
-  private _showGeneric(type: string = 'info', detail: string, summary?: string): void {
+  private _showGeneric(type: string = 'info', detail: string, summary?: string, sticky?: boolean): void {
     switch(type) {
       case 'error': console.error(detail, summary); break;
       case 'warn': console.warn(detail, summary); break;
@@ -50,7 +50,8 @@ export class ToastMessageComponent implements OnInit, OnDestroy {
     this.messageService.add({
       severity: type,
       detail: detail,
-      summary: summary
+      summary: summary,
+      sticky: sticky || false
     });    
   }
 }

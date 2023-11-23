@@ -21,3 +21,4 @@ TODO:
 - "Demo mode" (once we have user login) that lets you explore the app without changing data, with a free/auto account, and a bunch of default stuff. Could swap Storage Service for this case?
 - Eventually do lazy loading on pagination, for large amounts of records
 - Manage tabIndex focus order, especially for mobile
+- Would be nice to not have to manually set `tooltipPosition="left"` (or bottom) in cases where the tooltip is smooshed along the right edge. Seems to autocalculate for some but not all

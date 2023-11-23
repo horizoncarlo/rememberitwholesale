@@ -22,3 +22,6 @@ TODO:
 - Eventually do lazy loading on pagination, for large amounts of records
 - Manage tabIndex focus order, especially for mobile
 - Would be nice to not have to manually set `tooltipPosition="left"` (or bottom) in cases where the tooltip is smooshed along the right edge. Seems to autocalculate for some but not all
+- Fire resize when a reminde is cleared/removed
+- Tweak loading states so the entire table doesn't disappear while fetching
+- Eventually have Photo as a type to upload images to Things

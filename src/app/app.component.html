@@ -75,7 +75,6 @@
       </th>
       <th class="control-col">
         {{ rowSelectedCount() }} Sel<span class="hide-on-mobile">ected Rows</span> <!-- TODO Plural -->
-        <!-- TODO Put these simple and small clickable icons into a component as they're used a few places -->
         <span class="pi pi-ban header-tiny-button header-tiny-button-color header-clear-rows-button" (click)="clearSelectedRows()" pTooltip="Clear Selections" tooltipPosition="left" *ngIf="hasSelectedRows()"></span>
         &nbsp;
         <span class="pi pi-filter header-tiny-button header-tiny-button-color" (click)="toggleShowFilters()" pTooltip="Show Filters" *ngIf="!showFilters"></span>
@@ -86,7 +85,7 @@
       <tr>
         <th><p-columnFilter type="text" field="name" matchMode="contains" /></th>
         <th><p-columnFilter type="text" field="templateType" matchMode="contains" /></th>
-        <!-- TODO Could add a custom filter option of "Reminder=true/false" for the time column -->
+        <!-- TODO Could add a custom filter option of "Reminder=true/false" for the time column. Then can remove 'reminder' from supported global search fields on the table -->
         <th><p-columnFilter type="date" field="time" appendTo="body" /></th>
         <th colspan="2">
           <input pInputText type="text" (change)="filterFields($event)" class="header-filter-field" />
@@ -104,7 +103,7 @@
       </td>
       <td class="center">
         <span [style]="'color:' + data.color">
-          <span class="pi pi-clock" *ngIf="data.reminder" pTooltip="Thing is a Reminder"></span> {{ data.time | date: 'MMM dd &rsquo;yy \'at\' hh:mm a' }}
+          <span class="pi pi-clock" *ngIf="data.hasFutureReminder() || data.hasOverdueReminder()" pTooltip="Thing is a Reminder"></span> {{ data.time | date: 'MMM dd &rsquo;yy \'at\' hh:mm a' }}
         </span>
       </td>
       <td colspan="2">

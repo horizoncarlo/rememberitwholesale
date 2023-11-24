@@ -90,6 +90,10 @@ p-columnfilterformelement .p-inputtext {
 .consistent-field .p-calendar input {
   width: var(--standard-field-width);
 }
+.half-consistent-field .p-dropdown,
+.half-consistent-field .p-calendar input {
+  width: calc(var(--standard-field-width) / 2);
+}
 
 @media (max-width: 800px) { /* TODO Put any mobile breakpoints into a variable */
   .fixed-toolbar p-button .p-button-label,

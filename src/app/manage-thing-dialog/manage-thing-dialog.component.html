@@ -33,7 +33,6 @@
         </td>
         <td>
           <p-checkbox [(ngModel)]="actOn.reminder" [binary]="true" label="Reminder?"
-                      [disabled]="!actOn.timeInFuture()"
                       pTooltip="Click to make this Thing a reminder that will display time left and notify you when due" />
         </td>
       </tr>
@@ -57,6 +56,10 @@
               </ng-container>
             </div>
           </ng-container>
+          <ng-container *ngIf="field.type === fieldTypes.Boolean">
+            <!-- TODO QUIDEL Checkbox doesn't seem to be saving value -->
+            <p-triStateCheckbox [id]="field.property" [(ngModel)]="field.value" [required]="field.required || false" />
+          </ng-container>
           <ng-container *ngIf="field.type === fieldTypes.Dropdown">
             <p-dropdown [id]="field.property" [(ngModel)]="field.value"
                         [options]="field.options"
@@ -74,7 +77,6 @@
           </ng-container>
         </td>
       </tr>
-      <!-- TODO Do we need an option to add a custom field for one-off tweaks to a Thing? Might feel like Template and Thing aren't different enough if that's the case, or make filling Things tedious and complicated -->
     </table>
   </div>
   

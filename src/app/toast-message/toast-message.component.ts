@@ -5,6 +5,7 @@ import { Message, MessageService } from 'primeng/api';
   selector: 'riw-global-toast',
   templateUrl: './toast-message.component.html',
   styleUrls: ['./toast-message.component.css'],
+  providers: [MessageService]
 })
 export class ToastMessageComponent implements OnInit, OnDestroy {
   constructor(private messageService: MessageService) { }

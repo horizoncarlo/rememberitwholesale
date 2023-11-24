@@ -24,6 +24,7 @@ import { SplitButtonModule } from 'primeng/splitbutton';
 import { TableModule } from 'primeng/table';
 import { ToastModule } from 'primeng/toast';
 import { TooltipModule } from 'primeng/tooltip';
+import { TriStateCheckboxModule } from 'primeng/tristatecheckbox';
 import { AppComponent } from './app.component';
 import { GlobalSearchDialogComponent } from './global-search-dialog/global-search-dialog.component';
 import { ManageTemplateDialogComponent } from './manage-template-dialog/manage-template-dialog.component';
@@ -66,7 +67,8 @@ import { ToastMessageComponent } from './toast-message/toast-message.component';
     SplitButtonModule,
     TableModule,
     ToastModule,
-    TooltipModule
+    TooltipModule,
+    TriStateCheckboxModule
   ],
   providers: [MessageService],
   bootstrap: [AppComponent]

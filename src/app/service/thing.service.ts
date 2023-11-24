@@ -1,5 +1,5 @@
 import { Injectable, inject } from '@angular/core';
-import { addMonths, differenceInMilliseconds, differenceInMinutes, formatDistanceToNow, isAfter, isBefore, subDays, subHours, subWeeks } from 'date-fns';
+import { differenceInMilliseconds, differenceInMinutes, formatDistanceToNow } from 'date-fns';
 import { MessageService } from 'primeng/api';
 import { Template } from '../model/template';
 import { Thing } from '../model/thing';
@@ -118,7 +118,6 @@ export class ThingService {
   
   postGetAllThings(): void {
     const nowDate = new Date();
-    const monthAway = addMonths(new Date(), 1);
     
     this.data = this.data.map((current: Thing) => {
       const toReturn = Thing.cloneFrom(current);
@@ -130,9 +129,9 @@ export class ThingService {
       //  we want to track those and remove them and update the UI when they expire
       if (toReturn.reminder && toReturn.time) {
         // Handle reminders that are still in the future
-        if (isAfter(toReturn.time, nowDate)) {
+        if (toReturn.hasFutureReminder()) {
           // Only bother processing if the reminder is within a month
-          if (isBefore(toReturn.time, monthAway)) {
+          if (toReturn.hasFarFutureReminder()) {
             this.reminders.push(toReturn);
             
             if (differenceInMinutes(toReturn.time, nowDate) <= REMINDER_MINUTES_TO_WATCH) {
@@ -162,13 +161,11 @@ export class ThingService {
             console.log('FAR Reminder "' + toReturn.name + '" (' + toReturn.templateType + ') ' + formatDistanceToNow(toReturn.time, { addSuffix: true }));
           }
         }
-        // Mark anything up to a day old as overdue
+        // Deal with reminders that are passed: either overdue or need to be cleaned up
         else {
-          const dayOld = subDays(nowDate, 1);
-          if (isAfter(toReturn.time, dayOld)) {
-            // If we just missed the reminder in the last hour notify with an option to complete on the screen
-            const hourOld = subHours(nowDate, 1);
-            if (isAfter(toReturn.time, hourOld)) {
+          if (toReturn.hasOverdueReminder()) {
+            // If we JUST missed the reminder notify with a toast and option to complete on the screen
+            if (toReturn.hasFreshOverdueReminder()) {
               const _this = this;
               Utility.showReminderOverdue(toReturn, () => {
                 _this.completeReminder(toReturn);
@@ -177,15 +174,12 @@ export class ThingService {
             
             this.remindersOverdue.push(toReturn);
           }
-          // Anything really old (week+) should have it's reminder flag cleared
+          // Anything older than overdue should have it's reminder flag cleared
           else {
-            const weekOld = subWeeks(nowDate, 1);
-            if (isBefore(toReturn.time, weekOld)) {
-              console.log('OLD Reminder "' + toReturn.name + '" (' + toReturn.templateType + ') will be cleared');
-              
-              delete toReturn.reminder;
-              this.saveThing(toReturn, { silent: true });
-            }
+            console.log('OLD Reminder "' + toReturn.name + '" (' + toReturn.templateType + ') will be cleared');
+            
+            delete toReturn.reminder;
+            this.saveThing(toReturn, { silent: true });
           }
         }
       }
@@ -224,7 +218,7 @@ export class ThingService {
     }
     
     delete markDone.reminder;
-    this.saveThing(markDone, { silent: false });
+    this.saveThing(markDone, { silent: true });
   }
   
   countThingsUsingTemplate(toCount: Template, showNotif?: boolean): number {

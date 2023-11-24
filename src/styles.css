@@ -47,3 +47,7 @@ html {
 .consistent-field {
   width: var(--standard-field-width);
 }
+
+.half-consistent-field {
+  width: calc(var(--standard-field-width) / 2);
+}

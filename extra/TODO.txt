@@ -30,3 +30,8 @@ TODO:
 - Tweak loading states so the entire table doesn't disappear while fetching
 - Eventually have Photo as a type to upload images to Things
 - Better and more consistent and centralized logging, with levels depending on deployment/environment
+- Look at date-fns (currently used) vs Day.js vs Luxon, consider bundle size and features used
+- 'is-mobile' is a CommonJS module, try to find a more modern replacement?
+- Where does Inter-roman and Inter-italic font come from? PrimeNG? Slightly big size
+- Look at environment.ts setup via https://angular.io/guide/build
+- Have a "looking back" / "remember this?" feature that shows you memories from the same time X months/years ago, sort of like Facebook. Toggleable option of course

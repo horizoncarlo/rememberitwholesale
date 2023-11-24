@@ -1,4 +1,4 @@
-import { isAfter } from 'date-fns';
+import { addMonths, isAfter, isBefore, subDays, subHours } from 'date-fns';
 import { v4 as uuidv4 } from 'uuid';
 import { TemplateService } from '../service/template.service';
 import { Utility } from '../util/utility';
@@ -84,6 +84,10 @@ export class Thing {
         if (!currentField.required) {
           delete currentField.required;
         }
+        
+        if (!Utility.isArray(currentField.options)) {
+          delete currentField.options;
+        }
       });
     }
   }
@@ -99,16 +103,40 @@ export class Thing {
     return '';
   }
   
-  timeInFuture(): boolean {
-    return (this.time && isAfter(this.time, new Date())) ? true : false;
-  }
-  
   hasFields(): boolean {
     return Utility.hasItems(this.fields);
   }
   
+  timeInFuture(): boolean {
+    return (this.time && isAfter(this.time, new Date())) ? true : false;
+  }
+  
   hasFutureReminder(): boolean {
     return (this.reminder && this.timeInFuture()) ? true : false;
+  }
+  
+  /**
+   * Return true if our reminder is in the far future, which we consider over a month away
+   */
+  hasFarFutureReminder(): boolean {
+    return (this.hasFutureReminder() && this.time && isBefore(this.time, addMonths(new Date(), 1))) ? true : false;
+  }
+  
+  /**
+   * Return true if we have a reminder that is in the past, up to 2 days old
+   */
+  hasOverdueReminder(): boolean {
+    // TODO Configure the limit on what is considered overdue
+    return (this.reminder && this.time &&
+            isAfter(this.time, subDays(new Date(), 2))) ? true: false;
+  }
+  
+  /**
+   * Return true if we have a fresh reminder that is in the past, but only up to an hour ago
+   */
+  hasFreshOverdueReminder(): boolean {
+    return (this.reminder && this.time &&
+            isAfter(this.time, subHours(new Date(), 1))) ? true : false;
   }
   
   isValid(): boolean {

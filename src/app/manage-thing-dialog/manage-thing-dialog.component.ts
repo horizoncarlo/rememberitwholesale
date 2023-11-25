@@ -21,6 +21,7 @@ export class ManageThingDialogComponent {
   fieldTypes = TemplateField.TYPES;
   @Output() manageTemplateEvent = new EventEmitter<TemplateEvent>();
   @Output() onDelete = new EventEmitter<{ thing: Thing, event: Event }>();
+  @Output() onEdit = new EventEmitter<Thing>();
   
   isAdd(): boolean {
     return this.type === 'add';
@@ -76,6 +77,11 @@ export class ManageThingDialogComponent {
     // Store the template fields into the Thing as well
     if (this.selectedTemplate?.fields) {
       this.actOn.fields = this.selectedTemplate?.fields;
+    }
+    
+    // If we're editing, which means the Thing already exists, notify the parent as such
+    if (this.things.doesThingExist(this.actOn)) {
+      this.onEdit.emit(this.actOn);
     }
     
     this.things.saveThing(this.actOn);

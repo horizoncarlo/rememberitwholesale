@@ -1,6 +1,5 @@
 import { Injectable, inject } from '@angular/core';
 import { differenceInMilliseconds, differenceInMinutes, formatDistanceToNow } from 'date-fns';
-import { MessageService } from 'primeng/api';
 import { Template } from '../model/template';
 import { Thing } from '../model/thing';
 import { DebugFlags } from '../util/debug-flags';
@@ -19,7 +18,6 @@ export class ThingService {
   remindersOverdue: Thing[] = []; // Reminders that are a day or less old
   remindersCleanup: any[] = []; // List of setTimeout references for tracking and clearing
   backend: StorageService = inject(StorageService);
-  messageService: MessageService = inject(MessageService);
   
   saveThing(toSave: Thing, options?: { silent?: boolean, refreshFromServer?: boolean }): void {
     if (toSave && toSave.isValid()) {
@@ -32,6 +30,7 @@ export class ThingService {
     
     console.log("Going to save Thing", toSave);
     
+    Utility.clearMessages();
     this.loading = true;
     this.backend.submitThing(toSave).subscribe({
       next: res => {
@@ -45,7 +44,7 @@ export class ThingService {
         // If we don't want to do a full refresh, just update our local list instead
         else {
           this.preGetAllThings();
-          const foundThing = this.data.find((currentThing) => currentThing.id === toSave.id);
+          const foundThing = this.getExistingThing(toSave);
           if (!foundThing) { // Doesn't exist, so add
             this.data.push(toSave);
           }
@@ -65,6 +64,14 @@ export class ThingService {
     });
   }
   
+  getExistingThing(toCheck: Thing): Thing | undefined {
+    return this.data.find((currentThing) => currentThing.id === toCheck.id);
+  }
+  
+  doesThingExist(toCheck: Thing): boolean {
+    return this.getExistingThing(toCheck) !== null;
+  }
+  
   deleteThings(toDelete: Thing[], options?: { refreshFromServer?: boolean }): void {
     this.loading = true;
     let isMultiple = toDelete.length > 1;
@@ -82,7 +89,15 @@ export class ThingService {
             else {
               this.preGetAllThings();
               for (let j = 0; j < toDelete.length; j++) {
-                const foundAt = this.data.indexOf(toDelete[j]);
+                // Try to just find our delete item, but if we can't, match by ID instead
+                let foundAt = this.data.indexOf(toDelete[j]);
+                if (foundAt === -1) {
+                  const foundThing = this.data.find((currentThing) => currentThing.id === toDelete[j].id);
+                  if (foundThing) {
+                    foundAt = this.data.indexOf(foundThing);
+                  }
+                }
+                
                 if (foundAt !== -1) {
                   this.data.splice(foundAt, 1);
                 }
@@ -105,7 +120,7 @@ export class ThingService {
     this.loading = true;
     this.reminders = [];
     this.remindersOverdue = [];
-    this.messageService.clear(); // Remove any old sticky reminder notifications
+    Utility.clearMessages(); // Remove any old sticky reminder notifications
     
     // Clean up any existing timeouts that may be around from a previous fetch
     if (Utility.hasItems(this.remindersCleanup)) {

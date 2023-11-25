@@ -358,10 +358,13 @@ export class AppComponent implements OnInit, OnDestroy {
       this.things.data.filter((thing: Thing) => thing.getFieldsAsString().toLocaleLowerCase().indexOf(event.target.value.toLowerCase()) !== -1);
   }
   
+  doneEditThing(toEdit: Thing): void {
+    this.clearSelectedRows();
+  }
+  
   requestEditSelected(): void {
     if (this.hasOneSelectedRow()) {
       this.manageThingDialog.showEdit(this.selectedRows);
-      this.clearSelectedRows();
     }
     else {
       Utility.showWarn('Select a single row to edit');
@@ -463,10 +466,6 @@ export class AppComponent implements OnInit, OnDestroy {
   }
   
   confirmDeleteThing(toDelete: Thing, event: Event): void {
-    if (this.manageThingDialog) {
-      this.manageThingDialog.hide();
-    }
-    
     this.selectedRows = [toDelete];
     this.confirmDeleteSelected(event);
   }
@@ -479,9 +478,10 @@ export class AppComponent implements OnInit, OnDestroy {
         accept: () => {
           this.things.deleteThings(this.selectedRows);
           this.clearSelectedRows();
-        },
-        reject:() => {
-          this.clearSelectedRows();
+          
+          if (this.manageThingDialog) {
+            this.manageThingDialog.hide();
+          }
         },
       };
       

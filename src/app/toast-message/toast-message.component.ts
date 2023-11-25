@@ -15,6 +15,7 @@ export class ToastMessageComponent implements OnInit, OnDestroy {
     window.addEventListener("message-info", this.showInfo.bind(this) as EventListener);    
     window.addEventListener("message-warn", this.showWarn.bind(this) as EventListener);    
     window.addEventListener("message-error", this.showError.bind(this) as EventListener);    
+    window.addEventListener("message-clear-all", this.clearMessages.bind(this) as EventListener);
   }
   
   ngOnDestroy(): void {
@@ -22,6 +23,7 @@ export class ToastMessageComponent implements OnInit, OnDestroy {
     window.removeEventListener('message-info', this.showInfo.bind(this) as EventListener);
     window.removeEventListener('message-warn', this.showWarn.bind(this) as EventListener);
     window.removeEventListener('message-error', this.showError.bind(this) as EventListener);
+    window.removeEventListener('message-clear-all', this.clearMessages.bind(this) as EventListener);
   }
 
   showSuccess(event: CustomEvent): void {
@@ -38,6 +40,10 @@ export class ToastMessageComponent implements OnInit, OnDestroy {
   
   showError(event: CustomEvent): void {
     this._showGeneric('error', event.detail);
+  }
+  
+  clearMessages(): void {
+    this.messageService.clear();
   }
   
   confirmResponse(toMark: Message): void {

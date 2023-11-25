@@ -3,7 +3,6 @@ import { NgModule } from '@angular/core';
 import { FormsModule } from '@angular/forms';
 import { BrowserModule } from '@angular/platform-browser';
 import { BrowserAnimationsModule } from '@angular/platform-browser/animations';
-import { MessageService } from 'primeng/api';
 import { ButtonModule } from 'primeng/button';
 import { CalendarModule } from 'primeng/calendar';
 import { CheckboxModule } from 'primeng/checkbox';
@@ -70,7 +69,6 @@ import { ToastMessageComponent } from './toast-message/toast-message.component';
     TooltipModule,
     TriStateCheckboxModule
   ],
-  providers: [MessageService],
   bootstrap: [AppComponent]
 })
 export class AppModule { }

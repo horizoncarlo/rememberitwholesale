@@ -131,6 +131,8 @@
 
 </div>
 
-<riw-manage-thing-dialog #manageThing (manageTemplateEvent)="manageTemplate.show($event)" (onDelete)="confirmDeleteThing($event.thing, $event.event)"/>
+<riw-manage-thing-dialog #manageThing (manageTemplateEvent)="manageTemplate.show($event)"
+                         (onDelete)="confirmDeleteThing($event.thing, $event.event)"
+                         (onEdit)="doneEditThing($event)"/>
 <riw-manage-template-dialog #manageTemplate />
 <riw-global-search-dialog #globalSearch [searchFunction]="globalFilterTable.bind(this)"/>

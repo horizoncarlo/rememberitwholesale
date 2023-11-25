@@ -21,6 +21,10 @@ export class Utility {
     this._dispatchGenericShow('message-error', { message: message, header: header, sticky: sticky });
   }
   
+  static clearMessages(): void {
+    window.dispatchEvent(new CustomEvent('message-clear-all'));
+  }
+  
   static showReminderComplete(toMark: Thing, confirmCallback: Function): void {
     this._dispatchGenericShow('message-info', {
       message: toMark.name + ' (' + toMark.templateType + ') is due',
@@ -57,7 +61,7 @@ export class Utility {
     this.showError(message, header, true);
   }
   
-  private static _dispatchGenericShow(type: string, options?: any): void {
+  private static _dispatchGenericShow(type: string, options: any): void {
     // Slightly rename our incoming variables to match what the component expects
     window.dispatchEvent(new CustomEvent(type, { detail: { summary: options.header, detail: options.message, ...options } }));
   }

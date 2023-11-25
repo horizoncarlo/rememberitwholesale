@@ -1,6 +1,5 @@
 import { Component, OnDestroy, OnInit, ViewChild, inject } from '@angular/core';
 import { formatDistanceToNow } from 'date-fns';
-import { isMobile } from 'is-mobile'; // TODO Remove and just use widths?
 import { Confirmation, ConfirmationService, MenuItem, PrimeNGConfig, SortEvent } from 'primeng/api';
 import { Table } from 'primeng/table';
 import { GlobalSearchDialogComponent } from './global-search-dialog/global-search-dialog.component';
@@ -54,10 +53,8 @@ export class AppComponent implements OnInit, OnDestroy {
     }
     
     // Determine if we should default to the speed dial or not
-    if (DebugFlags.DEBUG_FORCE_USE_DIAL) {
-      this.useDial = true;
-    }
-    else if (document.body.getBoundingClientRect().width < 700 || isMobile()) { // TODO Mobile breakpoints
+    if (DebugFlags.DEBUG_FORCE_USE_DIAL ||
+        Utility.isMobileSize()) {
       // TODO Also pull this from user settings
       this.useDial = true;
     }
@@ -109,6 +106,12 @@ export class AppComponent implements OnInit, OnDestroy {
                   this.speedDial.el.nativeElement.style.top = ele.style.top;
                   this.speedDial.el.nativeElement.style.left = ele.style.left;
                 }
+                
+                const badgeEle = document.getElementById('ddBadge');
+                if (badgeEle) {
+                  badgeEle.style.top = ele.style.top;
+                  badgeEle.style.left = event.changedTouches[0].clientX + Utility.getCSSVarNum('dial-badge-size') - 5 + 'px';
+                }
               }
             }
           });
@@ -134,12 +137,9 @@ export class AppComponent implements OnInit, OnDestroy {
   }
   
   getDialBoxMiddleSize(): number {
-    let middleSize = Utility.getCSSVar('dial-box-size');
+    let middleSize: number = Utility.getCSSVarNum('dial-box-size');
     if (middleSize) {
-      middleSize = parseInt(middleSize) / 2;
-    }
-    if (isNaN(middleSize) || typeof middleSize !== 'number') {
-      middleSize = 0;
+      middleSize = middleSize / 2;
     }
     return middleSize;
   }
@@ -191,7 +191,7 @@ export class AppComponent implements OnInit, OnDestroy {
           }
         },
         {
-          visible: this.things.hasReminders(),
+          visible: this.things.hasAnyReminders(),
           icon: "pi pi-clock",
           command: () => {
               this.toggleShowReminders();
@@ -273,17 +273,13 @@ export class AppComponent implements OnInit, OnDestroy {
       let calcHeight = document.documentElement.getBoundingClientRect().height;
       
       // Always count the progress bar
-      const progressHeight = Utility.getCSSVar('progress-bar-height');
-      if (progressHeight && !isNaN(parseInt(progressHeight))) {
-        calcHeight -= parseInt(progressHeight);
-      }
+      const progressHeight = Utility.getCSSVarNum('progress-bar-height');
+      calcHeight -= progressHeight;
       
       // If we're not using the dial calculate the toolbar
       if (!this.useDial) {
-        const toolbarHeight = Utility.getCSSVar('fixed-toolbar-height');
-        if (toolbarHeight && !isNaN(parseInt(toolbarHeight))) {
-          calcHeight -= parseInt(toolbarHeight);
-        }
+        const toolbarHeight = Utility.getCSSVarNum('fixed-toolbar-height');
+        calcHeight -= toolbarHeight;
       }
       
       // Determine if our paginator is showing, and if so account for it in our table scroll height
@@ -293,10 +289,8 @@ export class AppComponent implements OnInit, OnDestroy {
         paginatorShowing = true;
       }
       if (paginatorShowing) {
-      const paginatorHeight = Utility.getCSSVar('table-paginator-height');
-        if (paginatorHeight && !isNaN(parseInt(paginatorHeight))) {
-          calcHeight -= parseInt(paginatorHeight);
-        }
+        const paginatorHeight = Utility.getCSSVarNum('table-paginator-height');
+        calcHeight -= paginatorHeight;
       }
       
       // Calculate for Reminders if needed
@@ -323,8 +317,15 @@ export class AppComponent implements OnInit, OnDestroy {
     }
   }
   
-  globalFilterTable(value: string): void {
-    this.thingTable.filterGlobal(value, 'contains');
+  async globalFilterTable(value: string): Promise<number> {
+    return new Promise((resolve) => {
+      this.thingTable.filterGlobal(value, 'contains');
+      
+      // Wait for the table to rerender
+      setTimeout(() => {
+        resolve(this.getThingTotalRecords());
+      }, 500);
+    });
   }
   
   filterFields(event: any): void {
@@ -394,16 +395,20 @@ export class AppComponent implements OnInit, OnDestroy {
       return 'Name';
     }
     
-    const total = this.things.data ? this.things.data.length : 0;
-    
-    if (this.thingTable && typeof this.thingTable.totalRecords === 'number') {
-      const current = this.thingTable ? this.thingTable.totalRecords : 0;
-      if (current !== total && total > current) {
-        return 'Name (' + Utility.formatNumber(current) + ' of ' + Utility.formatNumber(total) + ')';
-      }
+    const total = Utility.getLength(this.things.data);
+    const current = this.getThingTotalRecords();
+    if (typeof current === 'number' && current !== total && total > current) {
+      return 'Name (' + Utility.formatNumber(current) + ' of ' + Utility.formatNumber(total) + ')';
     }
     
     return 'Name (' + Utility.formatNumber(total) + ')';
+  }
+  
+  getThingTotalRecords(): number {
+    if (this.thingTable && typeof this.thingTable.totalRecords === 'number') {
+      return this.thingTable.totalRecords;
+    }
+    return Utility.getLength(this.things.data);
   }
   
   getManageTemplateLabel(): string {
@@ -432,13 +437,13 @@ export class AppComponent implements OnInit, OnDestroy {
     return toReturn;
   }
   
-  confirmDeleteThing(toDelete: Thing): void {
+  confirmDeleteThing(toDelete: Thing, event: Event): void {
     if (this.manageThingDialog) {
       this.manageThingDialog.hide();
     }
     
     this.selectedRows = [toDelete];
-    this.confirmDeleteSelected(null, true);
+    this.confirmDeleteSelected(event);
   }
   
   confirmDeleteSelected(event: Event | null, isDialog?: boolean, header?: string): void {

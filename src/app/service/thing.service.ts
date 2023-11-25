@@ -234,6 +234,16 @@ export class ThingService {
     return !this.loading && Utility.hasItems(this.data);
   }
   
+  getReminderBadgeCount(): number {
+    if (this.hasReminders()) {
+      return Utility.getLength(this.reminders);
+    }
+    else if (this.hasRemindersOverdue()) {
+      return Utility.getLength(this.remindersOverdue);
+    }
+    return 0;
+  }
+  
   hasReminders(): boolean {
     return Utility.hasItems(this.reminders);
   }

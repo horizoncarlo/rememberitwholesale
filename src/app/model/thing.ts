@@ -77,7 +77,7 @@ export class Thing {
     if (!this.reminder) { delete this.reminder; }
     if (Utility.hasItems(this.fields)) {
       this.fields?.forEach((currentField) => {
-        if (!Utility.isValidString(currentField.value)) {
+        if (!Utility.isDefinedNotNull(currentField.value)) {
           delete currentField.value;
         }
         
@@ -95,7 +95,7 @@ export class Thing {
   getFieldsAsString(): string {
     if (this.hasFields()) {
       let toReturn: string = this.fields.map((field) => {
-        return field.getLabel() + ' = ' + (field.value || 'N/A');
+        return field.getLabel() + ' = ' + ((typeof field.value !== 'undefined' && field.value !== null) ? field.value : 'N/A');
       }).join(', ');
       
       return toReturn;

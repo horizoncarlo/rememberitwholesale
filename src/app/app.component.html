@@ -8,8 +8,10 @@
   <div id="ddOverlay" [draggable]="true" (dragstart)="dialDragStart($event)" (dragend)="dialDragEnd($event)"
        class="menu-dial menu-dial-overlay"
        (click)="dialOverlayClickthru($event)"></div>
+  <div id="ddBadge" class="menu-dial-badge" *ngIf="things.getReminderBadgeCount() > 0">{{things.getReminderBadgeCount()}}</div>
   <p-speedDial #speedDial id="speedDial" [model]="getDialItems()" direction="down" type="linear" class="menu-dial"
-                (onHide)="isDialOpen = false" (onShow)="isDialOpen = true"/>
+                (onHide)="isDialOpen = false" (onShow)="isDialOpen = true">
+  </p-speedDial>
 </ng-container>
 
 <ng-container *ngIf="!useDial">
@@ -130,6 +132,6 @@
 
 </div>
 
-<riw-manage-thing-dialog #manageThing (manageTemplateEvent)="manageTemplate.show($event)" (onDelete)="confirmDeleteThing($event)"/>
+<riw-manage-thing-dialog #manageThing (manageTemplateEvent)="manageTemplate.show($event)" (onDelete)="confirmDeleteThing($event.thing, $event.event)"/>
 <riw-manage-template-dialog #manageTemplate />
 <riw-global-search-dialog #globalSearch [searchFunction]="globalFilterTable.bind(this)"/>

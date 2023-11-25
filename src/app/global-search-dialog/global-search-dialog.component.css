@@ -2,3 +2,7 @@
   min-width: var(--standard-field-width);
   max-width: 100%;
 }
+
+.result-text {
+  padding: 0 0 5px 0;
+}

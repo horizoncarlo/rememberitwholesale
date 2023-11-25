@@ -1,8 +1,7 @@
 <p-dialog header="Global Search" [(visible)]="isShowing" [modal]="false" class="global-search-dialog"
           (onShow)="handleFocus(searchField)">
-  <div class="content-form">
-    <input id="search" #searchField pInputText [(ngModel)]="searchText" (keyup.enter)="performSearch()" placeholder="Enter your keywords"/>
-  </div>
+  <div *ngIf="isShowing && resultCount" class="center result-text">{{resultCount}} records</div>
+  <input id="search" #searchField pInputText [(ngModel)]="searchText" (keyup.enter)="performSearch()" placeholder="Enter your keywords"/>
   <ng-template pTemplate="footer">
     <p-button (onClick)="performReset()" label="Reset" icon="pi pi-delete-left" iconPos="left" severity="secondary"/>
     <p-button (onClick)="performSearch()" label="Search" icon="pi pi-check" iconPos="left"/>

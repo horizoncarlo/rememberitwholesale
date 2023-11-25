@@ -74,7 +74,7 @@ export class TemplateService  {
       },
       error: err => {
         this.loading = false;
-        Utility.showError('Failed to retrieve your Templates');
+        Utility.showError('Failed to retrieve your templates');
         console.error(err);
       },
       complete: () => this.loading = false
@@ -86,21 +86,21 @@ export class TemplateService  {
       toAdd.prepareForSave();
     }
     else {
-      Utility.showError('Invalid Template, ensure all fields are filled');
+      Utility.showError('Invalid template, ensure all fields are filled');
       return;
     }
     
-    console.log("Going to save new Template", toAdd);
+    console.log("Going to save new template", toAdd);
     
     this.loading = true;
     this.backend.submitTemplate(toAdd).subscribe({
       next: res => {
-        Utility.showSuccess('Successfully saved your new Template', toAdd.name);
+        Utility.showSuccess('Successfully saved your new template', toAdd.name);
         this.getAllTemplates();
       },
       error: err => {
         this.loading = false;
-        Utility.showError('Failed to save your new Template');
+        Utility.showError('Failed to save your new template');
         console.error(err);
       },
       complete: () => this.loading = false

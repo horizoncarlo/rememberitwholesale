@@ -41,7 +41,7 @@
           <label [htmlFor]="field.property">{{ field.getLabel() }}</label>
         </td>
         <td colspan="2">
-          <!-- TODO Do we need any other field types for Things? Photos? Checkbox? Slider? -->
+          <!-- TODO Do we need any other field types for Things? Photos? Slider? -->
           <ng-container *ngIf="field.type === fieldTypes.Text || field.type === fieldTypes.Number">
             <input [id]="field.property" pInputText [type]="field.type" [required]="field.required || false" [(ngModel)]="field.value"/>
           </ng-container>
@@ -57,7 +57,6 @@
             </div>
           </ng-container>
           <ng-container *ngIf="field.type === fieldTypes.Boolean">
-            <!-- TODO QUIDEL Checkbox doesn't seem to be saving value -->
             <p-triStateCheckbox [id]="field.property" [(ngModel)]="field.value" [required]="field.required || false" />
           </ng-container>
           <ng-container *ngIf="field.type === fieldTypes.Dropdown">
@@ -81,8 +80,9 @@
   </div>
   
   <ng-template pTemplate="footer">
-    <p-button (onClick)="handleDeleteThing()" label="Delete" icon="pi pi-trash" iconPos="left" severity="danger"/>
+    <p-button (onClick)="handleDeleteThing($event)" icon="pi pi-trash" [rounded]="true" severity="danger" pTooltip="Delete this Thing" class="fleft"/>
     <p-button (onClick)="hide()" label="Cancel" icon="pi pi-times" iconPos="left" severity="secondary"/>
     <p-button (onClick)="submit()" label="Save Thing" icon="pi pi-check" iconPos="left"/>
+    <p-confirmPopup />
   </ng-template>
 </p-dialog>

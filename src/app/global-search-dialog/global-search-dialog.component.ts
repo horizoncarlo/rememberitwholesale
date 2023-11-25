@@ -1,4 +1,5 @@
 import { Component, Input, ViewChild } from '@angular/core';
+import { Utility } from '../util/utility';
 
 @Component({
   selector: 'riw-global-search-dialog',
@@ -9,14 +10,17 @@ export class GlobalSearchDialogComponent {
   @ViewChild('searchField') searchInput!: any;
   @Input() searchFunction!: Function;
   searchText: string = '';
+  resultCount: number | null = null;
   isShowing: boolean = false;
   
-  performSearch(): void {
-    this.searchFunction(this.searchText);
+  async performSearch() {
+    await this.searchFunction(this.searchText).then((res: number) => this.resultCount = res );
     
     if (this.searchInput && this.searchInput.nativeElement) {
       this.searchInput.nativeElement.select();
     }
+    
+    Utility.fireWindowResize();
   }
   
   performReset(): void {
@@ -30,6 +34,10 @@ export class GlobalSearchDialogComponent {
   
   hide(): void {
     this.isShowing = false;
+  }
+  
+  hasSearchText(): boolean {
+    return Utility.isValidString(this.searchText);
   }
   
   handleFocus(inputEl: HTMLElement): void {

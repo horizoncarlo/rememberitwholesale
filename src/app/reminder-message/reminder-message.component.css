@@ -7,7 +7,7 @@
   margin: 0 10px 10px 0;
 }
 
-@media (max-width: 800px) {
+@media (max-width: 850px) {  /* var(--mobile-breakpoint) equivalent, just can't use in media queries */
   .p-message {
     width: 100%;
   }

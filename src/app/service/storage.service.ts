@@ -6,6 +6,7 @@ import { Thing } from '../model/thing';
 
 // TODO Will need to pull the base URL from environment.ts and put to a live URL (instead of localhost) for deploy
 const BASE_URL = 'http://localhost:4333/';
+// const BASE_URL = 'http://192.168.0.10:4333/';
 
 @Injectable({
   providedIn: 'root'

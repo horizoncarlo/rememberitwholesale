@@ -1,4 +1,5 @@
 import { formatDistanceToNow } from "date-fns";
+import isMobile from "is-mobile";
 import { Thing } from "../model/thing";
 
 export class Utility {
@@ -72,13 +73,37 @@ export class Utility {
   static pluralNum(count: number): string {
     return count === 1 ? '' : 's';
   }
+  
+  static isMobileSize() : boolean {
+    if (isMobile()) {
+      return true;
+    }
+    if (document && document.body &&
+        document.body.getBoundingClientRect() &&
+        document.body.getBoundingClientRect().width < Utility.getCSSVarNum('mobile-breakpoint')) {
+          return true;
+    }
+    return false;
+  }
 
   static isString(str: any): boolean {
     return !!(str && typeof str === 'string');
   }
-
+  
+  static isNumber(toCheck: number | null | undefined): boolean {
+    return !!(typeof toCheck === 'number' && !isNaN(toCheck));
+  }
+  
   static isValidString(str: any): boolean {
     return !!(str && typeof str === 'string' && str.trim().length > 0);
+  }
+  
+  static isDefined(toCheck: any): boolean {
+    return typeof toCheck !== 'undefined';
+  }
+  
+  static isDefinedNotNull(toCheck: any): boolean {
+    return this.isDefined(toCheck) && toCheck !== null;
   }
 
   static getLength(arrOrStr: Array<any> | string): number {
@@ -114,6 +139,19 @@ export class Utility {
       clearTimeout(this.debounceTimer);
     }
     this.debounceTimer = setTimeout(() => func.apply(args), delay);
+  }
+  
+  static getCSSVarNum(name: string): number {
+    const returnedVar = this.getCSSVar(name);
+    if (returnedVar) {
+      try{
+        const toReturn = parseInt(returnedVar);
+        if (this.isNumber(toReturn)) {
+          return toReturn;
+        }
+      }catch(ignore) { }
+    }
+    return 0;
   }
   
   static getCSSVar(name: string): any {

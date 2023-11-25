@@ -108,7 +108,9 @@
   </div>
   <ng-template pTemplate="footer">
     <p-button (onClick)="hide()" label="Cancel" icon="pi pi-times" iconPos="left" severity="secondary"/>
-    <p-button (onClick)="submit($event)" [label]="getSubmitLabel()" icon="pi pi-check" iconPos="left"/>
+    <p-button (onClick)="submit($event)" [label]="getSubmitLabel()"
+                        [severity]="(operation === 'delete' ? 'danger' : 'primary')"
+                        [icon]="'pi ' + (operation === 'delete' ? 'pi-trash' : 'pi-check')" iconPos="left"/>
     <p-confirmPopup />
   </ng-template>
 </p-dialog>

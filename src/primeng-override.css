@@ -3,11 +3,42 @@
   --table-paginator-height: 70px;
 }
 
+@media (max-width: 850px) { /* var(--mobile-breakpoint) equivalent, just can't use in media queries */
+  .hide-on-mobile {
+    display: none;
+  }
+  
+  .p-dialog .p-dialog-content {
+    padding: 10px;
+  }
+  
+  /* For spacing considerations hide the text on footer buttons. Icons should be clear enough */
+  .p-dialog .p-dialog-footer .p-button-label {
+    display: none;
+  }
+  .p-dialog .p-dialog-footer .p-button .p-button-icon-left {
+    margin-right: 0;
+  }
+  
+  .p-dialog-header {
+    padding: 15px 15px 0 15px;
+  }
+  
+  .manage-thing-dialog .p-dialog,
+  .manage-template-dialog .p-dialog {
+    height: auto;
+  }
+  
+  .content-form {
+    margin-top: 0 !important;
+  }
+}
+
 /* Make our top loading bar narrower, and speed it up slightly */
 .loading-bar .p-progressbar {
   height: var(--progress-bar-height);
   border-radius: 0;
-  background-color: transparent;
+  background-color: black;
 }
 .loading-bar .p-progressbar .p-progressbar-value::before {
   animation-duration: 1.8s;
@@ -46,6 +77,11 @@
 }
 .p-datatable .p-datatable-thead > tr > th.p-sortable-column {
   padding: 15px;
+}
+
+/* Icon buttons have their width overwritten in the footer of a dialog, so manually revert to the base icon button size */
+.p-dialog .p-dialog-footer .p-button-icon-only {
+  width: 3rem;
 }
 
 /* Match our custom Fields filter input to the others */
@@ -89,36 +125,4 @@ p-columnfilterformelement .p-inputtext {
 .consistent-field .p-dropdown,
 .consistent-field .p-calendar input {
   width: var(--standard-field-width);
-}
-.half-consistent-field .p-dropdown,
-.half-consistent-field .p-calendar input {
-  width: calc(var(--standard-field-width) / 2);
-}
-
-@media (max-width: 800px) { /* TODO Put any mobile breakpoints into a variable */
-  .fixed-toolbar p-button .p-button-label,
-  .fixed-toolbar .p-splitbutton-defaultbutton .p-button-label {
-    display: none; /* TODO Should we still do this with buttons? Or just switch to speed dial? */
-  }
-  
-  .hide-on-mobile {
-    display: none;
-  }
-  
-  .p-dialog .p-dialog-content {
-    padding: 10px;
-  }
-  
-  .p-dialog-header {
-    padding: 15px 15px 0 15px;
-  }
-  
-  .manage-thing-dialog .p-dialog,
-  .manage-template-dialog .p-dialog {
-    height: auto;
-  }
-  
-  .content-form {
-    margin-top: 0 !important;
-  }
 }

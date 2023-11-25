@@ -4,9 +4,11 @@
   --standard-field-width: 300px;
   --dial-right-pos: 40px;
   --dial-box-size: 64px;
+  --dial-badge-size: 20px;
+  --mobile-breakpoint: 850px;
 }
 
-@media (max-width: 800px) {
+@media (max-width: 850px) { /* var(--mobile-breakpoint) equivalent, just can't use in media queries */
   :root {
     --standard-field-width: 150px;
   }
@@ -28,6 +30,10 @@ html {
   margin-right: auto;
 }
 
+.fleft {
+  float: left;
+}
+
 .checkbox-label-on-left {
   flex-direction: row-reverse;
 }
@@ -46,8 +52,4 @@ html {
 
 .consistent-field {
   width: var(--standard-field-width);
-}
-
-.half-consistent-field {
-  width: calc(var(--standard-field-width) / 2);
 }

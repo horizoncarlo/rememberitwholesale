@@ -101,6 +101,7 @@
 }
 
 .menu-dial,
+.menu-dial-badge,
 .menu-dial-overlay {
   width: var(--dial-box-size);
   height: var(--dial-box-size);
@@ -114,10 +115,23 @@
   opacity: 0.9;
 }
 
+.menu-dial-badge {
+  color: white;
+  background-color: red;
+  box-shadow: 0 0 5px white;
+  width: var(--dial-badge-size);
+  height: var(--dial-badge-size);
+  z-index: 6;
+  opacity: 1;
+  border-radius: 50%;
+  text-align: center;
+  font-weight: bold;
+}
+
 .menu-dial-overlay {
   background-color: transparent;
   border-radius: 50%;
   box-shadow: 0 0 5px white;
-  z-index: 6;
+  z-index: 7;
   opacity: 1;
 }

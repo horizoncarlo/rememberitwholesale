@@ -23,12 +23,12 @@ export class TemplateField {
   options?: string[] | undefined; // Defined if type is radio or dropdown, to give a list of available options for the user
   value?: any | null = null;
   
-  constructor(property: string, label?: string, required?: boolean, type?: any, value?: string | null, options?: string[] | undefined) {
+  constructor(property: string, label?: string, required?: boolean, type?: any, value?: any | null, options?: string[] | undefined) {
     this.property = property;
     this.label = label || property;
     this.required = required || false;
     this.type = type || TemplateFieldTypes.Text;
-    this.value = value || null;
+    this.value = value;
     this.options = options;
   }
   

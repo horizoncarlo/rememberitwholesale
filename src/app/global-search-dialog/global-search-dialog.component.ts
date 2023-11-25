@@ -14,7 +14,7 @@ export class GlobalSearchDialogComponent {
   isShowing: boolean = false;
   
   async performSearch() {
-    await this.searchFunction(this.searchText).then((res: number) => this.resultCount = res );
+    this.searchFunction(this.searchText).then((res: number) => this.resultCount = res );
     
     if (this.searchInput && this.searchInput.nativeElement) {
       this.searchInput.nativeElement.select();

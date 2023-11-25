@@ -239,6 +239,7 @@ export class AppComponent implements OnInit, OnDestroy {
         newLeft = 0;
       }
       
+      // TODO Consolidate this with `touchend` event so we're not repeating ourselves
       ele.style.top = newTop + 'px';
       ele.style.left = newLeft + 'px';
       if (this.speedDial && this.speedDial.el &&
@@ -246,7 +247,31 @@ export class AppComponent implements OnInit, OnDestroy {
         this.speedDial.el.nativeElement.style.top = ele.style.top;
         this.speedDial.el.nativeElement.style.left = ele.style.left;
       }
+      const badgeEle = document.getElementById('ddBadge');
+      if (badgeEle) {
+        badgeEle.style.top = ele.style.top;
+        badgeEle.style.left = newLeft + middleSize + Utility.getCSSVarNum('dial-badge-size') - 5 + 'px';
+      }
     }
+  }
+  
+  getDialBadgeTop(): string {
+    const ele = document.getElementById('ddOverlay');;
+    if (ele) {
+      return ele.style.top;
+    }
+    return '';
+  }
+  
+  getDialBadgeLeft(): string {
+    const ele = document.getElementById('ddOverlay');;
+    if (ele) {
+      // TODO Clean up and centralize our various badge math
+      return (parseInt(ele.style.left) -
+              Utility.getCSSVarNum('dial-badge-size') +
+              this.getDialBoxMiddleSize()*2) + 'px';
+    }
+    return '';
   }
   
   /**

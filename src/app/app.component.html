@@ -8,7 +8,10 @@
   <div id="ddOverlay" [draggable]="true" (dragstart)="dialDragStart($event)" (dragend)="dialDragEnd($event)"
        class="menu-dial menu-dial-overlay"
        (click)="dialOverlayClickthru($event)"></div>
-  <div id="ddBadge" class="menu-dial-badge" *ngIf="things.getReminderBadgeCount() > 0">{{things.getReminderBadgeCount()}}</div>
+  <div id="ddBadge" class="menu-dial-badge"
+       *ngIf="things.getReminderBadgeCount() > 0"
+       [style.top]="getDialBadgeTop()"
+       [style.left]="getDialBadgeLeft()">{{things.getReminderBadgeCount()}}</div>
   <p-speedDial #speedDial id="speedDial" [model]="getDialItems()" direction="down" type="linear" class="menu-dial"
                 (onHide)="isDialOpen = false" (onShow)="isDialOpen = true">
   </p-speedDial>

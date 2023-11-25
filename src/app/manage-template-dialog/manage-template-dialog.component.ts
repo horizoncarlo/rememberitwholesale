@@ -117,7 +117,7 @@ export class ManageTemplateDialogComponent {
   getSubmitLabel(): string {
     switch (this.operation) {
       case 'create': return 'Save New Template';
-      case 'delete': return 'Request Delete';
+      case 'delete': return 'Delete Template';
     }
   }
   

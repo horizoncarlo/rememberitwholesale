@@ -126,7 +126,7 @@ export class Thing {
    * Return true if we have a reminder that is in the past, up to 2 days old
    */
   hasOverdueReminder(): boolean {
-    // TODO Configure the limit on what is considered overdue
+    // TODO As setting, configure these limits on what is considered overdue
     return (this.reminder && this.time &&
             isAfter(this.time, subDays(new Date(), 2))) ? true: false;
   }

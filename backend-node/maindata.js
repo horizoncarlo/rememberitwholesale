@@ -9,7 +9,7 @@ const DEFAULT_TEMPLATES = [
     "name": "Milestone",
     "isDefault": true
   },
-  { // TODO TEMPORARY Template data
+  { // TODO TEMPORARY Template data - set default templates when a new user and their files are setup
     "name": "Longboard",
     "color": "pink",
     "fields": [

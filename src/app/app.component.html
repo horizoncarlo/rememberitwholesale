@@ -18,7 +18,6 @@
 <div class="fixed-toolbar">
   <div class="toolbar-content">
     <div class="toolbar-left">
-      <!-- TODO Have the option to "quick fill" a Template that has been marked as "Pinned", which means it will show up on the toolbar, and be a 1-click and 1-fill of a field to quickly enter things. Example would be Reminder/Note, Work Commute, etc. Something repetitive that you don't want to have to keep manually re-entering -->
       <p-button (onClick)="things.getAllThings()" icon="pi pi-refresh" [loading]="things.loading" severity="info" />
       <p-button (onClick)="clearSelectedRows(); manageTemplate.show()" icon="pi pi-list" [label]="getManageTemplateLabel()" />
       <p-button (onClick)="clearSelectedRows(); manageThing.showAdd()" icon="pi pi-plus-circle" label="New Thing" />
@@ -26,13 +25,11 @@
       <p-button (onClick)="confirmDeleteSelected($event)" icon="pi pi-trash" severity="danger" [label]="getDeleteLabel()" [disabled]="!hasSelectedRows()" />
     </div>
     <div class="toolbar-right">
-      <!-- TODO Get Utility.plural and similar functions accessible from Angular templates -->
       <p-splitButton (onClick)="toggleShowReminders()"
                      icon="pi pi-clock" [model]="getRemindersForSplitButton()"
                      [label]="getReminderLabel()"
                      *ngIf="things.hasAnyReminders()"
                      class="reminder-button" styleClass="p-button-secondary p-button-sm"/>
-      <!-- TODO Handle a flag for if we're mobile or not (which just means we're at a set CSS breakpoint, not related to browser string) -->
       <span class="p-input-icon-left" *ngIf="!things.loading">
         <i class="pi pi-search"></i>
         <input pInputText type="text" (input)="globalFilterTableByEvent($event)" placeholder="Search Things" />
@@ -66,7 +63,6 @@
     <tr>
       <th pSortableColumn="name" class="name-col">
         <span class="pi pi-refresh header-refresh" (click)="things.getAllThings()" pTooltip="Refresh" *ngIf="useDial">&nbsp;</span>
-        <!-- TODO Style the name "X of Y" as a progress bar, as in fill up a percentage of the background? Any use? Confusing? -->
         {{ getNameColumnHeader() }} <p-sortIcon field="name" />
       </th>
       <th pSortableColumn="templateType" class="type-col">Type <p-sortIcon field="templateType" /></th>
@@ -76,7 +72,7 @@
         <p-sortIcon field="fields" />
       </th>
       <th class="control-col">
-        {{ rowSelectedCount() }} Sel<span class="hide-on-mobile">ected Rows</span> <!-- TODO Plural -->
+        {{ rowSelectedCount() }} Sel<span class="hide-on-mobile">ected Rows</span>
         <span class="pi pi-ban header-tiny-button header-tiny-button-color header-clear-rows-button" (click)="clearSelectedRows()" pTooltip="Clear Selections" tooltipPosition="left" *ngIf="hasSelectedRows()"></span>
         &nbsp;
         <span class="pi pi-filter header-tiny-button header-tiny-button-color" (click)="toggleShowFilters()" pTooltip="Show Filters" *ngIf="!showFilters"></span>

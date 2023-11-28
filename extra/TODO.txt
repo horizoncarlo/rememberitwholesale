@@ -26,8 +26,6 @@ MAIN FEATURES:
 
 - Better and more consistent and centralized logging, with levels depending on deployment/environment
 
-- Look at environment.ts setup via https://angular.io/guide/build
-
 - Do a proper pass and componentize any elements that need it
 -- Such as menu dial, including it's drag and drop features, table itself maybe?
 

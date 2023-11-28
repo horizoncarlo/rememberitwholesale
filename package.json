@@ -1,11 +1,14 @@
 {
   "name": "rememberitwholesale",
-  "version": "0.0.1",
+  "version": "0.5",
   "scripts": {
-    "ng": "ng",
-    "start": "ng serve",
-    "build": "ng build",
-    "watch": "ng build --watch --configuration development"
+    "live": "ng serve --watch --configuration live --public-host --host 0.0.0.0",
+    "dev": "ng serve --watch --configuration development",
+    "prod": "ng serve --watch --configuration production",
+    "backend": "nodemon backend-node/maindata.js"
+  },
+  "engines": {
+    "node": ">=18.0.0"
   },
   "private": true,
   "dependencies": {

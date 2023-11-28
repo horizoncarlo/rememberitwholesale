@@ -22,6 +22,7 @@
   <div class="toolbar-content">
     <div class="toolbar-left">
       <p-button (onClick)="things.getAllThings()" icon="pi pi-refresh" [loading]="things.loading" severity="info" />
+      <!-- TODO QUIDEL Insert an icon button (pi-heart?) for Favorite template, if set. Do the same for speed dial -->
       <p-button (onClick)="clearSelectedRows(); manageTemplate.show()" icon="pi pi-list" [label]="getManageTemplateLabel()" />
       <p-button (onClick)="clearSelectedRows(); manageThing.showAdd()" icon="pi pi-plus-circle" label="New Thing" />
       <p-button (onClick)="requestEditSelected()" icon="pi pi-pencil" label="Edit Thing" [disabled]="!hasOneSelectedRow()" />

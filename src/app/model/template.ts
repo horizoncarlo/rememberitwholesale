@@ -55,6 +55,6 @@ export class Template {
 }
 
 export interface TemplateEvent {
-  type: 'create' | 'delete',
+  type: 'create' | 'favorite' | 'delete',
   actOn?: Template | null
 }

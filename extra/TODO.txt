@@ -10,10 +10,6 @@ MAIN FEATURES:
 -- Try server side rendering
 -- Try signals and NgRx data store for sharing between parts of app
 
-- Single "Pinned" Template that puts a button on the toolbar and you can quick fill, basically 1 click
--- Likely just confirmPopup, auto-set date to current time, and only a single text field
---- For something repetitive we don't want to have to keep entering like Reminder / Work Commute, etc.
-
 - Reports with custom queries to generate, as well as charts (could be using ChartModule from PrimeNG)
 
 - User login, tokens for API, plus settings

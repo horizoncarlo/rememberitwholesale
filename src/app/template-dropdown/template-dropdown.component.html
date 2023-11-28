@@ -12,9 +12,9 @@
 
 <ng-container *ngIf="!hideControls">
   &nbsp;
-  <p-button (onClick)="requestCreateTemplate()" icon="pi pi-plus" [rounded]="true" severity="success" pTooltip="Create a new template" />
+  <p-button (onClick)="requestCreateTemplate()" icon="pi pi-calendar-plus" [rounded]="true" severity="success" pTooltip="Create a new template" />
   <ng-container *ngIf="selectedTemplate && !selectedTemplate.isDefault">
     &nbsp;
-    <p-button *ngIf="!!selectedTemplate" (onClick)="requestDeleteTemplate()" icon="pi pi-trash" [rounded]="true" severity="danger" pTooltip="Delete this template" />
+    <p-button *ngIf="!!selectedTemplate" (onClick)="requestDeleteTemplate()" icon="pi pi-calendar-times" [rounded]="true" severity="danger" pTooltip="Delete this template" />
   </ng-container>
 </ng-container>

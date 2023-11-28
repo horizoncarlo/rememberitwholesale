@@ -62,6 +62,9 @@ export class ManageTemplateDialogComponent {
     if (this.operation === 'create') {
       this.actOn = new Template(DEFAULT_TEMPLATE_NAME);
     }
+    else if (this.operation === 'favorite') {
+      // TODO QUIDEL Anything we need to setup or preload for the Favorite section?
+    }
     else if (this.operation === 'delete') {
       this.actOn = null;
       this.deleteTargetChanged();
@@ -117,7 +120,24 @@ export class ManageTemplateDialogComponent {
   getSubmitLabel(): string {
     switch (this.operation) {
       case 'create': return 'Save New Template';
+      case 'favorite': return 'Favorite Template';
       case 'delete': return 'Delete Template';
+    }
+  }
+  
+  getSubmitSeverity(): string {
+    switch (this.operation) {
+      case 'create': return 'primary';
+      case 'favorite': return 'help';
+      case 'delete': return 'danger';
+    }
+  }
+  
+  getSubmitIcon(): string {
+    switch (this.operation) {
+      case 'create': return 'pi-check';
+      case 'favorite': return 'pi-heart';
+      case 'delete': return 'pi-trash';
     }
   }
   
@@ -149,6 +169,9 @@ export class ManageTemplateDialogComponent {
       
       this.templateService.saveNew(this.actOn);
       this.hide();
+    }
+    else if (this.operation === 'favorite') {
+      Utility.showWarn('TODO Favorite saving'); // QUIDEL - Likely save the favorite as a modified Template structure directly in a new JSON file. Can have presets like reminder=true (might not load automatically currently as I think we strip some params?). Would be nice to just have a single "isFavorite" flag similar to "isDefault" in the template itself and store in the existing template JSON file. Would have to manage the flag, as we only want a single one at a time. Or have a user setting property of favoriteTemplateName that points to it? That might be best
     }
     else if (this.operation === 'delete') {
       let message = 'Are you sure you want to delete "' + this.actOn.name + "'";

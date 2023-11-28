@@ -5,6 +5,9 @@
       <p-radioButton value="create" [(ngModel)]="operation" (onClick)="operationRadioClicked()" inputId="createIn"></p-radioButton>
       <label for="createIn"> Create</label>
       &nbsp;
+      <p-radioButton value="favorite" [(ngModel)]="operation" (onClick)="operationRadioClicked()" inputId="favoriteIn"></p-radioButton>
+      <label for="favoriteIn"> Favorite</label>
+      &nbsp;
       <p-radioButton value="delete" [(ngModel)]="operation" (onClick)="operationRadioClicked()" inputId="deleteIn"></p-radioButton>
       <label for="deleteIn"> Delete</label>
     </div>
@@ -89,6 +92,12 @@
       </ng-container>
     </ng-container>
     
+    <ng-container *ngIf="operation === 'favorite'">
+      <!-- TODO QUIDEL Favorite functionality - Provide normal template dropdown list, then allow setting of Reminder flag and date settings, sort of like a mini-edit on an existing template. Limit to templates with 1 field only? OR are we overdoing it, and can just have an isDefault Reminder template that is auto-shown on toolbar, with no custom favorite concept? More flexibility is generally better for the user though -->
+      <div style="width: 500px;"><b>WIP - Favorite functionality -</b> can save a single Template in the toolbar/dial for quick single click access to fill and save,
+      meant for repeated actions like Commute or Reminder. Likely just leverage confirmPopup and auto-set date</div>
+    </ng-container>
+    
     <ng-container *ngIf="operation === 'delete'">
       <div class="delete-wrap">
         <label>Template to Delete:&nbsp;</label>
@@ -108,9 +117,11 @@
   </div>
   <ng-template pTemplate="footer">
     <p-button (onClick)="hide()" label="Cancel" icon="pi pi-times" iconPos="left" severity="secondary"/>
-    <p-button (onClick)="submit($event)" [label]="getSubmitLabel()"
-                        [severity]="(operation === 'delete' ? 'danger' : 'primary')"
-                        [icon]="'pi ' + (operation === 'delete' ? 'pi-trash' : 'pi-check')" iconPos="left"/>
+    <p-button (onClick)="submit($event)"
+              [label]="getSubmitLabel()"
+              [severity]="getSubmitSeverity()"
+              [icon]="'pi ' + getSubmitIcon()"
+              iconPos="left"/>
     <p-confirmPopup />
   </ng-template>
 </p-dialog>

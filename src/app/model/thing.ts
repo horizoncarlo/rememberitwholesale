@@ -1,4 +1,4 @@
-import { addMonths, isAfter, isBefore, subDays, subHours } from 'date-fns';
+import { addMonths, isAfter, isBefore, subHours } from 'date-fns';
 import { v4 as uuidv4 } from 'uuid';
 import { TemplateService } from '../service/template.service';
 import { Utility } from '../util/utility';
@@ -16,17 +16,25 @@ export class Thing {
   color?: string;
   reminder?: boolean;
   
-  constructor(name: string, templateType: string = TemplateService.getDefaultName(), id?: string, color?: string, time?: Date, reminder?: boolean, fields?: TemplateField[]) {
+  constructor(name: string,
+              templateType: string = TemplateService.getDefaultName(),
+              options?: {
+                id?: string,
+                color?: string,
+                time?: Date,
+                reminder?: boolean,
+                fields?: TemplateField[],
+              }) {
     this.name = name;
     this.templateType = templateType;
-    this.id = id ? id : DEFAULT_ID;
-    this.color = color || 'inherit';
-    this.reminder = reminder || false;
-    this.fields = fields || [];
+    this.id = (options && options.id) ? options.id : DEFAULT_ID;
+    this.color = options && options.color || 'inherit';
+    this.reminder = options && options.reminder || false;
+    this.fields = options && options.fields || [];
     
     // If we have an existing date just cast it
-    if (time) {
-      this.time = Utility.isValidString(time) ? new Date(time) : time;
+    if (options && options.time) {
+      this.time = Utility.isValidString(options.time) ? new Date(options.time) : options.time;
     }
     // Otherwise round down to the nearest hour on a new Date
     else {
@@ -42,7 +50,8 @@ export class Thing {
   }
   
   static cloneFrom(source: Thing): Thing {
-    return new Thing(source.name, source.templateType, source.id, source.color, source.time, source.reminder, source.fields);
+    return new Thing(source.name, source.templateType,
+                     { id: source.id, color: source.color, time: source.time, reminder: source.reminder, fields: source.fields });
   }
   
   roundDownToHour(time: Date): Date {
@@ -120,15 +129,6 @@ export class Thing {
    */
   hasFarFutureReminder(): boolean {
     return (this.hasFutureReminder() && this.time && isBefore(this.time, addMonths(new Date(), 1))) ? true : false;
-  }
-  
-  /**
-   * Return true if we have a reminder that is in the past, up to 2 days old
-   */
-  hasOverdueReminder(): boolean {
-    // TODO As setting, configure these limits on what is considered overdue
-    return (this.reminder && this.time &&
-            isAfter(this.time, subDays(new Date(), 2))) ? true: false;
   }
   
   /**

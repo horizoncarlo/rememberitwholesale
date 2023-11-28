@@ -4,6 +4,7 @@ import { Observable } from 'rxjs';
 import { environment } from 'src/environments/environment';
 import { Template } from '../model/template';
 import { Thing } from '../model/thing';
+import { UserSettings } from '../model/user-settings';
 
 // Determine our base URL for all Node interactions
 const BASE_URL = environment.baseUrl || 'http://localhost:4333/';
@@ -41,5 +42,13 @@ export class StorageService {
   
   submitTemplate(body: Template): Observable<any> {
     return this.http.post(BASE_URL + 'templates', body, this.defaultHeaders);
+  }
+  
+  getSettings(): Observable<any> {
+    return this.http.get(BASE_URL + 'settings');
+  }
+  
+  submitSettings(body: UserSettings): Observable<any> {
+    return this.http.post(BASE_URL + 'settings', body, this.defaultHeaders);
   }
 }

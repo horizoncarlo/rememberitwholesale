@@ -26,10 +26,6 @@
   max-width: var(--standard-field-width);
 }
 
-.reminder-wrap {
-  padding: 20px 20px 10px 20px;
-}
-
 .thing-table {
   min-width: 50rem;
   --name-col-width: 350px;

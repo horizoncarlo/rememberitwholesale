@@ -43,9 +43,10 @@ const PORT_NUM = 4333;
 const FILE_DIR = os.homedir() + '/.rememberitwholesale/';
 const BACKUP_FILE = FILE_DIR + 'backup.json';
 
-// TODO Combine files and property into an object, and then centralize functions so we don't have to duplicate read/write?
+// TODO Combine files and property into an object, and then centralize functions so we don't have to duplicate read/write
 const THINGS_FILE = FILE_DIR + 'things.json';
 const TEMPLATES_FILE = FILE_DIR + 'templates.json';
+const SETTINGS_FILE = FILE_DIR + 'settings.json';
 
 // TODO Need login functionality to protect our APIs
 
@@ -58,7 +59,8 @@ app.use(express.json());
 // TODO Will eventually need to maintain each of these on a per-user basis. Just assuming singleton access per user to avoid a lot of complexity and over engineering
 let inMemory = {
   things: null,
-  templates: null
+  templates: null,
+  settings: null
 };
 
 // Fire up the server
@@ -72,6 +74,7 @@ function ensureFilesAreSetup() {
   // Ensure our initial files are ready
   setupSingleFile(THINGS_FILE);
   setupSingleFile(TEMPLATES_FILE);
+  setupSingleFile(SETTINGS_FILE);
 }
 
 function setupSingleFile(name) {
@@ -83,11 +86,11 @@ function setupSingleFile(name) {
   }
 }
 
-function readSingleFile(name, property) {
+function readSingleFile(name, property, defaultVal) {
   try{
-    // Determine if our file is empty, in which case we'll use an empty array
+    // Determine if our file is empty, in which case we'll use the default value
     if (fs.readFileSync(name)?.length <= 0) {
-      inMemory[property] = [];
+      inMemory[property] = defaultVal;
     }
     // Otherwise read our file
     else {
@@ -95,20 +98,20 @@ function readSingleFile(name, property) {
     }
   }catch(err) {
     setupSingleFile(name);
-    inMemory[property] = [];
+    inMemory[property] = defaultVal;
   }
 }
 
 function getInMemoryThings() {
   if (inMemory.things === null) {
-    readSingleFile(THINGS_FILE, 'things');
+    readSingleFile(THINGS_FILE, 'things', []);
   }
   return inMemory.things;
 }
 
 function getInMemoryTemplates() {
   if (inMemory.templates === null) {
-    readSingleFile(TEMPLATES_FILE, 'templates');
+    readSingleFile(TEMPLATES_FILE, 'templates', []);
   }
   
   // Default our templates if we have none, to ensure we at least have some preset
@@ -124,6 +127,13 @@ function getInMemoryTemplates() {
   return inMemory.templates;
 }
 
+function getInMemorySettings() {
+  if (inMemory.settings === null) {
+    readSingleFile(SETTINGS_FILE, 'settings', {});
+  }
+  return inMemory.settings;
+}
+
 function saveThingsMemoryToFile() {
   console.log("WRITE Things", inMemory.things.length);
   writeSafeFile(THINGS_FILE, inMemory.things);
@@ -132,6 +142,11 @@ function saveThingsMemoryToFile() {
 function saveTemplatesMemoryToFile() {
   console.log("WRITE Templates", inMemory.templates.length);
   writeSafeFile(TEMPLATES_FILE, inMemory.templates);
+}
+
+function saveSettingsMemoryToFile() {
+  console.log("WRITE Settings", inMemory.settings);
+  writeSafeFile(SETTINGS_FILE, inMemory.settings);
 }
 
 function writeSafeFile(name, data, retryCount = 0) {
@@ -266,4 +281,24 @@ app.post("/templates/delete", (req, res) => {
   else {
     return res.status(400).end();
   }
+});
+
+app.get("/settings", (req, res) => {
+  console.log("GET Settings", getInMemorySettings());
+  return res.send(getInMemorySettings()).end();
+});
+
+app.post("/settings", (req, res) => {
+  console.log("POST Settings", req.body);
+  
+  // TODO Properly validate our Settings post
+  //if (req.body && req.body.name) {
+    getInMemorySettings();
+    inMemory.settings = req.body;
+    saveSettingsMemoryToFile();
+    return res.status(200).end();
+  //}
+  //else {
+  //  return res.status(400).end();
+  //}
 });

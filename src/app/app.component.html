@@ -57,11 +57,10 @@
          (sortFunction)="customSort($event)" [customSort]="true"
          sortField="time" [sortOrder]="-1"
          [globalFilterFields]="['name', 'time', 'templateType', 'reminder']"
-         [paginator]="true" [rows]="50"
+         [paginator]="getUser().paginatorTable" [rows]="getUser().paginatorRows"
          [pageLinks]="3" [alwaysShowPaginator]="false" [showFirstLastIcon]="false" [showCurrentPageReport]="true"
-         [scrollable]="true" [scrollHeight]="tableScrollHeight"
+         [scrollable]="getUser().scrollableTable" [scrollHeight]="getUser().scrollableTable ? tableScrollHeight : '100%'"
          >
-         <!-- TODO Make 'scrollable' and 'paginator' a user setting -->
   <ng-template pTemplate="header">
     <tr>
       <th pSortableColumn="name" class="name-col">
@@ -104,7 +103,7 @@
       </td>
       <td class="center">
         <span [style]="'color:' + data.color">
-          <span class="pi pi-clock" *ngIf="data.hasFutureReminder() || data.hasOverdueReminder()" pTooltip="Thing is a Reminder"></span> {{ data.time | date: 'MMM dd &rsquo;yy \'at\' hh:mm a' }}
+          <span class="pi pi-clock" *ngIf="data.hasFutureReminder() || things.hasOverdueReminder(data)" pTooltip="Thing is a Reminder"></span> {{ data.time | date: 'MMM dd &rsquo;yy \'at\' hh:mm a' }}
         </span>
       </td>
       <td colspan="2">

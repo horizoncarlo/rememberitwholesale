@@ -6,8 +6,10 @@ import { GlobalSearchDialogComponent } from './global-search-dialog/global-searc
 import { ManageTemplateDialogComponent } from './manage-template-dialog/manage-template-dialog.component';
 import { ManageThingDialogComponent } from './manage-thing-dialog/manage-thing-dialog.component';
 import { Thing } from './model/thing';
+import { UserSettings } from './model/user-settings';
 import { TemplateService } from './service/template.service';
 import { ThingService } from './service/thing.service';
+import { UserService } from './service/user.service';
 import { DebugFlags } from './util/debug-flags';
 import { Utility } from './util/utility';
 
@@ -25,8 +27,8 @@ export class AppComponent implements OnInit, OnDestroy {
   @ViewChild('speedDial') speedDial!: any;
   things: ThingService = inject(ThingService);
   templateService: TemplateService = inject(TemplateService);
+  userService: UserService = inject(UserService);
   selectedRows: Thing[] = [];
-  // TODO Features like showing filters/reminders by default or not should be remembered (or set) in user settings and their eventual record, or at least local/session storage
   showFilters: boolean = false;
   showReminders: boolean = false;
   useDial: boolean = false;
@@ -38,38 +40,56 @@ export class AppComponent implements OnInit, OnDestroy {
               private confirmationService: ConfirmationService) { }
   
   ngOnInit(): void {
-    // As part of PrimeNG config we need to manually enable ripple across the components
-    this.primengConfig.ripple = true;
-    
-    // Get our initial data load
-    if (!DebugFlags.DEBUG_SIMULATE_LATENCY) {
-      this.things.getAllThings();
-    }
-    else {
-      this.things.loading = true;
-      setTimeout(() => {
-        this.things.getAllThings();
-      }, 5000); // Simulate latency if requested
-    }
-    
-    // Determine if we should default to the speed dial or not
-    if (DebugFlags.DEBUG_FORCE_USE_DIAL ||
-        Utility.isMobileSize()) {
-      // TODO Also pull this from user settings
-      this.useDial = true;
-    }
-    
-    this.calcTableScrollHeight();
-    window.addEventListener('resize', this.calcTableScrollHeight.bind(this));
-    
-    // Setup touch events for our dial being draggable
-    if (this.useDial) {
-      this.setupDialTouchEvents();
-    }
+    // TODO Simplify and centralize loading, instead of a flag in things/templates/etc.
+    this.things.loading = true;
+    this.userService.ready$.subscribe({
+      next: (isReady) => {
+        if (!isReady) {
+          return;
+        }
+        
+        // As part of PrimeNG config we need to manually enable ripple across the components
+        this.primengConfig.ripple = true;
+        
+        // Get our initial data load
+        if (!DebugFlags.DEBUG_SIMULATE_LATENCY) {
+          this.things.getAllThings();
+        }
+        else {
+          this.things.loading = true;
+          setTimeout(() => {
+            this.things.getAllThings();
+          }, 5000); // Simulate latency if requested
+        }
+        
+        // Determine if we should default to the speed dial or not
+        if (DebugFlags.DEBUG_FORCE_USE_DIAL ||
+            Utility.isMobileSize() ||
+            this.userService.getUser().useDial) {
+          this.useDial = true;
+        }
+        
+        // Set our various UI flags
+        this.showFilters = this.userService.getUser().showFilters;
+        this.showReminders = this.userService.getUser().showReminders;
+        
+        this.calcTableScrollHeight();
+        window.addEventListener('resize', this.calcTableScrollHeight.bind(this));
+        
+        // Setup touch events for our dial being draggable
+        if (this.useDial) {
+          this.setupDialTouchEvents();
+        }
+      }
+    });
   }
   
   ngOnDestroy(): void {
     window.removeEventListener('resize', this.calcTableScrollHeight);
+  }
+  
+  getUser(): UserSettings {
+    return this.userService.getUser();
   }
   
   setupDialTouchEvents(retryCount?: number): void {
@@ -197,7 +217,8 @@ export class AppComponent implements OnInit, OnDestroy {
               this.toggleShowReminders();
           },
           tooltipOptions: {
-            tooltipLabel: this.things.reminders.length + ' Reminder' + Utility.plural(this.things.reminders),
+            tooltipLabel: (Utility.getLength(this.things.reminders) + Utility.getLength(this.things.remindersOverdue)) +
+                           ' Reminder' + Utility.plural(this.things.reminders),
             tooltipPosition: 'bottom'
           }
         },
@@ -506,6 +527,7 @@ export class AppComponent implements OnInit, OnDestroy {
   
   toggleShowReminders(): void {
     this.showReminders = !this.showReminders;
+    this.userService.setUserProp('showReminders', this.showReminders);
     Utility.fireWindowResize();
   }
   

@@ -1,10 +1,11 @@
 import { Injectable, inject } from '@angular/core';
-import { differenceInMilliseconds, differenceInMinutes, formatDistanceToNow } from 'date-fns';
+import { differenceInMilliseconds, differenceInMinutes, formatDistanceToNow, isAfter, subDays } from 'date-fns';
 import { Template } from '../model/template';
 import { Thing } from '../model/thing';
 import { DebugFlags } from '../util/debug-flags';
 import { Utility } from '../util/utility';
 import { StorageService } from './storage.service';
+import { UserService } from './user.service';
 
 const REMINDER_MINUTES_TO_WATCH = 60; // Minimum number of minutes remaining on a reminder before we observe it for completion, in case of the app being idle
 
@@ -18,6 +19,7 @@ export class ThingService {
   remindersOverdue: Thing[] = []; // Reminders that are a day or less old
   remindersCleanup: any[] = []; // List of setTimeout references for tracking and clearing
   backend: StorageService = inject(StorageService);
+  userService: UserService = inject(UserService);
   
   saveThing(toSave: Thing, options?: { silent?: boolean, refreshFromServer?: boolean }): void {
     if (toSave && toSave.isValid()) {
@@ -178,7 +180,7 @@ export class ThingService {
         }
         // Deal with reminders that are passed: either overdue or need to be cleaned up
         else {
-          if (toReturn.hasOverdueReminder()) {
+          if (this.hasOverdueReminder(toReturn)) {
             // If we JUST missed the reminder notify with a toast and option to complete on the screen
             if (toReturn.hasFreshOverdueReminder()) {
               const _this = this;
@@ -224,6 +226,15 @@ export class ThingService {
       },
       complete: () => this.postGetAllThings()
     });
+  }
+  
+  /**
+   * Return true if we have a reminder that is in the past, up to X days old (user.overdueLimitDays setting)
+   */
+  hasOverdueReminder(toCheck: Thing): boolean {
+    return (toCheck && toCheck.reminder && toCheck.time &&
+            isAfter(toCheck.time,
+                    subDays(new Date(), this.userService.getUser().overdueLimitDays))) ? true: false;
   }
   
   completeReminder(markDone: Thing): void {

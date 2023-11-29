@@ -93,9 +93,45 @@
     </ng-container>
     
     <ng-container *ngIf="operation === 'favorite'">
-      <!-- TODO QUIDEL Favorite functionality - Provide normal template dropdown list, then allow setting of Reminder flag and date settings, sort of like a mini-edit on an existing template. Limit to templates with 1 field only? OR are we overdoing it, and can just have an isDefault Reminder template that is auto-shown on toolbar, with no custom favorite concept? More flexibility is generally better for the user though -->
-      <div style="width: 500px;"><b>WIP - Favorite functionality -</b> can save a single Template in the toolbar/dial for quick single click access to fill and save,
-      meant for repeated actions like Commute or Reminder. Likely just leverage confirmPopup and auto-set date</div>
+      <div class="favorite-wrap">
+        <div class="section">
+          You can have one favorite template at a time, which will pin to the menu<br/>and have some convenience options to make it one-click to submit a Thing.
+        </div>
+        <div class="section">
+          <label>Template to Favorite:&nbsp;</label>
+          <riw-template-dropdown [(selectedTemplate)]="actOn"
+                                 (selectedTemplateChange)="favoriteTargetChanged()"
+                                 [hideControls]="true" />
+        </div>
+        <ng-container *ngIf="actOn">
+          <div class="section" style="padding-bottom: 15px;">
+            <p-checkbox [(ngModel)]="favoriteAutoReminder" [binary]="true" label="Will be a Reminder?"/>
+          </div>
+          <div><b>Generate Name:</b></div>
+          <div class="indent">
+            Name will look like: <b>Favorite - <input pInputText [(ngModel)]="favoriteNameSuffix"/></b>
+          </div>
+          <div class="section">
+            <div><b>Autofill Date:</b></div>
+            <div class="indent">
+              <label>Time from when Thing is created:&nbsp;</label>
+              <p-dropdown [options]="favoriteTimeOptions"
+                          appendTo="body"
+                          [(ngModel)]="favoriteTimeRange"/>
+            </div>
+          </div>
+          <ng-container *ngIf="actOn.hasFields()">
+            <div class="section">
+              <b>Custom Fields:</b>
+              <ul>
+                <li *ngFor="let field of actOn?.fields">
+                  {{field.label}} ({{field.type}})
+                </li>
+              </ul>
+            </div>
+          </ng-container>
+        </ng-container>
+      </div>
     </ng-container>
     
     <ng-container *ngIf="operation === 'delete'">

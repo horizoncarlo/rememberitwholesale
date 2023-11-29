@@ -53,3 +53,12 @@ html {
 .consistent-field {
   width: var(--standard-field-width);
 }
+
+.indent {
+  padding-top: 5px;
+  padding-left: 20px;
+}
+
+.favorite-dialog .p-dialog-content {
+  display: block !important;
+}

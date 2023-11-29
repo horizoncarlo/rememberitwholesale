@@ -6,10 +6,15 @@
   padding: 10px 0 10px 0;
 }
 
-.delete-wrap {
+.delete-wrap,
+.favorite-wrap {
   padding: 15px 5px 15px 5px;
 }
 
 .manage-radio-font > label {
   font-size: 20px;
+}
+
+.section {
+  padding: 8px 0 8px 0;
 }

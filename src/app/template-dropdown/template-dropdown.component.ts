@@ -1,8 +1,6 @@
 import { Component, EventEmitter, Input, OnInit, Output, inject } from '@angular/core';
 import { Template, TemplateEvent } from '../model/template';
-import { TemplateField } from '../model/template-field';
 import { TemplateService } from '../service/template.service';
-import { Utility } from '../util/utility';
 
 @Component({
   selector: 'riw-template-dropdown',
@@ -13,7 +11,7 @@ export class TemplateDropdownComponent implements OnInit {
   @Input() hideControls?: boolean = false;
   @Input() hideDefaults?: boolean = false;
   @Input() selectedTemplate: Template | null = null;
-  @Input() keepValue: boolean = false;
+  @Input() keepValue: boolean = false; // Set to true to ensure that when our template is changed any `value` in each child fields is kept
   @Output() selectedTemplateChange = new EventEmitter<Template | null>();
   @Output() manageTemplateEvent = new EventEmitter<TemplateEvent>();
   templateService: TemplateService = inject(TemplateService);
@@ -26,13 +24,8 @@ export class TemplateDropdownComponent implements OnInit {
   
   selectedTemplateChanged(): void {
     // Reset any fields of the template after changing, unless asked not too
-    if (!this.keepValue) {
-      if (this.selectedTemplate && Utility.hasItems(this.selectedTemplate.fields)) {
-        this.selectedTemplate.fields = this.selectedTemplate.fields?.map((currentField: TemplateField) => {
-          currentField.value = null;
-          return currentField;
-        });
-      }
+    if (!this.keepValue && this.selectedTemplate) {
+      this.selectedTemplate.clearValuesFromFields();
     }
     
     this.selectedTemplateChange.emit(this.selectedTemplate);

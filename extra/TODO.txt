@@ -43,3 +43,4 @@ TODO:
 - Where does Inter-roman and Inter-italic font come from? PrimeNG? Slightly big size
 - Have a "looking back" / "remember this?" feature that shows you memories from the same time X months/years ago, sort of like Facebook. Toggleable option of course
 - Have an "annual repeat" feature for reminders, likely don't want more granular as we're not intending to be a full scheduling app
+- Validation across the app - from 'required' custom fields to dialogs, etc.

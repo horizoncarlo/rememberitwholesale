@@ -1,10 +1,11 @@
 import { Component, OnDestroy, OnInit, ViewChild, inject } from '@angular/core';
-import { formatDistanceToNow } from 'date-fns';
+import { addHours, formatDistanceToNow } from 'date-fns';
 import { Confirmation, ConfirmationService, MenuItem, PrimeNGConfig, SortEvent } from 'primeng/api';
 import { Table } from 'primeng/table';
 import { GlobalSearchDialogComponent } from './global-search-dialog/global-search-dialog.component';
 import { ManageTemplateDialogComponent } from './manage-template-dialog/manage-template-dialog.component';
 import { ManageThingDialogComponent } from './manage-thing-dialog/manage-thing-dialog.component';
+import { TemplateField } from './model/template-field';
 import { Thing } from './model/thing';
 import { UserSettings } from './model/user-settings';
 import { TemplateService } from './service/template.service';
@@ -28,6 +29,7 @@ export class AppComponent implements OnInit, OnDestroy {
   things: ThingService = inject(ThingService);
   templateService: TemplateService = inject(TemplateService);
   userService: UserService = inject(UserService);
+  fieldTypes = TemplateField.TYPES;
   selectedRows: Thing[] = [];
   showFilters: boolean = false;
   showReminders: boolean = false;
@@ -40,7 +42,14 @@ export class AppComponent implements OnInit, OnDestroy {
               private confirmationService: ConfirmationService) { }
   
   ngOnInit(): void {
-    // TODO Simplify and centralize loading, instead of a flag in things/templates/etc.
+    // Right on initial render determine if we should use the dial, to prevent flicker
+    // We'll load this later from user settings as well
+    if (DebugFlags.DEBUG_FORCE_USE_DIAL ||
+      Utility.isMobileSize()) {
+      this.useDial = true;
+    }
+    
+    // TODO Simplify and centralize loading (probably a new service), instead of a flag in things/templates/etc.
     this.things.loading = true;
     this.userService.ready$.subscribe({
       next: (isReady) => {
@@ -62,10 +71,8 @@ export class AppComponent implements OnInit, OnDestroy {
           }, 5000); // Simulate latency if requested
         }
         
-        // Determine if we should default to the speed dial or not
-        if (DebugFlags.DEBUG_FORCE_USE_DIAL ||
-            Utility.isMobileSize() ||
-            this.userService.getUser().useDial) {
+        // Determine if we should default to the speed dial or not based on our user settings
+        if (this.userService.getUser().forceDial) {
           this.useDial = true;
         }
         
@@ -196,6 +203,17 @@ export class AppComponent implements OnInit, OnDestroy {
           },
           tooltipOptions: {
             tooltipLabel: 'Delete',
+            tooltipPosition: 'bottom'
+          }
+        },
+        {
+          visible: this.templateService.hasFavorite(),
+          icon: "pi pi-heart-fill",
+          command: () => {
+              this.quickfillFavoriteThing();
+          },
+          tooltipOptions: {
+            tooltipLabel: 'Use Favorite Template',
             tooltipPosition: 'bottom'
           }
         },
@@ -453,6 +471,11 @@ export class AppComponent implements OnInit, OnDestroy {
     return 'Name (' + Utility.formatNumber(total) + ')';
   }
   
+  isFavoriteByName(name: string): boolean {
+    return (Utility.isValidString(name) &&
+            name.indexOf('Favorite - ') === 0);
+  }
+  
   getThingTotalRecords(): number {
     if (this.thingTable && typeof this.thingTable.totalRecords === 'number') {
       return this.thingTable.totalRecords;
@@ -525,6 +548,40 @@ export class AppComponent implements OnInit, OnDestroy {
     }
   }
   
+  quickfillFavoriteThing(): void {
+    const favorite = this.templateService.favorite;
+    if (favorite) {
+      const opts: Confirmation = {
+        key: 'favorite',
+        accept: () => {
+          // Construct a Thing from the settings in our Favorite Template and dialog
+          const toSave = new Thing('Favorite - ');
+          toSave.name += Utility.isValidString(favorite.nameSuffix) ? favorite.nameSuffix : favorite.name;
+          toSave.time = addHours(new Date(), favorite.timeRange || 0);
+          toSave.reminder = favorite.autoReminder;
+          toSave.applyTemplateTo(favorite); // TODO This should probably be in thing.prepareForSave so it's done in a consistent way and not manually
+          
+          // After saving we want to clear our value from the favorite template, so it's fresh for next time
+          this.things.saveThing(toSave, { onSuccess: () => favorite.clearValuesFromFields() });
+        },
+      };
+      // TODO Once the confirm content is componentized, have the option for a confirmPopup too (use a different key) instead of dialog (or maybe just our own dialog, we're customizing confirm* pretty hard): opts.target = event.target as EventTarget;
+      
+      this.confirmationService.confirm(opts);
+      
+      // Simple approach to focus the first custom field, if found, otherwise the name (if found), so that the dialog is even faster to use
+      // Note we use a setTimeout to let the dialog render open first
+      setTimeout(() => {
+        if (favorite.hasFields() && favorite.fields) { // TODO This approach is throughout the app, so we need a way in Typescript to count our "hasFields" (similar Utility.hasItems) as marking the field as valid, so we don't have to double check it
+          document.getElementById(favorite.fields[0].property)?.focus();
+        }
+      }, 0);
+    }
+    else {
+      Utility.showWarn('No favorite template has been set yet');
+    }
+  }
+  
   toggleShowReminders(): void {
     this.showReminders = !this.showReminders;
     this.userService.setUserProp('showReminders', this.showReminders);
@@ -533,6 +590,7 @@ export class AppComponent implements OnInit, OnDestroy {
   
   toggleShowFilters(): void {
     this.showFilters = !this.showFilters;
+    this.thingTable.reset();
     Utility.fireWindowResize();
   }
   

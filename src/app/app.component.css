@@ -131,3 +131,11 @@
   z-index: 7;
   opacity: 1;
 }
+
+.favorite-section {
+  padding: 10px;
+}
+
+.favorite-section label {
+  padding-right: 10px;
+}

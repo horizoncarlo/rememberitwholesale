@@ -3,6 +3,7 @@ import { Injectable } from '@angular/core';
 import { Observable } from 'rxjs';
 import { environment } from 'src/environments/environment';
 import { Template } from '../model/template';
+import { TemplateFavorite } from '../model/template-favorite';
 import { Thing } from '../model/thing';
 import { UserSettings } from '../model/user-settings';
 
@@ -42,6 +43,14 @@ export class StorageService {
   
   submitTemplate(body: Template): Observable<any> {
     return this.http.post(BASE_URL + 'templates', body, this.defaultHeaders);
+  }
+  
+  getFavoriteTemplate(): Observable<any> {
+    return this.http.get(BASE_URL + 'templates/favorite');
+  }
+  
+  submitFavoriteTemplate(body: TemplateFavorite): Observable<any> {
+    return this.http.post(BASE_URL + 'templates/favorite', body, this.defaultHeaders);
   }
   
   getSettings(): Observable<any> {

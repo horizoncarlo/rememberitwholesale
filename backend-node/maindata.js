@@ -46,6 +46,7 @@ const BACKUP_FILE = FILE_DIR + 'backup.json';
 // TODO Combine files and property into an object, and then centralize functions so we don't have to duplicate read/write
 const THINGS_FILE = FILE_DIR + 'things.json';
 const TEMPLATES_FILE = FILE_DIR + 'templates.json';
+const FAVORITE_FILE = FILE_DIR + 'favorite.json';
 const SETTINGS_FILE = FILE_DIR + 'settings.json';
 
 // TODO Need login functionality to protect our APIs
@@ -60,6 +61,7 @@ app.use(express.json());
 let inMemory = {
   things: null,
   templates: null,
+  favorite: null,
   settings: null
 };
 
@@ -74,6 +76,7 @@ function ensureFilesAreSetup() {
   // Ensure our initial files are ready
   setupSingleFile(THINGS_FILE);
   setupSingleFile(TEMPLATES_FILE);
+  setupSingleFile(FAVORITE_FILE);
   setupSingleFile(SETTINGS_FILE);
 }
 
@@ -127,6 +130,13 @@ function getInMemoryTemplates() {
   return inMemory.templates;
 }
 
+function getInMemoryFavorite() {
+  if (inMemory.favorite === null) {
+    readSingleFile(FAVORITE_FILE, 'favorite', {});
+  }
+  return inMemory.favorite;
+}
+
 function getInMemorySettings() {
   if (inMemory.settings === null) {
     readSingleFile(SETTINGS_FILE, 'settings', {});
@@ -142,6 +152,11 @@ function saveThingsMemoryToFile() {
 function saveTemplatesMemoryToFile() {
   console.log("WRITE Templates", inMemory.templates.length);
   writeSafeFile(TEMPLATES_FILE, inMemory.templates);
+}
+
+function saveFavoriteMemoryToFile() {
+  console.log("WRITE Favorite Template", inMemory.favorite);
+  writeSafeFile(FAVORITE_FILE, inMemory.favorite);
 }
 
 function saveSettingsMemoryToFile() {
@@ -244,6 +259,25 @@ app.post("/templates", (req, res) => {
   if (req.body && req.body.name) {
     getInMemoryTemplates().push(req.body);
     saveTemplatesMemoryToFile();
+    return res.status(200).end();
+  }
+  else {
+    return res.status(400).end();
+  }
+});
+
+app.get("/templates/favorite", (req, res) => {
+  console.log("GET Favorite Template", getInMemoryFavorite());
+  return res.send(getInMemoryFavorite()).end();
+});
+
+app.post("/templates/favorite", (req, res) => {
+  console.log("POST Favorite Template", req.body);
+  
+  if (req.body && req.body.name) {
+    getInMemoryFavorite();
+    inMemory.favorite = req.body;
+    saveFavoriteMemoryToFile();
     return res.status(200).end();
   }
   else {

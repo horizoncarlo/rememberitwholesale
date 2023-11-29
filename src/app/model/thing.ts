@@ -68,6 +68,10 @@ export class Thing {
     if (source) {
       this.templateType = source.name;
       this.color = source.color;
+      
+      if (source.fields) {
+        this.fields = source.fields;
+      }
     }
   }
   

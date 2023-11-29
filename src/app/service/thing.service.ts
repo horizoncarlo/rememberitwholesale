@@ -21,7 +21,7 @@ export class ThingService {
   backend: StorageService = inject(StorageService);
   userService: UserService = inject(UserService);
   
-  saveThing(toSave: Thing, options?: { silent?: boolean, refreshFromServer?: boolean }): void {
+  saveThing(toSave: Thing, options?: { silent?: boolean, refreshFromServer?: boolean, onSuccess?: Function }): void {
     if (toSave && toSave.isValid()) {
       toSave.prepareForSave();
     }
@@ -32,7 +32,6 @@ export class ThingService {
     
     console.log("Going to save Thing", toSave);
     
-    Utility.clearMessages();
     this.loading = true;
     this.backend.submitThing(toSave).subscribe({
       next: res => {
@@ -55,6 +54,10 @@ export class ThingService {
             this.data.splice(foundAt, 1, toSave);
           }
           this.postGetAllThings();
+        }
+        
+        if (options?.onSuccess && typeof options?.onSuccess === 'function') {
+          options.onSuccess(res);
         }
       },
       error: err => {
@@ -122,7 +125,7 @@ export class ThingService {
     this.loading = true;
     this.reminders = [];
     this.remindersOverdue = [];
-    Utility.clearMessages(); // Remove any old sticky reminder notifications
+    Utility.clearReminderMessages(); // Remove any old sticky reminder notifications
     
     // Clean up any existing timeouts that may be around from a previous fetch
     if (Utility.hasItems(this.remindersCleanup)) {
@@ -180,7 +183,7 @@ export class ThingService {
         }
         // Deal with reminders that are passed: either overdue or need to be cleaned up
         else {
-          if (this.hasOverdueReminder(toReturn)) {
+          if (this.isOverdueReminder(toReturn)) {
             // If we JUST missed the reminder notify with a toast and option to complete on the screen
             if (toReturn.hasFreshOverdueReminder()) {
               const _this = this;
@@ -231,7 +234,7 @@ export class ThingService {
   /**
    * Return true if we have a reminder that is in the past, up to X days old (user.overdueLimitDays setting)
    */
-  hasOverdueReminder(toCheck: Thing): boolean {
+  isOverdueReminder(toCheck: Thing): boolean {
     return (toCheck && toCheck.reminder && toCheck.time &&
             isAfter(toCheck.time,
                     subDays(new Date(), this.userService.getUser().overdueLimitDays))) ? true: false;

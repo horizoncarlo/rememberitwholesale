@@ -1,6 +1,7 @@
 import { Component, inject } from '@angular/core';
 import { ConfirmationService } from 'primeng/api';
 import { Template, TemplateEvent } from '../model/template';
+import { TemplateFavorite } from '../model/template-favorite';
 import { TemplateField } from '../model/template-field';
 import { TemplateService } from '../service/template.service';
 import { ThingService } from '../service/thing.service';
@@ -26,6 +27,23 @@ export class ManageTemplateDialogComponent {
   deleteThings: boolean = false;
   fieldTypes = TemplateField.TYPES;
   typeOptions = Object.values(this.fieldTypes);
+  // TODO Put the favorite concept into a component
+  favoriteAutoReminder: boolean = false;
+  favoriteNameSuffix: string = '';
+  favoriteTimeRange: number = 1;
+  favoriteTimeOptions = [
+    { value: 0, label: 'Immediate' },
+    { value: 1, label: '1 hour ahead' },
+    { value: 2, label: '2 hours' },
+    { value: 8, label: '8 hours' },
+    { value: 12, label: '12 hours' },
+    { value: 24, label: '1 day' },
+    { value: 48, label: '2 days' },
+    { value: 24*7, label: '1 week' },
+    { value: 24*7*2, label: '2 weeks' },
+    { value: 24*30, label: '1 month' },
+    { value: 24*365, label: '1 year' }
+  ];
   
   constructor(private confirmationService: ConfirmationService) { }
   
@@ -63,7 +81,7 @@ export class ManageTemplateDialogComponent {
       this.actOn = new Template(DEFAULT_TEMPLATE_NAME);
     }
     else if (this.operation === 'favorite') {
-      // TODO QUIDEL Anything we need to setup or preload for the Favorite section?
+      this.actOn = null;
     }
     else if (this.operation === 'delete') {
       this.actOn = null;
@@ -98,6 +116,10 @@ export class ManageTemplateDialogComponent {
         this.nameIsDuplicate = !this.templateService.isNameUnique(nameToCheck);
       }, skipDebounce ? 0 : undefined);
     }
+  }
+  
+  favoriteTargetChanged(): void {
+    this.favoriteNameSuffix = this.actOn ? this.actOn.name : 'quickfill';
   }
   
   deleteTargetChanged(): void {
@@ -136,7 +158,7 @@ export class ManageTemplateDialogComponent {
   getSubmitIcon(): string {
     switch (this.operation) {
       case 'create': return 'pi-check';
-      case 'favorite': return 'pi-heart';
+      case 'favorite': return 'pi-heart-fill';
       case 'delete': return 'pi-trash';
     }
   }
@@ -171,7 +193,15 @@ export class ManageTemplateDialogComponent {
       this.hide();
     }
     else if (this.operation === 'favorite') {
-      Utility.showWarn('TODO Favorite saving'); // QUIDEL - Likely save the favorite as a modified Template structure directly in a new JSON file. Can have presets like reminder=true (might not load automatically currently as I think we strip some params?). Would be nice to just have a single "isFavorite" flag similar to "isDefault" in the template itself and store in the existing template JSON file. Would have to manage the flag, as we only want a single one at a time. Or have a user setting property of favoriteTemplateName that points to it? That might be best
+      // Turn our desired template into a TemplateFavorite with the options we've chosed, then save it
+      const toSave = new TemplateFavorite(this.actOn,
+                                          this.favoriteAutoReminder,
+                                          this.favoriteNameSuffix,
+                                          this.favoriteTimeRange
+      );
+      
+      this.templateService.saveFavorite(toSave);
+      this.hide();
     }
     else if (this.operation === 'delete') {
       let message = 'Are you sure you want to delete "' + this.actOn.name + "'";

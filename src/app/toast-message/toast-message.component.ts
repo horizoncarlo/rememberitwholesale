@@ -16,6 +16,7 @@ export class ToastMessageComponent implements OnInit, OnDestroy {
     window.addEventListener("message-warn", this.showWarn.bind(this) as EventListener);    
     window.addEventListener("message-error", this.showError.bind(this) as EventListener);    
     window.addEventListener("message-clear-all", this.clearMessages.bind(this) as EventListener);
+    window.addEventListener("message-clear-reminders", this.clearReminderMessages.bind(this) as EventListener);
   }
   
   ngOnDestroy(): void {
@@ -24,6 +25,7 @@ export class ToastMessageComponent implements OnInit, OnDestroy {
     window.removeEventListener('message-warn', this.showWarn.bind(this) as EventListener);
     window.removeEventListener('message-error', this.showError.bind(this) as EventListener);
     window.removeEventListener('message-clear-all', this.clearMessages.bind(this) as EventListener);
+    window.removeEventListener('message-clear-reminders', this.clearReminderMessages.bind(this) as EventListener);
   }
 
   showSuccess(event: CustomEvent): void {
@@ -46,6 +48,10 @@ export class ToastMessageComponent implements OnInit, OnDestroy {
     this.messageService.clear();
   }
   
+  clearReminderMessages(): void {
+    this.messageService.clear('reminderComplete');
+  }
+  
   confirmResponse(toMark: Message): void {
     // Fire our callback if we have one, and regardless clear the messages
     if (toMark.data && toMark.data.callback &&
@@ -53,7 +59,7 @@ export class ToastMessageComponent implements OnInit, OnDestroy {
       toMark.data.callback();
     }
     
-    this.messageService.clear();
+    this.clearReminderMessages();
   }
   
   private _showGeneric(type: string = 'info', eventDetail: any): void {

@@ -25,6 +25,10 @@ export class Utility {
     window.dispatchEvent(new CustomEvent('message-clear-all'));
   }
   
+  static clearReminderMessages(): void {
+    window.dispatchEvent(new CustomEvent('message-clear-reminders'));
+  }
+  
   static showReminderComplete(toMark: Thing, confirmCallback: Function): void {
     this._dispatchGenericShow('message-info', {
       message: toMark.name + ' (' + toMark.templateType + ') is due',

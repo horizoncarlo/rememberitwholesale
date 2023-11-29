@@ -1,5 +1,6 @@
 import { Injectable, inject } from '@angular/core';
 import { Template } from '../model/template';
+import { TemplateFavorite } from '../model/template-favorite';
 import { Utility } from '../util/utility';
 import { StorageService } from './storage.service';
 import { ThingService } from './thing.service';
@@ -11,7 +12,13 @@ export class TemplateService  {
   things: ThingService = inject(ThingService);
   loading: boolean = false;
   data: Template[] = [];
+  favorite?: TemplateFavorite;
   backend: StorageService = inject(StorageService);
+  
+  constructor() {
+    // Automatically fetch our favorite on load
+    this._getFavorite();
+  }
   
   static getMilestoneName(): string {
     return 'Milestone';
@@ -67,9 +74,11 @@ export class TemplateService  {
     this.loading = true;
     this.backend.getAllTemplates().subscribe({
       next: res => {
+        // Cast our results for better type checking, and sort by name
         this.data = res.map((current: Template) => {
           return Template.cloneFrom(current);
-        });
+        }).toSorted((a: Template, b: Template) => a.name.localeCompare(b.name));
+        
         console.log("Get Templates", this.data);
       },
       error: err => {
@@ -107,6 +116,33 @@ export class TemplateService  {
     });
   }
   
+  saveFavorite(toAdd: TemplateFavorite): void {
+    if (toAdd && toAdd.isValid()) {
+      toAdd.prepareForSave();
+    }
+    else {
+      Utility.showError('Invalid template, ensure all fields are filled');
+      return;
+    }
+    
+    console.log("Going to save favorite template", toAdd);
+    
+    this.loading = true;
+    this.backend.submitFavoriteTemplate(toAdd).subscribe({
+      next: res => {
+        this.favorite = toAdd;
+        
+        Utility.showSuccess('Successfully set your favorite template', this.favorite.name);
+      },
+      error: err => {
+        this.loading = false;
+        Utility.showError('Failed to set your favorite template');
+        console.error(err);
+      },
+      complete: () => this.loading = false
+    });
+  }
+  
   deleteTemplate(nameToDelete: string, deleteThingsToo?: boolean): void {
     this.loading = true;
     this.backend.deleteTemplate(nameToDelete, deleteThingsToo).subscribe({
@@ -129,5 +165,22 @@ export class TemplateService  {
         console.error(err);
       }
     });
+  }
+  
+  private _getFavorite(): void {
+    this.backend.getFavoriteTemplate().subscribe({
+      next: res => {
+        // Clone to ensure we get our JSON data cast properly
+        this.favorite = TemplateFavorite.cloneFrom(res);
+      },
+      error: err => {
+        Utility.showError('Failed to retrieve your favorite template');
+        console.error(err);
+      }
+    })
+  }
+  
+  hasFavorite(): boolean {
+    return this.favorite ? true : false;
   }
 }

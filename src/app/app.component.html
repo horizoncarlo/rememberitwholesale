@@ -1,6 +1,4 @@
 <riw-global-toast />
-<p-confirmPopup key="inline" />
-<p-confirmDialog key="dialog"/>
 
 <p-progressBar [mode]="things.loading ? 'indeterminate' : 'determinate'" class="loading-bar" />
 
@@ -22,7 +20,7 @@
   <div class="toolbar-content">
     <div class="toolbar-left">
       <p-button (onClick)="things.getAllThings()" icon="pi pi-refresh" [loading]="things.loading" severity="info" />
-      <!-- TODO QUIDEL Insert an icon button (pi-heart?) for Favorite template, if set. Do the same for speed dial -->
+      <p-button (onClick)="quickfillFavoriteThing()" icon="pi pi-heart" severity="help" *ngIf="templateService.hasFavorite()" />
       <p-button (onClick)="clearSelectedRows(); manageTemplate.show()" icon="pi pi-list" [label]="getManageTemplateLabel()" />
       <p-button (onClick)="clearSelectedRows(); manageThing.showAdd()" icon="pi pi-plus-circle" label="New Thing" />
       <p-button (onClick)="requestEditSelected()" icon="pi pi-pencil" label="Edit Thing" [disabled]="!hasOneSelectedRow()" />
@@ -97,14 +95,17 @@
   <ng-template pTemplate="body" let-data let-rowIndex="rowIndex">
     <tr [pSelectableRow]="data" [pSelectableRowIndex]="rowIndex">
       <td>
-        <span [style]="'color:' + data.color">{{ data.name }}</span>
+        <span [style]="'color:' + data.color">
+          <span *ngIf="isFavoriteByName(data.name)" class="pi pi-heart-fill" style="font-size: 0.75rem"></span>
+          {{ data.name }}
+        </span>
       </td>
       <td>
         <span [style]="'color:' + data.color">{{ data.templateType }}</span>
       </td>
       <td class="center">
         <span [style]="'color:' + data.color">
-          <span class="pi pi-clock" *ngIf="data.hasFutureReminder() || things.hasOverdueReminder(data)" pTooltip="Thing is a Reminder"></span> {{ data.time | date: 'MMM dd &rsquo;yy \'at\' hh:mm a' }}
+          <span class="pi pi-clock" *ngIf="data.hasFutureReminder() || things.isOverdueReminder(data)" pTooltip="Thing is a Reminder"></span> {{ data.time | date: 'MMM dd &rsquo;yy \'at\' hh:mm a' }}
         </span>
       </td>
       <td colspan="2">
@@ -136,3 +137,58 @@
                          (onEdit)="doneEditThing($event)"/>
 <riw-manage-template-dialog #manageTemplate />
 <riw-global-search-dialog #globalSearch [searchFunction]="globalFilterTable.bind(this)"/>
+
+<p-confirmPopup key="inline" />
+<p-confirmDialog key="dialog"/>
+<p-confirmDialog #favoriteConfirmDialog key="favorite" class="favorite-dialog"
+                 *ngIf="templateService.favorite && templateService.hasFavorite()">
+  <ng-template pTemplate="header">
+    <span class="p-dialog-title" [style.color]="templateService.favorite.color">Favorite - {{templateService.favorite.name}}</span>
+  </ng-template>
+  <ng-template pTemplate="message">
+    <!-- TODO - Need to componentize the custom field rendering and not repeat it both here and in Manage Thing dialog. Note styling needs to come over too (ie: radio buttons are different) -->
+    <div *ngFor="let field of templateService.favorite.fields" class="favorite-section">
+      <label [htmlFor]="field.property">{{ field.getLabel() }}</label>
+      <ng-container *ngIf="field.type === fieldTypes.Text || field.type === fieldTypes.Number">
+        <input [id]="field.property" pInputText [type]="field.type" [required]="field.required || false" [(ngModel)]="field.value"
+               (keyup.enter)="templateService.favorite.hasOneField() && favoriteConfirmDialog.accept()"/>
+      </ng-container>
+      <ng-container *ngIf="field.type === fieldTypes.Textarea">
+        <textarea [id]="field.property" rows="3" pInputTextarea [(ngModel)]="field.value" [required]="field.required || false"></textarea>
+      </ng-container>
+      <ng-container *ngIf="field.type === fieldTypes.Radio">
+        <div [id]="field.property">
+          <ng-container *ngFor="let option of field.options; index as i">
+            <p-radioButton [value]="option" [(ngModel)]="field.value" [inputId]="'option' + i" [required]="field.required || false"
+                           (ngModelChange)="templateService.favorite.hasOneField() && favoriteConfirmDialog.accept()" />
+            <label [for]="'option' + i"> {{option}}</label>
+          </ng-container>
+        </div>
+      </ng-container>
+      <ng-container *ngIf="field.type === fieldTypes.Boolean">
+        <p-triStateCheckbox [id]="field.property" [(ngModel)]="field.value" [required]="field.required || false" />
+      </ng-container>
+      <ng-container *ngIf="field.type === fieldTypes.Dropdown">
+        <p-dropdown [id]="field.property" [(ngModel)]="field.value"
+                    [options]="field.options"
+                    [required]="field.required || false"
+                    (ngModelChange)="(field.value && templateService.favorite.hasOneField()) && favoriteConfirmDialog.accept()"
+                    class="consistent-field" appendTo="body"/>
+      </ng-container>
+      <ng-container *ngIf="field.type === fieldTypes.Date || field.type === fieldTypes.Datetime">
+        <p-calendar [id]="field.property" [(ngModel)]="field.value" dataType="string"
+                    (ngModelChange)="templateService.favorite.hasOneField() && favoriteConfirmDialog.accept()"
+                    [required]="field.required || false"
+                    [showTime]="field.type === fieldTypes.Datetime" [showIcon]="true"
+                    hourFormat="12" [stepMinute]="5"
+                    [hideOnDateTimeSelect]="field.type === fieldTypes.Date"
+                    [tabindex]="-1"
+                    class="consistent-field" appendTo="body" ></p-calendar>
+      </ng-container>
+    </div>
+  </ng-template>
+  <ng-template pTemplate="footer">
+    <p-button (onClick)="favoriteConfirmDialog.reject()" label="Cancel" icon="pi pi-times" iconPos="left" severity="secondary"/>
+    <p-button (onClick)="favoriteConfirmDialog.accept()" label="Save" icon="pi pi-check" iconPos="left"/>
+  </ng-template>
+</p-confirmDialog>

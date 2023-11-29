@@ -2,7 +2,7 @@
 export class UserSettings {
   // TODO Wrap user settings in a signal once migrated to Ang 17 so that any change will auto-persist to the backend, instead of RxJS
   // TODO Username concept for logging in: username: string
-  useDial: boolean = false;
+  forceDial: boolean = false;
   paginatorTable: boolean = true;
   paginatorRows: number = 50;
   scrollableTable: boolean = true;
@@ -11,7 +11,7 @@ export class UserSettings {
   overdueLimitDays: number = 2;
   
   constructor(options?: {
-      useDial?: boolean,
+      forceDial?: boolean,
       paginatorTable?: boolean,
       paginatorRows?: number,
       scrollTable?: boolean,
@@ -21,7 +21,7 @@ export class UserSettings {
     }) {
     
     if (options) {
-      this.useDial = options.useDial || false;
+      this.forceDial = options.forceDial || false;
       this.paginatorTable = options.paginatorTable || true;
       this.paginatorRows = options.paginatorRows || 50;
       this.scrollableTable = options.scrollTable || true;

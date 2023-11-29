@@ -25,6 +25,26 @@ export class Template {
     return new Template(source.name, source.color, source.fields, source.isDefault);
   }
   
+  hasFields(): boolean {
+    return Utility.hasItems(this.fields);
+  }
+  
+  hasOneField(): boolean {
+    if (this.fields) {
+      return Utility.getLength(this.fields) === 1;
+    }
+    return false;
+  }
+  
+  clearValuesFromFields(): void {
+    if (Utility.hasItems(this.fields)) {
+      this.fields = this.fields?.map((currentField: TemplateField) => {
+        currentField.value = null;
+        return currentField;
+      });
+    }
+  }
+  
   prepareForSave(): void {
     if (!this.color) {
       this.color = 'inherit';

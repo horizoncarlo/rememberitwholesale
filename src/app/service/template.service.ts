@@ -170,8 +170,13 @@ export class TemplateService  {
   private _getFavorite(): void {
     this.backend.getFavoriteTemplate().subscribe({
       next: res => {
-        // Clone to ensure we get our JSON data cast properly
-        this.favorite = TemplateFavorite.cloneFrom(res);
+        if (res && Utility.hasItems(res)) {
+          // Clone to ensure we get our JSON data cast properly
+          this.favorite = TemplateFavorite.cloneFrom(res);
+        }
+        else {
+          delete this.favorite;
+        }
       },
       error: err => {
         Utility.showError('Failed to retrieve your favorite template');

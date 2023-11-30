@@ -268,7 +268,13 @@ app.post("/templates", (req, res) => {
 
 app.get("/templates/favorite", (req, res) => {
   console.log("GET Favorite Template", getInMemoryFavorite());
-  return res.send(getInMemoryFavorite()).end();
+  
+  // If we are a blank object, return nothing
+  const toReturn = getInMemoryFavorite();
+  if (toReturn && Object.keys(toReturn).length > 0) {
+    return res.send(toReturn).end();
+  }
+  return res.send().end();
 });
 
 app.post("/templates/favorite", (req, res) => {

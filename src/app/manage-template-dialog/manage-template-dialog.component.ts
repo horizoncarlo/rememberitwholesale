@@ -30,7 +30,6 @@ export class ManageTemplateDialogComponent {
   // TODO Put the favorite concept into a component
   favoriteAutoReminder: boolean = false;
   favoriteNameSuffix: string = '';
-  favoriteTimeRange: number = 1;
   favoriteTimeOptions = [
     { value: 0, label: 'Immediate' },
     { value: 1, label: '1 hour ahead' },
@@ -44,6 +43,7 @@ export class ManageTemplateDialogComponent {
     { value: 24*30, label: '1 month' },
     { value: 24*365, label: '1 year' }
   ];
+  favoriteTimeRange: { value: number, label: string} = this.favoriteTimeOptions[1];
   
   constructor(private confirmationService: ConfirmationService) { }
   
@@ -197,7 +197,7 @@ export class ManageTemplateDialogComponent {
       const toSave = new TemplateFavorite(this.actOn,
                                           this.favoriteAutoReminder,
                                           this.favoriteNameSuffix,
-                                          this.favoriteTimeRange
+                                          this.favoriteTimeRange.value
       );
       
       this.templateService.saveFavorite(toSave);

@@ -2,7 +2,7 @@
   "name": "rememberitwholesale",
   "version": "0.5",
   "scripts": {
-    "live": "ng serve --watch --configuration live --public-host --host 0.0.0.0",
+    "live": "ng serve --watch --configuration live --host 0.0.0.0 --public-host junk.scrapping.cc",
     "dev": "ng serve --watch --configuration development",
     "prod": "ng serve --watch --configuration production",
     "backend": "nodemon backend-node/maindata.js"

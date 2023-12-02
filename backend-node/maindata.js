@@ -4,37 +4,23 @@ const cors = require('cors');
 const fs = require("fs");
 const os = require("os");
 
+// Set some default templates for a new user
+// TODO Once user accounts are finalized, this should likely be part of a larger default dataset (from outside the code) that is set in
 const DEFAULT_TEMPLATES = [
   {
     "name": "Milestone",
     "isDefault": true
   },
-  { // TODO TEMPORARY Template data - set default templates when a new user and their files are setup
-    "name": "Longboard",
-    "color": "pink",
-    "fields": [
-      {
-        "property": "distance",
-        "label": "Distance",
-        "required": true,
-        "type": "number"
-      },
-    ]
-  },
-  { // TODO TEMPORARY Template data
-    "name": "Boardgame",
+  {
+    "name": "TODO",
     "color": "goldenrod",
+    "initialReminder": true,
     "fields": [
       {
-        "property": "numPlayers",
-        "label": "Number of Players",
-        "type": "number"
+        "property": "notes",
+        "label": "Notes",
+        "type": "textarea"
       },
-      {
-        "property": "whoWon",
-        "label": "Winner Name",
-        "type": "text"
-      }
     ]
   }
 ];

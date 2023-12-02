@@ -35,7 +35,7 @@ export class ManageThingDialogComponent {
     this.type = 'add';
     // Reset our state as well
     this.actOn = new Thing('');
-    this.selectedTemplate = this.templateService.getFirstDefaultTemplate();
+    this.templateChanged(this.templateService.getFirstDefaultTemplate());
     
     this.isShowing = true;
   }
@@ -46,8 +46,9 @@ export class ManageThingDialogComponent {
       this.actOn = Thing.cloneFrom(selectedRows[0]);
       const template = this.templateService.getTemplateByName(this.actOn.templateType);
       if (template) {
-        this.selectedTemplate = Template.cloneFrom(template);
-        this.selectedTemplate.fields = this.actOn.fields;
+        const toSet = Template.cloneFrom(template);
+        toSet.fields = this.actOn.fields;
+        this.templateChanged(toSet);
       }
       
       this.isShowing = true;
@@ -63,6 +64,15 @@ export class ManageThingDialogComponent {
   
   toggleThingDialog(): void {
     this.isShowing ? this.hide() : this.showAdd();
+  }
+  
+  templateChanged(newVal: Template | null): void {
+    this.selectedTemplate = newVal;
+    
+    // Apply our initial reminder state if we have it
+    if (this.selectedTemplate) {
+      this.actOn.reminder = this.selectedTemplate.initialReminder;
+    }
   }
   
   submit(): void {

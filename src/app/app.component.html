@@ -123,11 +123,18 @@
 </p-table>
 
 <div *ngIf="!things.loadedAndHasData()" class="no-things-wrap">
-  <span *ngIf="!things.loading">
-    <!-- TODO If we have a speed dial, we should just put Add Thing / Template button here as well, to simplify for the user -->
-    <!-- TODO More verbose message too, some basic instructions and description of app, etc. -->
-    Add something to get started
-  </span>
+  <div *ngIf="!things.loading">
+    <p>Welcome to <b>Remember It Wholesale</b>&nbsp;<a href="https://en.wikipedia.org/wiki/We_Can_Remember_It_for_You_Wholesale" target="_blank"><span class="pi pi-external-link"></span></a></p>
+    <div class="small">
+      <p>The purpose of this app is to turn your life into usable data, in any arbitrary form you want.</p>
+      <p>You can store Things of milestones, reminders, goals, events, memories, and more.</p>
+    </div>
+    <hr/>
+    <p>Add something to get started</p>
+    <ng-container *ngIf="useDial">
+      <p-button (onClick)="manageThing.showAdd()" icon="pi pi-plus-circle" label="New Thing" />
+    </ng-container>
+  </div>
 </div>
 
 </div>

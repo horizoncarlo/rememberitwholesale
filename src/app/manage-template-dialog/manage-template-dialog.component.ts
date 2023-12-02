@@ -1,5 +1,6 @@
 import { Component, inject } from '@angular/core';
 import { ConfirmationService } from 'primeng/api';
+import { ColorPicker } from 'primeng/colorpicker';
 import { Template, TemplateEvent } from '../model/template';
 import { TemplateFavorite } from '../model/template-favorite';
 import { TemplateField } from '../model/template-field';
@@ -227,6 +228,13 @@ export class ManageTemplateDialogComponent {
         reject:() => {
         },
       });
+    }
+  }
+  
+  openColorPicker(picker: ColorPicker ) {
+    if (picker && picker.el && picker.el.nativeElement &&
+        picker.el.nativeElement.querySelector('input')) {
+      picker.el.nativeElement.querySelector('input').click();
     }
   }
   

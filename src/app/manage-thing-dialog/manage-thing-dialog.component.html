@@ -8,7 +8,8 @@
         </td>
         <td colspan="2">
           <riw-template-dropdown [(selectedTemplate)]="selectedTemplate" [keepValue]="isEdit()"
-                                 (manageTemplateEvent)="handleTemplateEvent($event)"/>
+                                 (manageTemplateEvent)="handleTemplateEvent($event)"
+                                 (selectedTemplateChange)="templateChanged($event)"/>
         </td>
       </tr>
       <tr>

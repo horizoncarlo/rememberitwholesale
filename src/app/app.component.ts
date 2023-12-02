@@ -99,78 +99,6 @@ export class AppComponent implements OnInit, OnDestroy {
     return this.userService.getUser();
   }
   
-  setupDialTouchEvents(retryCount?: number): void {
-    // Since touch* events aren't naturally supported on Angular 16 components, like (touchstart), we have to manually add the listeners
-    // Support dragging the speed dial around
-    if (this.useDial) {
-      setTimeout(() => {
-        const ele = document.getElementById('ddOverlay');
-        if (ele) {
-          const middleSize = this.getDialBoxMiddleSize();
-          
-          ele.addEventListener('touchmove', (event: TouchEvent) => {
-            event.preventDefault(); // Necessary for performance, otherwise we get choppiness
-            this.isDraggingDial = true;
-            
-            if (Utility.hasItems(event.changedTouches)) {
-              ele.style.top = event.changedTouches[0].clientY - middleSize + 'px';
-              ele.style.left = event.changedTouches[0].clientX - middleSize + 'px';
-            }
-          });
-          
-          ele.addEventListener('touchend', (event: TouchEvent) => {
-            if (this.isDraggingDial) {
-              this.isDraggingDial = false;
-              
-              ele.style.backgroundColor = 'transparent';
-              
-              if (Utility.hasItems(event.changedTouches)) {
-                ele.style.top = event.changedTouches[0].clientY - middleSize + 'px';
-                ele.style.left = event.changedTouches[0].clientX - middleSize + 'px';
-                
-                if (this.speedDial && this.speedDial.el &&
-                    this.speedDial.el.nativeElement) {
-                  this.speedDial.el.nativeElement.style.top = ele.style.top;
-                  this.speedDial.el.nativeElement.style.left = ele.style.left;
-                }
-                
-                const badgeEle = document.getElementById('ddBadge');
-                if (badgeEle) {
-                  badgeEle.style.top = ele.style.top;
-                  badgeEle.style.left = event.changedTouches[0].clientX + Utility.getCSSVarNum('dial-badge-size') - 5 + 'px';
-                }
-              }
-            }
-          });
-          
-          ele.addEventListener('touchcancel', (e: any) => {
-            this.isDraggingDial = false;
-          });
-        }
-        else {
-          if (typeof retryCount !== 'number') {
-            retryCount = 0;
-          }
-          
-          if (retryCount < 20) {
-            setTimeout(() => {
-              this.setupDialTouchEvents(retryCount);
-            }, 200);
-            retryCount++;
-          }
-        }
-      }, 0);
-    }
-  }
-  
-  getDialBoxMiddleSize(): number {
-    let middleSize: number = Utility.getCSSVarNum('dial-box-size');
-    if (middleSize) {
-      middleSize = middleSize / 2;
-    }
-    return middleSize;
-  }
-  
   getDialItems(): MenuItem[] {
     return [
         {
@@ -262,13 +190,18 @@ export class AppComponent implements OnInit, OnDestroy {
   }
   
   dialDragEnd(event: DragEvent): void {
-    const ele = event.target as HTMLElement;
+    this.genericBadgeDropEvent(event.target as HTMLElement,
+                               { x: event.clientX, y: event.clientY });
+  }
+  
+  genericBadgeDropEvent(ele: HTMLElement, pos: { x: number, y: number }) {
     if (ele) {
+      this.isDraggingDial = false;
       ele.style.backgroundColor = 'transparent';
       
       const middleSize = this.getDialBoxMiddleSize();
-      let newTop = event.clientY - middleSize;
-      let newLeft = event.clientX - middleSize;
+      let newTop = pos.y - middleSize;
+      let newLeft = pos.x - middleSize;
       
       // Ensure we can't drag outside the browser
       if (newTop < 0) {
@@ -278,7 +211,6 @@ export class AppComponent implements OnInit, OnDestroy {
         newLeft = 0;
       }
       
-      // TODO Consolidate this with `touchend` event so we're not repeating ourselves
       ele.style.top = newTop + 'px';
       ele.style.left = newLeft + 'px';
       if (this.speedDial && this.speedDial.el &&
@@ -286,12 +218,68 @@ export class AppComponent implements OnInit, OnDestroy {
         this.speedDial.el.nativeElement.style.top = ele.style.top;
         this.speedDial.el.nativeElement.style.left = ele.style.left;
       }
+      
       const badgeEle = document.getElementById('ddBadge');
       if (badgeEle) {
         badgeEle.style.top = ele.style.top;
         badgeEle.style.left = newLeft + middleSize + Utility.getCSSVarNum('dial-badge-size') - 5 + 'px';
       }
     }
+  }
+  
+  setupDialTouchEvents(retryCount?: number): void {
+    // Since touch* events aren't naturally supported on Angular 16 components, like (touchstart), we have to manually add the listeners
+    // Support dragging the speed dial around
+    if (this.useDial) {
+      setTimeout(() => {
+        const ele = document.getElementById('ddOverlay');
+        if (ele) {
+          ele.addEventListener('touchmove', (event: TouchEvent) => {
+            event.preventDefault(); // Necessary for performance, otherwise we get choppiness
+            this.isDraggingDial = true;
+            
+            if (Utility.hasItems(event.changedTouches)) {
+              const middleSize = this.getDialBoxMiddleSize();
+              ele.style.top = event.changedTouches[0].clientY - middleSize + 'px';
+              ele.style.left = event.changedTouches[0].clientX - middleSize + 'px';
+            }
+          });
+          
+          ele.addEventListener('touchend', (event: TouchEvent) => {
+            if (this.isDraggingDial) {
+              if (Utility.hasItems(event.changedTouches)) {
+              this.genericBadgeDropEvent(ele, { x: event.changedTouches[0].clientX,
+                                                y: event.changedTouches[0].clientY });
+              }
+            }
+          });
+          
+          ele.addEventListener('touchcancel', (e: any) => {
+            this.isDraggingDial = false;
+          });
+        }
+        else {
+          if (typeof retryCount !== 'number') {
+            retryCount = 0;
+          }
+          
+          if (retryCount < 20) {
+            setTimeout(() => {
+              this.setupDialTouchEvents(retryCount);
+            }, 200);
+            retryCount++;
+          }
+        }
+      }, 0);
+    }
+  }
+  
+  getDialBoxMiddleSize(): number {
+    let middleSize: number = Utility.getCSSVarNum('dial-box-size');
+    if (middleSize) {
+      middleSize = middleSize / 2;
+    }
+    return middleSize;
   }
   
   getDialBadgeTop(): string {
@@ -412,7 +400,8 @@ export class AppComponent implements OnInit, OnDestroy {
   
   requestEditReminder(toEdit: Thing): void {
     if (toEdit) {
-      this.manageThingDialog.showEdit([toEdit]);
+      this.selectedRows = [toEdit];
+      this.manageThingDialog.showEdit(this.selectedRows);
     }
     else {
       Utility.showWarn('Select a Reminder to edit');

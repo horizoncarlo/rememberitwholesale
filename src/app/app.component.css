@@ -64,7 +64,11 @@
   font-size: 24px;
   text-align: center;
   width: 100%;
-  padding-top: 40vh;
+  padding-top: 35vh;
+}
+
+.no-things-wrap .small {
+  font-size: 18px;
 }
 
 .fixed-toolbar {

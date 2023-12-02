@@ -24,7 +24,7 @@
       <table cellspacing="5" cellpading="0" class="template-table">
         <ng-container *ngIf="actOn">
           <tr>
-            <td colspan="3">
+            <td colspan="5">
               <span class="p-float-label">
                 <input #nameField pInputText [(ngModel)]="actOn.name" (keyup.enter)="handleEnterKey(submit.bind(this))"
                       (ngModelChange)="createNameChanged()"/>
@@ -35,18 +35,29 @@
                 </ng-container>
               </span>
             </td>
-            <td colspan="2">
+          </tr>
+          <tr>
+            <td colspan="5">
               <span class="p-float-label">
-                <input pInputText *ngIf="actOn.color === 'inherit'" value="default (change to the right)" readonly />
+                <input pInputText *ngIf="actOn.color === 'inherit'" value="default (click to change)" [style.cursor]="'alias'" readonly (click)="openColorPicker(colorPicker)" />
                 <input pInputText *ngIf="actOn.color !== 'inherit'" [(ngModel)]="actOn.color" />
                 <label>Optional Color coding</label>
                 &nbsp;
-                <p-colorPicker [(ngModel)]="actOn.color" appendTo="body"/>
+                <p-colorPicker #colorPicker [(ngModel)]="actOn.color" appendTo="body"/>
                 <p-button icon="pi pi-ban" pTooltip="Reset the color" severity="secondary" size="small" [rounded]="true" [text]="true" (onClick)="resetColor()" />
               </span>
             </td>
           </tr>
-          
+          <tr>
+            <td colspan="5">
+              <p-checkbox [(ngModel)]="actOn.initialReminder" [binary]="true" label="Set initially as a Reminder?" pTooltip="If checked, any Thing created from this template will default to being a reminder"/>
+            </td>
+          </tr>
+          <tr *ngIf="actOn.hasFields()">
+            <td colspan="5">
+              <hr/>
+            </td>
+          </tr>
           <ng-container *ngFor="let field of actOn?.fields">
             <tr>
               <td>

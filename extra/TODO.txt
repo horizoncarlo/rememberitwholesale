@@ -5,6 +5,22 @@
 -- Org Chart could help in the organizing and creation of the heirarchy
 - Would Tree Table be better for our main table?
 
+LOADING:
+- Block entire page, header and all, with a spinner in the middle (after a couple seconds, to prevent flashing)
+-- This is while we're getting the user settings and so on
+^-- "isInitialized"
+
+- Progress bar should always show, for ALL loading
+-- Maybe a general "has any loading" feature that combines our various rxjs to one result?
+
+- Has a per-service init & loading flags: things for refresh button, templates for Manage X Templates, etc.
+-- tableLoading ties to this (blocks main table, but keeps header, equivalent to current things.loading)
+- Each service registers themselves in loadingService
+
+- Should also disable or use the "loading" attribute of a lot of buttons we want to avoid exposing while something is happening
+
+- Have specific utility calls, like "top right spinner on/off", that hide the logic in the loading service itself
+
 MAIN FEATURES:
 - Update to Angular 17 (need PrimeNG to update first https://github.com/primefaces/primeng/issues/14063)
 -- Try server side rendering
@@ -44,3 +60,4 @@ TODO:
 - Have a "looking back" / "remember this?" feature that shows you memories from the same time X months/years ago, sort of like Facebook. Toggleable option of course
 - Have an "annual repeat" feature for reminders, likely don't want more granular as we're not intending to be a full scheduling app
 - Validation across the app - from 'required' custom fields to dialogs, etc.
+- Autosort template list (when adding a new Thing) by grouped select items of Regularly Used, less frequent, etc.

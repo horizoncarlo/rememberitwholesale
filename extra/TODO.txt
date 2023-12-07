@@ -51,11 +51,16 @@ TODO:
 - Detect browser resume on mobile devices
 - "Demo mode" (once we have user login) that lets you explore the app without changing data, with a free/auto account, and a bunch of default stuff. Could swap Storage Service for this case?
 - Manage tabIndex focus order, especially for mobile
-- Would be nice to not have to manually set `tooltipPosition="left"` (or bottom) in cases where the tooltip is smooshed along the right edge. Seems to autocalculate for some but not all
--- File a bug with PrimeNG?
 - Tweak loading states so the entire table doesn't disappear while fetching
 - Eventually have Photo as a type to upload images to Things
 - Where does Inter-roman and Inter-italic font come from? PrimeNG? Slightly big size
 - Have a "looking back" / "remember this?" feature that shows you memories from the same time X months/years ago, sort of like Facebook. Toggleable option of course
 - Have an "annual repeat" feature for reminders, likely don't want more granular as we're not intending to be a full scheduling app
 - Autosort template list (when adding a new Thing) by grouped select items of Regularly Used, less frequent, etc.
+
+PRIMENG BUGS (file these?):
+- Would be nice to not have to manually set `tooltipPosition="left"` (or bottom) in cases where the tooltip is smooshed along the right edge. Seems to autocalculate for some but not all
+- Speed Dial has an overlay that extends below the visible button by 44px
+-- Inspect around the Speed Dial to see
+-- This blocks the Selected Rows clear button when a reminder is present (as the table gets pushed down and becomes below the overlay)
+-- A hacky solution could be to move the dial down when the Reminders are shown, but the view would jump and it's a lot of math if we have multiple reminders

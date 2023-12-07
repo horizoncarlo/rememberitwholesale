@@ -87,6 +87,11 @@ export class AppComponent implements OnInit, OnDestroy {
         if (this.useDial) {
           this.setupDialTouchEvents();
         }
+        
+        // Setup an orientation listener to resize if a native device changes from portrait to landscape or back
+        screen.orientation.addEventListener("change", (event) => {
+          Utility.fireWindowResize();
+        });
       }
     });
   }
@@ -600,6 +605,11 @@ export class AppComponent implements OnInit, OnDestroy {
   
   hasOneSelectedRow(): boolean {
     return this.hasSelectedRows() && this.selectedRows.length === 1;
+  }
+  
+  getEmptyMessageClass(): string {
+    // Center our "no data" message, unless we're on mobile as then we have to scroll over to see it
+    return Utility.isMobileSize() ? '' : 'center';
   }
   
   customSort(event: SortEvent) {

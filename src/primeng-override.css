@@ -3,37 +3,6 @@
   --table-paginator-height: 70px;
 }
 
-@media (max-width: 850px) { /* var(--mobile-breakpoint) equivalent, just can't use in media queries */
-  .hide-on-mobile {
-    display: none;
-  }
-  
-  .p-dialog .p-dialog-content {
-    padding: 10px;
-  }
-  
-  /* For spacing considerations hide the text on footer buttons. Icons should be clear enough */
-  .p-dialog .p-dialog-footer .p-button-label {
-    display: none;
-  }
-  .p-dialog .p-dialog-footer .p-button .p-button-icon-left {
-    margin-right: 0;
-  }
-  
-  .p-dialog-header {
-    padding: 15px 15px 0 15px;
-  }
-  
-  .manage-thing-dialog .p-dialog,
-  .manage-template-dialog .p-dialog {
-    height: auto;
-  }
-  
-  .content-form {
-    margin-top: 0 !important;
-  }
-}
-
 /* Make our top loading bar narrower, and speed it up slightly */
 .loading-bar .p-progressbar {
   height: var(--progress-bar-height);
@@ -105,10 +74,13 @@ p-columnfilterformelement .p-inputtext {
   min-width: 50vw;
   height: 90vh;
 }
-.manage-thing-dialog .p-dialog,
-.manage-template-dialog .p-dialog,
-.global-search-dialog .p-dialog {
+.p-dialog,
+.p-confirm-dialog {
   max-width: 95vw;
+}
+/* Unless of course we are maximized, in which case have no max width */
+.p-dialog-maximized {
+  max-width: 100% !important;
 }
 
 /* Put a bit of a gap between the label and the checkbox */
@@ -125,4 +97,40 @@ p-columnfilterformelement .p-inputtext {
 .consistent-field .p-dropdown,
 .consistent-field .p-calendar input {
   width: var(--standard-field-width);
+}
+
+@media (max-width: 850px) { /* var(--mobile-breakpoint) equivalent, just can't use in media queries */
+  .hide-on-mobile {
+    display: none;
+  }
+  
+  /* Less precious whitespace wasted on content padding on dialogs */
+  .p-dialog .p-dialog-content {
+    padding: 10px;
+  }
+  .manage-thing-dialog .p-dialog .p-dialog-content {
+    padding: 0;
+  }
+  
+  /* For spacing considerations hide the text on footer buttons. Icons should be clear enough */
+  .p-dialog .p-dialog-footer .p-button-label {
+    display: none;
+  }
+  .p-dialog .p-dialog-footer .p-button .p-button-icon-left {
+    margin-right: 0;
+  }
+  
+  .p-dialog-header {
+    padding: 15px 15px 0 15px;
+  }
+  
+  /* Don't force a nearly full height like we do on desktop, primarily for the floating mobile keyboard */
+  .manage-thing-dialog .p-dialog,
+  .manage-template-dialog .p-dialog {
+    height: auto;
+  }
+  
+  .content-form {
+    margin-top: 0 !important;
+  }
 }

@@ -66,6 +66,10 @@ export class ManageThingDialogComponent {
     this.isShowing ? this.hide() : this.showAdd();
   }
   
+  shouldWrapReminder(): boolean {
+    return Utility.isMobileSize();
+  }
+  
   reminderCheckboxChanged() : void {
     if (this.actOn && this.actOn.reminder && !this.actOn.timeInFuture()) {
       Utility.showInfo('Normally Reminders are in the future');

@@ -44,7 +44,7 @@
 
 <div [class]="'main-wrap' + (useDial ? '' : ' main-wrap-with-toolbar')" dropzone="true">
 
-<div id="reminders" class="reminder-wrap" *ngIf="showReminders">
+<div id="reminders" *ngIf="showReminders">
   <riw-reminder-message *ngFor="let reminder of things.remindersOverdue" [thing]="reminder" [overdue]="true" (onClick)="handleOverdueReminder($event)" />
   <riw-reminder-message *ngFor="let reminder of things.reminders" [thing]="reminder" (onClick)="requestEditReminder($event)" />
 </div>
@@ -123,7 +123,7 @@
   </ng-template>
   <ng-template *ngIf="!things.loading" pTemplate="emptymessage" let-columns>
     <tr>
-      <td colspan="6" class="center">
+      <td colspan="6" [class]="getEmptyMessageClass()">
         No data matches your search
       </td>
     </tr>

@@ -10,7 +10,7 @@
 
 @media (max-width: 850px) { /* var(--mobile-breakpoint) equivalent, just can't use in media queries */
   :root {
-    --standard-field-width: 150px;
+    --standard-field-width: 175px;
   }
 }
 

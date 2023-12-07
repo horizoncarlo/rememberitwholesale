@@ -33,11 +33,27 @@
                       class="consistent-field" appendTo="body" ></p-calendar>
         </td>
         <td>
-          <p-checkbox [(ngModel)]="actOn.reminder" (onChange)="reminderCheckboxChanged()"
-                      [binary]="true" label="Reminder?"
-                      pTooltip="Click to make this Thing a reminder that will display time left and notify you when due" />
+          <!-- TODO Should make this less repetitive (with the wrapped version below), either with a component or better styling -->
+          <ng-container *ngIf="!shouldWrapReminder()">
+            <p-checkbox [(ngModel)]="actOn.reminder" (onChange)="reminderCheckboxChanged()"
+                        [binary]="true" label="Reminder?"
+                        pTooltip="Click to make this Thing a reminder that will display time left and notify you when due" />
+          </ng-container>
+          <ng-container *ngIf="shouldWrapReminder()">
+            <!-- TODO This is a hack to ensure the Add/Delete template circle buttons above don't wrap -->
+            <div style="width: 80px;">&nbsp;</div>
+          </ng-container>
         </td>
       </tr>
+      <ng-container *ngIf="shouldWrapReminder()">
+        <tr>
+          <td colspan="3">
+            <p-checkbox [(ngModel)]="actOn.reminder" (onChange)="reminderCheckboxChanged()"
+                        [binary]="true" label="Reminder?"
+                        pTooltip="Click to make this Thing a reminder that will display time left and notify you when due" />
+          </td>
+        </tr>
+      </ng-container>
       <tr *ngFor="let field of selectedTemplate?.fields">
         <td>
           <label [htmlFor]="field.property">{{ field.getLabel() }}</label>

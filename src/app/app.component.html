@@ -76,9 +76,10 @@
         <p-sortIcon field="fields" />
       </th>
       <th class="control-col">
-        <span (click)="clearSelectedRows()">
+        <span (click)="clearSelectedRows()" [style.cursor]="'pointer'"
+              pTooltip="Click to deselect all" tooltipPosition="bottom">
           {{ rowSelectedCount() }} Sel<span class="hide-on-mobile">ected Rows</span>
-          <span class="pi pi-ban header-tiny-button header-tiny-button-color header-clear-rows-button" pTooltip="Clear Selections" tooltipPosition="left" *ngIf="hasSelectedRows()"></span>
+          <span class="pi pi-ban header-tiny-button header-tiny-button-color header-clear-rows-button" *ngIf="hasSelectedRows()"></span>
         </span>
         &nbsp;
         <span class="pi pi-filter header-tiny-button header-tiny-button-color" (click)="toggleShowFilters()" pTooltip="Show Filters" *ngIf="!showFilters"></span>

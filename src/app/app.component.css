@@ -30,6 +30,7 @@
   min-width: 50rem;
   --name-col-width: 350px;
   --time-col-width: 250px;
+  --updated-col-width: 80px;
   --type-col-width: 300px;
   --name-col-width: 350px;
 }
@@ -46,6 +47,16 @@
   width: var(--time-col-width);
 }
 
+.updated-col {
+  vertical-align: top;
+  width: var(--updated-col-width);
+  min-width: var(--updated-col-width);
+}
+
+.updated-col-cell {
+  font-size: 10px;
+}
+
 .type-col {
   width: var(--type-col-width);
 }
@@ -57,7 +68,7 @@
 
 .fields-col {
   min-width: 300px;
-  width: calc(100% - var(--name-col-width) - var(--time-col-width) - var(--type-col-width));
+  width: calc(100% - var(--name-col-width) - var(--time-col-width) - var(--updated-col-width) - var(--type-col-width));
 }
 
 .no-things-wrap {

@@ -136,7 +136,7 @@ export class ThingService {
     this.remindersCleanup = [];
   }
   
-  postGetAllThings(): void {
+  postGetAllThings(details?: { fromService?: boolean }): void {
     const nowDate = new Date();
     
     this.data = this.data.map((current: Thing) => {
@@ -210,7 +210,7 @@ export class ThingService {
     // Sort our reminders with the closest to completion at the top
     this.reminders.sort((a, b) => { return (a.time && b.time) ? a.time?.getTime() - b.time?.getTime() : 0 });
     
-    console.log("Get Things", this.data);
+    console.log((details && details.fromService ? "--> ": "") + "Get Things", this.data);
     console.log("Reminders", this.reminders);
     
     // Dispatch a resize event in case the rows changed
@@ -227,7 +227,7 @@ export class ThingService {
         Utility.showError('Failed to retrieve your Things');
         console.error(err);
       },
-      complete: () => this.postGetAllThings()
+      complete: () => this.postGetAllThings({ fromService: true })
     });
   }
   

@@ -33,7 +33,8 @@
                       class="consistent-field" appendTo="body" ></p-calendar>
         </td>
         <td>
-          <p-checkbox [(ngModel)]="actOn.reminder" [binary]="true" label="Reminder?"
+          <p-checkbox [(ngModel)]="actOn.reminder" (onChange)="reminderCheckboxChanged()"
+                      [binary]="true" label="Reminder?"
                       pTooltip="Click to make this Thing a reminder that will display time left and notify you when due" />
         </td>
       </tr>
@@ -81,7 +82,8 @@
   </div>
   
   <ng-template pTemplate="footer">
-    <p-button (onClick)="handleDeleteThing($event)" icon="pi pi-trash" [rounded]="true" severity="danger" pTooltip="Delete this Thing" class="fleft"/>
+    <p-button (onClick)="handleDeleteThing($event)" *ngIf="isEdit()"
+              icon="pi pi-trash"  [rounded]="true" severity="danger" pTooltip="Delete this Thing" class="fleft"/>
     <p-button (onClick)="hide()" label="Cancel" icon="pi pi-times" iconPos="left" severity="secondary"/>
     <p-button (onClick)="submit()" label="Save Thing" icon="pi pi-check" iconPos="left"/>
     <p-confirmPopup />

@@ -26,9 +26,16 @@ MAIN FEATURES:
 -- Try server side rendering
 -- Try signals and NgRx data store for sharing between parts of app
 
-- Reports with custom queries to generate, as well as charts (could be using ChartModule from PrimeNG)
+- User login, tokens for API, plus settings/profile page
 
-- User login, tokens for API, plus settings
+- Better and more consistent and centralized logging, with levels depending on deployment/environment
+
+- Do a proper pass and componentize any elements that need it
+-- Such as menu dial, including it's drag and drop features, table itself maybe?
+
+- Validation across the app - from 'required' custom fields to dialogs, etc.
+
+- Reports with custom queries to generate, as well as charts (could be using ChartModule from PrimeNG)
 
 - Eventually do lazy loading on pagination, for large amounts of records
 -- Or dropdown of timeframe to pull data from - always simpler and cleaner in regards to sort/filter/etc.
@@ -36,17 +43,10 @@ MAIN FEATURES:
 --- Mostly also to stop write/updates from slowing down once you're at 10,000+ records in a single file
 --- Similarly should do monthly/yearly backups of our data files automatically on the backend
 
-- Better and more consistent and centralized logging, with levels depending on deployment/environment
-
-- Do a proper pass and componentize any elements that need it
--- Such as menu dial, including it's drag and drop features, table itself maybe?
-
 TODO:
 - Update Readme.md once the app is close to done
 - Remove old-Utility.js once anything of value has been copied over
 - Timezone support for Reminders and general dates? Only necessary if we foresee acting on the server from a client in a different timezone
-- Might be nice to highlight any newly added Thing, especially if there are ones in the future, as sorting by date means it's hard to tell what was added
--- Alternatively do we need an "Update/Create Date" field in thing.ts and we sort under the hood by that?
 - Put our revision or version number somewhere on the page? Pulled from environment file automatically?
 - Detect browser resume on mobile devices
 - "Demo mode" (once we have user login) that lets you explore the app without changing data, with a free/auto account, and a bunch of default stuff. Could swap Storage Service for this case?
@@ -55,9 +55,7 @@ TODO:
 -- File a bug with PrimeNG?
 - Tweak loading states so the entire table doesn't disappear while fetching
 - Eventually have Photo as a type to upload images to Things
-- Look at date-fns (currently used) vs Day.js vs Luxon, consider bundle size and features used
 - Where does Inter-roman and Inter-italic font come from? PrimeNG? Slightly big size
 - Have a "looking back" / "remember this?" feature that shows you memories from the same time X months/years ago, sort of like Facebook. Toggleable option of course
 - Have an "annual repeat" feature for reminders, likely don't want more granular as we're not intending to be a full scheduling app
-- Validation across the app - from 'required' custom fields to dialogs, etc.
 - Autosort template list (when adding a new Thing) by grouped select items of Regularly Used, less frequent, etc.

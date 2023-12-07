@@ -28,7 +28,7 @@ export class UserService {
       }
     });
     
-    // TODO If we don't have initial settings, we could do a save to the file with default values? Less flexible if the defaults change, but easier to have a tracked copy and something to edit directly while debugging
+    // TODO Temporarily we might not have a settings file, but once we have user login done we for sure will (at a minimum for their login information)
     this._backend.getSettings().subscribe({
       next: res => {
         this._settings = UserSettings.cloneFrom(res);

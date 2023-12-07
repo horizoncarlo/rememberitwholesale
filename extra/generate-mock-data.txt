@@ -10,6 +10,7 @@ Go to https://json-generator.com/ and paste the following to make ~30,000 record
     color: function() {
       return "#" + Math.floor(Math.random() * 16777215).toString(16).padEnd(6, "0");
     },
-    reminder: '{{random(true, false)}}'
+    reminder: '{{random(true, false)}}',
+    updated: '{{date(new Date(2022, 0, 1), new Date())}}'
   }
 ]

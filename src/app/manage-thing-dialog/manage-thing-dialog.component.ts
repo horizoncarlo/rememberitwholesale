@@ -66,11 +66,18 @@ export class ManageThingDialogComponent {
     this.isShowing ? this.hide() : this.showAdd();
   }
   
+  reminderCheckboxChanged() : void {
+    if (this.actOn && this.actOn.reminder && !this.actOn.timeInFuture()) {
+      Utility.showInfo('Normally Reminders are in the future');
+    }
+  }
+  
   templateChanged(newVal: Template | null): void {
     this.selectedTemplate = newVal;
     
     // Apply our initial reminder state if we have it
-    if (this.selectedTemplate) {
+    // Note if we've manually set reminder, we won't overwrite that
+    if (this.selectedTemplate && !this.actOn.reminder) {
       this.actOn.reminder = this.selectedTemplate.initialReminder;
     }
   }

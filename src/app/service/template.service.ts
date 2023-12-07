@@ -79,7 +79,7 @@ export class TemplateService  {
           return Template.cloneFrom(current);
         }).toSorted((a: Template, b: Template) => a.name.localeCompare(b.name));
         
-        console.log("Get Templates", this.data);
+        console.log("--> Get Templates", this.data);
       },
       error: err => {
         this.loading = false;

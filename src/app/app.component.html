@@ -54,7 +54,7 @@
          class="thing-table" styleClass="p-datatable-striped"
          selectionMode="multiple" [(selection)]="selectedRows"
          (sortFunction)="customSort($event)" [customSort]="true"
-         sortField="time" [sortOrder]="-1"
+         sortField="updated" [sortOrder]="-1"
          [globalFilterFields]="['name', 'time', 'templateType', 'reminder']"
          [paginator]="getUser().paginatorTable" [rows]="getUser().paginatorRows"
          [pageLinks]="3" [alwaysShowPaginator]="false" [showFirstLastIcon]="false" [showCurrentPageReport]="true"
@@ -79,6 +79,17 @@
         <span class="pi pi-filter header-tiny-button header-tiny-button-color" (click)="toggleShowFilters()" pTooltip="Show Filters" *ngIf="!showFilters"></span>
         <span class="pi pi-filter-slash header-tiny-button header-tiny-button-color" (click)="toggleShowFilters()" pTooltip="Hide Filters" *ngIf="showFilters"></span>
       </th>
+      <!-- TODO Need to repeat ourselves here, which isn't great, to be able to have a dynamic rowspan. Can't use [rowspan] or {{}}-->
+      <ng-container *ngIf="showFilters">
+        <th rowspan="2" pSortableColumn="updated" class="updated-col center" pTooltip="Last Updated">
+          Last<br/>Updated<br/><p-sortIcon field="updated" />
+        </th>
+      </ng-container>
+      <ng-container *ngIf="!showFilters">
+        <th pSortableColumn="updated" class="updated-col center" pTooltip="Last Updated">
+          <p-sortIcon field="updated" />
+        </th>
+      </ng-container>
     </tr>
     <ng-container *ngIf="showFilters">
       <tr>
@@ -111,11 +122,14 @@
       <td colspan="2">
         {{ data.getFieldsAsString() }}
       </td>
+      <td class="updated-col-cell" pTooltip="{{data.updated | date: 'medium'}}">
+        {{ data.getUpdated() }}
+      </td>
     </tr>
   </ng-template>
   <ng-template *ngIf="!things.loading" pTemplate="emptymessage" let-columns>
     <tr>
-      <td colspan="5" class="center">
+      <td colspan="6" class="center">
         No data matches your search
       </td>
     </tr>
@@ -140,7 +154,7 @@
 </div>
 
 <riw-manage-thing-dialog #manageThing (manageTemplateEvent)="manageTemplate.show($event)"
-                         (onDelete)="confirmDeleteThing($event.thing, $event.event)"
+                         (onDelete)="confirmDeleteSelected($event.event)"
                          (onEdit)="doneEditThing($event)"/>
 <riw-manage-template-dialog #manageTemplate />
 <riw-global-search-dialog #globalSearch [searchFunction]="globalFilterTable.bind(this)"/>

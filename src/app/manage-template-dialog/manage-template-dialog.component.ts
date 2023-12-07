@@ -205,7 +205,7 @@ export class ManageTemplateDialogComponent {
       this.hide();
     }
     else if (this.operation === 'delete') {
-      let message = 'Are you sure you want to delete "' + this.actOn.name + "'";
+      let message = 'Are you sure you want to delete the "' + this.actOn.name + "' Template?";
       if (this.deleteThings) {
         message += ' and ' + this.lastCheckCount + ' related Thing' + Utility.pluralNum(this.lastCheckCount);
       }

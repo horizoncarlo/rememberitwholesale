@@ -498,15 +498,17 @@ export class AppComponent implements OnInit, OnDestroy {
     return toReturn;
   }
   
-  confirmDeleteThing(toDelete: Thing, event: Event): void {
-    this.selectedRows = [toDelete];
-    this.confirmDeleteSelected(event);
-  }
-  
   confirmDeleteSelected(event: Event | null, isDialog?: boolean, header?: string): void {
     if (this.hasSelectedRows()) {
+      // If we only have a single Thing show it's name, otherwise use the selected number of rows
+      const message = 'Are you sure you want to delete ' +
+        (this.selectedRows.length === 1 ?
+          ('the "' + this.selectedRows[0].name + '"') :
+          (this.selectedRows.length)) +
+        ' Thing' + Utility.plural(this.selectedRows) + '?';
+      
       const opts: Confirmation = {
-        message: 'Are you sure you want to delete ' + this.selectedRows.length + ' Thing' + Utility.plural(this.selectedRows) + '?',
+        message: message,
         icon: 'pi pi-exclamation-triangle',
         accept: () => {
           this.things.deleteThings(this.selectedRows);
@@ -579,6 +581,7 @@ export class AppComponent implements OnInit, OnDestroy {
   
   toggleShowFilters(): void {
     this.showFilters = !this.showFilters;
+    this.userService.setUserProp('showFilters', this.showFilters);
     this.thingTable.reset();
     Utility.fireWindowResize();
   }
@@ -609,13 +612,13 @@ export class AppComponent implements OnInit, OnDestroy {
         let result = null;
         
         // Get all our missing cases out of the way
-        if (value1 === null && value2 !== null) {
+        if ((!value1 || value1 === null) && (!value2 || value2 !== null)) {
           result = -1;
         }
-        else if (value1 !== null && value2 === null) {
+        else if (value1 !== null && (!value2 || value2 === null)) {
           result = 1;
         }
-        else if (value1 === null && value2 === null) {
+        else if ((!value1 || value1 === null) && value2 === null) {
           result = 0;
         }
         // Can handle strings in a basic way

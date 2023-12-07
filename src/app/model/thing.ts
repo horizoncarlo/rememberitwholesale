@@ -1,4 +1,4 @@
-import { addMonths, isAfter, isBefore, subHours } from 'date-fns';
+import { addMonths, formatDistanceStrict, isAfter, isBefore, subHours } from 'date-fns';
 import { v4 as uuidv4 } from 'uuid';
 import { TemplateService } from '../service/template.service';
 import { Utility } from '../util/utility';
@@ -10,11 +10,12 @@ export const DEFAULT_ID = "progress";
 export class Thing {
   name: string;
   templateType: string = '';
-  fields: TemplateField[] = [];
   id: string;
   time?: Date;
   color?: string;
   reminder?: boolean;
+  updated: Date | undefined;
+  fields: TemplateField[] = [];
   
   constructor(name: string,
               templateType: string = TemplateService.getDefaultName(),
@@ -23,6 +24,7 @@ export class Thing {
                 color?: string,
                 time?: Date,
                 reminder?: boolean,
+                updated: Date | undefined,
                 fields?: TemplateField[],
               }) {
     this.name = name;
@@ -41,6 +43,15 @@ export class Thing {
       this.time = this.roundDownToHour(new Date());
     }
     
+    // Do the same casting for Updated
+    if (options && options.updated) {
+      this.updated = Utility.isValidString(options.updated) ? new Date(options.updated) : options.updated;
+    }
+    // Otherwise use no date
+    else {
+      delete this.updated;
+    }
+    
     // If we have fields get them as actual TemplateField objects
     if (Utility.hasItems(this.fields)) {
       this.fields = this.fields.map((field) => {
@@ -51,7 +62,7 @@ export class Thing {
   
   static cloneFrom(source: Thing): Thing {
     return new Thing(source.name, source.templateType,
-                     { id: source.id, color: source.color, time: source.time, reminder: source.reminder, fields: source.fields });
+                     { id: source.id, color: source.color, time: source.time, reminder: source.reminder, updated: source.updated, fields: source.fields });
   }
   
   roundDownToHour(time: Date): Date {
@@ -62,6 +73,30 @@ export class Thing {
     time.setMinutes(0, 0, 0); // Resets also seconds and milliseconds
 
     return time;
+  }
+  
+  getUpdated(): string {
+    if (this.updated) {
+      let toReturn = formatDistanceStrict(this.updated, new Date(), { addSuffix: true });
+      
+      // If we're at "seconds", just ditch it. Don't want to have to update the count, and not much value in it
+      if (toReturn.indexOf('second') !== -1) {
+        return '';
+      }
+      
+      // Otherwise shorthand format
+      toReturn = toReturn.replace(' minute', 'm');
+      toReturn = toReturn.replace(' hour', 'h');
+      toReturn = toReturn.replace(' day', 'd');
+      toReturn = toReturn.replace(' year', 'y');
+      toReturn = toReturn.replace(' year', 'y');
+      
+      // Then remove any plural leftovers
+      toReturn = toReturn.replace('s', '');
+      
+      return toReturn;
+    }
+    return '';
   }
   
   applyTemplateTo(source: Template | null): void {
@@ -85,6 +120,9 @@ export class Thing {
     if (!Utility.isValidString(this.templateType)) {
       this.templateType = TemplateService.getDefaultName();
     }
+    
+    // Set in our updated date
+    this.updated = new Date();
     
     // Can slightly trim down the object by removing false/empty values
     if (!this.reminder) { delete this.reminder; }

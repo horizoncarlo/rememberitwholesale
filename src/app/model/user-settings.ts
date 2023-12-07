@@ -1,6 +1,7 @@
 
 export class UserSettings {
   // TODO Wrap user settings in a signal once migrated to Ang 17 so that any change will auto-persist to the backend, instead of RxJS
+  // TODO Will need a user profile page/dialog, with certain settings exposed that can't be dynamically set from the app (such as forcing the dial)
   // TODO Username concept for logging in: username: string
   forceDial: boolean = false;
   paginatorTable: boolean = true;

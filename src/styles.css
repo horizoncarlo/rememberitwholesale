@@ -62,3 +62,7 @@ html {
 .favorite-dialog .p-dialog-content {
   display: block !important;
 }
+
+.updated-col-sort svg {
+  margin-left: 0;
+}

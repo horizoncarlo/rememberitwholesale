@@ -79,9 +79,9 @@ export class Thing {
     if (this.updated) {
       let toReturn = formatDistanceStrict(this.updated, new Date(), { addSuffix: true });
       
-      // If we're at "seconds", just ditch it. Don't want to have to update the count, and not much value in it
+      // If we're at "seconds", just return simple text instead
       if (toReturn.indexOf('second') !== -1) {
-        return '';
+        return 'New';
       }
       
       // Otherwise shorthand format

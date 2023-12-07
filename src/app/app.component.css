@@ -48,9 +48,9 @@
 }
 
 .updated-col {
-  vertical-align: top;
   width: var(--updated-col-width);
   min-width: var(--updated-col-width);
+  max-width: var(--updated-col-width);
 }
 
 .updated-col-cell {
@@ -68,7 +68,7 @@
 
 .fields-col {
   min-width: 300px;
-  width: calc(100% - var(--name-col-width) - var(--time-col-width) - var(--updated-col-width) - var(--type-col-width));
+  width: calc(100% - var(--updated-col-width) - var(--name-col-width) - var(--time-col-width) - var(--type-col-width));
 }
 
 .no-things-wrap {

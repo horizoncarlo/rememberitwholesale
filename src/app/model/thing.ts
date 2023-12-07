@@ -88,7 +88,7 @@ export class Thing {
       toReturn = toReturn.replace(' minute', 'm');
       toReturn = toReturn.replace(' hour', 'h');
       toReturn = toReturn.replace(' day', 'd');
-      toReturn = toReturn.replace(' year', 'y');
+      toReturn = toReturn.replace(' month', 'mon');
       toReturn = toReturn.replace(' year', 'y');
       
       // Then remove any plural leftovers

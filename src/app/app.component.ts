@@ -569,7 +569,7 @@ export class AppComponent implements OnInit, OnDestroy {
       }, 0);
     }
     else {
-      Utility.showWarn('No favorite template has been set yet');
+      Utility.showWarn('No Favorite Template has been set yet');
     }
   }
   

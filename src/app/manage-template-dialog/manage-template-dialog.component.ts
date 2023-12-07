@@ -166,7 +166,7 @@ export class ManageTemplateDialogComponent {
   
   submit(event: Event): void {
     if (!this.actOn) {
-      return Utility.showError('Select a template to work on');
+      return Utility.showError('Select a Template to work on');
     }
     
     // Determine what part of CRUD were doing and apply the persistence changes
@@ -205,7 +205,7 @@ export class ManageTemplateDialogComponent {
       this.hide();
     }
     else if (this.operation === 'delete') {
-      let message = 'Are you sure you want to delete the "' + this.actOn.name + "' Template?";
+      let message = 'Are you sure you want to delete the "' + this.actOn.name + "' Template";
       if (this.deleteThings) {
         message += ' and ' + this.lastCheckCount + ' related Thing' + Utility.pluralNum(this.lastCheckCount);
       }

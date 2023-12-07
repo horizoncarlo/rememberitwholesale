@@ -83,7 +83,7 @@ export class TemplateService  {
       },
       error: err => {
         this.loading = false;
-        Utility.showError('Failed to retrieve your templates');
+        Utility.showError('Failed to retrieve your Templates');
         console.error(err);
       },
       complete: () => this.loading = false
@@ -95,21 +95,21 @@ export class TemplateService  {
       toAdd.prepareForSave();
     }
     else {
-      Utility.showError('Invalid template, ensure all fields are filled');
+      Utility.showError('Invalid Template, ensure all fields are filled');
       return;
     }
     
-    console.log("Going to save new template", toAdd);
+    console.log("Going to save new Template", toAdd);
     
     this.loading = true;
     this.backend.submitTemplate(toAdd).subscribe({
       next: res => {
-        Utility.showSuccess('Successfully saved your new template', toAdd.name);
+        Utility.showSuccess('Successfully saved your new Template', toAdd.name);
         this.getAllTemplates();
       },
       error: err => {
         this.loading = false;
-        Utility.showError('Failed to save your new template');
+        Utility.showError('Failed to save your new Template');
         console.error(err);
       },
       complete: () => this.loading = false
@@ -121,22 +121,22 @@ export class TemplateService  {
       toAdd.prepareForSave();
     }
     else {
-      Utility.showError('Invalid template, ensure all fields are filled');
+      Utility.showError('Invalid Template, ensure all fields are filled');
       return;
     }
     
-    console.log("Going to save favorite template", toAdd);
+    console.log("Going to save Favorite Template", toAdd);
     
     this.loading = true;
     this.backend.submitFavoriteTemplate(toAdd).subscribe({
       next: res => {
         this.favorite = toAdd;
         
-        Utility.showSuccess('Successfully set your favorite template', this.favorite.name);
+        Utility.showSuccess('Successfully set your Favorite Template', this.favorite.name);
       },
       error: err => {
         this.loading = false;
-        Utility.showError('Failed to set your favorite template');
+        Utility.showError('Failed to set your Favorite Template');
         console.error(err);
       },
       complete: () => this.loading = false
@@ -179,7 +179,7 @@ export class TemplateService  {
         }
       },
       error: err => {
-        Utility.showError('Failed to retrieve your favorite template');
+        Utility.showError('Failed to retrieve your Favorite Template');
         console.error(err);
       }
     })

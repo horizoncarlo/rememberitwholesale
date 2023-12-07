@@ -109,7 +109,7 @@ function getInMemoryTemplates() {
     try{
       saveTemplatesMemoryToFile();
     }catch (err) {
-      console.error("Failed to save default templates", err);
+      console.error("Failed to save default Templates", err);
     }
   }
   
@@ -187,10 +187,10 @@ app.post("/things", (req, res) => {
       failError = 'Missing ID';
     }
     if (!req.body.name || req.body.name.trim().length === 0) {
-      failError = 'Missing name';
+      failError = 'Missing Name';
     }
     if (!req.body.templateType || req.body.templateType.trim().length === 0) {
-      failError = 'Missing template type';
+      failError = 'Missing Template type';
     }
   }
   else {

@@ -1,4 +1,5 @@
 import { Injectable, inject } from '@angular/core';
+import { Observable, map } from 'rxjs';
 import { Template } from '../model/template';
 import { TemplateFavorite } from '../model/template-favorite';
 import { Utility } from '../util/utility';
@@ -50,7 +51,7 @@ export class TemplateService  {
     return null;
   }
   
-  filteredData(hideDefaults: boolean = false): Template[] {
+  getFilteredData(hideDefaults: boolean = false): Template[] {
     return this.data.filter((template) => {
       if (hideDefaults) {
         return !template.isDefault;
@@ -70,17 +71,30 @@ export class TemplateService  {
     return Utility.hasItems(this.data) ? this.data.length : 0;
   }
   
-  getAllTemplates(): void {
+  getAllTemplatesObs(): Observable<any> {
     this.loading = true;
-    this.backend.getAllTemplates().subscribe({
-      next: res => {
+    
+    return this.backend.getAllTemplates().pipe(map(res => {
         // Cast our results for better type checking, and sort by name
         this.data = res.map((current: Template) => {
           return Template.cloneFrom(current);
         }).toSorted((a: Template, b: Template) => a.name.localeCompare(b.name));
         
         console.log("--> Get Templates", this.data);
+        this.loading = false;
+        /*
+      error: err => {
+        this.loading = false;
+        Utility.showError('Failed to retrieve your Templates');
+        console.error(err);
       },
+      complete: () => this.loading = false
+      */
+    }));
+  }
+  
+  getAllTemplates(): void {
+    this.getAllTemplatesObs().subscribe({
       error: err => {
         this.loading = false;
         Utility.showError('Failed to retrieve your Templates');

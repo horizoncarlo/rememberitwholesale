@@ -78,13 +78,13 @@
                     "builder": "@angular-devkit/build-angular:dev-server",
                     "configurations": {
                         "production": {
-                            "browserTarget": "rememberitwholesale:build:production"
+                            "buildTarget": "rememberitwholesale:build:production"
                         },
                         "development": {
-                            "browserTarget": "rememberitwholesale:build:development"
+                            "buildTarget": "rememberitwholesale:build:development"
                         },
                         "live": {
-                          "browserTarget": "rememberitwholesale:build:live"
+                          "buildTarget": "rememberitwholesale:build:live"
                         }
                     },
                     "defaultConfiguration": "development"

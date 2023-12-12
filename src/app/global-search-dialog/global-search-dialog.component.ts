@@ -14,7 +14,14 @@ export class GlobalSearchDialogComponent {
   isShowing: boolean = false;
   
   async performSearch() {
-    this.searchFunction(this.searchText).then((res: number) => this.resultCount = res );
+    this.searchFunction(this.searchText).then((res: number) => {
+      this.resultCount = res;
+      
+      // Warn if we don't get any results
+      if (this.resultCount === 0) {
+        Utility.showWarn('No results found');
+      }
+    });
     
     if (this.searchInput && this.searchInput.nativeElement) {
       this.searchInput.nativeElement.select();
@@ -33,7 +40,18 @@ export class GlobalSearchDialogComponent {
   }
   
   hide(): void {
+    Utility.clearMessages(); // Clear any "no results found"
+    
     this.isShowing = false;
+  }
+  
+  resetOnHide(): void {
+    // If we are hiding and don't have results we'll want to reset
+    if (this.resultCount === 0) {
+      this.performReset();
+    }
+    
+    this.hide();
   }
   
   hasSearchText(): boolean {

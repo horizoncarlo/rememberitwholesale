@@ -1,9 +1,37 @@
-- PrimeNG is only free for the latest version, afterwards previous versions move to LTS which is paid. So forced to keep up to date.
--- See https://primeng.org/lts
+MAIN FEATURES:
+BLOCK- User login, tokens for API, plus settings/profile page
 
-- Tree Select could be a richer alternative to plain select for multiple templates, if we go the heirarchy way
--- Org Chart could help in the organizing and creation of the heirarchy
-- Would Tree Table be better for our main table?
+BLOCK- Validation across the app - from 'required' custom fields to dialogs, etc.
+
+- Better and more consistent and centralized logging, with levels depending on deployment/environment
+
+- Do a proper pass and componentize any elements that need it
+-- Such as menu dial, including it's drag and drop features, table itself maybe?
+
+- Reports with custom queries to generate, as well as charts (could be using ChartModule from PrimeNG)
+
+- Eventually do lazy loading on pagination, for large amounts of records
+-- Or dropdown of timeframe to pull data from - always simpler and cleaner in regards to sort/filter/etc.
+-- Could segment JSON our files by Year, to trim down the total number of records fetched, then have a dropdown of each year that will work against the relevant file
+--- Mostly also to stop write/updates from slowing down once you're at 10,000+ records in a single file
+--- Similarly should do monthly/yearly backups of our data files automatically on the backend
+
+TODO:
+- Try server side rendering using Ang 17
+- Try signals and NgRx data store for sharing between parts of app using Ang 17
+- Update Readme.md once the app is close to done
+- Remove old-Utility.js once anything of value has been copied over
+- Timezone support for Reminders and general dates? Only necessary if we foresee acting on the server from a client in a different timezone
+- Put our revision or version number somewhere on the page? Pulled from environment file automatically?
+- Detect browser resume on mobile devices
+- "Demo mode" (once we have user login) that lets you explore the app without changing data, with a free/auto account, and a bunch of default stuff. Could swap Storage Service for this case?
+- Manage tabIndex focus order, especially for mobile
+- Tweak loading states so the entire table doesn't disappear while fetching
+- Eventually have Photo as a type to upload images to Things
+- Where does Inter-roman and Inter-italic font come from? PrimeNG? Slightly big size
+- Have a "looking back" / "remember this?" feature that shows you memories from the same time X months/years ago, sort of like Facebook. Toggleable option of course
+- Have an "annual repeat" feature for reminders, likely don't want more granular as we're not intending to be a full scheduling app
+- Autosort template list (when adding a new Thing) by grouped select items of Regularly Used, less frequent, etc.
 
 LOADING:
 - Block entire page, header and all, with a spinner in the middle (after a couple seconds, to prevent flashing)
@@ -21,46 +49,13 @@ LOADING:
 
 - Have specific utility calls, like "top right spinner on/off", that hide the logic in the loading service itself
 
-MAIN FEATURES:
-- Update to Angular 17 (need PrimeNG to update first https://github.com/primefaces/primeng/issues/14063)
--- Try server side rendering
--- Try signals and NgRx data store for sharing between parts of app
-
-- User login, tokens for API, plus settings/profile page
-
-- Better and more consistent and centralized logging, with levels depending on deployment/environment
-
-- Do a proper pass and componentize any elements that need it
--- Such as menu dial, including it's drag and drop features, table itself maybe?
-
-- Validation across the app - from 'required' custom fields to dialogs, etc.
-
-- Reports with custom queries to generate, as well as charts (could be using ChartModule from PrimeNG)
-
-- Eventually do lazy loading on pagination, for large amounts of records
--- Or dropdown of timeframe to pull data from - always simpler and cleaner in regards to sort/filter/etc.
--- Could segment JSON our files by Year, to trim down the total number of records fetched, then have a dropdown of each year that will work against the relevant file
---- Mostly also to stop write/updates from slowing down once you're at 10,000+ records in a single file
---- Similarly should do monthly/yearly backups of our data files automatically on the backend
-
-TODO:
-- Update Readme.md once the app is close to done
-- Remove old-Utility.js once anything of value has been copied over
-- Timezone support for Reminders and general dates? Only necessary if we foresee acting on the server from a client in a different timezone
-- Put our revision or version number somewhere on the page? Pulled from environment file automatically?
-- Detect browser resume on mobile devices
-- "Demo mode" (once we have user login) that lets you explore the app without changing data, with a free/auto account, and a bunch of default stuff. Could swap Storage Service for this case?
-- Manage tabIndex focus order, especially for mobile
-- Tweak loading states so the entire table doesn't disappear while fetching
-- Eventually have Photo as a type to upload images to Things
-- Where does Inter-roman and Inter-italic font come from? PrimeNG? Slightly big size
-- Have a "looking back" / "remember this?" feature that shows you memories from the same time X months/years ago, sort of like Facebook. Toggleable option of course
-- Have an "annual repeat" feature for reminders, likely don't want more granular as we're not intending to be a full scheduling app
-- Autosort template list (when adding a new Thing) by grouped select items of Regularly Used, less frequent, etc.
-
-PRIMENG BUGS (file these?):
+PRIMENG BUGS:
 - Would be nice to not have to manually set `tooltipPosition="left"` (or bottom) in cases where the tooltip is smooshed along the right edge. Seems to autocalculate for some but not all
 - Speed Dial has an overlay that extends below the visible button by 44px
+*- FILED: https://github.com/primefaces/primeng/issues/14330
 -- Inspect around the Speed Dial to see
 -- This blocks the Selected Rows clear button when a reminder is present (as the table gets pushed down and becomes below the overlay)
 -- A hacky solution could be to move the dial down when the Reminders are shown, but the view would jump and it's a lot of math if we have multiple reminders
+
+- PrimeNG is only free for the latest version, afterwards previous versions move to LTS which is paid. So forced to keep up to date.
+-- See https://primeng.org/lts

@@ -19,6 +19,7 @@ BLOCK- Validation across the app - from 'required' custom fields to dialogs, etc
 TODO:
 - Try server side rendering using Ang 17
 - Try signals and NgRx data store for sharing between parts of app using Ang 17
+- Try new control flow instead of ngIf/ngFor, etc. from Ang 17
 - Update Readme.md once the app is close to done
 - Remove old-Utility.js once anything of value has been copied over
 - Timezone support for Reminders and general dates? Only necessary if we foresee acting on the server from a client in a different timezone

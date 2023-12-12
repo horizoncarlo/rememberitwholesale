@@ -19,7 +19,7 @@ export class GlobalSearchDialogComponent {
       
       // Warn if we don't get any results
       if (this.resultCount === 0) {
-        Utility.showWarn('No results found');
+        Utility.showWarn('No data matches your search');
       }
     });
     

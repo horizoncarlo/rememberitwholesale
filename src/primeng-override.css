@@ -3,11 +3,12 @@
   --table-paginator-height: 70px;
 }
 
-/* Make our top loading bar narrower, and speed it up slightly */
+/* Make our top loading bar narrower, speed it up slightly, and make sure we stay above the toolbar */
 .loading-bar .p-progressbar {
   height: var(--progress-bar-height);
   border-radius: 0;
   background-color: black;
+  z-index: 10;
 }
 .loading-bar .p-progressbar .p-progressbar-value::before {
   animation-duration: 1.8s;

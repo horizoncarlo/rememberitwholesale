@@ -18,6 +18,10 @@ export class TemplateDropdownComponent implements OnInit {
   filteredData: Template[] = [];
   
   ngOnInit(): void {
+    this.refreshData();
+  }
+  
+  refreshData(): void {
     // TODO We should just get all the templates once on app load, and use a local cached version we update on any related operation. Currently this is over-calling as the dropdown shows. Note it IS handy to reset data, such as editing and removing fields from a template, and not wanting to keep those changes
     // Also note without the setTimeout we get the "NG0100: Expression has changed after it was checked" error
     setTimeout(() => {

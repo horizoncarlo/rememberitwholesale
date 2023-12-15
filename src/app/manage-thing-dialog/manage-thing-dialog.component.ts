@@ -1,9 +1,10 @@
-import { Component, EventEmitter, Output, inject } from '@angular/core';
+import { Component, EventEmitter, Output, ViewChild, inject } from '@angular/core';
 import { Template, TemplateEvent } from '../model/template';
 import { TemplateField } from '../model/template-field';
 import { Thing } from '../model/thing';
 import { TemplateService } from '../service/template.service';
 import { ThingService } from '../service/thing.service';
+import { TemplateDropdownComponent } from '../template-dropdown/template-dropdown.component';
 import { Utility } from '../util/utility';
 
 @Component({
@@ -19,6 +20,7 @@ export class ManageThingDialogComponent {
   selectedTemplate: Template | null = null;
   isShowing: boolean = false;
   fieldTypes = TemplateField.TYPES;
+  @ViewChild('templateDropdown') templateDropdown!: TemplateDropdownComponent;
   @Output() manageTemplateEvent = new EventEmitter<TemplateEvent>();
   @Output() onDelete = new EventEmitter<{ thing: Thing, event: Event }>();
   @Output() onEdit = new EventEmitter<Thing>();
@@ -37,7 +39,7 @@ export class ManageThingDialogComponent {
     this.actOn = new Thing('');
     this.templateChanged(this.templateService.getFirstDefaultTemplate());
     
-    this.isShowing = true;
+    this.show();
   }
   
   showEdit(selectedRows: Thing[]) {
@@ -51,11 +53,17 @@ export class ManageThingDialogComponent {
         this.templateChanged(toSet);
       }
       
-      this.isShowing = true;
+      this.show();
     }
     else {
       Utility.showWarn('Select a Thing row to edit');
     }
+  }
+  
+  show(): void {
+    this.templateDropdown.refreshData();
+    
+    this.isShowing = true;
   }
   
   hide(): void {

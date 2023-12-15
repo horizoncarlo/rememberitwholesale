@@ -1,3 +1,4 @@
+<!-- TODO Previously would bind directly to templateService.getFilteredData(hideDefaults), but due to a PrimeNG bug we have to go to a static value instead https://github.com/primefaces/primeng/issues/14319 -->
 <p-dropdown [options]="filteredData"
             optionLabel="name"
             appendTo="body"
@@ -10,11 +11,13 @@
   </ng-template>
 </p-dropdown>
 
-<ng-container *ngIf="!hideControls">
+@if (!hideControls) {
   &nbsp;
   <p-button (onClick)="requestCreateTemplate()" icon="pi pi-calendar-plus" [rounded]="true" severity="success" pTooltip="Create a new Template" />
-  <ng-container *ngIf="selectedTemplate && !selectedTemplate.isDefault">
+  @if (selectedTemplate && !selectedTemplate.isDefault) {
     &nbsp;
-    <p-button *ngIf="!!selectedTemplate" (onClick)="requestDeleteTemplate()" icon="pi pi-calendar-times" [rounded]="true" severity="danger" pTooltip="Delete this Template" />
-  </ng-container>
-</ng-container>
+    @if (!!selectedTemplate) {
+      <p-button (onClick)="requestDeleteTemplate()" icon="pi pi-calendar-times" [rounded]="true" severity="danger" pTooltip="Delete this Template" />
+    }
+  }
+}

@@ -2,17 +2,37 @@
 <div [class]="'p-message p-message-' + determineType()" (click)="clickReminder()">
   <div class="p-message-wrapper">
     <span class="p-message-icon">
-      <span class="pi pi-calendar" *ngIf="determineType() === 'info'"></span>
-      <span class="pi pi-clock" *ngIf="determineType() === 'warn'"></span>
-      <span class="pi pi-bell" *ngIf="determineType() === 'error'"></span>
-      <span class="pi pi-calendar-minus" *ngIf="determineType() === 'success'"></span>
+      @if (determineType() === 'info') {
+        <span class="pi pi-calendar"></span>
+      }
+      @else if (determineType() === 'warn') {
+        <span class="pi pi-clock"></span>
+      }
+      @else if (determineType() === 'error') {
+        <span class="pi pi-bell"></span>
+      }
+      @else if (determineType() === 'success') {
+        <span class="pi pi-calendar-minus"></span>
+      }
     </span>
     <span class="p-message-summary">
-      <span *ngIf="overdue" class="subtext">MISSED -</span>
+      @if (overdue) {
+        <span class="subtext">MISSED -</span>
+      }
       {{thing.name}}
-      <span *ngIf="!overdue"> {{distanceDate()}} ({{relativeDate()}})</span>
-      <span *ngIf="overdue"> {{relativeDate()}}</span>
+      @if (overdue) {
+        {{relativeDate()}}
+      }
+      @else {
+        {{distanceDate()}} ({{relativeDate()}})
+      }
     </span>
-    <span class="p-message-detail">{{thing.templateType}}<span *ngIf="thing.hasFields()">,</span> {{thing.getFieldsAsString()}}</span>
+    <span class="p-message-detail">
+      {{thing.templateType}}
+      @if (thing.hasFields()) {
+        ,
+      }
+      {{thing.getFieldsAsString()}}
+    </span>
   </div>
 </div>

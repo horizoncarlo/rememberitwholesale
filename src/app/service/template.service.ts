@@ -1,5 +1,5 @@
 import { Injectable, inject } from '@angular/core';
-import { Observable, map } from 'rxjs';
+import { Observable, catchError, map } from 'rxjs';
 import { Template } from '../model/template';
 import { TemplateFavorite } from '../model/template-favorite';
 import { Utility } from '../util/utility';
@@ -82,14 +82,12 @@ export class TemplateService  {
         
         console.log("--> Get Templates", this.data);
         this.loading = false;
-        /*
-      error: err => {
-        this.loading = false;
-        Utility.showError('Failed to retrieve your Templates');
-        console.error(err);
-      },
-      complete: () => this.loading = false
-      */
+    }),
+    catchError(err => {
+      this.loading = false;
+      Utility.showError('Failed to retrieve your Templates');
+      console.error(err);
+      throw(err);
     }));
   }
   

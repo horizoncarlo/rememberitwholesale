@@ -13,7 +13,7 @@
     </div>
     <br/>
     
-    <ng-container *ngIf="operation === 'create'">
+    @if (operation === 'create') {
       <!-- TODO Auto hide (with an option to expand) this help text based on the user account, once they've logged in X number of times, or show again if they haven't logged in in a while-->
       <p>Setup the <b>Name</b> of your template (must be unique between all templates).</p>
       <p>Then you can add as many fields related to the template you want.<br/>
@@ -22,25 +22,33 @@
       <p>Each template also automatically provides a name input for the user to fill in, and an optional date.</p>
       <p>Note for the sake of data integrity you cannot edit a template after creation.</p>
       <table cellspacing="5" cellpading="0" class="template-table">
-        <ng-container *ngIf="actOn">
+        @if (actOn) {
           <tr>
             <td colspan="5">
               <span class="p-float-label">
                 <input #nameField pInputText [(ngModel)]="actOn.name" (keyup.enter)="handleEnterKey(submit.bind(this))"
                       (ngModelChange)="createNameChanged()"/>
                 <label>Template Name</label>
-                <ng-container *ngIf="operation === 'create'">
-                  <span *ngIf="nameIsDuplicate" class="red-error subtext">&nbsp;&nbsp;* Name exists already</span>
-                  <span *ngIf="!nameIsDuplicate" class="green-success subtext">&nbsp;&nbsp;* Name is unique</span>
-                </ng-container>
+                @if (operation === 'create') {
+                  @if (nameIsDuplicate) {
+                    <span class="red-error subtext">&nbsp;&nbsp;* Name exists already</span>
+                  }
+                  @else {
+                    <span class="green-success subtext">&nbsp;&nbsp;* Name is unique</span>
+                  }
+                }
               </span>
             </td>
           </tr>
           <tr>
             <td colspan="5">
               <span class="p-float-label">
-                <input pInputText *ngIf="actOn.color === 'inherit'" value="default (click to change)" [style.cursor]="'alias'" readonly (click)="openColorPicker(colorPicker)" />
-                <input pInputText *ngIf="actOn.color !== 'inherit'" [(ngModel)]="actOn.color" />
+                @if (actOn.color === 'inherit') {
+                  <input pInputText value="default (click to change)" [style.cursor]="'alias'" readonly (click)="openColorPicker(colorPicker)" />
+                }
+                @else {
+                  <input pInputText [(ngModel)]="actOn.color" />
+                }
                 <label>Optional Color coding</label>
                 &nbsp;
                 <p-colorPicker #colorPicker [(ngModel)]="actOn.color" appendTo="body"/>
@@ -53,12 +61,14 @@
               <p-checkbox [(ngModel)]="actOn.initialReminder" [binary]="true" label="Set initially as a Reminder?" pTooltip="If checked, any Thing created from this Template will default to being a reminder"/>
             </td>
           </tr>
-          <tr *ngIf="actOn.hasFields()">
-            <td colspan="5">
-              <hr/>
-            </td>
-          </tr>
-          <ng-container *ngFor="let field of actOn?.fields">
+          @if (actOn.hasFields()) {
+            <tr>
+              <td colspan="5">
+                <hr/>
+              </td>
+            </tr>
+          }
+          @for (field of actOn.fields; track field.property) {
             <tr>
               <td>
                 <p-button icon="pi pi-times" severity="danger" size="small" (onClick)="removeField(field)" />
@@ -85,25 +95,26 @@
                 <p-checkbox [(ngModel)]="field.required" [binary]="true" label="Is Required?" class="checkbox-label-on-left"/>
               </td>
             </tr>
-            <tr *ngIf="field.type === fieldTypes.Radio || field.type === fieldTypes.Dropdown">
-              <td>&nbsp;</td>
-              <td colspan="4">
-                <span class="p-float-label">
-                  <p-chips [(ngModel)]="field.options" [allowDuplicate]="false" [addOnBlur]="true"/>
-                  <label>List of Options</label>
-                </span>
-                &nbsp;<span class="subtext">Type in a unique option and press Enter to add to the list</span>
-              </td>
-            </tr>
-          </ng-container>
-        </ng-container>
+            @if (field.type === fieldTypes.Radio || field.type === fieldTypes.Dropdown) {
+              <tr>
+                <td>&nbsp;</td>
+                <td colspan="4">
+                  <span class="p-float-label">
+                    <p-chips [(ngModel)]="field.options" [allowDuplicate]="false" [addOnBlur]="true"/>
+                    <label>List of Options</label>
+                  </span>
+                  &nbsp;<span class="subtext">Type in a unique option and press Enter to add to the list</span>
+                </td>
+              </tr>
+            }
+          }
+        }
       </table>
-      <ng-container *ngIf="operation === 'create'">
+      @if (operation === 'create') {
         <p-button (onClick)="addField()" icon="pi pi-plus" [rounded]="true" severity="success" pTooltip="Add a new field" />
-      </ng-container>
-    </ng-container>
-    
-    <ng-container *ngIf="operation === 'favorite'">
+      }
+    }
+    @else if (operation === 'favorite') {
       <div class="favorite-wrap">
         <div class="section">
           You can have one Favorite Template at a time, which will pin to the menu<br/>and have some convenience options to make it one-click to submit a Thing.
@@ -114,7 +125,7 @@
                                  (selectedTemplateChange)="favoriteTargetChanged()"
                                  [hideControls]="true" />
         </div>
-        <ng-container *ngIf="actOn">
+        @if (actOn) {
           <div class="section" style="padding-bottom: 15px;">
             <p-checkbox [(ngModel)]="favoriteAutoReminder" [binary]="true" label="Will be a Reminder?"/>
           </div>
@@ -132,21 +143,22 @@
                           [(ngModel)]="favoriteTimeRange"/>
             </div>
           </div>
-          <ng-container *ngIf="actOn.hasFields()">
+          @if (actOn.hasFields()) {
             <div class="section">
               <b>Custom Fields:</b>
               <ul>
-                <li *ngFor="let field of actOn?.fields">
-                  {{field.label}} ({{field.type}})
-                </li>
+                @for (field of actOn.fields; track field.property) {
+                  <li>
+                    {{field.label}} ({{field.type}})
+                  </li>
+                }
               </ul>
             </div>
-          </ng-container>
-        </ng-container>
+          }
+        }
       </div>
-    </ng-container>
-    
-    <ng-container *ngIf="operation === 'delete'">
+    }
+    @else if (operation === 'delete') {
       <div class="delete-wrap">
         <label>Template to Delete:&nbsp;</label>
         <riw-template-dropdown [(selectedTemplate)]="actOn"
@@ -155,13 +167,15 @@
                                [hideControls]="true" />
         <br/>
         <p>By default deleting a template <b>will NOT</b> remove or clear any related Things that used the template.</p>
-        <ng-container *ngIf="actOn">
+        @if (actOn) {
           <p>Note that you <i>can</i> choose to delete all related Things.<br/>Check a count of the selected template to see how far reaching this would be:</p>
           <p-button (onClick)="checkForThings()" label="Count Things" icon="pi pi-search" iconPos="left" severity="secondary"/>
-          <p-checkbox *ngIf="lastCheckCount" [(ngModel)]="deleteThings" [binary]="true" [label]="'Delete ' + lastCheckCount + ' Things as well'" class="checkbox-label-on-left"/>
-        </ng-container>
+          @if (lastCheckCount) {
+            <p-checkbox [(ngModel)]="deleteThings" [binary]="true" [label]="'Delete ' + lastCheckCount + ' Things as well'" class="checkbox-label-on-left"/>
+          }
+        }
       </div>
-    </ng-container>
+    }
   </div>
   <ng-template pTemplate="footer">
     <p-button (onClick)="hide()" label="Cancel" icon="pi pi-times" iconPos="left" severity="secondary"/>

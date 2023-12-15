@@ -72,6 +72,11 @@ export class AppComponent implements OnInit, OnDestroy {
           return;
         }
         
+        // Set our various UI flags
+        this.showFilters = this.userService.getUser().showFilters;
+        this.showReminders = this.userService.getUser().showReminders;
+        this.limitDate = this.userService.getUser().limitDate;
+        
         // As part of PrimeNG config we need to manually enable ripple across the components
         this.primengConfig.ripple = true;
         
@@ -90,11 +95,6 @@ export class AppComponent implements OnInit, OnDestroy {
         if (this.userService.getUser().forceDial) {
           this.useDial = true;
         }
-        
-        // Set our various UI flags
-        this.showFilters = this.userService.getUser().showFilters;
-        this.showReminders = this.userService.getUser().showReminders;
-        this.limitDate = this.userService.getUser().limitDate;
         
         this.calcTableScrollHeight();
         window.addEventListener('resize', this.calcTableScrollHeight.bind(this));

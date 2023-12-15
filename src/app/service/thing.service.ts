@@ -218,9 +218,9 @@ export class ThingService {
     this.loading = false;
   }
 
-  getAllThings(): void {
+  getAllThings(limitDate?: number): void {
     this.preGetAllThings();
-    this.backend.getAllThings().subscribe({
+    this.backend.getAllThings(limitDate).subscribe({
       next: res => this.data = res,
       error: err => {
         this.loading = false;

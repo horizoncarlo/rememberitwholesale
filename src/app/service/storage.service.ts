@@ -15,11 +15,22 @@ const BASE_URL = environment.baseUrl || 'http://localhost:4333/';
 })
 export class StorageService {
   defaultHeaders = { headers: { 'Content-Type': 'application/json' }};
+  storedLimitDate: number | undefined;
   
   constructor(private http: HttpClient) { }
   
-  getAllThings(): Observable<any> {
-    return this.http.get(BASE_URL + 'things');
+  getAllThings(limitDate?: number): Observable<any> {
+    // If we don't have a limitDate defined, fallback to our stored version, or default to -1 (all time)
+    if (typeof limitDate !== 'number') {
+      if (typeof this.storedLimitDate === 'number') {
+        limitDate = this.storedLimitDate;
+      }
+      else {
+        limitDate = -1;
+      }
+    }
+    
+    return this.http.get(BASE_URL + 'things?limit=' + limitDate);
   }
   
   deleteThing(deleteId: string): Observable<any> {

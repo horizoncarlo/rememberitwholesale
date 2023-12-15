@@ -1,8 +1,9 @@
 const express = require("express");
 const app = express();
-const cors = require('cors');
+const cors = require("cors");
 const fs = require("fs");
 const os = require("os");
+const subMinutes = require("date-fns/subMinutes");
 
 // Set some default templates for a new user
 // TODO Once user accounts are finalized, this should likely be part of a larger default dataset (from outside the code) that is set in
@@ -91,10 +92,23 @@ function readSingleFile(name, property, defaultVal) {
   }
 }
 
-function getInMemoryThings() {
+function getInMemoryThings(limitDate) {
   if (inMemory.things === null) {
     readSingleFile(THINGS_FILE, 'things', []);
   }
+  
+  // If we have a date limit, apply it now
+  if (typeof limitDate === 'number' && limitDate > 0) {
+    const desiredDate = subMinutes(new Date(), limitDate).getTime();
+    
+    return inMemory.things.filter(thing => {
+      if (thing.updated) {
+        return new Date(thing.updated).getTime() > desiredDate ? thing : null;
+      }
+      return thing;
+    });
+  }
+  
   return inMemory.things;
 }
 
@@ -174,7 +188,24 @@ function writeSafeFile(name, data, retryCount = 0) {
 /***** API Endpoints *****/
 app.get("/things", (req, res) => {
   console.log("GET Things", getInMemoryThings().length);
-  return res.send(getInMemoryThings()).end();
+  
+  // Determine if we are limiting by date/time
+  let limitDate = -1;
+  if (req && req.query && req.query.limit) {
+    try{
+      limitDate = parseInt(req.query.limit);
+      
+      if (isNaN(limitDate)) {
+        console.warn("Couldn't convert date limit to number [" + req.query.limit + "]");
+        limitDate = -1;
+      }
+    }catch(err) {
+      console.error("Failed to convert passed date limit [" + req.query.limit + "]", err);
+      limitDate = -1;
+    }
+  }
+  
+  return res.send(getInMemoryThings(limitDate)).end();
 });
 
 app.post("/things", (req, res) => {

@@ -10,6 +10,7 @@ export class UserSettings {
   showFilters: boolean = false;
   showReminders: boolean = false;
   overdueLimitDays: number = 2;
+  limitDate: number = -1;
   
   constructor(options?: {
       forceDial?: boolean,
@@ -18,7 +19,8 @@ export class UserSettings {
       scrollTable?: boolean,
       showFilters?: boolean,
       showReminders?: boolean,
-      overdueLimitDays?: number
+      overdueLimitDays?: number,
+      limitDate?: number
     }) {
     
     if (options) {
@@ -29,6 +31,7 @@ export class UserSettings {
       this.showFilters = options.showFilters || false;
       this.showReminders = options.showReminders || false;
       this.overdueLimitDays = options.overdueLimitDays || 2;
+      this.limitDate = options.limitDate || -1;
     }
   }
   

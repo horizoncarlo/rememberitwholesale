@@ -19,7 +19,7 @@
   <div class="fixed-toolbar">
     <div class="toolbar-content">
       <div class="toolbar-left">
-        <p-button (onClick)="things.getAllThings()" icon="pi pi-refresh" [loading]="things.loading" severity="info" />
+        <p-button (onClick)="refreshThings()" icon="pi pi-refresh" [loading]="things.loading" severity="info" />
         @if (templateService.hasFavorite()) {
           <p-button (onClick)="quickfillFavoriteThing()" icon="pi pi-heart" severity="help" />
         }
@@ -49,7 +49,7 @@
   </div>
 }
 
-< [class]="'main-wrap' + (useDial ? '' : ' main-wrap-with-toolbar')" dropzone="true">
+<div [class]="'main-wrap' + (useDial ? '' : ' main-wrap-with-toolbar')" dropzone="true">
 
 @if (showReminders) {
   <div id="reminders">
@@ -81,7 +81,7 @@
       </th>
       <th pSortableColumn="name" class="name-col">
         @if (useDial) {
-          <span class="pi pi-refresh header-refresh" (click)="things.getAllThings()" pTooltip="Refresh">&nbsp;</span>
+          <span class="pi pi-refresh header-refresh" (click)="refreshThings()" pTooltip="Refresh">&nbsp;</span>
         }
         {{ getNameColumnHeader() }} <p-sortIcon field="name" />
       </th>
@@ -90,6 +90,17 @@
       <th pSortableColumn="fields" class="fields-col">
         Fields
         <p-sortIcon field="fields" />
+      </th>
+      <th class="control-col">
+        <div class="fright">
+          <span class="hide-on-mobile">Limit:&nbsp;</span>
+          <p-dropdown id="limitDate"
+                      [options]="limitDateOptions"
+                      [(ngModel)]="limitDate"
+                      (ngModelChange)="changeLimitDate()"
+                      placeholder="Limit by Date"
+                      appendTo="body"/>
+        </div>
       </th>
       <th class="control-col">
         <span (click)="clearSelectedRows()" [style.cursor]="'pointer'"
@@ -114,7 +125,7 @@
         <th><p-columnFilter type="text" field="templateType" matchMode="contains" /></th>
         <!-- TODO Could add a custom filter option of "Reminder=true/false" for the time column. Then can remove 'reminder' from supported global search fields on the table -->
         <th><p-columnFilter type="date" field="time" appendTo="body" /></th>
-        <th colspan="2">
+        <th colspan="3">
           <input pInputText type="text" (change)="filterFields($event)" class="header-filter-field" />
         </th>
       </tr>
@@ -143,7 +154,7 @@
           }
         </span>
       </td>
-      <td colspan="2">
+      <td colspan="3">
         {{ data.getFieldsAsString() }}
       </td>
     </tr>

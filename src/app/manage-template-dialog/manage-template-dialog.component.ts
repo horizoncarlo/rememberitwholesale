@@ -31,7 +31,7 @@ export class ManageTemplateDialogComponent {
   // TODO Put the favorite concept into a component
   favoriteAutoReminder: boolean = false;
   favoriteNameSuffix: string = '';
-  favoriteTimeOptions = [
+  favoriteTimeOptions: { value: number, label: string }[] = [
     { value: 0, label: 'Immediate' },
     { value: 1, label: '1 hour ahead' },
     { value: 2, label: '2 hours' },

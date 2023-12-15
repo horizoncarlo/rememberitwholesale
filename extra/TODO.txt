@@ -10,12 +10,6 @@ BLOCK- Validation across the app - from 'required' custom fields to dialogs, to 
 
 - Reports with custom queries to generate, as well as charts (could be using ChartModule from PrimeNG)
 
-- Eventually do lazy loading on pagination, for large amounts of records
--- Or dropdown of timeframe to pull data from - always simpler and cleaner in regards to sort/filter/etc.
--- Could segment JSON our files by Year, to trim down the total number of records fetched, then have a dropdown of each year that will work against the relevant file
---- Mostly also to stop write/updates from slowing down once you're at 10,000+ records in a single file
---- Similarly should do monthly/yearly backups of our data files automatically on the backend
-
 TODO:
 - Try server side rendering using Ang 17
 - Try signals and NgRx data store for sharing between parts of app using Ang 17
@@ -32,6 +26,7 @@ TODO:
 - Have an "annual repeat" feature for reminders, likely don't want more granular as we're not intending to be a full scheduling app
 - Autosort template dropdown (when adding a new Thing) by grouped select items of Regularly Used, less frequent, etc.
 - Try Bun.js as a drop in replacement for Node?
+- Eventually segment data files by year? To prevent giant files of 10k+ records? Then date limit filter could integrate with that (by having like 2021, 2022, etc. instead of "2 years ago")
 
 LOADING:
 - Block entire page, header and all, with a spinner in the middle (after a couple seconds, to prevent flashing)

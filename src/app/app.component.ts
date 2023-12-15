@@ -37,6 +37,21 @@ export class AppComponent implements OnInit, OnDestroy {
   isDialOpen = false;
   isDraggingDial: boolean = false;
   tableScrollHeight: string = '400px';
+  limitDate: number = 60*24*30; // Limit to 1 month by default
+  limitDateOptions: { value: number, label: string }[] = [
+    { value: 60, label: '1 hour'},
+    { value: 60*8, label: '8 hours'},
+    { value: 60*24, label: '1 day'},
+    { value: 60*24*7, label: '1 week'},
+    { value: 60*24*30, label: '1 month'},
+    { value: 60*24*30*3, label: '3 months'},
+    { value: 60*24*30*6, label: '6 months'},
+    { value: 60*24*30*8, label: '8 months'},
+    { value: 60*24*365, label: '1 year'},
+    { value: 60*24*365*2, label: '2 years'},
+    { value: 60*24*365*3, label: '3 years'},
+    { value: -1, label: 'All Time (may be slow)'},
+  ];
   
   constructor(private primengConfig: PrimeNGConfig,
               private confirmationService: ConfirmationService) { }
@@ -62,12 +77,12 @@ export class AppComponent implements OnInit, OnDestroy {
         
         // Get our initial data load
         if (!DebugFlags.DEBUG_SIMULATE_LATENCY) {
-          this.things.getAllThings();
+          this.refreshThings();
         }
         else {
           this.things.loading = true;
           setTimeout(() => {
-            this.things.getAllThings();
+            this.refreshThings();
           }, 5000); // Simulate latency if requested
         }
         
@@ -79,6 +94,7 @@ export class AppComponent implements OnInit, OnDestroy {
         // Set our various UI flags
         this.showFilters = this.userService.getUser().showFilters;
         this.showReminders = this.userService.getUser().showReminders;
+        this.limitDate = this.userService.getUser().limitDate;
         
         this.calcTableScrollHeight();
         window.addEventListener('resize', this.calcTableScrollHeight.bind(this));
@@ -98,6 +114,15 @@ export class AppComponent implements OnInit, OnDestroy {
   
   ngOnDestroy(): void {
     window.removeEventListener('resize', this.calcTableScrollHeight);
+  }
+  
+  refreshThings(): void {
+    this.things.getAllThings(this.limitDate);
+  }
+  
+  changeLimitDate(): void {
+    this.userService.setUserProp('limitDate', this.limitDate);
+    this.refreshThings();
   }
   
   getUser(): UserSettings {

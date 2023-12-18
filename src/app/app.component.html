@@ -21,7 +21,7 @@
       <div class="toolbar-left">
         <p-button (onClick)="refreshThings()" icon="pi pi-refresh" [loading]="things.loading" severity="info" />
         @if (templateService.hasFavorite()) {
-          <p-button (onClick)="quickfillFavoriteThing()" icon="pi pi-heart" severity="help" />
+          <p-button (onClick)="quickfillFavoriteThing()" icon="pi pi-heart" severity="help" /> <!-- TODO Have a "beginner mode", similar to intro paragraph on template dialog, that puts additional tooltips. Like for this Favorite have "Create a new Thing from your Favorite template" or whatever -->
         }
         <p-button (onClick)="clearSelectedRows(); manageTemplate.show()" icon="pi pi-list" [label]="getManageTemplateLabel()" />
         <p-button (onClick)="clearSelectedRows(); manageThing.showAdd()" icon="pi pi-plus-circle" label="New Thing" />
@@ -162,8 +162,9 @@
   @if (!things.loading) {
     <ng-template pTemplate="emptymessage" let-columns>
       <tr>
-        <td colspan="6" [class]="getEmptyMessageClass()">
-          No data matches your search
+        <td colspan="7" [class]="getEmptyMessageClass()">
+          No data matches your search or filters
+          <!-- TODO Componentize the Limit dropdown and put here on mobile, plus maybe a "Reset Search" button? -->
         </td>
       </tr>
     </ng-template>

@@ -405,7 +405,7 @@ export class AppComponent implements OnInit, OnDestroy {
       
       // Wait for the table to rerender
       setTimeout(() => {
-        resolve(this.getThingTotalRecords());
+        resolve(this.getThingsTableRecordCount());
       }, 500);
     });
   }
@@ -481,8 +481,8 @@ export class AppComponent implements OnInit, OnDestroy {
       return 'Name';
     }
     
-    const total = Utility.getLength(this.things.data);
-    const current = this.getThingTotalRecords();
+    const total = this.things.thingCount > 0 ? this.things.thingCount : Utility.getLength(this.things.data);
+    const current = this.getThingsTableRecordCount();
     if (typeof current === 'number' && current !== total && total > current) {
       return 'Name (' + Utility.formatNumber(current) + ' of ' + Utility.formatNumber(total) + ')';
     }
@@ -495,7 +495,7 @@ export class AppComponent implements OnInit, OnDestroy {
             name.indexOf('Favorite - ') === 0);
   }
   
-  getThingTotalRecords(): number {
+  getThingsTableRecordCount(): number {
     if (this.thingTable && typeof this.thingTable.totalRecords === 'number') {
       return this.thingTable.totalRecords;
     }
@@ -633,8 +633,12 @@ export class AppComponent implements OnInit, OnDestroy {
   }
   
   getEmptyMessageClass(): string {
-    // Center our "no data" message, unless we're on mobile as then we have to scroll over to see it
-    return Utility.isMobileSize() ? '' : 'center';
+    // If we're on mobile pin the message so it stick as you scroll
+    if (Utility.isMobileSize()) {
+      return 'pos-fixed';
+    }
+    // Otherwise on desktop we want to center the message
+    return 'center';
   }
   
   customSort(event: SortEvent) {

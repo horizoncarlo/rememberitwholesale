@@ -205,7 +205,16 @@ app.get("/things", (req, res) => {
     }
   }
   
-  return res.send(getInMemoryThings(limitDate)).end();
+  // Limit our Things and wrap the return with some metadata
+  const limitedThings = getInMemoryThings(limitDate);
+  let toReturn = {
+    metadata: {
+      totalCount: inMemory.things.length
+    },
+    data: limitedThings
+  };
+  
+  return res.send(toReturn).end();
 });
 
 app.post("/things", (req, res) => {

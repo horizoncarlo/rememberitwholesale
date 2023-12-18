@@ -71,7 +71,7 @@
           @for (field of actOn.fields; track field.property) {
             <tr>
               <td>
-                <p-button icon="pi pi-times" severity="danger" size="small" (onClick)="removeField(field)" />
+                <p-button icon="pi pi-times" severity="danger" size="small" (onClick)="removeField(field)" pTooltip="Remove this field" />
               </td>
               <td>
                 <span class="p-float-label">

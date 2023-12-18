@@ -15,6 +15,7 @@ const REMINDER_MINUTES_TO_WATCH = 60; // Minimum number of minutes remaining on 
 export class ThingService {
   loading: boolean = false;
   data: Thing[] = [];
+  thingCount: number = -1;
   reminders: Thing[] = [];
   remindersOverdue: Thing[] = []; // Reminders that are a day or less old
   remindersCleanup: any[] = []; // List of setTimeout references for tracking and clearing
@@ -221,7 +222,18 @@ export class ThingService {
   getAllThings(limitDate?: number): void {
     this.preGetAllThings();
     this.backend.getAllThings(limitDate).subscribe({
-      next: res => this.data = res,
+      next: res => {
+        // Unwrap the content from the server
+        this.data = res.data;
+        
+        // Default the Thing count, but overwrite if we have metadata specifying it
+        this.thingCount = this.data.length;
+        if (res.metadata) {
+          if (Utility.isDefined(res.metadata.totalCount)) {
+            this.thingCount = res.metadata.totalCount;
+          }
+        }
+      },
       error: err => {
         this.loading = false;
         Utility.showError('Failed to retrieve your Things');
@@ -260,7 +272,8 @@ export class ThingService {
   }
   
   loadedAndHasData(): boolean {
-    return !this.loading && Utility.hasItems(this.data);
+    return !this.loading &&
+           (Utility.hasItems(this.data) || this.thingCount > 0);
   }
   
   getReminderBadgeCount(): number {

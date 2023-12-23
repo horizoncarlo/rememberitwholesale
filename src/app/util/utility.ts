@@ -175,4 +175,12 @@ export class Utility {
     }
     return null;
   }
+  
+  static getRandomInt(min: number, max: number): number {
+    return Math.floor(Math.random() * (max - min + 1)) + min;
+  }
+  
+  static getRandomFloat(min: number, max: number): number {
+    return parseFloat(((Math.random() * (max - min)) + min).toFixed(3));
+  }
 }

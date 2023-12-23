@@ -1,5 +1,5 @@
-import { Injectable, inject } from "@angular/core";
-import { BehaviorSubject, distinctUntilChanged } from "rxjs";
+import { Injectable, OnDestroy, inject } from "@angular/core";
+import { BehaviorSubject, Subscription, distinctUntilChanged } from "rxjs";
 import { UserSettings } from "../model/user-settings";
 import { Utility } from "../util/utility";
 import { StorageService } from "./storage.service";
@@ -7,15 +7,16 @@ import { StorageService } from "./storage.service";
 @Injectable({
   providedIn: 'root'
 })
-export class UserService {
+export class UserService implements OnDestroy {
   private _settings: UserSettings = new UserSettings(); // Start with a blank object, which we'll clone into from our actual results later
   private _backend: StorageService = inject(StorageService); // TODO Check the app and see which services we want public/private. Remember public is necessary for template HTML access and binding
+  private _autosave_sub: Subscription;
   
   ready$: BehaviorSubject<boolean> = new BehaviorSubject(false); // Data is loaded and we're ready to start saving changes
   data$: BehaviorSubject<UserSettings> = new BehaviorSubject(this._settings);
   
   constructor() {
-    this.data$
+    this._autosave_sub = this.data$
       .pipe(
         distinctUntilChanged(
           (a, b) => JSON.stringify(a) === JSON.stringify(b)))
@@ -42,6 +43,12 @@ export class UserService {
         console.error(err);
       },
     });
+  }
+  
+  ngOnDestroy(): void {
+    if (this._autosave_sub) {
+      this._autosave_sub.unsubscribe();
+    }
   }
   
   getUser(): UserSettings {

@@ -20,8 +20,8 @@
                         "tsConfig": "tsconfig.app.json",
                         "assets": ["src/favicon.ico", "src/assets"],
                         "styles": [
-                            "src/styles.css",
-                            "src/primeng-override.css",
+                            "src/assets/css/styles.css",
+                            "src/assets/css/primeng-override.css",
                             "src/assets/themes/lara-dark-teal_theme_v16.css",
                             "node_modules/primeicons/primeicons.css",
                             "node_modules/primeng/resources/primeng.min.css"

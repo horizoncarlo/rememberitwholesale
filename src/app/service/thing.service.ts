@@ -216,7 +216,7 @@ export class ThingService {
     
     // Dispatch a resize event in case the rows changed
     Utility.fireWindowResize();
-    this.loading = false;
+    setTimeout(() => this.loading = false );
   }
 
   getAllThings(limitDate?: number): void {

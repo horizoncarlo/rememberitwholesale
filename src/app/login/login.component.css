@@ -1,0 +1,25 @@
+.login-wrap {
+  margin-top: 25vh;
+  padding: 40px 20px 20px 20px;
+}
+
+.fieldset-wrap {
+  padding-top: 40px;
+  margin-left: auto;
+  margin-right: auto;
+  min-width: 600px;
+  max-width: 50vw;
+}
+
+@media (max-width: 850px) {  /* var(--mobile-breakpoint) equivalent, just can't use in media queries */
+  .login-wrap {
+    margin-top: 0;
+    padding: 5px;
+  }
+  
+  .fieldset-wrap {
+    padding-top: 20px;
+    min-width: auto;
+    max-width: 100vw;
+  }
+}

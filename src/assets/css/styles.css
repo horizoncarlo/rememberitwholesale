@@ -8,12 +8,6 @@
   --mobile-breakpoint: 850px;
 }
 
-@media (max-width: 850px) { /* var(--mobile-breakpoint) equivalent, just can't use in media queries */
-  :root {
-    --standard-field-width: 175px;
-  }
-}
-
 html, body {
   margin: 0;
   padding: 0;
@@ -34,12 +28,16 @@ html {
   position: fixed;
 }
 
-.fleft {
+.fleft, .desktop-fleft {
   float: left;
 }
 
-.fright {
+.fright, .desktop-fright {
   float: right;
+}
+
+.inline, .desktop-inline {
+  display: inline-block;
 }
 
 .checkbox-label-on-left {
@@ -75,6 +73,30 @@ html {
   margin-left: 0;
 }
 
+.shine-image {
+  mask: linear-gradient(135deg,#000c 40%,#000,#000c 60%) 100% 100%/250% 250%;
+  transition: 0.4s;
+}
+
+.shine-image:hover {
+  mask-position: 0 0;
+}
+
 #limitDate {
   max-width: var(--standard-field-width);
+}
+
+@media (max-width: 850px) { /* var(--mobile-breakpoint) equivalent, just can't use in media queries */
+  :root {
+    --standard-field-width: 175px;
+  }
+  
+  .desktop-inline {
+    display: block;
+  }
+  
+  .desktop-fleft,
+  .desktop-fright {
+    float: none;
+  }
 }

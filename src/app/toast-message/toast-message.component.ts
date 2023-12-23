@@ -27,7 +27,7 @@ export class ToastMessageComponent implements OnInit, OnDestroy {
     window.removeEventListener('message-clear-all', this.clearMessages.bind(this) as EventListener);
     window.removeEventListener('message-clear-reminders', this.clearReminderMessages.bind(this) as EventListener);
   }
-
+  
   showSuccess(event: CustomEvent): void {
     this._showGeneric('success', event.detail);
   }

@@ -11,6 +11,7 @@ export class UserSettings {
   showReminders: boolean = false;
   overdueLimitDays: number = 2;
   limitDate: number = -1;
+  isLoggedIn: boolean = false; // TODO PRIORITY QUIDEL
   
   constructor(options?: {
       forceDial?: boolean,

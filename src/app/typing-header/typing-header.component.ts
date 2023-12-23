@@ -11,13 +11,23 @@ export class TypingHeaderComponent implements AfterViewInit, OnDestroy {
   @Input() typingDelayMs: number = 120;
   @Input() blinkDelayMs: number = 400;
   @Input() transitionWaitDelayMs: number = 1000;
-  @Input() backspaceEffect: boolean = true;
+  @Input() maxEffectCount: number = -1; // -1 for infinite retyping, otherwise cap after X times (will round up to an even number if needed)
+  @Input() backspaceEffect: boolean = true; // If this is disabled, then maxEffectCount won't be used
   
   @ViewChild('typingEffectOutput') typingEffectOutput!: ElementRef;
   
   typingInterval: any;
   blinkingInterval: any;
+  currentEffectCount: number = 0;
   hideUnderscore: boolean = false;
+  
+  constructor() {
+    // Ensure if we have a max effect count it's rounded up to an even number, so we end up on text showing, not backspaced
+    if (this.maxEffectCount > 0 &&
+        this.maxEffectCount % 2 !== 0) {
+      this.maxEffectCount++;
+    }
+  }
   
   ngAfterViewInit(): void {
     const target = this.typingEffectOutput.nativeElement;
@@ -36,7 +46,9 @@ export class TypingHeaderComponent implements AfterViewInit, OnDestroy {
           
           // Wait a bit, then start writing/backspacing the opposite direction, if allowed
           if (this.backspaceEffect) {
+            const _this = this;
             setTimeout(function() {
+              _this.currentEffectCount++;
               modifyCountBy *= -1;
               letterCount += modifyCountBy;
               stopAndWait = false;
@@ -46,6 +58,11 @@ export class TypingHeaderComponent implements AfterViewInit, OnDestroy {
         else {
           letterCount += modifyCountBy;
         }
+      }
+      
+      if (this.maxEffectCount > 0 &&
+        this.currentEffectCount > this.maxEffectCount) {
+        clearInterval(this.typingInterval);
       }
     }, this.typingDelayMs);
     

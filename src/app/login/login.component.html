@@ -1,9 +1,35 @@
 <div class="login-wrap">
-  <riw-typing-header text="Remember It Wholesale"></riw-typing-header>
+  <riw-typing-header text="Remember It Wholesale" [maxEffectCount]="10"></riw-typing-header>
   
   <div class="fieldset-wrap">
     <p-fieldset legend="Login">
-      TODO PRIORITY
+      <div class="fieldset-inner">
+        <div class="field-wrap">
+          <!-- TODO PRIORITY QUIDEL For mobile consider a "reset" button to clear each field. Or auto-select text when highlighting the field? -->
+          <input #usernameIn
+                 pInputText id="username" type="text" required="true"
+                 placeholder="Username"
+                 autocomplete="username" autocorrect="off" autocapitalize="off" autofocus="true"
+                 [(ngModel)]="username"
+                 (keyup.enter)="submitLogin()" />
+        </div>
+        <div class="terminal-image-wrap" (click)="submitLogin()">
+          @if (processing) {
+            <p-progressSpinner class="login-spinner" />
+          }
+          @else {
+            <img src="assets/images/simple-terminal.png" class="terminal-image shine-image"/>
+          }
+        </div>
+        <div class="field-wrap">
+          <input #passwordIn
+                 pInputText id="password" type="password" required="true"
+                 placeholder="Password"
+                 autocomplete="current-password" autocorrect="off" autocapitalize="off"
+                 [(ngModel)]="password"
+                 (keyup.enter)="submitLogin()" />
+        </div>
+      </div>
     </p-fieldset>
   </div>
 </div>

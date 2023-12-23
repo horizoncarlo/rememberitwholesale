@@ -88,6 +88,7 @@
   position: fixed;
   top: 0;
   width: 100%;
+  min-width: 1000px;
   min-height: var(--fixed-toolbar-height);
   box-shadow: 0 5px 5px var(--primary-color);
   background-color: var(--surface-ground);
@@ -154,4 +155,14 @@
 
 .favorite-section label {
   padding-right: 10px;
+}
+
+.limit-text {
+  margin-left: -50px; /* Keep the Limit to the left of the dropdown, to prevent wrapping on smaller screens */
+}
+
+@media (max-width: 1150px) { /* Shrink the Search Things input */
+  .global-search-wrap input {
+    width: calc(var(--standard-field-width) - 125px);
+  }
 }

@@ -24,6 +24,10 @@
 .p-progress-spinner-circle {
   stroke-width: 8;
 }
+.login-spinner .p-progress-spinner {
+  width: 60px; /* Little janky, but the spinner has some extra padding for it's animation, so to get 70px we need 60px */
+  height: 70px;
+}
 
 /* Make the current day more noticeable in the calendar */
 .p-datepicker-today span {

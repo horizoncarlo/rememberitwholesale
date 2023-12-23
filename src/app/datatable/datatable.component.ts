@@ -365,12 +365,7 @@ export class DatatableComponent implements OnInit, OnDestroy {
       }
       
       // Determine if our paginator is showing, and if so account for it in our table scroll height
-      let paginatorShowing = false;
-      if (this.thingTable && typeof this.thingTable.rows === 'number' &&
-          Utility.getLength(this.things.data) > this.thingTable.rows) {
-        paginatorShowing = true;
-      }
-      if (paginatorShowing) {
+      if (this.getThingsTableRecordCount() > this.userService.getUser().paginatorRows) {
         const paginatorHeight = Utility.getCSSVarNum('table-paginator-height');
         calcHeight -= paginatorHeight;
       }
@@ -506,7 +501,11 @@ export class DatatableComponent implements OnInit, OnDestroy {
     if (this.templateService.loading) {
       return 'Manage Templates';
     }
-    return 'Manage ' + this.templateService.getTemplateCount() + ' Template' + Utility.plural(this.templateService.data);
+    let prefix = '';
+    if (!Utility.isMobileSize()) {
+      prefix += 'Manage ';
+    }
+    return prefix + this.templateService.getTemplateCount() + ' Template' + Utility.plural(this.templateService.data);
   }
   
   getDeleteLabel(): string {

@@ -36,7 +36,7 @@
                         class="reminder-button" styleClass="p-button-secondary p-button-sm"/>
         }
         @if (!things.loading) {
-          <span class="p-input-icon-left">
+          <span class="global-search-wrap p-input-icon-left">
             <i class="pi pi-search"></i>
             <input pInputText type="text" (input)="globalFilterTableByEvent($event)" placeholder="Search Things" />
           </span>
@@ -93,7 +93,7 @@
       </th>
       <th class="control-col">
         <div class="fright">
-          <span class="hide-on-mobile">Limit:&nbsp;</span>
+          <span class="hide-on-mobile limit-text">Limit:&nbsp;</span>
           <p-dropdown id="limitDate"
                       [options]="limitDateOptions"
                       [(ngModel)]="limitDate"
@@ -211,7 +211,7 @@
           <label [htmlFor]="field.property">{{ field.getLabel() }}</label>
           @if (field.type === fieldTypes.Text || field.type === fieldTypes.Number) {
             <input [id]="field.property" pInputText [type]="field.type" [required]="field.required || false" [(ngModel)]="field.value"
-                  (keyup.enter)="templateService.favorite.hasOneField() && favoriteConfirmDialog.accept()"/>
+                   (keyup.enter)="templateService.favorite.hasOneField() && favoriteConfirmDialog.accept()"/>
           }
           @else if (field.type === fieldTypes.Textarea) {
             <textarea [id]="field.property" rows="3" pInputTextarea [(ngModel)]="field.value" [required]="field.required || false"></textarea>

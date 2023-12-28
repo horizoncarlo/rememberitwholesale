@@ -1,0 +1,40 @@
+<p-dialog header="User Profile" [(visible)]="isShowing" [modal]="true" [maximizable]="true" class="user-profile-dialog">
+
+  <div class="dialog-items">
+    <span>Username: <b>{{userService.getAuth().username}}</b></span>
+    
+    <p-checkbox [(ngModel)]="settings.forceDial" [binary]="true" label="Use speed dial instead of toolbar"/>
+    
+    <p-checkbox [(ngModel)]="settings.paginatorTable" [binary]="true" label="Pagination on the Things table"/>
+    
+    <div>
+      <label>Table rows</label>
+      <br/>
+      <div class="slider-wrap">
+        <p-slider [(ngModel)]="settings.paginatorRows" [min]="5" [max]="250" [disabled]="!settings.paginatorTable" class="slider"/>
+      </div>
+      @if (settings.paginatorTable) {
+        {{settings.paginatorRows}}
+      }
+      @else {
+        Disabled
+      }
+    </div>
+    
+    <div>
+      <label>Number of days to show old Reminders for</label>
+      <br/>
+      <div class="slider-wrap">
+        <p-slider [(ngModel)]="settings.overdueLimitDays" [min]="1" [max]="365" class="slider" />
+      </div>
+      {{settings.overdueLimitDays}}
+    </div>
+  </div>
+  
+  <ng-template pTemplate="footer">
+    <p-button (onClick)="userService.performLogout()" label="Logout" icon="pi pi-lock-open" iconPos="left" severity="danger" class="fleft"/>
+    
+    <p-button (onClick)="hide()" label="Cancel" icon="pi pi-times" iconPos="left" severity="secondary"/>
+    <p-button (onClick)="submit()" label="Save Profile" icon="pi pi-check" iconPos="left"/>
+  </ng-template>
+</p-dialog>

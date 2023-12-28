@@ -1,0 +1,15 @@
+.dialog-items > * {
+  padding-top: 10px;
+  padding-bottom: 10px;
+  display: block;
+}
+
+.dialog-items > *:first-child {
+  padding-top: 0;
+}
+
+.slider-wrap {
+  display: inline-block;
+  width: 50%;
+  margin: 5px 10px 5px 0;
+}

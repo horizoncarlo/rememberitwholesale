@@ -71,4 +71,12 @@ export class StorageService {
   submitSettings(body: UserSettings): Observable<any> {
     return this.http.post(BASE_URL + 'settings', body, this.defaultHeaders);
   }
+  
+  submitLogin(username: string, password: string, saveLogin?: boolean): Observable<any> {
+    return this.http.post(BASE_URL + 'login', {
+      username: username,
+      password: password,
+      saveLogin: saveLogin ? true : false
+    }, this.defaultHeaders);
+  }
 }

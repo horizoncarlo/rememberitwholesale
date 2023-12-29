@@ -3,6 +3,10 @@
   padding: 40px 20px 20px 20px;
 }
 
+.full-length {
+  width: 100%;
+}
+
 .fieldset-wrap {
   padding-top: 40px;
   margin-left: auto;
@@ -52,6 +56,12 @@
   transition: 2s;
 }
 
+.save-login-wrap {
+  font-size: 13px;
+  width: 100%;
+  text-align: right;
+}
+
 @media (max-width: 850px) {  /* var(--mobile-breakpoint) equivalent, just can't use in media queries */
   .login-wrap {
     margin-top: 10px;
@@ -71,5 +81,11 @@
   .terminal-image-wrap {
     margin-top: 10px;
     margin-bottom: 10px;
+  }
+  
+  .save-login-wrap {
+    font-size: inherit;
+    padding-top: 15px;
+    text-align: center;
   }
 }

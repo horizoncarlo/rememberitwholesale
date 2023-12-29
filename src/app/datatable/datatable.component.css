@@ -161,8 +161,14 @@
   margin-left: -50px; /* Keep the Limit to the left of the dropdown, to prevent wrapping on smaller screens */
 }
 
-@media (max-width: 1150px) { /* Shrink the Search Things input */
+@media (max-width: 1200px) { /* Shrink the Search Things input */
   .global-search-wrap input {
     width: calc(var(--standard-field-width) - 125px);
+  }
+}
+
+@media (max-width: 1075px) { /* Shrink the Search Things input */
+  .global-search-wrap input {
+    width: calc(var(--standard-field-width) - 175px);
   }
 }

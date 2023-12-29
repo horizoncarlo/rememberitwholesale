@@ -1,0 +1,6 @@
+{
+  "auth": {
+    "salt": "%forGitHub10k%",
+    "newAccountCheck": "githubbyBOI"
+  }
+}

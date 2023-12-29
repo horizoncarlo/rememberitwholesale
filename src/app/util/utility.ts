@@ -3,6 +3,8 @@ import isMobile from "is-mobile";
 import { Thing } from "../model/thing";
 
 export class Utility {
+  static LS_AUTH_TOKEN: string = 'authToken';
+  static LS_AUTH_USERNAME: string = 'authUsername';
   static numberFormatter: Intl.NumberFormat = new Intl.NumberFormat();
   
   static showSuccess(message: string, header?: string, sticky?: boolean): void {
@@ -182,5 +184,17 @@ export class Utility {
   
   static getRandomFloat(min: number, max: number): number {
     return parseFloat(((Math.random() * (max - min)) + min).toFixed(3));
+  }
+  
+  static getLocalStorageItem(key: string): string | null {
+    return window.localStorage.getItem(key);
+  }
+  
+  static setLocalStorageItem(key: string, value: string): void {
+    window.localStorage.setItem(key, value);
+  }
+  
+  static removeLocalStorageItem(key: string): void {
+    window.localStorage.removeItem(key);
   }
 }

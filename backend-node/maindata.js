@@ -4,6 +4,9 @@ const cors = require("cors");
 const fs = require("fs");
 const os = require("os");
 const subMinutes = require("date-fns/subMinutes");
+const config = require('config');
+const crypto = require('crypto');
+const { v4: uuidv4 } = require('uuid');
 
 // Set some default templates for a new user
 // TODO Once user accounts are finalized, this should likely be part of a larger default dataset (from outside the code) that is set in
@@ -35,6 +38,7 @@ const THINGS_FILE = FILE_DIR + 'things.json';
 const TEMPLATES_FILE = FILE_DIR + 'templates.json';
 const FAVORITE_FILE = FILE_DIR + 'favorite.json';
 const SETTINGS_FILE = FILE_DIR + 'settings.json';
+const AUTH_FILE = FILE_DIR + 'auth.json';
 
 // TODO Need login functionality to protect our APIs
 
@@ -49,7 +53,8 @@ let inMemory = {
   things: null,
   templates: null,
   favorite: null,
-  settings: null
+  settings: null,
+  auth: null
 };
 
 // Fire up the server
@@ -60,11 +65,13 @@ app.listen(PORT_NUM, () => {
 });
 
 function ensureFilesAreSetup() {
+  // TODO QUIDEL PRIORITY - File management should be by username
   // Ensure our initial files are ready
   setupSingleFile(THINGS_FILE);
   setupSingleFile(TEMPLATES_FILE);
   setupSingleFile(FAVORITE_FILE);
   setupSingleFile(SETTINGS_FILE);
+  setupSingleFile(AUTH_FILE);
 }
 
 function setupSingleFile(name) {
@@ -144,6 +151,13 @@ function getInMemorySettings() {
   return inMemory.settings;
 }
 
+function getInMemoryAuth() {
+  if (inMemory.auth === null) {
+    readSingleFile(AUTH_FILE, 'auth', {});
+  }
+  return inMemory.auth;
+}
+
 function saveThingsMemoryToFile() {
   console.log("WRITE Things", inMemory.things.length);
   writeSafeFile(THINGS_FILE, inMemory.things);
@@ -162,6 +176,11 @@ function saveFavoriteMemoryToFile() {
 function saveSettingsMemoryToFile() {
   console.log("WRITE Settings", inMemory.settings);
   writeSafeFile(SETTINGS_FILE, inMemory.settings);
+}
+
+function saveAuthMemoryToFile() {
+  console.log("WRITE Auth", inMemory.auth);
+  writeSafeFile(AUTH_FILE, inMemory.auth);
 }
 
 function writeSafeFile(name, data, retryCount = 0) {
@@ -183,6 +202,16 @@ function writeSafeFile(name, data, retryCount = 0) {
       throw new Error('Failed to write the file');
     }
   }
+}
+
+function createHashedPassword(password) {
+  const hashObj = crypto.createHash('sha256');
+  hashObj.update(password + config.get('auth.salt'));
+  return hashObj.digest('hex');
+}
+
+function generateAuthToken() {
+  return uuidv4();
 }
 
 /***** API Endpoints *****/
@@ -293,11 +322,10 @@ app.post("/templates", (req, res) => {
 });
 
 app.get("/templates/favorite", (req, res) => {
-  console.log("GET Favorite Template", getInMemoryFavorite());
-  
   // If we are a blank object, return nothing
   const toReturn = getInMemoryFavorite();
   if (toReturn && Object.keys(toReturn).length > 0) {
+    console.log("GET Favorite Template:", toReturn.name);
     return res.send(toReturn).end();
   }
   return res.send().end();
@@ -367,4 +395,59 @@ app.post("/settings", (req, res) => {
   //else {
   //  return res.status(400).end();
   //}
+});
+
+app.post("/login", (req, res) => {
+  console.log("POST Login", req.body?.username);
+  
+  const auth = getInMemoryAuth();
+  if (auth && Object.keys(auth).length > 0) {
+    const userObj = auth[req.body.username];
+    if (userObj) {
+      // Create a new password hash for our input text
+      const passwordHash = createHashedPassword(req.body.password);
+      
+      if (userObj.password === passwordHash) {
+        // Generate a new auth token and save it
+        userObj.authToken = generateAuthToken();
+        saveAuthMemoryToFile();
+        
+        return res.status(200).end(JSON.stringify({ authToken: userObj.authToken }));
+      }
+    }
+  }
+  
+  // If we reached this far, give a 401 error as we don't have a valid user state
+  return res.status(401).end();
+});
+
+/**
+ * Generate a password hash that matches a username and can be manually added to our auth file
+ */
+// TODO Make a "request new account" from the login page that uses Nodemailer to email me with a requested username. For now just manually create accounts
+app.get("/password-hash", (req, res) => {
+  console.log("GET New Account", req.query);
+  
+  // Determine if our params are good, otherwise give 'em the old 401
+  // Basically looking for ?username=somenewperson&createCheck=matchesconfig&newPassword=theirpass&
+  if (req && req.query && req.query.username &&
+      typeof req.query.username === 'string' &&
+      req.query.username.trim().length > 0) {
+      if (req.query.createCheck &&
+          typeof req.query.createCheck === 'string' &&
+          req.query.createCheck.trim().length > 0 &&
+          req.query.createCheck === config.get('auth.newAccountCheck')) {
+        if (req.query.newPassword &&
+            typeof req.query.newPassword === 'string' &&
+            req.query.newPassword.trim().length > 0) {
+          const toReturn = {
+            username: req.query.username,
+            passwordHash: createHashedPassword(req.query.newPassword)
+          };
+          console.log("RETURN New Account", toReturn);
+          return res.send(toReturn).end();
+        }
+      }
+  }
+  return res.status(401).end();
 });

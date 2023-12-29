@@ -75,7 +75,8 @@ p-columnfilterformelement .p-inputtext {
 
 /* Ensure the dialogs size nicely to the page, regardless of view and content */
 .manage-thing-dialog .p-dialog,
-.manage-template-dialog .p-dialog {
+.manage-template-dialog .p-dialog,
+.user-profile-dialog .p-dialog {
   min-width: 50vw;
   height: 90vh;
 }

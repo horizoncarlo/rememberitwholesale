@@ -19,6 +19,7 @@ import { InputTextareaModule } from 'primeng/inputtextarea';
 import { ProgressBarModule } from 'primeng/progressbar';
 import { ProgressSpinnerModule } from 'primeng/progressspinner';
 import { RadioButtonModule } from 'primeng/radiobutton';
+import { SliderModule } from 'primeng/slider';
 import { SpeedDialModule } from 'primeng/speeddial';
 import { SplitButtonModule } from 'primeng/splitbutton';
 import { TableModule } from 'primeng/table';
@@ -34,6 +35,7 @@ import { ManageThingDialogComponent } from './manage-thing-dialog/manage-thing-d
 import { ReminderMessageComponent } from './reminder-message/reminder-message.component';
 import { TemplateDropdownComponent } from './template-dropdown/template-dropdown.component';
 import { ToastMessageComponent } from './toast-message/toast-message.component';
+import { UserProfileDialogComponent } from './user-profile-dialog/user-profile-dialog.component';
 
 @NgModule({
   declarations: [
@@ -44,7 +46,8 @@ import { ToastMessageComponent } from './toast-message/toast-message.component';
     ManageTemplateDialogComponent,
     ManageThingDialogComponent,
     ReminderMessageComponent,
-    GlobalSearchDialogComponent
+    GlobalSearchDialogComponent,
+    UserProfileDialogComponent
   ],
   imports: [
     BrowserModule,
@@ -66,6 +69,7 @@ import { ToastMessageComponent } from './toast-message/toast-message.component';
     ProgressBarModule,
     ProgressSpinnerModule,
     RadioButtonModule,
+    SliderModule,
     SpeedDialModule,
     SplitButtonModule,
     TableModule,

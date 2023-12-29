@@ -11,6 +11,7 @@ import { UserSettings } from '../model/user-settings';
 import { TemplateService } from '../service/template.service';
 import { ThingService } from '../service/thing.service';
 import { UserService } from '../service/user.service';
+import { UserProfileDialogComponent } from '../user-profile-dialog/user-profile-dialog.component';
 import { DebugFlags } from '../util/debug-flags';
 import { Utility } from '../util/utility';
 
@@ -25,6 +26,7 @@ export class DatatableComponent implements OnInit, OnDestroy {
   @ViewChild('manageTemplate') manageTemplateDialog!: ManageTemplateDialogComponent;
   @ViewChild('manageThing') manageThingDialog!: ManageThingDialogComponent;
   @ViewChild('globalSearch') globalSearchDialog!: GlobalSearchDialogComponent;
+  @ViewChild('userProfile') userProfileDialog!: UserProfileDialogComponent;
   @ViewChild('speedDial') speedDial!: any;
   things: ThingService = inject(ThingService);
   templateService: TemplateService = inject(TemplateService);
@@ -129,7 +131,7 @@ export class DatatableComponent implements OnInit, OnDestroy {
     return this.userService.getUser();
   }
   
-  getDialItems(): MenuItem[] {
+  getSpeedDialItems(): MenuItem[] {
     return [
         {
           icon: "pi pi-plus-circle",
@@ -206,6 +208,16 @@ export class DatatableComponent implements OnInit, OnDestroy {
           },
           tooltipOptions: {
             tooltipLabel: 'Global Search',
+            tooltipPosition: 'bottom'
+          }
+        },
+        {
+          icon: "pi pi-user",
+          command: () => {
+            this.userProfileDialog.show();
+          },
+          tooltipOptions: {
+            tooltipLabel: 'User Profile',
             tooltipPosition: 'bottom'
           }
         },
@@ -365,7 +377,8 @@ export class DatatableComponent implements OnInit, OnDestroy {
       }
       
       // Determine if our paginator is showing, and if so account for it in our table scroll height
-      if (this.getThingsTableRecordCount() > this.userService.getUser().paginatorRows) {
+      if (this.userService.getUser().paginatorTable &&
+          this.getThingsTableRecordCount() > this.userService.getUser().paginatorRows) {
         const paginatorHeight = Utility.getCSSVarNum('table-paginator-height');
         calcHeight -= paginatorHeight;
       }

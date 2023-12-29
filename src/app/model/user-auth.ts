@@ -11,6 +11,7 @@ export class UserAuth {
     const possibleUsername = Utility.getLocalStorageItem(Utility.LS_AUTH_USERNAME);
     if (Utility.isValidString(possibleAuthToken) &&
         Utility.isValidString(possibleUsername)) {
+      console.log("Logged in with saved authToken=" + possibleAuthToken);
       this.username = possibleUsername;
       this.setLoggedIn(possibleAuthToken as string, true);
     }
@@ -33,6 +34,7 @@ export class UserAuth {
   }
   
   setLoggedOut(): void {
+    this.username = null;
     this.authToken = null;
     this.isLoggedIn = false;
     Utility.removeLocalStorageItem(Utility.LS_AUTH_TOKEN);

@@ -3,7 +3,7 @@ import { ActivatedRouteSnapshot, CanActivateFn, Router, RouterStateSnapshot } fr
 import { UserService } from '../service/user.service';
 
 export const LoginGuard: CanActivateFn = (route: ActivatedRouteSnapshot, state: RouterStateSnapshot) => {
-  const isLoggedIn = inject(UserService).getUser().isLoggedIn;
+  const isLoggedIn = inject(UserService).getAuth().isLoggedIn;
   
   // Two cases: we're logged in and can go wherever, or we're not and are forced to the login page
   if (state.url === '/login') {

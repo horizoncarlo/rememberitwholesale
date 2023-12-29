@@ -18,6 +18,10 @@ html {
   height: 100%;
 }
 
+.pointer {
+  cursor: pointer;
+}
+
 .center {
   text-align: center;
   margin-left: auto;

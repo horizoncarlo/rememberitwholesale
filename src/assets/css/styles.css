@@ -8,6 +8,22 @@
   --mobile-breakpoint: 850px;
 }
 
+/* TODO Any place to use this cool old DOS-style console font?
+@font-face {
+  font-family: FixedsysExcelsior301Regular;
+  src: url(../fonts/fixedsys-excelsior.woff2) format("woff2");
+  font-weight: 400;
+  font-style: normal;
+  -webkit-font-smoothing: none;
+  -moz-osx-font-smoothing: none;
+  font-smooth: never;
+}
+
+html, body, body .p-component {
+  font-family: FixedsysExcelsior301Regular !important;
+}
+*/
+
 html, body {
   margin: 0;
   padding: 0;

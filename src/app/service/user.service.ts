@@ -12,6 +12,7 @@ import { StorageService } from "./storage.service";
 })
 export class UserService implements OnDestroy {
   private _settings: UserSettings = new UserSettings(); // Start with a blank object, which we'll clone into from our actual results later
+  // TODO QUIDEL PRIORITY - Rename _backend to storageService and move to constructor var instead of injection
   private _backend: StorageService = inject(StorageService); // TODO Check the app and see which services we want public/private. Remember public is necessary for template HTML access and binding
   private _autosave_sub: Subscription;
   private _auth: UserAuth = new UserAuth();

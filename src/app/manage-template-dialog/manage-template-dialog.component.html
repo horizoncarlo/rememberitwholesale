@@ -121,8 +121,8 @@
         </div>
         <div class="section">
           <label>Template to Favorite:&nbsp;</label>
-          <riw-template-dropdown [(selectedTemplate)]="actOn"
-                                 (selectedTemplateChange)="favoriteTargetChanged()"
+          <riw-template-dropdown [(selectedTemplateName)]="actOnName"
+                                 (selectedTemplateNameChange)="genericTemplateChanged($event); favoriteTargetChanged();"
                                  [hideControls]="true" />
         </div>
         @if (actOn) {
@@ -161,8 +161,8 @@
     @else if (operation === 'delete') {
       <div class="delete-wrap">
         <label>Template to Delete:&nbsp;</label>
-        <riw-template-dropdown [(selectedTemplate)]="actOn"
-                               (selectedTemplateChange)="deleteTargetChanged()"
+        <riw-template-dropdown [(selectedTemplateName)]="actOnName"
+                               (selectedTemplateNameChange)="genericTemplateChanged($event); deleteTargetChanged();"
                                [hideDefaults]="true"
                                [hideControls]="true" />
         <br/>

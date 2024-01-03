@@ -30,6 +30,7 @@ export class StorageService {
       }
     }
     
+    // TODO QUIDEL PRIORITY return this.http.get(BASE_URL + 'things?authToken=' + this.userService.getAuth().authToken + '&limit=' + limitDate);
     return this.http.get(BASE_URL + 'things?limit=' + limitDate);
   }
   

@@ -18,6 +18,7 @@ export class ManageThingDialogComponent {
   templateService: TemplateService = inject(TemplateService);
   actOn: Thing = new Thing('');
   selectedTemplate: Template | null = null;
+  selectedTemplateName: string | null = null;
   isShowing: boolean = false;
   fieldTypes = TemplateField.TYPES;
   @ViewChild('templateDropdown') templateDropdown!: TemplateDropdownComponent;
@@ -37,7 +38,9 @@ export class ManageThingDialogComponent {
     this.type = 'add';
     // Reset our state as well
     this.actOn = new Thing('');
-    this.templateChanged(this.templateService.getFirstDefaultTemplate());
+    
+    const defaultTemplate = this.templateService.getFirstDefaultTemplate();
+    this.templateNameChanged(defaultTemplate ? defaultTemplate.name : null);
     
     this.show();
   }
@@ -46,12 +49,8 @@ export class ManageThingDialogComponent {
     if (Utility.hasItems(selectedRows)) {
       this.type = 'edit';
       this.actOn = Thing.cloneFrom(selectedRows[0]);
-      const template = this.templateService.getTemplateByName(this.actOn.templateType);
-      if (template) {
-        const toSet = Template.cloneFrom(template);
-        toSet.fields = this.actOn.fields;
-        this.templateChanged(toSet);
-      }
+      this.selectedTemplateName = this.actOn.templateType;
+      this.templateNameChanged(this.selectedTemplateName);
       
       this.show();
     }
@@ -84,13 +83,29 @@ export class ManageThingDialogComponent {
     }
   }
   
-  templateChanged(newVal: Template | null): void {
-    this.selectedTemplate = newVal;
+  templateNameChanged(newName: string | null): void {
+    this.selectedTemplateName = newName;
+    this.selectedTemplate = this.templateService.getTemplateByName(this.selectedTemplateName);
     
-    // Apply our initial reminder state if we have it
-    // Note if we've manually set reminder, we won't overwrite that
-    if (this.selectedTemplate && !this.actOn.reminder) {
-      this.actOn.reminder = this.selectedTemplate.initialReminder;
+    // Clone if we found a template, so that we can make changes without affecting the actual template
+    if (this.selectedTemplate) {
+      this.selectedTemplate = Template.cloneFrom(this.selectedTemplate);
+      
+      // Apply any saved fields to our template
+      // Of course only for editing
+      if (this.isEdit() && this.actOn.fields) {
+        this.selectedTemplate.fields = this.actOn.fields;
+      }
+      // Otherwise reset our fields
+      else {
+        this.selectedTemplate.clearValuesFromFields();
+      }
+      
+      // Apply our initial reminder state if we have it
+      // Note if we've manually set reminder, we won't overwrite that
+      if (!this.actOn.reminder) {
+        this.actOn.reminder = this.selectedTemplate.initialReminder;
+      }
     }
   }
   

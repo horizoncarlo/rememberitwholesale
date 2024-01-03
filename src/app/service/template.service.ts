@@ -41,8 +41,8 @@ export class TemplateService  {
     return null;
   }
   
-  getTemplateByName(name: string): Template | null {
-    if (Utility.hasItems(this.data)) {
+  getTemplateByName(name: string | null): Template | null {
+    if (Utility.isValidString(name) && Utility.hasItems(this.data)) {
       const toReturn: Template[] = this.data.filter((template) => name === template.name);
       if (Utility.hasItems(toReturn)) {
         return toReturn[0];
@@ -50,6 +50,14 @@ export class TemplateService  {
     }
     return null;
   }
+  
+  getColorByTemplateName(name: string | null): string | null {
+    const template = this.getTemplateByName(name);
+    if (template && template.color) {
+      return template.color;
+    }
+    return null;
+  }  
   
   getFilteredData(hideDefaults: boolean = false): Template[] {
     return this.data.filter((template) => {

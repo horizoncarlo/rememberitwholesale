@@ -10,12 +10,11 @@ import { TemplateService } from '../service/template.service';
 export class TemplateDropdownComponent implements OnInit {
   @Input() hideControls?: boolean = false;
   @Input() hideDefaults?: boolean = false;
-  @Input() selectedTemplate: Template | null = null;
-  @Input() keepValue: boolean = false; // Set to true to ensure that when our template is changed any `value` in each child fields is kept
-  @Output() selectedTemplateChange = new EventEmitter<Template | null>();
+  @Input() selectedTemplateName: string | null = null;
+  @Output() selectedTemplateNameChange = new EventEmitter<string | null>();
   @Output() manageTemplateEvent = new EventEmitter<TemplateEvent>();
   templateService: TemplateService = inject(TemplateService);
-  filteredData: Template[] = [];
+  filteredData: string[] = [];
   
   ngOnInit(): void {
     this.refreshData();
@@ -26,18 +25,19 @@ export class TemplateDropdownComponent implements OnInit {
     // Also note without the setTimeout we get the "NG0100: Expression has changed after it was checked" error
     setTimeout(() => {
       this.templateService.getAllTemplatesObs().subscribe({
-        next: () => this.filteredData = this.templateService.getFilteredData(this.hideDefaults)
+        next: () => this.filteredData = this.templateService.getFilteredData(this.hideDefaults).map((template: Template) => template.name)
       });
     }, 0);
+    
+    this.selectedTemplateName = null;
+  }
+  
+  getSelectedTemplate(): Template | null {
+    return this.templateService.getTemplateByName(this.selectedTemplateName as string);
   }
   
   selectedTemplateChanged(): void {
-    // Reset any fields of the template after changing, unless asked not too
-    if (!this.keepValue && this.selectedTemplate) {
-      this.selectedTemplate.clearValuesFromFields();
-    }
-    
-    this.selectedTemplateChange.emit(this.selectedTemplate);
+    this.selectedTemplateNameChange.emit(this.selectedTemplateName);
   }
   
   requestCreateTemplate(): void {
@@ -45,6 +45,6 @@ export class TemplateDropdownComponent implements OnInit {
   }
   
   requestDeleteTemplate(): void {
-    this.manageTemplateEvent.emit({ type: 'delete', actOn: this.selectedTemplate });
+    this.manageTemplateEvent.emit({ type: 'delete', actOn: this.getSelectedTemplate() });
   }  
 }

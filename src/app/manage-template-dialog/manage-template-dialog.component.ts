@@ -22,6 +22,7 @@ export class ManageTemplateDialogComponent {
   nextFieldIndex: number = 0;
   operation: TemplateEvent['type'] = 'create';
   actOn: Template | null = new Template(DEFAULT_TEMPLATE_NAME);
+  actOnName: string | null = null;
   isShowing: boolean = false;
   nameIsDuplicate: boolean = false; // Is a create new template Name unique or not?
   lastCheckCount: number = 0;
@@ -120,12 +121,16 @@ export class ManageTemplateDialogComponent {
   }
   
   favoriteTargetChanged(): void {
-    this.favoriteNameSuffix = this.actOn ? this.actOn.name : 'quickfill';
+    this.favoriteNameSuffix = this.actOnName ? this.actOnName : 'quickfill';
   }
   
   deleteTargetChanged(): void {
     this.lastCheckCount = 0;
     this.deleteThings = false;
+  }
+  
+  genericTemplateChanged(newName: string | null): void {
+    this.actOn = this.templateService.getTemplateByName(newName);
   }
   
   checkForThings(): void {

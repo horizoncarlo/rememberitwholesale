@@ -9,9 +9,9 @@
         </td>
         <td colspan="2">
           <riw-template-dropdown #templateDropdown
-                                 [(selectedTemplate)]="selectedTemplate" [keepValue]="isEdit()"
-                                 (manageTemplateEvent)="handleTemplateEvent($event)"
-                                 (selectedTemplateChange)="templateChanged($event)"/>
+                                [(selectedTemplateName)]="selectedTemplateName"
+                                (selectedTemplateNameChange)="templateNameChanged($event)"
+                                (manageTemplateEvent)="handleTemplateEvent($event)"/>
         </td>
       </tr>
       <tr>

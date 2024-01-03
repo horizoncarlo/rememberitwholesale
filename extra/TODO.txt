@@ -5,27 +5,30 @@ BLOCK- Validation across the app - from 'required' custom fields to dialogs, to 
 
 - Better and more consistent and centralized logging, with levels depending on deployment/environment
 
+- Reports with custom queries to generate, as well as charts (could be using ChartModule from PrimeNG)
+-- Definitely just start with basic queries to get data and numbers, since we'll be using that for charts so having the text first is valuable and simpler
+
 - Do a proper pass and componentize any elements that need it
 -- Also make sure existing components are "standalone: true" where possible
 -- Such as menu dial, including it's drag and drop features, table itself maybe?
 
-- Reports with custom queries to generate, as well as charts (could be using ChartModule from PrimeNG)
+- Forgotten password and "request new account" for realistic integration with other users
 
 TODO:
 - Try signals and NgRx data store for sharing between parts of app using Ang 17
-- Update Readme.md once the app is close to done
+- Manage tabIndex focus order, especially for mobile (so for example we can press Next, Next, Go on the floating keyboard)
 - Remove old-Utility.js once anything of value has been copied over
 - Timezone support for Reminders and general dates? Only necessary if we foresee acting on the server from a client in a different timezone
 - Put our revision or version number somewhere on the page? Pulled from environment file automatically?
 - Detect browser resume on mobile devices
 - "Demo mode" (once we have user login) that lets you explore the app without changing data, with a free/auto account, and a bunch of default stuff. Could swap Storage Service for this case?
-- Manage tabIndex focus order, especially for mobile (so for example we can press Next, Next, Go on the floating keyboard)
 - Eventually have Photo as a type to upload images to Things
 - Have a "looking back" / "remember this?" feature that shows you memories from the same time X months/years ago, sort of like Facebook. Toggleable option of course
 - Have an "annual repeat" feature for reminders, likely don't want more granular as we're not intending to be a full scheduling app
 - Autosort template dropdown (when adding a new Thing) by grouped select items of Regularly Used, less frequent, etc.
 - Try Bun.js as a drop in replacement for Node?
 - Eventually segment data files by year? To prevent giant files of 10k+ records? Then date limit filter could integrate with that (by having like 2021, 2022, etc. instead of "2 years ago")
+- Update Readme.md once the app is close to done
 
 LOADING:
 - Block entire page, header and all, with a spinner in the middle (after a couple seconds, to prevent flashing)
@@ -50,6 +53,8 @@ PRIMENG BUGS:
 -- Inspect around the Speed Dial to see
 -- This blocks the Selected Rows clear button when a reminder is present (as the table gets pushed down and becomes below the overlay)
 -- A hacky solution could be to move the dial down when the Reminders are shown, but the view would jump and it's a lot of math if we have multiple reminders
+- Can't bind to a dynamic options list in a dropdown, needs to be static or it infinite loops
+-- See https://github.com/primefaces/primeng/issues/14319
 
 - PrimeNG is only free for the latest version, afterwards previous versions move to LTS which is paid. So forced to keep up to date.
 -- See https://primeng.org/lts

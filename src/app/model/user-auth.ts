@@ -12,49 +12,49 @@ export class UserAuth {
   async checkStoredLogin(): Promise<any> {
     this.hasCheckedStorage = true;
     
-    // TODO QUIDEL PRIORITY - All this is extremely overdone. We can just return and store their hashed password as it's sha256, and do a login automatically if present, and don't locally store the auth token
-    const possibleSavedToken = Utility.getLocalStorageItem(Utility.LS_SAVED_TOKEN);
     const possibleUsername = Utility.getLocalStorageItem(Utility.LS_AUTH_USERNAME);
-    if (Utility.isValidString(possibleSavedToken) &&
-        Utility.isValidString(possibleUsername)) {
-        this.processingCheckedStorage = true;
-        const ourPromise = new Promise((resolve, reject) => {
-          this.username = possibleUsername;
-          
-          inject(StorageService).submitSavedToken(this.username as string, possibleSavedToken as string).subscribe({
-            next: res => {
-              if (res && res.authToken) {
-                console.log("Logged in with savedToken=" + res.authToken);
-                
-                this.setLoggedIn(res.authToken, res.savedToken);
-                return resolve(res.savedToken);
-              }
-              return reject('No auth token');
-            },
-            error: err => {
-              console.error("Failed to use savedToken for login", err);
-              return reject(err);
+    const possiblePassword = Utility.getLocalStorageItem(Utility.LS_AUTH_PASSWORD);
+    if (Utility.isValidString(possibleUsername) &&
+        Utility.isValidString(possiblePassword)) {
+      this.processingCheckedStorage = true;
+      const ourPromise = new Promise((resolve, reject) => {
+        this.username = possibleUsername;
+        
+        inject(StorageService).submitLogin(this.username as string, possiblePassword as string).subscribe({
+          next: res => {
+            if (res && res.authToken) {
+              console.log("Logged in with saved password");
+              
+              this.setLoggedIn(res.authToken, possiblePassword as string);
+              return resolve(res.authToken);
             }
-          });
-        }).finally(() => this.processingCheckedStorage = false);
+            return reject('No auth token');
+          },
+          error: err => {
+            console.error("Failed to use saved password for login", err);
+            this.setLoggedOut();
+            return reject(err);
+          }
+        });
+      }).finally(() => this.processingCheckedStorage = false);
       
       await ourPromise;
     }
   }
   
-  setLoggedIn(authToken: string, savedToken?: string): void {
+  setLoggedIn(authToken: string, passwordToSave?: string): void {
     this.authToken = authToken;
     this.isLoggedIn = true;
     
-    if (savedToken) {
-      Utility.setLocalStorageItem(Utility.LS_SAVED_TOKEN, savedToken);
+    if (passwordToSave) {
+      Utility.setLocalStorageItem(Utility.LS_AUTH_PASSWORD, passwordToSave);
       if (Utility.isValidString(this.username)) {
         Utility.setLocalStorageItem(Utility.LS_AUTH_USERNAME, this.username as string);
       }
     }
     else {
-      Utility.removeLocalStorageItem(Utility.LS_SAVED_TOKEN);
       Utility.removeLocalStorageItem(Utility.LS_AUTH_USERNAME);
+      Utility.removeLocalStorageItem(Utility.LS_AUTH_PASSWORD);
     }
   }
   
@@ -62,8 +62,9 @@ export class UserAuth {
     this.username = null;
     this.authToken = null;
     this.hasCheckedStorage = false;
+    this.processingCheckedStorage = false;
     this.isLoggedIn = false;
-    Utility.removeLocalStorageItem(Utility.LS_SAVED_TOKEN);
     Utility.removeLocalStorageItem(Utility.LS_AUTH_USERNAME);
+    Utility.removeLocalStorageItem(Utility.LS_AUTH_PASSWORD);
   }
 }

@@ -80,11 +80,4 @@ export class StorageService {
       saveLogin: saveLogin ? true : false
     }, this.defaultHeaders);
   }
-  
-  submitSavedToken(username: string, savedToken: string): Observable<any> {
-    return this.http.post(BASE_URL + 'loginWithToken', {
-      username: username,
-      savedToken: savedToken
-    }, this.defaultHeaders);
-  }
 }

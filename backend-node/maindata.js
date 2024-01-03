@@ -214,10 +214,6 @@ function generateAuthToken() {
   return uuidv4();
 }
 
-function generateSavedToken() {
-  return uuidv4();
-}
-
 /***** API Endpoints *****/
 app.get("/things", (req, res) => {
   console.log("GET Things", getInMemoryThings().length);
@@ -408,56 +404,23 @@ app.post("/login", (req, res) => {
   if (auth && Object.keys(auth).length > 0) {
     const userObj = auth[req.body.username];
     if (userObj) {
-      // Create a new password hash for our input text
+      // Create a password hash for the case of a user sending a plain text password
       const passwordHash = createHashedPassword(req.body.password);
       
-      if (userObj.password === passwordHash) {
+      if (userObj.password === passwordHash ||
+          userObj.password === req.body.password) {
         // Generate a new auth token and save it
         userObj.authToken = generateAuthToken();
+        saveAuthMemoryToFile();
         
-        // Manage our saved token as well
+        const toReturn = {
+          username: req.body.username,
+          authToken: userObj.authToken,
+        };
         if (req.body.saveLogin) {
-          userObj.savedToken = generateSavedToken();
+          toReturn.password = userObj.password;
         }
-        else {
-          delete userObj.savedToken;
-        }
-        
-        saveAuthMemoryToFile();
-        
-        return res.status(200).end(JSON.stringify({
-          username: req.body.username,
-          authToken: userObj.authToken,
-          savedToken: userObj.savedToken
-        }));
-      }
-    }
-  }
-  
-  // If we reached this far, give a 401 error as we don't have a valid user state
-  return res.status(401).end();
-});
-
-app.post("/loginWithToken", (req, res) => {
-  console.log("POST Login with Token", req.body?.username);
-  
-  if (req.body.username && req.body.savedToken) {
-    const auth = getInMemoryAuth();
-    if (auth && Object.keys(auth).length > 0) {
-      const userObj = auth[req.body.username];
-      if (userObj && userObj.savedToken &&
-          userObj.savedToken === req.body.savedToken) {
-        // Generate a new tokens and save them
-        userObj.authToken = generateAuthToken();
-        userObj.savedToken = generateSavedToken();
-        
-        saveAuthMemoryToFile();
-        
-        return res.status(200).end(JSON.stringify({
-          username: req.body.username,
-          authToken: userObj.authToken,
-          savedToken: userObj.savedToken
-        }));
+        return res.status(200).end(JSON.stringify(toReturn));
       }
     }
   }

@@ -1,3 +1,4 @@
+@if (!userService.getAuth().processingCheckedStorage) {
 <div class="login-wrap">
   <riw-typing-header text="Remember It Wholesale" [maxEffectCount]="10"></riw-typing-header>
   
@@ -41,3 +42,4 @@
     </p-fieldset>
   </div>
 </div>
+}

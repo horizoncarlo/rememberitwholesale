@@ -3,7 +3,7 @@ import isMobile from "is-mobile";
 import { Thing } from "../model/thing";
 
 export class Utility {
-  static LS_AUTH_TOKEN: string = 'authToken';
+  static LS_SAVED_TOKEN: string = 'authSaved';
   static LS_AUTH_USERNAME: string = 'authUsername';
   static numberFormatter: Intl.NumberFormat = new Intl.NumberFormat();
   

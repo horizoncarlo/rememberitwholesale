@@ -60,7 +60,7 @@ export class LoginComponent {
         if (res && res.authToken) {
           console.log("Logged in with authToken=" + res.authToken);
           
-          this.userService.getAuth().setLoggedIn(res.authToken, this.saveLogin);
+          this.userService.getAuth().setLoggedIn(res.authToken, res.savedToken);
           this.router.navigate(['/']);
         }
       },

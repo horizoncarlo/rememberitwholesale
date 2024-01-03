@@ -14,7 +14,6 @@ export class UserService implements OnDestroy {
   private _backend: StorageService = inject(StorageService); // TODO Check the app and see which services we want public/private. Remember public is necessary for template HTML access and binding
   private _autosave_sub: Subscription;
   private _auth: UserAuth = new UserAuth();
-  private _hasCheckedStorage: boolean = false;
   
   ready$: BehaviorSubject<boolean> = new BehaviorSubject(false); // Data is loaded and we're ready to start saving changes
   data$: BehaviorSubject<UserSettings> = new BehaviorSubject(this._settings);
@@ -61,11 +60,12 @@ export class UserService implements OnDestroy {
   
   getAuth(): UserAuth {
     // If this is our first attempt, try to restore an auth key from local storage
-    if (!this._hasCheckedStorage) {
-      this._hasCheckedStorage = true;
-      this._auth.checkStoredLogin();
+    if (!this._auth.hasCheckedStorage) {
+      this._auth.checkStoredLogin().then(() => {
+        this.router.navigate(['/']);
+      });
     }
-    
+
     return this._auth;
   }
   

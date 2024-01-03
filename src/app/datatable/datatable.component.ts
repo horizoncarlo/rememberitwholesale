@@ -68,6 +68,7 @@ export class DatatableComponent implements OnInit, OnDestroy {
     
     // TODO Simplify and centralize loading (probably a new service), instead of a flag in things/templates/etc.
     this.things.loading = true;
+    this.userService.setupSettings();
     this.userService.ready$.subscribe({
       next: (isReady) => {
         if (!isReady) {

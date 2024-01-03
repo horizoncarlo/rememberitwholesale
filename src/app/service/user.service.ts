@@ -4,6 +4,7 @@ import { BehaviorSubject, Subscription, distinctUntilChanged } from "rxjs";
 import { UserAuth } from "../model/user-auth";
 import { UserSettings } from "../model/user-settings";
 import { Utility } from "../util/utility";
+import { AuthService } from "./auth.service";
 import { StorageService } from "./storage.service";
 
 @Injectable({
@@ -18,7 +19,7 @@ export class UserService implements OnDestroy {
   ready$: BehaviorSubject<boolean> = new BehaviorSubject(false); // Data is loaded and we're ready to start saving changes
   data$: BehaviorSubject<UserSettings> = new BehaviorSubject(this._settings);
   
-  constructor(private router: Router) {
+  constructor(private router: Router, private authService: AuthService) {
     this._autosave_sub = this.data$
       .pipe(
         distinctUntilChanged(
@@ -33,19 +34,25 @@ export class UserService implements OnDestroy {
     });
     
     // TODO Temporarily we might not have a settings file, but once we have user login done we for sure will (at a minimum for their login information)
-    this._backend.getSettings().subscribe({
-      next: res => {
-        this._settings = UserSettings.cloneFrom(res);
-        this.data$.next(this._settings);
-        this.ready$.next(true);
-        
-        console.log("Loaded user settings", this.getUser());
-      },
-      error: err => {
-        Utility.showError('Failed to load your user settings');
-        console.error(err);
-      },
-    });
+    this.setupSettings();
+  }
+  
+  setupSettings(): void {
+    if (this.authService.getAuth().isLoggedIn) {
+      this._backend.getSettings().subscribe({
+        next: res => {
+          this._settings = UserSettings.cloneFrom(res);
+          this.data$.next(this._settings);
+          this.ready$.next(true);
+          
+          console.log("Loaded user settings", this.getUser());
+        },
+        error: err => {
+          Utility.showError('Failed to load your user settings');
+          console.error(err);
+        },
+      });
+    }
   }
   
   ngOnDestroy(): void {

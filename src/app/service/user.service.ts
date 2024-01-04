@@ -1,5 +1,5 @@
 import { Injectable, OnDestroy, inject } from "@angular/core";
-import { Router } from "express";
+import { Router } from "@angular/router";
 import { BehaviorSubject, Subscription, distinctUntilChanged } from "rxjs";
 import { UserSettings } from "../model/user-settings";
 import { Utility } from "../util/utility";

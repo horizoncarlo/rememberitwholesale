@@ -1,5 +1,6 @@
 import { Component } from '@angular/core';
 import { UserSettings } from '../model/user-settings';
+import { AuthService } from '../service/auth.service';
 import { UserService } from '../service/user.service';
 import { Utility } from '../util/utility';
 
@@ -9,12 +10,12 @@ import { Utility } from '../util/utility';
   styleUrls: ['./user-profile-dialog.component.css']
 })
 export class UserProfileDialogComponent {
-  userService!: UserService;
+  authService!: AuthService;
   isShowing: boolean = false;
   settings: UserSettings = new UserSettings();
   
-  constructor(private incomingUserService: UserService) {
-    this.userService = incomingUserService;
+  constructor(private incomingAuthService: AuthService, private userService: UserService) {
+    this.authService = incomingAuthService;
   }
   
   show(): void {

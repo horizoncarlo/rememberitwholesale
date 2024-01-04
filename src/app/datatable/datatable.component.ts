@@ -590,7 +590,7 @@ export class DatatableComponent implements OnInit, OnDestroy {
           // Construct a Thing from the settings in our Favorite Template and dialog
           const toSave = new Thing('Favorite - ');
           toSave.name += Utility.isValidString(favorite.nameSuffix) ? favorite.nameSuffix : favorite.name;
-          toSave.time = addHours(new Date(), favorite.timeRange || 0);
+          toSave.time = addHours(new Date(), typeof favorite.timeRange === 'undefined' ? 0 : favorite.timeRange);
           toSave.reminder = favorite.autoReminder;
           toSave.applyTemplateTo(favorite); // TODO This should probably be in thing.prepareForSave so it's done in a consistent way and not manually
           

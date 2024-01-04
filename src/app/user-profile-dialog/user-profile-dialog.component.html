@@ -1,7 +1,7 @@
 <p-dialog header="User Profile" [(visible)]="isShowing" [modal]="true" [maximizable]="true" class="user-profile-dialog">
 
   <div class="dialog-items">
-    <span>Username: <b>{{userService.getAuth().username}}</b></span>
+    <span>Username: <b>{{authService.getAuth().username}}</b></span>
     
     <p-checkbox [(ngModel)]="settings.forceDial" [binary]="true" label="Use speed dial instead of toolbar"/>
     
@@ -32,7 +32,7 @@
   </div>
   
   <ng-template pTemplate="footer">
-    <p-button (onClick)="userService.performLogout()" label="Logout" icon="pi pi-lock-open" iconPos="left" severity="danger" class="fleft"/>
+    <p-button (onClick)="authService.performLogout()" label="Logout" icon="pi pi-lock-open" iconPos="left" severity="danger" class="fleft"/>
     
     <p-button (onClick)="hide()" label="Cancel" icon="pi pi-times" iconPos="left" severity="secondary"/>
     <p-button (onClick)="submit()" label="Save Profile" icon="pi pi-check" iconPos="left"/>

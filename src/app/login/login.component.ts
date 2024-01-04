@@ -5,8 +5,8 @@ import { CheckboxModule } from 'primeng/checkbox';
 import { FieldsetModule } from 'primeng/fieldset';
 import { InputTextModule } from 'primeng/inputtext';
 import { ProgressSpinnerModule } from 'primeng/progressspinner';
+import { AuthService } from '../service/auth.service';
 import { StorageService } from '../service/storage.service';
-import { UserService } from '../service/user.service';
 import { TypingHeaderComponent } from '../typing-header/typing-header.component';
 import { Utility } from '../util/utility';
 
@@ -28,21 +28,21 @@ export class LoginComponent {
   @ViewChild('usernameIn') usernameIn!: ElementRef;
   @ViewChild('passwordIn') passwordIn!: ElementRef;
   
-  userService!: UserService;
+  authService!: AuthService;
   password: string | null = null;
   saveLogin: boolean = true;
   processing: boolean = false;
   
   constructor(private router: Router, private storageService: StorageService,
-              private incomingUserService: UserService) {
-    this.userService = incomingUserService;
+              private incomingAuthService: AuthService) {
+    this.authService = incomingAuthService;
   }
   
   submitLogin(): void {
     let abort = false;
     this.usernameIn.nativeElement.style.outline = 'none';
     this.passwordIn.nativeElement.style.outline = 'none';
-    if (!Utility.isValidString(this.userService.getAuth().username)) {
+    if (!Utility.isValidString(this.authService.getAuth().username)) {
       this.markUsernameInvalid();
       abort = true;
     }
@@ -55,12 +55,12 @@ export class LoginComponent {
     }
     
     this.processing = true;
-    this.storageService.submitLogin(this.userService.getAuth().username as string, this.password as string, this.saveLogin).subscribe({
+    this.storageService.submitLogin(this.authService.getAuth().username as string, this.password as string, this.saveLogin).subscribe({
       next: res => {
         if (res && res.authToken) {
           console.log("Logged in with authToken=" + res.authToken);
           
-          this.userService.getAuth().setLoggedIn(res.authToken, res.password);
+          this.authService.getAuth().setLoggedIn(res.authToken, res.password);
           this.router.navigate(['/']);
         }
       },

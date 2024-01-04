@@ -1,7 +1,5 @@
 import { Injectable, OnDestroy, inject } from "@angular/core";
-import { Router } from "@angular/router";
 import { BehaviorSubject, Subscription, distinctUntilChanged } from "rxjs";
-import { UserAuth } from "../model/user-auth";
 import { UserSettings } from "../model/user-settings";
 import { Utility } from "../util/utility";
 import { StorageService } from "./storage.service";
@@ -13,12 +11,11 @@ export class UserService implements OnDestroy {
   private _settings: UserSettings = new UserSettings(); // Start with a blank object, which we'll clone into from our actual results later
   private _backend: StorageService = inject(StorageService); // TODO Check the app and see which services we want public/private. Remember public is necessary for template HTML access and binding
   private _autosave_sub: Subscription;
-  private _auth: UserAuth = new UserAuth();
   
   ready$: BehaviorSubject<boolean> = new BehaviorSubject(false); // Data is loaded and we're ready to start saving changes
   data$: BehaviorSubject<UserSettings> = new BehaviorSubject(this._settings);
   
-  constructor(private router: Router) {
+  constructor() {
     this._autosave_sub = this.data$
       .pipe(
         distinctUntilChanged(
@@ -56,23 +53,6 @@ export class UserService implements OnDestroy {
   
   getUser(): UserSettings {
     return this.data$.getValue();
-  }
-  
-  getAuth(): UserAuth {
-    // If this is our first attempt, try to restore an auth key from local storage
-    if (!this._auth.hasCheckedStorage) {
-      this._auth.checkStoredLogin().then(() => {
-        this.router.navigate(['/']);
-      });
-    }
-
-    return this._auth;
-  }
-  
-  performLogout(): void {
-    this._auth.setLoggedOut();
-    
-    this.router.navigate(['/login']);
   }
   
   /**

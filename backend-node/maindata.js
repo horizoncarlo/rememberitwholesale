@@ -46,6 +46,23 @@ const AUTH_FILE = FILE_DIR + 'auth.json';
 app.use(cors());
 app.use(express.json());
 
+// Ensure our auth token is valid
+app.use((req, res, next) => {
+  // Allow the login page to not need a token, of course
+  if (req.originalUrl === '/login') {
+    console.error("LOGIN SO SKIP");
+    next();
+  }
+  else {
+    // Check if we have an invalid token, and if so, return a 401
+    if (isInvalidAuthToken(req)) {
+      return res.status(401).end();
+    }
+    
+    next();
+  }
+});
+
 // Maintain our JSON data in memory, and read/write as needed as a whole chunk. Realistically don't need to overthink appending or streaming files for the sizes involved
 // Each file should correspond to a "table" in our JSON pseudo-database
 // TODO Will eventually need to maintain each of these on a per-user basis. Just assuming singleton access per user to avoid a lot of complexity and over engineering
@@ -212,6 +229,26 @@ function createHashedPassword(password) {
 
 function generateAuthToken() {
   return uuidv4();
+}
+
+function isInvalidAuthToken(req) {
+  if (req && req.query && req.query.token) {
+    //getInMemoryAuth().keys.forEach(function(test) { console.error("TEST", test) });
+    for (let key in getInMemoryAuth()) {
+      if (getInMemoryAuth().hasOwnProperty(key)) {
+        if (req.query.token === getInMemoryAuth()[key].authToken) {
+          // Could return getInMemoryAuth()[key].username too if needed
+          return false;
+        }
+      }
+    }
+  }
+  let message = 'unknown value';
+  if (req && req.query) {
+    message = req.query.token;
+  }
+  console.error("Invalid endpoint token of [" + message + "]");
+  return true;
 }
 
 /***** API Endpoints *****/

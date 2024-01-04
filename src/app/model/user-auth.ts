@@ -16,30 +16,31 @@ export class UserAuth {
     const possiblePassword = Utility.getLocalStorageItem(Utility.LS_AUTH_PASSWORD);
     if (Utility.isValidString(possibleUsername) &&
         Utility.isValidString(possiblePassword)) {
-      // TODO QUIDEL PRIORITY - Need to actually use this flag to prevent multiple request submissions
-      this.processingCheckedStorage = true;
-      const ourPromise = new Promise((resolve, reject) => {
-        this.username = possibleUsername;
-        
-        inject(StorageService).submitLogin(this.username as string, possiblePassword as string).subscribe({
-          next: res => {
-            if (res && res.authToken) {
-              console.log("Logged in with saved password");
-              
-              this.setLoggedIn(res.authToken, possiblePassword as string);
-              return resolve(res.authToken);
+      if (!this.processingCheckedStorage) {
+        this.processingCheckedStorage = true;
+        const ourPromise = new Promise((resolve, reject) => {
+          this.username = possibleUsername;
+          
+          inject(StorageService).submitLogin(this.username as string, possiblePassword as string).subscribe({
+            next: res => {
+              if (res && res.authToken) {
+                console.log("Logged in with saved password");
+                
+                this.setLoggedIn(res.authToken, possiblePassword as string);
+                return resolve(res.authToken);
+              }
+              return reject('No auth token');
+            },
+            error: err => {
+              console.error("Failed to use saved password for login", err);
+              this.setLoggedOut();
+              return reject(err);
             }
-            return reject('No auth token');
-          },
-          error: err => {
-            console.error("Failed to use saved password for login", err);
-            this.setLoggedOut();
-            return reject(err);
-          }
-        });
-      }).finally(() => this.processingCheckedStorage = false);
-      
-      await ourPromise;
+          });
+        }).finally(() => this.processingCheckedStorage = false);
+        
+        await ourPromise;
+      }
     }
   }
   

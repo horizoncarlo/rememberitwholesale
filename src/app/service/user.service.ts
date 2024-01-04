@@ -1,5 +1,4 @@
-import { Injectable, OnDestroy, inject } from "@angular/core";
-import { Router } from "@angular/router";
+import { Injectable, OnDestroy } from "@angular/core";
 import { BehaviorSubject, Subscription, distinctUntilChanged } from "rxjs";
 import { UserSettings } from "../model/user-settings";
 import { Utility } from "../util/utility";
@@ -11,21 +10,19 @@ import { StorageService } from "./storage.service";
 })
 export class UserService implements OnDestroy {
   private _settings: UserSettings = new UserSettings(); // Start with a blank object, which we'll clone into from our actual results later
-  // TODO QUIDEL PRIORITY - Rename _backend to storageService and move to constructor var instead of injection
-  private _backend: StorageService = inject(StorageService); // TODO Check the app and see which services we want public/private. Remember public is necessary for template HTML access and binding
   private _autosave_sub: Subscription;
   
   ready$: BehaviorSubject<boolean> = new BehaviorSubject(false); // Data is loaded and we're ready to start saving changes
   data$: BehaviorSubject<UserSettings> = new BehaviorSubject(this._settings);
   
-  constructor(private router: Router, private authService: AuthService) {
+  constructor(private authService: AuthService, private storageService: StorageService) {
     this._autosave_sub = this.data$
       .pipe(
         distinctUntilChanged(
           (a, b) => JSON.stringify(a) === JSON.stringify(b)))
             .subscribe((newSettings: UserSettings) => {
       if (this.ready$.getValue()) {
-        this._backend.submitSettings(newSettings).subscribe({
+        this.storageService.submitSettings(newSettings).subscribe({
           next: res => console.log("Saved user settings", newSettings),
           error: err => console.error("Failed to save user settings", err)
         });
@@ -38,7 +35,7 @@ export class UserService implements OnDestroy {
   
   setupSettings(): void {
     if (this.authService.getAuth().isLoggedIn) {
-      this._backend.getSettings().subscribe({
+      this.storageService.getSettings().subscribe({
         next: res => {
           this._settings = UserSettings.cloneFrom(res);
           this.data$.next(this._settings);

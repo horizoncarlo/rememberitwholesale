@@ -16,6 +16,7 @@ export class UserAuth {
     const possiblePassword = Utility.getLocalStorageItem(Utility.LS_AUTH_PASSWORD);
     if (Utility.isValidString(possibleUsername) &&
         Utility.isValidString(possiblePassword)) {
+      // TODO QUIDEL PRIORITY - Need to actually use this flag to prevent multiple request submissions
       this.processingCheckedStorage = true;
       const ourPromise = new Promise((resolve, reject) => {
         this.username = possibleUsername;

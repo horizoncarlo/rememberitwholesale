@@ -28,9 +28,6 @@ export class UserService implements OnDestroy {
         });
       }
     });
-    
-    // TODO Temporarily we might not have a settings file, but once we have user login done we for sure will (at a minimum for their login information)
-    this.setupSettings();
   }
   
   setupSettings(): void {

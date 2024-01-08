@@ -1,5 +1,5 @@
 MAIN FEATURES:
-BLOCK- User login, tokens for API, plus settings/profile page
+BLOCK- Ensure all subscriptions are unsubscribed in RxJS
 
 BLOCK- Validation across the app - from 'required' custom fields to dialogs, to checks before saving/using the backend, etc.
 

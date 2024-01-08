@@ -31,101 +31,137 @@ const DEFAULT_TEMPLATES = [
 
 const PORT_NUM = 4333;
 const FILE_DIR = os.homedir() + '/.rememberitwholesale/';
-const BACKUP_FILE = FILE_DIR + 'backup.json';
+const BACKUP_FILE = 'backup.json'; // TODO QUIDEL PRIORITY Better backups, per user and per file
 
 // TODO Combine files and property into an object, and then centralize functions so we don't have to duplicate read/write
-const THINGS_FILE = FILE_DIR + 'things.json';
-const TEMPLATES_FILE = FILE_DIR + 'templates.json';
-const FAVORITE_FILE = FILE_DIR + 'favorite.json';
-const SETTINGS_FILE = FILE_DIR + 'settings.json';
-const AUTH_FILE = FILE_DIR + 'auth.json';
-
-// TODO Need login functionality to protect our APIs
+const GLOBAL_DATA = "global$data";
+const THINGS_FILE = 'things.json';
+const TEMPLATES_FILE = 'templates.json';
+const FAVORITE_FILE = 'favorite.json';
+const SETTINGS_FILE = 'settings.json';
+const AUTH_FILE = 'auth.json';
 
 // TODO Configure CORS to just be from our website, instead of global/public access
 app.use(cors());
 app.use(express.json());
 
-// Ensure our auth token is valid
+// Ensure our auth token is valid and the user is logged in
 app.use((req, res, next) => {
-  // Allow the login page to not need a token, of course
-  if (req.originalUrl === '/login') {
-    console.error("LOGIN SO SKIP");
+  // Allow a few pages that don't need a token
+  if (req.originalUrl.startsWith('/login') ||
+      req.originalUrl.startsWith('/password-hash')) {
     next();
   }
   else {
     // Check if we have an invalid token, and if so, return a 401
-    if (isInvalidAuthToken(req)) {
+    const authRes = checkAuthToken(req);
+    if (!authRes.valid ||
+        !authRes.username) {
       return res.status(401).end();
     }
+    
+    // Store our username for use further down the chain
+    req.authUsername = authRes.username;
     
     next();
   }
 });
 
 // Maintain our JSON data in memory, and read/write as needed as a whole chunk. Realistically don't need to overthink appending or streaming files for the sizes involved
-// Each file should correspond to a "table" in our JSON pseudo-database
-// TODO Will eventually need to maintain each of these on a per-user basis. Just assuming singleton access per user to avoid a lot of complexity and over engineering
+// Each file should correspond to a "table" in our JSON pseudo-database. Just assuming singleton access per user to avoid a lot of complexity and over engineering
 let inMemory = {
-  things: null,
-  templates: null,
-  favorite: null,
-  settings: null,
-  auth: null
+  // username: {
+    // things: null,
+    // templates: null,
+    // favorite: null,
+    // settings: null,
+  // }
+};
+// Setup our global (not user specific) data such as Auth
+inMemory[GLOBAL_DATA] = {
+  auth: {}
 };
 
 // Fire up the server
 app.listen(PORT_NUM, () => {
   console.log("Server running on port " + PORT_NUM);
   
-  ensureFilesAreSetup();
+  // Ensure our initial files are ready
+  readUserFile(GLOBAL_DATA, AUTH_FILE, 'auth', {});
 });
 
-function ensureFilesAreSetup() {
-  // TODO QUIDEL PRIORITY - File management should be by username
-  // Ensure our initial files are ready
-  setupSingleFile(THINGS_FILE);
-  setupSingleFile(TEMPLATES_FILE);
-  setupSingleFile(FAVORITE_FILE);
-  setupSingleFile(SETTINGS_FILE);
-  setupSingleFile(AUTH_FILE);
+function ensureUserFilesAreSetup(authUsername) {
+  readUserFile(authUsername, THINGS_FILE, 'things', []);
+  readUserFile(authUsername, TEMPLATES_FILE, 'templates', []);
+  readUserFile(authUsername, FAVORITE_FILE, 'favorite', {});
+  readUserFile(authUsername, SETTINGS_FILE, 'settings', {});
 }
 
-function setupSingleFile(name) {
-  try{
-    fs.readFileSync(name);
-  }catch(err) {
-    fs.mkdirSync(FILE_DIR, { recursive: true });
-    fs.writeFileSync(name, '', { flag: 'wx' });
+function ensureUserInMemorySetup(authUsername, noReadFiles) {
+  if (authUsername) {
+    if (!inMemory[authUsername]) {
+      if (noReadFiles) {
+        inMemory[authUsername] = {};
+      }
+      else {
+        ensureUserFilesAreSetup(authUsername);
+      }
+    }
   }
 }
 
-function readSingleFile(name, property, defaultVal) {
+function readUserFile(authUsername, fileName, property, defaultVal, isRecursive) {
+  const fileDirectory = FILE_DIR + (authUsername ? authUsername + '/' : '');
+  let toSet = defaultVal;
+  
   try{
-    // Determine if our file is empty, in which case we'll use the default value
-    if (fs.readFileSync(name)?.length <= 0) {
-      inMemory[property] = defaultVal;
-    }
-    // Otherwise read our file
-    else {
-      inMemory[property] = JSON.parse(fs.readFileSync(name));
+    // Determine if our file is empty, in which case we'll use the default value above,
+    //  otherwise read our file
+    // If we error during the reading, try to create our file and attempt a single more time
+    const contents = fs.readFileSync(fileDirectory + fileName);
+    if (contents && contents.length > 0) {
+      toSet = JSON.parse(contents);
     }
   }catch(err) {
-    setupSingleFile(name);
-    inMemory[property] = defaultVal;
-  }
-}
-
-function getInMemoryThings(limitDate) {
-  if (inMemory.things === null) {
-    readSingleFile(THINGS_FILE, 'things', []);
+    fs.mkdirSync(fileDirectory, { recursive: true });
+    fs.writeFileSync(fileDirectory + fileName, '', { flag: 'wx' });
+    if (!isRecursive) {
+      return readUserFile(authUsername, fileName, property, defaultVal, isRecursive);
+    }
   }
   
+  // Store in-memory depending on what type we are
+  if (authUsername) {
+    // Ensure our parent username is setup in our JSON
+    ensureUserInMemorySetup(authUsername, true);
+    
+    inMemory[authUsername][property] = toSet;
+  }
+  
+  return toSet;
+}
+
+function getInMemoryUserData(authUsername, property) {
+  if (authUsername) {
+    ensureUserInMemorySetup(authUsername);
+    return inMemory[authUsername][property];
+  }
+  return null;
+}
+
+function setInMemoryUserData(authUsername, property, newVal) {
+  if (authUsername) {
+    ensureUserInMemorySetup(authUsername);
+    inMemory[authUsername][property] = newVal;
+  }
+}
+
+function getInMemoryThings(authUsername, limitDate) {
   // If we have a date limit, apply it now
   if (typeof limitDate === 'number' && limitDate > 0) {
     const desiredDate = subMinutes(new Date(), limitDate).getTime();
     
-    return inMemory.things.filter(thing => {
+    return getInMemoryUserData(authUsername, 'things').filter(thing => {
       if (thing.updated) {
         return new Date(thing.updated).getTime() > desiredDate ? thing : null;
       }
@@ -133,87 +169,77 @@ function getInMemoryThings(limitDate) {
     });
   }
   
-  return inMemory.things;
+  return getInMemoryUserData(authUsername, 'things');
 }
 
-function getInMemoryTemplates() {
-  if (inMemory.templates === null) {
-    readSingleFile(TEMPLATES_FILE, 'templates', []);
-  }
-  
+function getInMemoryTemplates(authUsername) {
   // Default our templates if we have none, to ensure we at least have some preset
-  if (!inMemory.templates || inMemory.templates.length === 0) {
-    inMemory.templates = DEFAULT_TEMPLATES;
+  if (!getInMemoryUserData(authUsername, 'templates') ||
+      getInMemoryUserData(authUsername, 'templates').length === 0) {
+    setInMemoryUserData(authUsername, 'templates', DEFAULT_TEMPLATES);
     try{
-      saveTemplatesMemoryToFile();
+      saveTemplatesMemoryToFile(authUsername);
     }catch (err) {
       console.error("Failed to save default Templates", err);
     }
   }
   
-  return inMemory.templates;
+  return getInMemoryUserData(authUsername, 'templates');
 }
 
-function getInMemoryFavorite() {
-  if (inMemory.favorite === null) {
-    readSingleFile(FAVORITE_FILE, 'favorite', {});
-  }
-  return inMemory.favorite;
+function getInMemoryFavorite(authUsername) {
+  return getInMemoryUserData(authUsername, 'favorite');
 }
 
-function getInMemorySettings() {
-  if (inMemory.settings === null) {
-    readSingleFile(SETTINGS_FILE, 'settings', {});
-  }
-  return inMemory.settings;
+function getInMemorySettings(authUsername) {
+  return getInMemoryUserData(authUsername, 'settings');
 }
 
 function getInMemoryAuth() {
-  if (inMemory.auth === null) {
-    readSingleFile(AUTH_FILE, 'auth', {});
-  }
-  return inMemory.auth;
+  return getInMemoryUserData(GLOBAL_DATA, 'auth');
 }
 
-function saveThingsMemoryToFile() {
-  console.log("WRITE Things", inMemory.things.length);
-  writeSafeFile(THINGS_FILE, inMemory.things);
+function saveThingsMemoryToFile(authUsername) {
+  console.log("WRITE Things", getInMemoryThings(authUsername).length);
+  writeSafeFile(authUsername, THINGS_FILE, getInMemoryThings(authUsername));
 }
 
-function saveTemplatesMemoryToFile() {
-  console.log("WRITE Templates", inMemory.templates.length);
-  writeSafeFile(TEMPLATES_FILE, inMemory.templates);
+function saveTemplatesMemoryToFile(authUsername) {
+  console.log("WRITE Templates", getInMemoryTemplates(authUsername).length);
+  writeSafeFile(authUsername, TEMPLATES_FILE, getInMemoryTemplates(authUsername));
 }
 
-function saveFavoriteMemoryToFile() {
-  console.log("WRITE Favorite Template", inMemory.favorite);
-  writeSafeFile(FAVORITE_FILE, inMemory.favorite);
+function saveFavoriteMemoryToFile(authUsername) {
+  console.log("WRITE Favorite Template", getInMemoryFavorite(authUsername));
+  writeSafeFile(authUsername, FAVORITE_FILE, getInMemoryFavorite(authUsername));
 }
 
-function saveSettingsMemoryToFile() {
-  console.log("WRITE Settings", inMemory.settings);
-  writeSafeFile(SETTINGS_FILE, inMemory.settings);
+function saveSettingsMemoryToFile(authUsername) {
+  console.log("WRITE Settings", getInMemorySettings(authUsername));
+  writeSafeFile(authUsername, SETTINGS_FILE, getInMemorySettings(authUsername));
 }
 
 function saveAuthMemoryToFile() {
-  console.log("WRITE Auth", inMemory.auth);
-  writeSafeFile(AUTH_FILE, inMemory.auth);
+  console.log("WRITE Auth", getInMemoryAuth());
+  writeSafeFile(GLOBAL_DATA, AUTH_FILE, getInMemoryAuth());
 }
 
-function writeSafeFile(name, data, retryCount = 0) {
+function writeSafeFile(authUsername, fileName, data, retryCount = 0) {
+  const fileDirectory = FILE_DIR + (authUsername ? authUsername + '/' : '');
+  
   try{
     // Write to a temporary file first
-    fs.writeFileSync(BACKUP_FILE, JSON.stringify(data));
+    fs.writeFileSync(fileDirectory + BACKUP_FILE, JSON.stringify(data));
     
     // Write to our actual file
-    fs.writeFileSync(name, JSON.stringify(data));
+    fs.writeFileSync(fileDirectory + fileName, JSON.stringify(data));
   }catch (err) {
     console.error("Failed to write a safe file", err);
     
     // Retry up to 5 times
     retryCount++;
     if (retryCount < 5) {
-      writeSafeFile(name, data, retryCount);
+      writeSafeFile(authUsername, fileName, data, retryCount);
     }
     else {
       throw new Error('Failed to write the file');
@@ -231,14 +257,15 @@ function generateAuthToken() {
   return uuidv4();
 }
 
-function isInvalidAuthToken(req) {
+function checkAuthToken(req) {
   if (req && req.query && req.query.token) {
-    //getInMemoryAuth().keys.forEach(function(test) { console.error("TEST", test) });
     for (let key in getInMemoryAuth()) {
       if (getInMemoryAuth().hasOwnProperty(key)) {
         if (req.query.token === getInMemoryAuth()[key].authToken) {
-          // Could return getInMemoryAuth()[key].username too if needed
-          return false;
+          return {
+            username: convertUsernameToFilesafe(key),
+            valid: true
+          };
         }
       }
     }
@@ -248,12 +275,22 @@ function isInvalidAuthToken(req) {
     message = req.query.token;
   }
   console.error("Invalid endpoint token of [" + message + "]");
-  return true;
+  return {
+    valid: false
+  };
+}
+
+function convertUsernameToFilesafe(username) {
+  return username.replace(/[^\w-]+/g, "");
+}
+
+function getAuthUsername(req) {
+  return req && req.authUsername ? req.authUsername : null;
 }
 
 /***** API Endpoints *****/
 app.get("/things", (req, res) => {
-  console.log("GET Things", getInMemoryThings().length);
+  console.log("GET Things", getInMemoryThings(getAuthUsername(req)).length);
   
   // Determine if we are limiting by date/time
   let limitDate = -1;
@@ -272,10 +309,10 @@ app.get("/things", (req, res) => {
   }
   
   // Limit our Things and wrap the return with some metadata
-  const limitedThings = getInMemoryThings(limitDate);
+  const limitedThings = getInMemoryThings(getAuthUsername(req), limitDate);
   let toReturn = {
     metadata: {
-      totalCount: inMemory.things.length
+      totalCount: getInMemoryThings(getAuthUsername(req)).length
     },
     data: limitedThings
   };
@@ -309,7 +346,7 @@ app.post("/things", (req, res) => {
   
   // Determine if our object exists by ID or not
   let justAdd = true;
-  const things = getInMemoryThings();
+  const things = getInMemoryThings(getAuthUsername(req));
   for (let i = things.length-1; i >= 0; i--) {
     if (req.body.id === things[i].id) {
       justAdd = false;
@@ -318,30 +355,30 @@ app.post("/things", (req, res) => {
   }
   
   if (justAdd) {
-    getInMemoryThings().push(req.body);
+    getInMemoryThings(getAuthUsername(req)).push(req.body);
   }
   
-  saveThingsMemoryToFile();
+  saveThingsMemoryToFile(getAuthUsername(req));
   return res.status(200).end();
 });
 
 app.delete("/things/:id", (req, res) => {
   console.log("DELETE Thing", req.params.id);
   
-  let toWork = getInMemoryThings();
+  const toWork = getInMemoryThings(getAuthUsername(req));
   for (let i = toWork.length-1; i >= 0; i--) {
     if (req.params.id === toWork[i].id) {
       toWork.splice(i, 1);
     }
   }
   
-  saveThingsMemoryToFile();
+  saveThingsMemoryToFile(getAuthUsername(req));
   return res.status(200).end();
 });
 
 app.get("/templates", (req, res) => {
-  console.log("GET Templates", getInMemoryTemplates().length);
-  return res.send(getInMemoryTemplates()).end();
+  console.log("GET Templates", getInMemoryTemplates(getAuthUsername(req)).length);
+  return res.send(getInMemoryTemplates(getAuthUsername(req))).end();
 });
 
 app.post("/templates", (req, res) => {
@@ -349,8 +386,8 @@ app.post("/templates", (req, res) => {
   console.log("POST Template", req.body);
   
   if (req.body && req.body.name) {
-    getInMemoryTemplates().push(req.body);
-    saveTemplatesMemoryToFile();
+    getInMemoryTemplates(getAuthUsername(req)).push(req.body);
+    saveTemplatesMemoryToFile(getAuthUsername(req));
     return res.status(200).end();
   }
   else {
@@ -360,7 +397,7 @@ app.post("/templates", (req, res) => {
 
 app.get("/templates/favorite", (req, res) => {
   // If we are a blank object, return nothing
-  const toReturn = getInMemoryFavorite();
+  const toReturn = getInMemoryFavorite(getAuthUsername(req));
   if (toReturn && Object.keys(toReturn).length > 0) {
     console.log("GET Favorite Template:", toReturn.name);
     return res.send(toReturn).end();
@@ -369,12 +406,11 @@ app.get("/templates/favorite", (req, res) => {
 });
 
 app.post("/templates/favorite", (req, res) => {
-  console.log("POST Favorite Template", req.body);
+  console.log("POST Favorite Template");
   
   if (req.body && req.body.name) {
-    getInMemoryFavorite();
-    inMemory.favorite = req.body;
-    saveFavoriteMemoryToFile();
+    setInMemoryUserData(getAuthUsername(req), 'favorite', req.body);
+    saveFavoriteMemoryToFile(getAuthUsername(req));
     return res.status(200).end();
   }
   else {
@@ -386,23 +422,23 @@ app.post("/templates/delete", (req, res) => {
   console.log("POST Template Delete", req.body);
   
   if (req.body && req.body.templateNameToDelete) {
-    const toSearch = getInMemoryTemplates();
+    const toSearch = getInMemoryTemplates(getAuthUsername(req));
     const withDeleted = toSearch.filter((template) => template.name.toLowerCase() !== req.body.templateNameToDelete.toLowerCase());
     if (withDeleted.length !== toSearch.length) {
-      inMemory.templates = withDeleted;
+      setInMemoryUserData(getAuthUsername(req), 'templates', withDeleted);
       
       // If requested, clean up related Things as well
       if (req.body.deleteThingsToo) {
-        const cleanupThings = getInMemoryThings();
+        const cleanupThings = getInMemoryThings(getAuthUsername(req));
         const newThings = cleanupThings.filter((things) => {
           return things.templateType &&
                  things.templateType.toLowerCase() !== req.body.templateNameToDelete.toLowerCase();
         });
-        inMemory.things = newThings;
-        saveThingsMemoryToFile();
+        setInMemoryUserData(getAuthUsername(req), 'things', newThings);
+        saveThingsMemoryToFile(getAuthUsername(req));
       }
       
-      saveTemplatesMemoryToFile();
+      saveTemplatesMemoryToFile(getAuthUsername(req));
       return res.status(200).end();
     }
     else {
@@ -415,18 +451,17 @@ app.post("/templates/delete", (req, res) => {
 });
 
 app.get("/settings", (req, res) => {
-  console.log("GET Settings", getInMemorySettings());
-  return res.send(getInMemorySettings()).end();
+  console.log("GET Settings", getInMemorySettings(getAuthUsername(req)));
+  return res.send(getInMemorySettings(getAuthUsername(req))).end();
 });
 
 app.post("/settings", (req, res) => {
-  console.log("POST Settings", req.body);
+  console.log("POST Settings");
   
   // TODO Properly validate our Settings post
   //if (req.body && req.body.name) {
-    getInMemorySettings();
-    inMemory.settings = req.body;
-    saveSettingsMemoryToFile();
+    setInMemoryUserData(getAuthUsername(req), 'settings', req.body);
+    saveSettingsMemoryToFile(getAuthUsername(req));
     return res.status(200).end();
   //}
   //else {
@@ -437,29 +472,42 @@ app.post("/settings", (req, res) => {
 app.post("/login", (req, res) => {
   console.log("POST Login", req.body?.username);
   
-  const auth = getInMemoryAuth();
-  if (auth && Object.keys(auth).length > 0) {
-    const userObj = auth[req.body.username];
-    if (userObj) {
-      // Create a password hash for the case of a user sending a plain text password
-      const passwordHash = createHashedPassword(req.body.password);
-      
-      if (userObj.password === passwordHash ||
-          userObj.password === req.body.password) {
-        // Generate a new auth token and save it
-        userObj.authToken = generateAuthToken();
-        saveAuthMemoryToFile();
+  if (req && req.body &&
+      req.body.username &&
+      req.body.password) {
+    const auth = getInMemoryAuth();
+    if (auth && Object.keys(auth).length > 0) {
+      const userObj = auth[req.body.username];
+      if (userObj) {
+        // Create a password hash for the case of a user sending a plain text password
+        const passwordHash = createHashedPassword(req.body.password);
         
-        const toReturn = {
-          username: req.body.username,
-          authToken: userObj.authToken,
-        };
-        if (req.body.saveLogin) {
-          toReturn.password = userObj.password;
+        if (userObj.password === passwordHash ||
+            userObj.password === req.body.password) {
+          // Generate a new auth token and save it
+          userObj.authToken = generateAuthToken();
+          saveAuthMemoryToFile();
+          
+          // Setup our files and in-memory data as needed
+          ensureUserFilesAreSetup(convertUsernameToFilesafe(req.body.username));
+          
+          const toReturn = {
+            username: req.body.username,
+            authToken: userObj.authToken,
+          };
+          if (req.body.saveLogin) {
+            toReturn.password = userObj.password;
+          }
+          return res.status(200).end(JSON.stringify(toReturn));
         }
-        return res.status(200).end(JSON.stringify(toReturn));
       }
     }
+    else {
+      console.error("Invalid auth, couldn't read stored data");
+    }
+  }
+  else {
+    console.error("Invalid Login - missing username or password");
   }
   
   // If we reached this far, give a 401 error as we don't have a valid user state
@@ -486,7 +534,7 @@ app.get("/password-hash", (req, res) => {
             typeof req.query.newPassword === 'string' &&
             req.query.newPassword.trim().length > 0) {
           const toReturn = {
-            username: req.query.username,
+            username: convertUsernameToFilesafe(req.query.username),
             passwordHash: createHashedPassword(req.query.newPassword)
           };
           console.log("RETURN New Account", toReturn);

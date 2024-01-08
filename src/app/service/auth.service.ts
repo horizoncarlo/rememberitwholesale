@@ -24,6 +24,7 @@ export class AuthService {
   performLogout(): void {
     this._auth.setLoggedOut();
     
-    this.router.navigate(['/login']);
+    // Navigate and refresh the page
+    this.router.navigate(['/login']).finally(() => location.reload());
   }
 }

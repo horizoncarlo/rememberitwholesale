@@ -28,15 +28,12 @@ export class LoginComponent {
   @ViewChild('usernameIn') usernameIn!: ElementRef;
   @ViewChild('passwordIn') passwordIn!: ElementRef;
   
-  authService!: AuthService;
   password: string | null = null;
   saveLogin: boolean = true;
   processing: boolean = false;
   
   constructor(private router: Router, private storageService: StorageService,
-              private incomingAuthService: AuthService) {
-    this.authService = incomingAuthService;
-  }
+              public authService: AuthService) { }
   
   submitLogin(): void {
     let abort = false;

@@ -10,13 +10,10 @@ import { Utility } from '../util/utility';
   styleUrls: ['./user-profile-dialog.component.css']
 })
 export class UserProfileDialogComponent {
-  authService!: AuthService;
   isShowing: boolean = false;
   settings: UserSettings = new UserSettings();
   
-  constructor(private incomingAuthService: AuthService, private userService: UserService) {
-    this.authService = incomingAuthService;
-  }
+  constructor(public authService: AuthService, private userService: UserService) { }
   
   show(): void {
     // Refresh our settings from our most recent actual object

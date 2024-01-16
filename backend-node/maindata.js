@@ -494,6 +494,46 @@ app.post("/settings", (req, res) => {
   //}
 });
 
+app.post("/change-password", (req, res) => {
+  console.log("POST Change Password", req.body?.username);
+  
+  if (req && req.body &&
+      req.body.username &&
+      req.body.currentPassword &&
+      req.body.newPassword) {
+    // Determine if our current password is valid
+    const auth = getInMemoryAuth();
+    if (auth && Object.keys(auth).length > 0) {
+      // TODO Combine common code with Login
+      const userObj = auth[req.body.username];
+      const currentPasswordHash = createHashedPassword(req.body.currentPassword);
+      if (userObj &&
+          userObj.password === currentPasswordHash ||
+          userObj.password === req.body.password) {
+        const newPasswordHash = createHashedPassword(req.body.newPassword);
+        userObj.password = newPasswordHash;
+        userObj.authToken = generateAuthToken();
+        saveAuthMemoryToFile();
+        
+        const toReturn = {
+          username: req.body.username,
+          authToken: userObj.authToken,
+          password: userObj.password
+        };
+        return res.status(200).end(JSON.stringify(toReturn));
+      }
+    }
+    else {
+      console.error("Invalid auth, couldn't read stored data");
+    }
+  }
+  else {
+    console.error("Invalid Change Password - missing username or passwords");
+  }
+  
+  return res.status(401).end();
+});
+
 app.post("/login", (req, res) => {
   console.log("POST Login", req.body?.username);
   

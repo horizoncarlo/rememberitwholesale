@@ -93,6 +93,14 @@ export class StorageService {
     }, this.defaultHeaders);
   }
   
+  changePassword(username: string, currentPassword: string, newPassword: string): Observable<any> {
+    return this.http.post(this.makeUrl('change-password'), {
+      username: username,
+      currentPassword: currentPassword,
+      newPassword: newPassword
+    });
+  }
+  
   requestNewAccount(username: string, email: string, note?: string): Observable<any> {
     return this.http.post(this.makeUrl('new-account'), {
       username: username,

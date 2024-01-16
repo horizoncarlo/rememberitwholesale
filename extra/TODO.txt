@@ -1,5 +1,5 @@
 MAIN FEATURES:
-BLOCK- Forgotten password, request new account (mostly done, just need dialog to fill in details), and reset password (once logged in)
+BLOCK- Request New Account (mostly done, just need dialog to fill in details)
 
 BLOCK- Ensure all subscriptions are unsubscribed in RxJS, do takeUntil probably
 
@@ -19,6 +19,7 @@ TODO:
 -- Such as menu dial, including it's drag and drop features, table itself maybe?
 - Autosort template dropdown (when adding a new Thing) by grouped select items of Regularly Used, less frequent, etc.
 - Manage tabIndex focus order, especially for mobile (so for example we can press Next, Next, Go on the floating keyboard)
+- Ensure Enter key support works on every field, and is consistent between keyup.enter on input and handleEnterKey function approaches
 - Put our revision or version number somewhere on the page? Pulled from environment file automatically?
 - "Demo mode" (once we have user login) that lets you explore the app without changing data, with a free/auto account, and a bunch of default stuff. Could swap Storage Service for this case?
 

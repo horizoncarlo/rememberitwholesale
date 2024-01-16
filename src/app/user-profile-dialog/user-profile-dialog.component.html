@@ -1,7 +1,14 @@
 <p-dialog header="User Profile" [(visible)]="isShowing" [modal]="true" [maximizable]="true" class="user-profile-dialog">
 
   <div class="dialog-items">
-    <span>Username: <b>{{authService.getAuth().username}}</b></span>
+    <span class="inline">Username: <b>{{authService.getAuth().username}}</b></span>
+    <div class="password-pad">
+      <input pInputText [(ngModel)]="currentPassword" placeholder="Current Password" class="inline" (keyup.enter)="changePassword()"
+             type="password" autocomplete="current-password" autocorrect="off" autocapitalize="off"/>
+      <span class="hide-on-mobile">New: </span><input pInputText [(ngModel)]="newPassword" placeholder="New Password" class="inline" (keyup.enter)="changePassword()"
+                  type="password" autocomplete="new-password" autocorrect="off" autocapitalize="off"/>
+    </div>
+    <p-button (onClick)="changePassword()" label="Change Password" icon="pi pi-shield" iconPost="left" severity="help"/>
     
     <p-checkbox [(ngModel)]="settings.forceDial" [binary]="true" label="Use speed dial instead of toolbar"/>
     

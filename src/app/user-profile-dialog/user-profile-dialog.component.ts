@@ -1,6 +1,7 @@
 import { Component } from '@angular/core';
 import { UserSettings } from '../model/user-settings';
 import { AuthService } from '../service/auth.service';
+import { StorageService } from '../service/storage.service';
 import { UserService } from '../service/user.service';
 import { Utility } from '../util/utility';
 
@@ -12,8 +13,10 @@ import { Utility } from '../util/utility';
 export class UserProfileDialogComponent {
   isShowing: boolean = false;
   settings: UserSettings = new UserSettings();
+  currentPassword: string = '';
+  newPassword: string = '';
   
-  constructor(public authService: AuthService, private userService: UserService) { }
+  constructor(public authService: AuthService, private userService: UserService, private storageService: StorageService) { }
   
   show(): void {
     // Refresh our settings from our most recent actual object
@@ -21,11 +24,48 @@ export class UserProfileDialogComponent {
     //  whereas the user settings auto-save on change
     this.settings = UserSettings.cloneFrom(this.userService.getUser());
     
+    // Clear our passwords
+    this.resetPasswordFields();
+    
     this.isShowing = true;
   }
   
   hide(): void {
     this.isShowing = false;
+  }
+  
+  resetPasswordFields(): void {
+    this.currentPassword = '';
+    this.newPassword = '';
+  }
+  
+  changePassword(): void {
+    if (!Utility.isValidString(this.currentPassword)) {
+      Utility.showError('Missing current password');
+      return;
+    }
+    if (!Utility.isValidString(this.newPassword)) {
+      Utility.showError('Missing new password');
+      return;
+    }
+    if (this.currentPassword === this.newPassword) {
+      Utility.showWarn('Passwords are the same');
+      return;
+    }
+    
+    this.storageService.changePassword(this.authService.getAuth().username as string, this.currentPassword, this.newPassword).subscribe({
+      next: res => {
+        this.authService.getAuth().setLoggedIn(res.authToken, this.authService.getAuth().saveLogin ? res.password : null);
+        
+        Utility.showSuccess('Successfully changed your password');
+        this.resetPasswordFields();
+        this.hide();
+      },
+      error: err => {
+        Utility.showError('Failed to change your password - is your Current Password correct?');
+        console.error(err);
+      }
+    });
   }
   
   submit(): void {

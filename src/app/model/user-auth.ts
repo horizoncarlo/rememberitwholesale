@@ -5,6 +5,7 @@ import { Utility } from "../util/utility";
 export class UserAuth {
   username: string | null = null;
   authToken: string | null = null;
+  saveLogin: boolean = false;
   isLoggedIn: boolean = false;
   hasCheckedStorage: boolean = false;
   processingCheckedStorage: boolean = false;
@@ -47,6 +48,7 @@ export class UserAuth {
   setLoggedIn(authToken: string, passwordToSave?: string): void {
     this.authToken = authToken;
     this.isLoggedIn = true;
+    this.saveLogin = passwordToSave ? true : false;
     
     if (passwordToSave) {
       Utility.setLocalStorageItem(Utility.LS_AUTH_PASSWORD, passwordToSave);
@@ -66,6 +68,7 @@ export class UserAuth {
     this.hasCheckedStorage = false;
     this.processingCheckedStorage = false;
     this.isLoggedIn = false;
+    this.saveLogin = false;
     Utility.removeLocalStorageItem(Utility.LS_AUTH_USERNAME);
     Utility.removeLocalStorageItem(Utility.LS_AUTH_PASSWORD);
   }

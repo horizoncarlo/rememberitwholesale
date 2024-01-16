@@ -8,6 +8,10 @@
   padding-top: 0;
 }
 
+.password-pad .inline {
+  margin-right: 10px;
+}
+
 .slider-wrap {
   display: inline-block;
   width: 50%;

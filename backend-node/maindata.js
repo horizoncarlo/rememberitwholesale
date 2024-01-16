@@ -4,9 +4,13 @@ const cors = require("cors");
 const fs = require("fs");
 const os = require("os");
 const subMinutes = require("date-fns/subMinutes");
+const mailjet = require('node-mailjet');
 const config = require('config');
 const crypto = require('crypto');
 const { v4: uuidv4 } = require('uuid');
+
+// Easily disable Mailjet in case you want to
+const ALLOW_EMAIL_SENDING = true;
 
 // Set some default templates for a new user
 // TODO Once user accounts are finalized, this should likely be part of a larger default dataset (from outside the code) that is set in
@@ -31,9 +35,10 @@ const DEFAULT_TEMPLATES = [
 
 const PORT_NUM = 4333;
 const FILE_DIR = os.homedir() + '/.rememberitwholesale/';
-const BACKUP_FILE = 'backup.json'; // TODO QUIDEL PRIORITY Better backups, per user and per file
 
 // TODO Combine files and property into an object, and then centralize functions so we don't have to duplicate read/write
+const BACKUP_FOLDER = 'backup/';
+const BACKUP_PREFIX = 'backup_';
 const GLOBAL_DATA = "global$data";
 const THINGS_FILE = 'things.json';
 const TEMPLATES_FILE = 'templates.json';
@@ -49,7 +54,8 @@ app.use(express.json());
 app.use((req, res, next) => {
   // Allow a few pages that don't need a token
   if (req.originalUrl.startsWith('/login') ||
-      req.originalUrl.startsWith('/password-hash')) {
+      req.originalUrl.startsWith('/new-account')
+    ) {
     next();
   }
   else {
@@ -123,8 +129,11 @@ function readUserFile(authUsername, fileName, property, defaultVal, isRecursive)
       toSet = JSON.parse(contents);
     }
   }catch(err) {
-    fs.mkdirSync(fileDirectory, { recursive: true });
-    fs.writeFileSync(fileDirectory + fileName, '', { flag: 'wx' });
+    try{
+      fs.mkdirSync(fileDirectory, { recursive: true });
+      fs.writeFileSync(fileDirectory + fileName, '', { flag: 'wx' });
+    }catch (ignored) { }
+    
     if (!isRecursive) {
       return readUserFile(authUsername, fileName, property, defaultVal, isRecursive);
     }
@@ -226,15 +235,23 @@ function saveAuthMemoryToFile() {
 
 function writeSafeFile(authUsername, fileName, data, retryCount = 0) {
   const fileDirectory = FILE_DIR + (authUsername ? authUsername + '/' : '');
+  const backupFolder = fileDirectory + BACKUP_FOLDER;
+  const backupFile = backupFolder + BACKUP_PREFIX + fileName;
   
   try{
     // Write to a temporary file first
-    fs.writeFileSync(fileDirectory + BACKUP_FILE, JSON.stringify(data));
+    // This might fail due to not existing, but we retry in the catch
+    fs.writeFileSync(backupFile, JSON.stringify(data));
     
     // Write to our actual file
     fs.writeFileSync(fileDirectory + fileName, JSON.stringify(data));
   }catch (err) {
     console.error("Failed to write a safe file", err);
+    
+    try{
+      fs.mkdirSync(backupFolder, { recursive: true });
+      fs.writeFileSync(backupFile, '', { flag: 'wx' });
+    }catch (ignored) { }
     
     // Retry up to 5 times
     retryCount++;
@@ -245,6 +262,14 @@ function writeSafeFile(authUsername, fileName, data, retryCount = 0) {
       throw new Error('Failed to write the file');
     }
   }
+}
+
+function createAuthAccount(username, password) {
+  return {
+    [convertUsernameToFilesafe(username)]: {
+      "password": createHashedPassword(password)
+    }
+  };
 }
 
 function createHashedPassword(password) {
@@ -514,33 +539,58 @@ app.post("/login", (req, res) => {
   return res.status(401).end();
 });
 
-/**
- * Generate a password hash that matches a username and can be manually added to our auth file
- */
-// TODO Make a "request new account" from the login page that uses Nodemailer to email me with a requested username. For now just manually create accounts
-app.get("/password-hash", (req, res) => {
-  console.log("GET New Account", req.query);
+app.post("/new-account", async (req, res) => {
+  console.log("**** New account requested as [" + req.body.username + "] from [" + req.body.email + "]");
   
-  // Determine if our params are good, otherwise give 'em the old 401
-  // Basically looking for ?username=somenewperson&createCheck=matchesconfig&newPassword=theirpass&
-  if (req && req.query && req.query.username &&
-      typeof req.query.username === 'string' &&
-      req.query.username.trim().length > 0) {
-      if (req.query.createCheck &&
-          typeof req.query.createCheck === 'string' &&
-          req.query.createCheck.trim().length > 0 &&
-          req.query.createCheck === config.get('auth.newAccountCheck')) {
-        if (req.query.newPassword &&
-            typeof req.query.newPassword === 'string' &&
-            req.query.newPassword.trim().length > 0) {
-          const toReturn = {
-            username: convertUsernameToFilesafe(req.query.username),
-            passwordHash: createHashedPassword(req.query.newPassword)
-          };
-          console.log("RETURN New Account", toReturn);
-          return res.send(toReturn).end();
-        }
-      }
+  if (!ALLOW_EMAIL_SENDING) {
+    return res.status(201).end();
   }
-  return res.status(401).end();
+  
+  let success = false;
+  try{
+    const mailjetApi = mailjet.apiConnect(
+      config.get('mailjet.apiKey'),
+      config.get('mailjet.secretKey'),
+    );
+    
+    const generatedPassword = Math.random().toString(36);
+    const replyBody = "Hey, I made your account " + req.body.username + " with a password of " + generatedPassword + " (I know it is a weird one, you can reset in the app).";
+    const request = mailjetApi.post("send", { version: "v3.1" }).request({
+      Messages: [
+        {
+          From: {
+            Email: config.get('mailjet.fromAddress'),
+            Name: config.get('mailjet.fromName')
+          },
+          To: [
+            {
+              Email: config.get('mailjet.toAddress'),
+              Name: config.get('mailjet.toName')
+            },
+          ],
+          Subject: "Account Requested",
+          HTMLPart:
+            "<b>" + req.body.username + "</b> has requested a new account at " +
+            new Date().toLocaleString() + "<br/><br/>Respond to: <a href='mailto:" +
+            req.body.email + "?subject=Information on your new account&body=" + replyBody + "'>" + req.body.email + "</a><br/><br/>" +
+            "Their new password is <b>" + generatedPassword + "</b> and the JSON format to paste into auth.json is:<br/>" +
+            "<pre>" + JSON.stringify(createAuthAccount(req.body.username, generatedPassword)) + "</pre>" +
+            (req.body.note && typeof req.body.note === 'string' && req.body.note.trim().length > 0 ? "They also included this note:<br/><blockquote><i>" + req.body.note + "</i></blockquote>" : "")
+        },
+      ],
+    });
+    
+    await request.then((result) => {
+      success = true;
+    }).catch((err) => {
+      console.error("Failure to send mailjet email", err);
+    });
+  }catch (err) {
+    console.error("General failure to send mailjet email", err);
+  }
+  
+  if (!success) {
+    return res.status(401).end();
+  }
+  return res.status(201).end();
 });

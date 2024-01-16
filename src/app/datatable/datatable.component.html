@@ -68,7 +68,7 @@
          selectionMode="multiple" [(selection)]="selectedRows"
          (sortFunction)="customSort($event)" [customSort]="true"
          sortField="updated" [sortOrder]="-1"
-         [globalFilterFields]="['name', 'time', 'templateType', 'reminder']"
+         [globalFilterFields]="['name', 'time', 'templateType', 'reminder', 'fieldsAsString']"
          [paginator]="getUser().paginatorTable" [rows]="getUser().paginatorRows"
          [pageLinks]="3" [alwaysShowPaginator]="false" [showFirstLastIcon]="false" [showCurrentPageReport]="true"
          [scrollable]="true" [scrollHeight]="tableScrollHeight"
@@ -86,7 +86,7 @@
       </th>
       <th pSortableColumn="templateType" class="type-col">Type <p-sortIcon field="templateType" /></th>
       <th pSortableColumn="time" class="time-col">Date <p-sortIcon field="time" /></th>
-      <th pSortableColumn="fields" class="fields-col">
+      <th pSortableColumn="fieldsAsString" class="fields-col">
         Fields
         <p-sortIcon field="fields" />
       </th>
@@ -155,7 +155,7 @@
         </span>
       </td>
       <td colspan="3">
-        {{ data.getFieldsAsString() }}
+        {{ data.fieldsAsString }}
       </td>
     </tr>
   </ng-template>

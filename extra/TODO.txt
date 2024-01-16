@@ -1,33 +1,34 @@
 MAIN FEATURES:
-BLOCK- Ensure all subscriptions are unsubscribed in RxJS
+BLOCK- Forgotten password, request new account (mostly done, just need dialog to fill in details), and reset password (once logged in)
+
+BLOCK- Ensure all subscriptions are unsubscribed in RxJS, do takeUntil probably
+
+BLOCK- Throttle any public requests in the API
 
 BLOCK- Validation across the app - from 'required' custom fields to dialogs, to checks before saving/using the backend, etc.
 
-- Better and more consistent and centralized logging, with levels depending on deployment/environment
+- Better and more consistent and centralized logging, with levels depending on deployment/environment, and also output to log files on backend side
 
 - Reports with custom queries to generate, as well as charts (could be using ChartModule from PrimeNG)
 -- Definitely just start with basic queries to get data and numbers, since we'll be using that for charts so having the text first is valuable and simpler
 
+TODO:
+- Try signals and NgRx data store for sharing between parts of app using Ang 17
 - Do a proper pass and componentize any elements that need it
 -- Also make sure existing components are "standalone: true" where possible
 -- Such as menu dial, including it's drag and drop features, table itself maybe?
-
-- Forgotten password and "request new account" for realistic integration with other users
-
-TODO:
-- Try signals and NgRx data store for sharing between parts of app using Ang 17
+- Autosort template dropdown (when adding a new Thing) by grouped select items of Regularly Used, less frequent, etc.
 - Manage tabIndex focus order, especially for mobile (so for example we can press Next, Next, Go on the floating keyboard)
-- Remove old-Utility.js once anything of value has been copied over
-- Timezone support for Reminders and general dates? Only necessary if we foresee acting on the server from a client in a different timezone
 - Put our revision or version number somewhere on the page? Pulled from environment file automatically?
-- Detect browser resume on mobile devices
 - "Demo mode" (once we have user login) that lets you explore the app without changing data, with a free/auto account, and a bunch of default stuff. Could swap Storage Service for this case?
+
+- Detect browser resume on mobile devices
 - Eventually have Photo as a type to upload images to Things
 - Have a "looking back" / "remember this?" feature that shows you memories from the same time X months/years ago, sort of like Facebook. Toggleable option of course
 - Have an "annual repeat" feature for reminders, likely don't want more granular as we're not intending to be a full scheduling app
-- Autosort template dropdown (when adding a new Thing) by grouped select items of Regularly Used, less frequent, etc.
-- Try Bun.js as a drop in replacement for Node?
 - Eventually segment data files by year? To prevent giant files of 10k+ records? Then date limit filter could integrate with that (by having like 2021, 2022, etc. instead of "2 years ago")
+
+- Remove old-Utility.js once anything of value has been copied over, and probably the entire extra/ folder
 - Update Readme.md once the app is close to done
 
 LOADING:

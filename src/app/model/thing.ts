@@ -16,6 +16,7 @@ export class Thing {
   reminder?: boolean;
   updated: Date | undefined;
   fields: TemplateField[] = [];
+  fieldsAsString: string; // TODO Convert fields to RxJS so we can maintain a string version automatically instead of manually like we do now
   
   constructor(name: string,
               templateType: string = TemplateService.getDefaultName(),
@@ -58,6 +59,7 @@ export class Thing {
         return TemplateField.cloneFrom(field);
       });
     }
+    this.fieldsAsString = this._convertFieldsToString();
   }
   
   static cloneFrom(source: Thing): Thing {
@@ -106,6 +108,7 @@ export class Thing {
       
       if (source.fields) {
         this.fields = source.fields;
+        this.fieldsAsString = this._convertFieldsToString();
       }
     }
   }
@@ -143,7 +146,11 @@ export class Thing {
     }
   }
   
-  getFieldsAsString(): string {
+  hasFields(): boolean {
+    return Utility.hasItems(this.fields);
+  }
+  
+  private _convertFieldsToString(): string {
     if (this.hasFields()) {
       let toReturn: string = this.fields.map((field) => {
         return field.getLabel() + ' = ' + ((typeof field.value !== 'undefined' && field.value !== null) ? field.value : 'N/A');
@@ -152,10 +159,6 @@ export class Thing {
       return toReturn;
     }
     return '';
-  }
-  
-  hasFields(): boolean {
-    return Utility.hasItems(this.fields);
   }
   
   timeInFuture(): boolean {

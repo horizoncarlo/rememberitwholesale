@@ -1,6 +1,13 @@
 {
   "auth": {
-    "salt": "%forGitHub10k%",
-    "newAccountCheck": "githubbyBOI"
+    "salt": "%forGitHub10k%"
+  },
+  "mailjet": {
+    "apiKey": "123",
+    "secretKey": "321",
+    "fromAddress": "test@somedomain.com",
+    "fromName": "RememberItWholesale App",
+    "toAddress": "admin@somedomain.com",
+    "toName": "Admin"
   }
 }

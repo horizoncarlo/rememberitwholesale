@@ -28,6 +28,10 @@ export class StorageService {
     return toReturn;
   }
   
+  makeUrl(endpoint: string): string {
+    return BASE_URL + endpoint + this.getAuthToken();
+  }
+  
   getAllThings(limitDate?: number): Observable<any> {
     // If we don't have a limitDate defined, fallback to our stored version, or default to -1 (all time)
     if (typeof limitDate !== 'number') {
@@ -39,53 +43,61 @@ export class StorageService {
       }
     }
     
-    return this.http.get(BASE_URL + 'things' + this.getAuthToken() + '&limit=' + limitDate);
+    return this.http.get(this.makeUrl('things') + '&limit=' + limitDate);
   }
   
   deleteThing(deleteId: string): Observable<any> {
-    return this.http.delete(BASE_URL + 'things/' + deleteId + this.getAuthToken());
+    return this.http.delete(this.makeUrl('things/' + deleteId));
   }
   
   submitThing(body: Thing): Observable<any> {
-    return this.http.post(BASE_URL + 'things' + this.getAuthToken(), body, this.defaultHeaders);
+    return this.http.post(this.makeUrl('things'), body, this.defaultHeaders);
   }
   
   getAllTemplates(): Observable<any> {
-    return this.http.get(BASE_URL + 'templates' + this.getAuthToken());
+    return this.http.get(this.makeUrl('templates'));
   }
   
   deleteTemplate(nameToDelete: string, deleteThingsToo?: boolean): Observable<any> {
-    return this.http.post(BASE_URL + 'templates/delete' + this.getAuthToken(), {
+    return this.http.post(this.makeUrl('templates/delete'), {
       templateNameToDelete: nameToDelete,
       deleteThingsToo: deleteThingsToo || false
     }, this.defaultHeaders);
   }
   
   submitTemplate(body: Template): Observable<any> {
-    return this.http.post(BASE_URL + 'templates' + this.getAuthToken(), body, this.defaultHeaders);
+    return this.http.post(this.makeUrl('templates'), body, this.defaultHeaders);
   }
   
   getFavoriteTemplate(): Observable<any> {
-    return this.http.get(BASE_URL + 'templates/favorite' + this.getAuthToken());
+    return this.http.get(this.makeUrl('templates/favorite'));
   }
   
   submitFavoriteTemplate(body: TemplateFavorite): Observable<any> {
-    return this.http.post(BASE_URL + 'templates/favorite' + this.getAuthToken(), body, this.defaultHeaders);
+    return this.http.post(this.makeUrl('templates/favorite'), body, this.defaultHeaders);
   }
   
   getSettings(): Observable<any> {
-    return this.http.get(BASE_URL + 'settings' + this.getAuthToken());
+    return this.http.get(this.makeUrl('settings'));
   }
   
   submitSettings(body: UserSettings): Observable<any> {
-    return this.http.post(BASE_URL + 'settings' + this.getAuthToken(), body, this.defaultHeaders);
+    return this.http.post(this.makeUrl('settings'), body, this.defaultHeaders);
   }
   
   submitLogin(username: string, password: string, saveLogin?: boolean): Observable<any> {
-    return this.http.post(BASE_URL + 'login', {
+    return this.http.post(this.makeUrl('login'), {
       username: username,
       password: password,
       saveLogin: saveLogin ? true : false
+    }, this.defaultHeaders);
+  }
+  
+  requestNewAccount(username: string, email: string, note?: string): Observable<any> {
+    return this.http.post(this.makeUrl('new-account'), {
+      username: username,
+      email: email,
+      note: note
     }, this.defaultHeaders);
   }
 }

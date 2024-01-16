@@ -7,6 +7,16 @@
   width: 100%;
 }
 
+.request-wrap {
+  padding-top: 10px;
+  text-align: center;
+  width: 100%;
+}
+
+.request-note {
+  text-decoration: underline;
+}
+
 .fieldset-wrap {
   padding-top: 40px;
   margin-left: auto;
@@ -56,8 +66,12 @@
   transition: 2s;
 }
 
+.request-wrap,
 .save-login-wrap {
   font-size: 13px;
+}
+
+.save-login-wrap {
   width: 100%;
   text-align: right;
 }
@@ -83,8 +97,12 @@
     margin-bottom: 10px;
   }
   
+  .request-wrap,
   .save-login-wrap {
     font-size: inherit;
+  }
+  
+  .save-login-wrap {
     padding-top: 15px;
     text-align: center;
   }

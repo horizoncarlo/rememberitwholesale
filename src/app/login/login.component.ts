@@ -76,6 +76,27 @@ export class LoginComponent {
     }
   }
   
+  requestNewAccount(e: any): void {
+    // TODO QUIDEL - Need to open a dialog here instead, so the user can enter a desired username and an email to get back to them and a note
+    Utility.showWarn('Still working on this', 'Feature coming soon');
+    
+    const username = 'test-new-account';
+    const email = 'test@gmail.com';
+    const note = 'Hey dude it is me, your friend';
+    
+    e.preventDefault();
+    this.processing = true;
+    this.storageService.requestNewAccount(username, email, note).subscribe({
+      next: res => {
+        Utility.showInfoSticky("I'll email you at '" + email + "' as soon as possible with your new account details", "Request Sent");
+      },
+      error: err => {
+        Utility.showError("Failed to send the email requesting your new account, try again later");
+        console.error(err);
+      }
+    }).add(() => this.processing = false);
+  }
+  
   markUsernameInvalid(): void {
     this._markFieldInvalid(this.usernameIn);
   }

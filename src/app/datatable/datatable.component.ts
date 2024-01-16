@@ -421,7 +421,7 @@ export class DatatableComponent implements OnInit, OnDestroy {
   
   filterFields(event: any): void {
     this.thingTable.filteredValue =
-      this.things.data.filter((thing: Thing) => thing.getFieldsAsString().toLocaleLowerCase().indexOf(event.target.value.toLowerCase()) !== -1);
+      this.things.data.filter((thing: Thing) => thing.fieldsAsString.toLocaleLowerCase().indexOf(event.target.value.toLowerCase()) !== -1);
   }
   
   doneEditThing(toEdit: Thing): void {
@@ -676,10 +676,6 @@ export class DatatableComponent implements OnInit, OnDestroy {
         // Can handle strings in a basic way
         else if (typeof value1 === 'string' && typeof value2 === 'string') {
           result = value1.localeCompare(value2);
-        }
-        // Handle Fields specifically, as we want to use their string version
-        else if (field === 'fields') {
-          result = (thing1 as Thing).getFieldsAsString().localeCompare((thing2 as Thing).getFieldsAsString());
         }
         // Fallback to a direct compare
         else {

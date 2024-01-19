@@ -47,7 +47,7 @@ import { UserProfileDialogComponent } from './user-profile-dialog/user-profile-d
     ManageThingDialogComponent,
     ReminderMessageComponent,
     GlobalSearchDialogComponent,
-    UserProfileDialogComponent
+    UserProfileDialogComponent,
   ],
   imports: [
     BrowserModule,

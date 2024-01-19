@@ -580,7 +580,7 @@ app.post("/login", (req, res) => {
 });
 
 app.post("/new-account", async (req, res) => {
-  console.log("**** New account requested as [" + req.body.username + "] from [" + req.body.email + "]");
+  console.log("***** New account requested as [" + req.body.username + "] from [" + req.body.email + "]"); // Mark with a few stars so this is easier to notice in the logs
   
   if (!ALLOW_EMAIL_SENDING) {
     return res.status(201).end();
@@ -623,10 +623,14 @@ app.post("/new-account", async (req, res) => {
     await request.then((result) => {
       success = true;
     }).catch((err) => {
-      console.error("Failure to send mailjet email", err);
+      let message = '';
+      if (err && err.response && err.response.data) {
+        message = err.response.data;
+      }
+      console.error("***** Failure to send mailjet email", message);
     });
   }catch (err) {
-    console.error("General failure to send mailjet email", err);
+    console.error("***** General failure to send mailjet email", err);
   }
   
   if (!success) {

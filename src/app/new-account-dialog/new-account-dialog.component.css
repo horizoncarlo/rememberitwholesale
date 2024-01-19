@@ -1,0 +1,13 @@
+.dialog-items > * {
+  padding-top: 10px;
+  padding-bottom: 10px;
+  display: block;
+}
+
+.dialog-items > *:first-child {
+  padding-top: 0;
+}
+
+.process-spinner {
+  padding-top: 15px;
+}

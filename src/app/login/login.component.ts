@@ -5,6 +5,7 @@ import { CheckboxModule } from 'primeng/checkbox';
 import { FieldsetModule } from 'primeng/fieldset';
 import { InputTextModule } from 'primeng/inputtext';
 import { ProgressSpinnerModule } from 'primeng/progressspinner';
+import { NewAccountDialogComponent } from '../new-account-dialog/new-account-dialog.component';
 import { AuthService } from '../service/auth.service';
 import { StorageService } from '../service/storage.service';
 import { TypingHeaderComponent } from '../typing-header/typing-header.component';
@@ -20,13 +21,15 @@ import { Utility } from '../util/utility';
     FieldsetModule,
     FormsModule,
     InputTextModule,
+    NewAccountDialogComponent,
     ProgressSpinnerModule,
-    TypingHeaderComponent
+    TypingHeaderComponent,
   ],
 })
 export class LoginComponent {
   @ViewChild('usernameIn') usernameIn!: ElementRef;
   @ViewChild('passwordIn') passwordIn!: ElementRef;
+  @ViewChild('newAccount') newAccountDialog!: NewAccountDialogComponent;
   
   password: string | null = null;
   saveLogin: boolean = true;
@@ -74,27 +77,6 @@ export class LoginComponent {
       toClear.value = '';
       toClear.focus();
     }
-  }
-  
-  requestNewAccount(e: any): void {
-    // TODO QUIDEL - Need to open a dialog here instead, so the user can enter a desired username and an email to get back to them and a note
-    Utility.showWarn('Still working on this', 'Feature coming soon');
-    
-    const username = 'test-new-account';
-    const email = 'test@gmail.com';
-    const note = 'Hey dude it is me, your friend';
-    
-    e.preventDefault();
-    this.processing = true;
-    this.storageService.requestNewAccount(username, email, note).subscribe({
-      next: res => {
-        Utility.showInfoSticky("I'll email you at '" + email + "' as soon as possible with your new account details", "Request Sent");
-      },
-      error: err => {
-        Utility.showError("Failed to send the email requesting your new account, try again later");
-        console.error(err);
-      }
-    }).add(() => this.processing = false);
   }
   
   markUsernameInvalid(): void {

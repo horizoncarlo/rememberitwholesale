@@ -37,7 +37,7 @@
         @if (!things.loading) {
           <span class="global-search-wrap p-input-icon-left">
             <i class="pi pi-search"></i>
-            <input pInputText type="text" (input)="globalFilterTableByEvent($event)" placeholder="Search Things" />
+            <input pInputText (input)="globalFilterTableByEvent($event)" placeholder="Search Things" />
           </span>
         }
         @if (things.loading) {

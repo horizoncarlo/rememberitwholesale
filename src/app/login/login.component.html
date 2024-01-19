@@ -8,7 +8,7 @@
         <div class="field-wrap">
           <span class="p-input-icon-right full-length">
             <input #usernameIn
-                  pInputText id="username" type="text" required="true"
+                  pInputText id="username" required="true"
                   placeholder="Username"
                   autocomplete="username" autocorrect="off" autocapitalize="off" autofocus="true"
                   [(ngModel)]="authService.getAuth().username"
@@ -44,7 +44,8 @@
   
   <div class="request-wrap">
     <i class="pi pi-user-plus"></i>
-    Or you can manually <a href="" (click)="requestNewAccount($event)">request a new account</a><span class="hide-on-mobile"> and I'll get back to you!</span>
+    Or you can manually <a href="" (click)="newAccount.show($event)">request a new account</a><span class="hide-on-mobile"> and I'll get back to you!</span>
   </div>
+  <riw-new-account-dialog #newAccount />
 </div>
 }

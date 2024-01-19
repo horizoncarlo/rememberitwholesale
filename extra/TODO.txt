@@ -15,7 +15,7 @@ BLOCK- Validation across the app - from 'required' custom fields to dialogs, to 
 TODO:
 - Try signals and NgRx data store for sharing between parts of app using Ang 17
 - Do a proper pass and componentize any elements that need it
--- Also make sure existing components are "standalone: true" where possible
+-- Also make sure existing components are "standalone: true" where possible (or at least consistent)
 -- Such as menu dial, including it's drag and drop features, table itself maybe?
 - Autosort template dropdown (when adding a new Thing) by grouped select items of Regularly Used, less frequent, etc.
 - Manage tabIndex focus order, especially for mobile (so for example we can press Next, Next, Go on the floating keyboard)
@@ -25,10 +25,12 @@ TODO:
 
 - Detect browser resume on mobile devices
 - Eventually have Photo as a type to upload images to Things
+- Could have a "random chooser" as a field in a Thing, specify a bunch of options (same as dropdown) but then render a button to choose between them. Good for deciding restaurant/boardgame/whatever
 - Have a "looking back" / "remember this?" feature that shows you memories from the same time X months/years ago, sort of like Facebook. Toggleable option of course
 - Have an "annual repeat" feature for reminders, likely don't want more granular as we're not intending to be a full scheduling app
 - Eventually segment data files by year? To prevent giant files of 10k+ records? Then date limit filter could integrate with that (by having like 2021, 2022, etc. instead of "2 years ago")
 
+- Update date-fns from 2.x to 3.x
 - Remove old-Utility.js once anything of value has been copied over, and probably the entire extra/ folder
 - Update Readme.md once the app is close to done
 

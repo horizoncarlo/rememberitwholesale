@@ -1,0 +1,31 @@
+<p-dialog header="Request New Account" [(visible)]="isShowing" [modal]="true" [maximizable]="true">
+
+  <p>
+    Enter the username you want<br/>and an email I can reach you at<br/>(not stored anywhere), and I'll<br/> create your account and let you know.<br/>
+  </p>
+  
+  <div class="dialog-items">
+    <div>
+      <input pInputText autofocus [(ngModel)]="username" placeholder="Desired Username" [required]="true" (keyup.enter)="submit()"/>
+    </div>
+    
+    <div>
+      <input pInputText [(ngModel)]="email" placeholder="Your Email" [required]="true" (keyup.enter)="submit()"/>
+    </div>
+    
+    <div>
+      <textarea pInputTextarea [(ngModel)]="note" placeholder="Optional Note" [autoResize]="true"></textarea>
+    </div>
+  </div>
+  
+  <ng-template pTemplate="footer">
+    <p-button (onClick)="hide()" label="Cancel" icon="pi pi-times" iconPos="left" severity="secondary"/>
+    <p-button (onClick)="submit()" label="Send Request" icon="pi pi-check" iconPos="left"/>
+    
+    @if (processing) {
+      <div class="center process-spinner">
+        <p-progressSpinner />
+      </div>
+    }
+  </ng-template>
+</p-dialog>

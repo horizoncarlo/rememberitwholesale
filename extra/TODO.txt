@@ -1,6 +1,4 @@
 MAIN FEATURES:
-BLOCK- Request New Account (mostly done, just need dialog to fill in details)
-
 BLOCK- Ensure all subscriptions are unsubscribed in RxJS, do takeUntil probably
 
 BLOCK- Throttle any public requests in the API
@@ -30,7 +28,6 @@ TODO:
 - Have an "annual repeat" feature for reminders, likely don't want more granular as we're not intending to be a full scheduling app
 - Eventually segment data files by year? To prevent giant files of 10k+ records? Then date limit filter could integrate with that (by having like 2021, 2022, etc. instead of "2 years ago")
 
-- Update date-fns from 2.x to 3.x
 - Remove old-Utility.js once anything of value has been copied over, and probably the entire extra/ folder
 - Update Readme.md once the app is close to done
 

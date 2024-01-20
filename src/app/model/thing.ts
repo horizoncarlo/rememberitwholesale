@@ -98,7 +98,7 @@ export class Thing {
       
       return toReturn;
     }
-    return '';
+    return '?';
   }
   
   applyTemplateTo(source: Template | null): void {

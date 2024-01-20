@@ -6,15 +6,15 @@
   
   <div class="dialog-items">
     <div>
-      <input pInputText autofocus [(ngModel)]="username" placeholder="Desired Username" [required]="true" (keyup.enter)="submit()"/>
+      <input pInputText autofocus [(ngModel)]="username" placeholder="Desired Username" [required]="true" class="consistent-field" (keyup.enter)="submit()"/>
     </div>
     
     <div>
-      <input pInputText [(ngModel)]="email" placeholder="Your Email" [required]="true" (keyup.enter)="submit()"/>
+      <input id="emailField" pInputText type="email" [(ngModel)]="email" placeholder="Your Email" [required]="true" [email]="true" class="consistent-field" (keyup.enter)="submit()"/>
     </div>
     
     <div>
-      <textarea pInputTextarea [(ngModel)]="note" placeholder="Optional Note" [autoResize]="true"></textarea>
+      <textarea pInputTextarea [(ngModel)]="note" placeholder="Optional Note" class="consistent-field" [autoResize]="true"></textarea>
     </div>
   </div>
   

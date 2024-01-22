@@ -1,4 +1,4 @@
-import { Component } from '@angular/core';
+import { Component, EventEmitter, Output } from '@angular/core';
 import { UserSettings } from '../model/user-settings';
 import { AuthService } from '../service/auth.service';
 import { StorageService } from '../service/storage.service';
@@ -11,6 +11,7 @@ import { Utility } from '../util/utility';
   styleUrls: ['./user-profile-dialog.component.css']
 })
 export class UserProfileDialogComponent {
+  @Output() onDialChanged = new EventEmitter<boolean>();
   isShowing: boolean = false;
   settings: UserSettings = new UserSettings();
   currentPassword: string = '';
@@ -69,7 +70,11 @@ export class UserProfileDialogComponent {
   }
   
   submit(): void {
-    // TODO Make forceDial apply dynamically on change here, currently have to refresh the browser
+    // Fire an event if the dial changed, as we might want to trigger off that
+    if (this.settings.forceDial !== this.userService.getUser().forceDial) {
+      this.onDialChanged.emit(this.settings.forceDial);
+    }
+    
     this.userService.data$.next(this.settings);
     Utility.showSuccess('Successfully saved your profile');
     Utility.fireWindowResize();

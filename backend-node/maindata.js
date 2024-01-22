@@ -10,11 +10,7 @@ const crypto = require('crypto');
 const { v4: uuidv4 } = require('uuid');
 const rateLimiter = require('express-rate-limit');
 
-// Easily disable Mailjet in case you want to
-const ALLOW_EMAIL_SENDING = true;
-
 // Set some default templates for a new user
-// TODO Once user accounts are finalized, this should likely be part of a larger default dataset (from outside the code) that is set in
 const DEFAULT_TEMPLATES = [
   {
     "name": "Milestone",
@@ -585,6 +581,7 @@ app.post("/login", loginLimiter, (req, res) => {
           userObj.password === req.body.password) {
         // Generate a new auth token and save it
         userObj.authToken = generateAuthToken();
+        userObj.lastLogin = new Date().toLocaleString();
         saveAuthMemoryToFile();
         
         // Setup our files and in-memory data as needed
@@ -613,10 +610,6 @@ app.post("/login", loginLimiter, (req, res) => {
 app.post("/new-account", newAccountLimiter, async (req, res) => {
   console.log("***** New account requested as [" + req.body.username + "] from [" + req.body.email + "]"); // Mark with a few stars so this is easier to notice in the logs
   if (hasInvalidFields(req.body.username, req.body.email)) { return res.status(400).end(); }
-  
-  if (!ALLOW_EMAIL_SENDING) {
-    return res.status(201).end();
-  }
   
   let success = false;
   try{

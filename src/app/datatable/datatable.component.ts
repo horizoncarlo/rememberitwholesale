@@ -271,13 +271,13 @@ export class DatatableComponent implements OnInit, OnDestroy {
   }
   
   setupDialTouchEvents(retryCount?: number): void {
-    // Since touch* events aren't naturally supported on Angular 16 components, like (touchstart), we have to manually add the listeners
+    // 2023: Since touch* events aren't naturally supported on Angular 16 components, like (touchstart), we have to manually add the listeners
     // Support dragging the speed dial around
     if (this.useDial) {
       setTimeout(() => {
         const ele = document.getElementById('ddOverlay');
         if (ele) {
-          ele.addEventListener('touchmove', (event: TouchEvent) => {
+          const touchmove = (event: TouchEvent) => {
             event.preventDefault(); // Necessary for performance, otherwise we get choppiness
             this.isDraggingDial = true;
             
@@ -286,20 +286,26 @@ export class DatatableComponent implements OnInit, OnDestroy {
               ele.style.top = event.changedTouches[0].clientY - middleSize + 'px';
               ele.style.left = event.changedTouches[0].clientX - middleSize + 'px';
             }
-          });
+          };
+          ele.removeEventListener('touchmove', touchmove);
+          ele.addEventListener('touchmove', touchmove);
           
-          ele.addEventListener('touchend', (event: TouchEvent) => {
+          const touchend = (event: TouchEvent) => {
             if (this.isDraggingDial) {
               if (Utility.hasItems(event.changedTouches)) {
               this.genericBadgeDropEvent(ele, { x: event.changedTouches[0].clientX,
                                                 y: event.changedTouches[0].clientY });
               }
             }
-          });
+          };
+          ele.removeEventListener('touchend', touchend);
+          ele.addEventListener('touchend', touchend);
           
-          ele.addEventListener('touchcancel', (e: any) => {
+          const touchcancel = (e: any) => {
             this.isDraggingDial = false;
-          });
+          };
+          ele.removeEventListener('touchcancel', touchcancel);
+          ele.addEventListener('touchcancel', touchcancel);
         }
         else {
           if (typeof retryCount !== 'number') {
@@ -314,6 +320,13 @@ export class DatatableComponent implements OnInit, OnDestroy {
           }
         }
       }, 0);
+    }
+  }
+  
+  dialChanged(event: boolean): void {
+    this.useDial = event;
+    if (this.useDial) {
+      this.setupDialTouchEvents();
     }
   }
   
@@ -336,7 +349,6 @@ export class DatatableComponent implements OnInit, OnDestroy {
   getDialBadgeLeft(): string {
     const ele = document.getElementById('ddOverlay');;
     if (ele) {
-      // TODO Clean up and centralize our various badge math
       return (parseInt(ele.style.left) -
               Utility.getCSSVarNum('dial-badge-size') +
               this.getDialBoxMiddleSize()*2) + 'px';
@@ -593,7 +605,7 @@ export class DatatableComponent implements OnInit, OnDestroy {
           toSave.name += Utility.isValidString(favorite.nameSuffix) ? favorite.nameSuffix : favorite.name;
           toSave.time = addHours(new Date(), typeof favorite.timeRange === 'undefined' ? 0 : favorite.timeRange);
           toSave.reminder = favorite.autoReminder;
-          toSave.applyTemplateTo(favorite); // TODO This should probably be in thing.prepareForSave so it's done in a consistent way and not manually
+          toSave.applyTemplateTo(favorite);
           
           // After saving we want to clear our value from the favorite template, so it's fresh for next time
           this.things.saveThing(toSave, { onSuccess: () => favorite.clearValuesFromFields() });

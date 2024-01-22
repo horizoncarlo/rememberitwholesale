@@ -50,6 +50,9 @@ export class ManageTemplateDialogComponent {
   constructor(private confirmationService: ConfirmationService) { }
   
   show(event?: any): void {
+    // Update our template list, if needed
+    this.templateService.getAllTemplatesObs().subscribe();
+    
     // If we have an incoming event, set our state from that
     // Otherwise default to the Create action
     if (event) {

@@ -27,7 +27,7 @@
             <td colspan="5">
               <span class="p-float-label">
                 <input #nameField pInputText [(ngModel)]="actOn.name" (keyup.enter)="submit($event)"
-                      (ngModelChange)="createNameChanged()"/>
+                      (ngModelChange)="createNameChanged()" [autofocus]="true"/>
                 <label>Template Name</label>
                 @if (operation === 'create') {
                   @if (nameIsDuplicate) {
@@ -95,7 +95,7 @@
                 <p-checkbox [(ngModel)]="field.required" [binary]="true" label="Is Required?" class="checkbox-label-on-left"/>
               </td>
             </tr>
-            @if (field.type === fieldTypes.Radio || field.type === fieldTypes.Dropdown) {
+            @if (field.type === fieldTypes.Radio || field.type === fieldTypes.Dropdown || field.type === fieldTypes.Chooser) {
               <tr>
                 <td>&nbsp;</td>
                 <td colspan="4">

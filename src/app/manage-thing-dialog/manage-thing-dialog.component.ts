@@ -116,7 +116,6 @@ export class ManageThingDialogComponent {
     }
     
     // Set in our template type and color as well
-    // TODO This should probably be in thing.prepareForSave so it's done in a consistent way and not manually
     this.actOn.applyTemplateTo(this.selectedTemplate);
     
     // If we're editing, which means the Thing already exists, notify the parent as such

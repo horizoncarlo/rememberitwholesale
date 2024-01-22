@@ -1,8 +1,8 @@
 # Remember It Wholesale
 
-A simple way to organize points of interest and pieces of data in your life. Also a way for me to practice Angular and keep up to date with their releases. Also uses PrimeNG for the component suite.
+A simple way to organize points of interest and pieces of data in your life. Also a way for me to practice Angular and keep up to date with their releases. Uses PrimeNG for the component suite.
 
-You can create different Templates (such as Birthday, Dinner, Boardgame Night, Commute, Allergies, etc.) with any arbitrary fields you want.
+You can create different Templates (for whatever you want, like Birthday, Dinner, Boardgame Night, Commute, Allergies, etc.) with a set of customizable and arbitrary fields.
 
 Then you can create Things from those Templates, for specific instances of each event in time. They can also be set as a reminder.
 

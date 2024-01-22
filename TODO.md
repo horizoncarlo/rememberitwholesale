@@ -6,17 +6,14 @@
 - Do a proper pass and componentize any elements that need it
   - Also make sure existing components are "standalone: true" where possible (or at least consistent)
   - Such as menu dial, including it's drag and drop features, table itself maybe?
-- Autosort template dropdown (when adding a new Thing) by grouped select items of Regularly Used, less frequent, etc.
 - Manage tabIndex focus order, especially for mobile (so for example we can press Next, Next, Go on the floating keyboard)
-- Ensure Enter key support works on every field, and is consistent between keyup.enter on input and handleEnterKey function approaches
-- Put our revision or version number somewhere on the page? Pulled from environment file automatically?
-- "Demo mode" (once we have user login) that lets you explore the app without changing data, with a free/auto account, and a bunch of default stuff. Could swap Storage Service for this case?
+- "Demo mode" (once we have user login) that lets you explore the app without changing data, with a free/auto account, and a bunch of default stuff
+  - When logging in as demo auto-copy/create preset files and data, and destroy them on logout? Or could swap Storage Service for this case? 
 
 - Detect browser resume on mobile devices
-- Eventually have Photo as a type to upload images to Things
-- Could have a "random chooser" as a field in a Thing, specify a bunch of options (same as dropdown) but then render a button to choose between them. Good for deciding restaurant/boardgame/whatever
 - Have a "looking back" / "remember this?" feature that shows you memories from the same time X months/years ago, sort of like Facebook. Toggleable option of course
 - Have an "annual repeat" feature for reminders, likely don't want more granular as we're not intending to be a full scheduling app
+- Autosort template dropdown (when adding a new Thing) by grouped select items of Regularly Used, less frequent, etc.
 - Eventually segment data files by year? To prevent giant files of 10k+ records? Then date limit filter could integrate with that (by having like 2021, 2022, etc. instead of "2 years ago")
 
 ## LOADING

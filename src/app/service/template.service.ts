@@ -13,6 +13,7 @@ export class TemplateService  {
   things: ThingService = inject(ThingService);
   loading: boolean = false;
   data: Template[] = [];
+  hasCached: boolean = false; // After our first fetch, we cache our `data`, and internally manage it and re-fetch when needed
   favorite?: TemplateFavorite;
   backend: StorageService = inject(StorageService);
   
@@ -80,13 +81,20 @@ export class TemplateService  {
   }
   
   getAllTemplatesObs(): Observable<any> {
-    this.loading = true;
+    // If we are cached just return our current data
+    if (this.hasCached) {
+      return new Observable((subscriber) => {
+        subscriber.next(this.data);
+      });
+    }
     
+    this.loading = true;
     return this.backend.getAllTemplates().pipe(map(res => {
         // Cast our results for better type checking, and sort by name
         this.data = res.map((current: Template) => {
           return Template.cloneFrom(current);
         }).toSorted((a: Template, b: Template) => a.name.localeCompare(b.name));
+        this.hasCached = true;
         
         console.log("--> Get Templates", this.data);
         this.loading = false;
@@ -125,6 +133,7 @@ export class TemplateService  {
     this.backend.submitTemplate(toAdd).subscribe({
       next: res => {
         Utility.showSuccess('Successfully saved your new Template', toAdd.name);
+        this.hasCached = false;
         this.getAllTemplates();
       },
       error: err => {
@@ -132,7 +141,9 @@ export class TemplateService  {
         Utility.showError('Failed to save your new Template');
         console.error(err);
       },
-      complete: () => this.loading = false
+      complete: () => {
+        this.loading = false;
+      }
     });
   }
   
@@ -159,7 +170,10 @@ export class TemplateService  {
         Utility.showError('Failed to set your Favorite Template');
         console.error(err);
       },
-      complete: () => this.loading = false
+      complete: () => {
+        this.loading = false;
+        this.hasCached = false;
+      }
     });
   }
   
@@ -169,6 +183,7 @@ export class TemplateService  {
       next: res => {
         // Ensure we only refresh our data once
         Utility.showSuccess("Successfully deleted Template", nameToDelete);
+        this.hasCached = false;
         this.getAllTemplates();
         
         // Refresh our Things too if we deleted them
@@ -183,7 +198,7 @@ export class TemplateService  {
         this.loading = false;
         Utility.showError('Failed to delete "' + nameToDelete + '"');
         console.error(err);
-      }
+      },
     });
   }
   

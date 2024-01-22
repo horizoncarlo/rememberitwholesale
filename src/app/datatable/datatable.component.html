@@ -20,7 +20,7 @@
         <p-button (onClick)="refreshThings()" icon="pi pi-refresh" [loading]="things.loading" severity="info" pTooltip="Refresh Things"/>
         <p-button (onClick)="userProfileDialog.show();" icon="pi pi-user" severity="info" pTooltip="User Profile and Logout"/>
         @if (templateService.hasFavorite()) {
-          <p-button (onClick)="quickfillFavoriteThing()" icon="pi pi-heart" severity="help" pTooltip="New from Favorite Template"/> <!-- TODO Have a "beginner mode", similar to intro paragraph on template dialog, that puts additional tooltips. Like for this Favorite have "Create a new Thing from your Favorite template" or whatever -->
+          <p-button (onClick)="quickfillFavoriteThing()" icon="pi pi-heart" severity="help" pTooltip="Create a new Thing from your Favorite Template"/>
         }
         <p-button (onClick)="clearSelectedRows(); manageTemplate.show()" icon="pi pi-list" [label]="getManageTemplateLabel()" />
         <p-button (onClick)="clearSelectedRows(); manageThing.showAdd()" icon="pi pi-plus-circle" label="New Thing" />
@@ -196,7 +196,7 @@
                          (onEdit)="doneEditThing($event)"/>
 <riw-manage-template-dialog #manageTemplate />
 <riw-global-search-dialog #globalSearch [searchFunction]="globalFilterTable.bind(this)"/>
-<riw-user-profile-dialog #userProfile />
+<riw-user-profile-dialog #userProfile (onDialChanged)="dialChanged($event)"/>
 
 <p-confirmPopup key="inline" />
 <p-confirmDialog key="dialog"/>
@@ -221,10 +221,14 @@
             <div [id]="field.property">
               @for (option of field.options; track $index) {
                 <p-radioButton [value]="option" [(ngModel)]="field.value" [inputId]="'option' + $index" [required]="field.required || false"
-                              (ngModelChange)="templateService.favorite.hasOneField() && favoriteConfirmDialog.accept()" />
+                               (ngModelChange)="templateService.favorite.hasOneField() && favoriteConfirmDialog.accept()" />
                 <label [for]="'option' + $index"> {{option}}</label>
               }
             </div>
+          }
+          @else if (field.type === fieldTypes.Chooser) {
+            <p-button (onClick)="field.handleRandomChooser(field); (templateService.favorite.hasOneField() && favoriteConfirmDialog.accept());"
+                      icon="pi pi-bolt" [label]="'Randomly choose from ' + field.options?.length + ' options'"/>
           }
           @else if (field.type === fieldTypes.Boolean) {
             <p-triStateCheckbox [id]="field.property" [(ngModel)]="field.value" [required]="field.required || false" />

@@ -54,7 +54,13 @@ export class NewAccountDialogComponent {
         Utility.showInfoSticky("I'll email you at '" + this.email + "' as soon as possible with your new account details", "Request Sent");
       },
       error: err => {
-        Utility.showError("Failed to send the email requesting your new account, try again later");
+        if (err && typeof err.status === 'number' &&
+            err.status === 429) {
+          Utility.showError('Too many new account requests, try again later');
+        }
+        else {
+          Utility.showError("Failed to send the email requesting your new account, try again later");
+        }
         console.error(err);
       }
     }).add(() => this.processing = false);

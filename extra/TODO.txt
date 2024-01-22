@@ -1,8 +1,6 @@
 MAIN FEATURES:
 BLOCK- Ensure all subscriptions are unsubscribed in RxJS, do takeUntil probably
 
-BLOCK- Throttle any public requests in the API
-
 BLOCK- Validation across the app - from 'required' custom fields to dialogs, to checks before saving/using the backend, etc.
 
 - Better and more consistent and centralized logging, with levels depending on deployment/environment, and also output to log files on backend side

@@ -8,6 +8,7 @@ const mailjet = require('node-mailjet');
 const config = require('config');
 const crypto = require('crypto');
 const { v4: uuidv4 } = require('uuid');
+const rateLimiter = require('express-rate-limit');
 
 // Easily disable Mailjet in case you want to
 const ALLOW_EMAIL_SENDING = true;
@@ -46,8 +47,30 @@ const FAVORITE_FILE = 'favorite.json';
 const SETTINGS_FILE = 'settings.json';
 const AUTH_FILE = 'auth.json';
 
-// TODO Configure CORS to just be from our website, instead of global/public access
-app.use(cors());
+// Setup express-rate-limit (https://express-rate-limit.mintlify.app/reference/configuration)
+// We want a global limiter for all endpoints, and then a more restrictive one for each public endpoint
+// We separate the public endpoints so that we can independently restrict login vs new account
+const globalLimiter = rateLimiter({
+	windowMs: 1 * 60 * 1000, // 1 minute
+  limit: 50, // Max of 50 requests across 1 minute
+	standardHeaders: false, // Don't return any RateLimit headers
+	legacyHeaders: false, // Don't return any RateLimit headers
+});
+const loginLimiter = rateLimiter({
+	windowMs: 20 * 60 * 1000,
+	limit: 10, // Can make 10 login calls every 20 minutes
+	standardHeaders: false,
+	legacyHeaders: false,
+});
+const newAccountLimiter = rateLimiter({
+	windowMs: 60 * 60 * 1000,
+	limit: 5, // Can request 5 accounts every hour
+	standardHeaders: false,
+	legacyHeaders: false,
+});
+
+app.use(globalLimiter);
+app.use(cors()); // TODO Configure CORS to just be from our website, instead of global/public access
 app.use(express.json());
 
 // Ensure our auth token is valid and the user is logged in
@@ -534,7 +557,8 @@ app.post("/change-password", (req, res) => {
   return res.status(401).end();
 });
 
-app.post("/login", (req, res) => {
+// Public
+app.post("/login", loginLimiter, (req, res) => {
   console.log("POST Login", req.body?.username);
   
   if (req && req.body &&
@@ -579,7 +603,8 @@ app.post("/login", (req, res) => {
   return res.status(401).end();
 });
 
-app.post("/new-account", async (req, res) => {
+// Public
+app.post("/new-account", newAccountLimiter, async (req, res) => {
   console.log("***** New account requested as [" + req.body.username + "] from [" + req.body.email + "]"); // Mark with a few stars so this is easier to notice in the logs
   
   if (!ALLOW_EMAIL_SENDING) {

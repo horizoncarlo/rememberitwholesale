@@ -65,9 +65,15 @@ export class LoginComponent {
         }
       },
       error: err => {
-        this.markUsernameInvalid();
-        this.markPasswordInvalid();
-        Utility.showError('Invalid login');
+        if (err && typeof err.status === 'number' &&
+            err.status === 429) {
+          Utility.showError('Too many login attempts, try again later');
+        }
+        else {
+          this.markUsernameInvalid();
+          this.markPasswordInvalid();
+          Utility.showError('Invalid login');
+        }
       }
     }).add(() => this.processing = false);
   }

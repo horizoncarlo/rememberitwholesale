@@ -1,12 +1,13 @@
-<!-- TODO Previously would bind directly to templateService.getFilteredData(hideDefaults), but due to a PrimeNG bug we have to go to a static value instead https://github.com/primefaces/primeng/issues/14319 -->
-<p-dropdown [options]="filteredData"
+<p-dropdown [options]="templateService.getFilteredData(hideDefaults)"
+            optionValue="name"
+            optionLabel="name"
             appendTo="body"
             [(ngModel)]="selectedTemplateName"
             placeholder="Select a Template"
             (onChange)="selectedTemplateChanged()"
             class="consistent-field">
   <ng-template let-template pTemplate="item">
-    <span [style.color]="templateService.getColorByTemplateName(template)">{{template}}</span>
+    <span [style.color]="templateService.getColorByTemplateName(template.name)">{{template.name}}</span>
   </ng-template>
 </p-dropdown>
 

@@ -1,27 +1,22 @@
-# Rememberitwholesale
+# Remember It Wholesale
 
-This project was generated with [Angular CLI](https://github.com/angular/angular-cli) version 16.2.6.
+A simple way to organize points of interest and pieces of data in your life. Also a way for me to practice Angular and keep up to date with their releases. Also uses PrimeNG for the component suite.
 
-## Development server
+You can create different Templates (such as Birthday, Dinner, Boardgame Night, Commute, Allergies, etc.) with any arbitrary fields you want.
 
-Run `ng serve` for a dev server. Navigate to `http://localhost:4200/`. The application will automatically reload if you change any of the source files.
+Then you can create Things from those Templates, for specific instances of each event in time. They can also be set as a reminder.
 
-## Code scaffolding
+Data is fully searchable with table-level filters and a global search.
 
-Run `ng generate component component-name` to generate a new component. You can also use `ng generate directive|pipe|service|class|guard|interface|enum|module`.
+There's more features planned, see `TODO.md` for details.
 
-## Build
+### Setup and Running
 
-Run `ng build` to build the project. The build artifacts will be stored in the `dist/` directory.
+For simplicity and future proofing for my own deployment, no database is used, just flat JSON files in `~/.rememberitwholesale/`
 
-## Running unit tests
+New accounts are requested manually via email, see `config/default.json` for setup of Mailjet
 
-Run `ng test` to execute the unit tests via [Karma](https://karma-runner.github.io).
-
-## Running end-to-end tests
-
-Run `ng e2e` to execute the end-to-end tests via a platform of your choice. To use this command, you need to first add a package that implements end-to-end testing capabilities.
-
-## Further help
-
-To get more help on the Angular CLI use `ng help` or go check out the [Angular CLI Overview and Command Reference](https://angular.io/cli) page.
+- Use Node v20+
+- See `npm run` for options, but:
+  - `npm run backend`: Start up the Node instance to back the app
+  - `npm run (dev|prod)`: Deploy the Angular app locally for development or prod

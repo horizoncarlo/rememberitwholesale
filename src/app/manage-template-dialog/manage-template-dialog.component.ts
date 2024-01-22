@@ -242,10 +242,4 @@ export class ManageTemplateDialogComponent {
       picker.el.nativeElement.querySelector('input').click();
     }
   }
-  
-  handleEnterKey(toCall: Function): void {
-    if (toCall) {
-      toCall();
-    }
-  }
 }

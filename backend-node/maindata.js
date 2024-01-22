@@ -36,8 +36,6 @@ const DEFAULT_TEMPLATES = [
 
 const PORT_NUM = 4333;
 const FILE_DIR = os.homedir() + '/.rememberitwholesale/';
-
-// TODO Combine files and property into an object, and then centralize functions so we don't have to duplicate read/write
 const BACKUP_FOLDER = 'backup/';
 const BACKUP_PREFIX = 'backup_';
 const GLOBAL_DATA = "global$data";
@@ -56,15 +54,17 @@ const globalLimiter = rateLimiter({
 	standardHeaders: false, // Don't return any RateLimit headers
 	legacyHeaders: false, // Don't return any RateLimit headers
 });
+// Login limit: 20 calls per 20 minutes
 const loginLimiter = rateLimiter({
 	windowMs: 20 * 60 * 1000,
-	limit: 10, // Can make 10 login calls every 20 minutes
+	limit: 20,
 	standardHeaders: false,
 	legacyHeaders: false,
 });
+// New account limit: 5 calls per 1 hour
 const newAccountLimiter = rateLimiter({
 	windowMs: 60 * 60 * 1000,
-	limit: 5, // Can request 5 accounts every hour
+	limit: 5,
 	standardHeaders: false,
 	legacyHeaders: false,
 });
@@ -139,7 +139,7 @@ function ensureUserInMemorySetup(authUsername, noReadFiles) {
   }
 }
 
-function readUserFile(authUsername, fileName, property, defaultVal, isRecursive) {
+function readUserFile(authUsername, fileName, property, defaultVal, recursiveCount) {
   const fileDirectory = FILE_DIR + (authUsername ? authUsername + '/' : '');
   let toSet = defaultVal;
   
@@ -157,9 +157,22 @@ function readUserFile(authUsername, fileName, property, defaultVal, isRecursive)
       fs.writeFileSync(fileDirectory + fileName, '', { flag: 'wx' });
     }catch (ignored) { }
     
-    if (!isRecursive) {
-      return readUserFile(authUsername, fileName, property, defaultVal, isRecursive);
+    // Determine if we should try again, up to 10 times
+    if (typeof recursiveCount === 'undefined') {
+      recursiveCount = 0;
     }
+    else if (typeof recursiveCount === 'number') {
+      if (recursiveCount < 10) {
+        recursiveCount++;
+      }
+      else {
+        // Failed over our tries, just abort
+        return null;
+      }
+    }
+    
+    // Keep recursing
+    return readUserFile(authUsername, fileName, property, defaultVal, recursiveCount);
   }
   
   // Store in-memory depending on what type we are
@@ -328,6 +341,26 @@ function checkAuthToken(req) {
   };
 }
 
+function hasInvalidFields(...fields) {
+  if (fields && fields.length > 0) {
+    for (let i = 0; i < fields.length; i++) {
+      // Check that we're not undefined or null
+      if (typeof fields[i] === 'undefined' &&
+          fields[i] === null) {
+        return true;
+      }
+      // For strings also ensure we're not just blank
+      else if (typeof fields[i] === 'string' &&
+               fields[i].trim().length === 0) {
+        return true;
+      }
+    }
+  }
+  
+  // Empty params means we don't want to check anything, so we're innately valid (aka return false for invalid)
+  return false;
+}
+
 function convertUsernameToFilesafe(username) {
   return username.replace(/[^\w-]+/g, "");
 }
@@ -411,7 +444,7 @@ app.post("/things", (req, res) => {
 });
 
 app.delete("/things/:id", (req, res) => {
-  console.log("DELETE Thing", req.params.id);
+  if (hasInvalidFields(req.params.id)) { return res.status(400).end(); }
   
   const toWork = getInMemoryThings(getAuthUsername(req));
   for (let i = toWork.length-1; i >= 0; i--) {
@@ -430,17 +463,18 @@ app.get("/templates", (req, res) => {
 });
 
 app.post("/templates", (req, res) => {
-  // TODO Our validation, like ensuring template names are unique, needs to be done on the backend as well, not just the front end. Look for similar with Things and other services
   console.log("POST Template", req.body);
+  if (hasInvalidFields(req.body.name)) { return res.status(400).end(); }
   
-  if (req.body && req.body.name) {
-    getInMemoryTemplates(getAuthUsername(req)).push(req.body);
-    saveTemplatesMemoryToFile(getAuthUsername(req));
-    return res.status(200).end();
-  }
-  else {
-    return res.status(400).end();
-  }
+  // Check that our template name is unique
+  const templatesList = getInMemoryTemplates(getAuthUsername(req));
+  const isUnique =
+    templatesList.filter((template) => req.body.name.toLowerCase() === template.name.toLowerCase()).length === 0;
+  if (!isUnique) { return res.status(400).end(); }
+  
+  getInMemoryTemplates(getAuthUsername(req)).push(req.body);
+  saveTemplatesMemoryToFile(getAuthUsername(req));
+  return res.status(200).end();
 });
 
 app.get("/templates/favorite", (req, res) => {
@@ -455,46 +489,38 @@ app.get("/templates/favorite", (req, res) => {
 
 app.post("/templates/favorite", (req, res) => {
   console.log("POST Favorite Template");
+  if (hasInvalidFields(req.body.name)) { return res.status(400).end(); }
   
-  if (req.body && req.body.name) {
-    setInMemoryUserData(getAuthUsername(req), 'favorite', req.body);
-    saveFavoriteMemoryToFile(getAuthUsername(req));
-    return res.status(200).end();
-  }
-  else {
-    return res.status(400).end();
-  }
+  setInMemoryUserData(getAuthUsername(req), 'favorite', req.body);
+  saveFavoriteMemoryToFile(getAuthUsername(req));
+  return res.status(200).end();
 });
 
 app.post("/templates/delete", (req, res) => {
   console.log("POST Template Delete", req.body);
+  if (hasInvalidFields(req.body.templateNameToDelete)) { return res.status(400).end(); }
   
-  if (req.body && req.body.templateNameToDelete) {
-    const toSearch = getInMemoryTemplates(getAuthUsername(req));
-    const withDeleted = toSearch.filter((template) => template.name.toLowerCase() !== req.body.templateNameToDelete.toLowerCase());
-    if (withDeleted.length !== toSearch.length) {
-      setInMemoryUserData(getAuthUsername(req), 'templates', withDeleted);
-      
-      // If requested, clean up related Things as well
-      if (req.body.deleteThingsToo) {
-        const cleanupThings = getInMemoryThings(getAuthUsername(req));
-        const newThings = cleanupThings.filter((things) => {
-          return things.templateType &&
-                 things.templateType.toLowerCase() !== req.body.templateNameToDelete.toLowerCase();
-        });
-        setInMemoryUserData(getAuthUsername(req), 'things', newThings);
-        saveThingsMemoryToFile(getAuthUsername(req));
-      }
-      
-      saveTemplatesMemoryToFile(getAuthUsername(req));
-      return res.status(200).end();
+  const toSearch = getInMemoryTemplates(getAuthUsername(req));
+  const withDeleted = toSearch.filter((template) => template.name.toLowerCase() !== req.body.templateNameToDelete.toLowerCase());
+  if (withDeleted.length !== toSearch.length) { // Couldn't match a template to delete
+    setInMemoryUserData(getAuthUsername(req), 'templates', withDeleted);
+    
+    // If requested, clean up related Things as well
+    if (req.body.deleteThingsToo) {
+      const cleanupThings = getInMemoryThings(getAuthUsername(req));
+      const newThings = cleanupThings.filter((things) => {
+        return things.templateType &&
+                things.templateType.toLowerCase() !== req.body.templateNameToDelete.toLowerCase();
+      });
+      setInMemoryUserData(getAuthUsername(req), 'things', newThings);
+      saveThingsMemoryToFile(getAuthUsername(req));
     }
-    else {
-      return res.status(404).end();
-    }
+    
+    saveTemplatesMemoryToFile(getAuthUsername(req));
+    return res.status(200).end();
   }
   else {
-    return res.status(400).end();
+    return res.status(404).end();
   }
 });
 
@@ -506,52 +532,38 @@ app.get("/settings", (req, res) => {
 app.post("/settings", (req, res) => {
   console.log("POST Settings");
   
-  // TODO Properly validate our Settings post
-  //if (req.body && req.body.name) {
-    setInMemoryUserData(getAuthUsername(req), 'settings', req.body);
-    saveSettingsMemoryToFile(getAuthUsername(req));
-    return res.status(200).end();
-  //}
-  //else {
-  //  return res.status(400).end();
-  //}
+  setInMemoryUserData(getAuthUsername(req), 'settings', req.body);
+  saveSettingsMemoryToFile(getAuthUsername(req));
+  return res.status(200).end();
 });
 
 app.post("/change-password", (req, res) => {
-  console.log("POST Change Password", req.body?.username);
+  console.log("POST Change Password", req.body.username);
+  if (hasInvalidFields(req.body.username, req.body.currentPassword, req.body.newPassword)) { return res.status(400).end(); }
   
-  if (req && req.body &&
-      req.body.username &&
-      req.body.currentPassword &&
-      req.body.newPassword) {
-    // Determine if our current password is valid
-    const auth = getInMemoryAuth();
-    if (auth && Object.keys(auth).length > 0) {
-      // TODO Combine common code with Login
-      const userObj = auth[req.body.username];
-      const currentPasswordHash = createHashedPassword(req.body.currentPassword);
-      if (userObj &&
-          userObj.password === currentPasswordHash ||
-          userObj.password === req.body.password) {
-        const newPasswordHash = createHashedPassword(req.body.newPassword);
-        userObj.password = newPasswordHash;
-        userObj.authToken = generateAuthToken();
-        saveAuthMemoryToFile();
-        
-        const toReturn = {
-          username: req.body.username,
-          authToken: userObj.authToken,
-          password: userObj.password
-        };
-        return res.status(200).end(JSON.stringify(toReturn));
-      }
-    }
-    else {
-      console.error("Invalid auth, couldn't read stored data");
+  // Determine if our current password is valid
+  const auth = getInMemoryAuth();
+  if (auth && Object.keys(auth).length > 0) {
+    const userObj = auth[req.body.username];
+    const currentPasswordHash = createHashedPassword(req.body.currentPassword);
+    if (userObj &&
+        userObj.password === currentPasswordHash ||
+        userObj.password === req.body.password) {
+      const newPasswordHash = createHashedPassword(req.body.newPassword);
+      userObj.password = newPasswordHash;
+      userObj.authToken = generateAuthToken();
+      saveAuthMemoryToFile();
+      
+      const toReturn = {
+        username: req.body.username,
+        authToken: userObj.authToken,
+        password: userObj.password
+      };
+      return res.status(200).end(JSON.stringify(toReturn));
     }
   }
   else {
-    console.error("Invalid Change Password - missing username or passwords");
+    console.error("Invalid auth, couldn't read stored data");
   }
   
   return res.status(401).end();
@@ -559,44 +571,38 @@ app.post("/change-password", (req, res) => {
 
 // Public
 app.post("/login", loginLimiter, (req, res) => {
-  console.log("POST Login", req.body?.username);
+  console.log("POST Login", req.body.username);
+  if (hasInvalidFields(req.body.username, req.body.password)) { return res.status(400).end(); }
   
-  if (req && req.body &&
-      req.body.username &&
-      req.body.password) {
-    const auth = getInMemoryAuth();
-    if (auth && Object.keys(auth).length > 0) {
-      const userObj = auth[req.body.username];
-      if (userObj) {
-        // Create a password hash for the case of a user sending a plain text password
-        const passwordHash = createHashedPassword(req.body.password);
+  const auth = getInMemoryAuth();
+  if (auth && Object.keys(auth).length > 0) {
+    const userObj = auth[req.body.username];
+    if (userObj) {
+      // Create a password hash for the case of a user sending a plain text password
+      const passwordHash = createHashedPassword(req.body.password);
+      
+      if (userObj.password === passwordHash ||
+          userObj.password === req.body.password) {
+        // Generate a new auth token and save it
+        userObj.authToken = generateAuthToken();
+        saveAuthMemoryToFile();
         
-        if (userObj.password === passwordHash ||
-            userObj.password === req.body.password) {
-          // Generate a new auth token and save it
-          userObj.authToken = generateAuthToken();
-          saveAuthMemoryToFile();
-          
-          // Setup our files and in-memory data as needed
-          ensureUserFilesAreSetup(convertUsernameToFilesafe(req.body.username));
-          
-          const toReturn = {
-            username: req.body.username,
-            authToken: userObj.authToken,
-          };
-          if (req.body.saveLogin) {
-            toReturn.password = userObj.password;
-          }
-          return res.status(200).end(JSON.stringify(toReturn));
+        // Setup our files and in-memory data as needed
+        ensureUserFilesAreSetup(convertUsernameToFilesafe(req.body.username));
+        
+        const toReturn = {
+          username: req.body.username,
+          authToken: userObj.authToken,
+        };
+        if (req.body.saveLogin) {
+          toReturn.password = userObj.password;
         }
+        return res.status(200).end(JSON.stringify(toReturn));
       }
-    }
-    else {
-      console.error("Invalid auth, couldn't read stored data");
     }
   }
   else {
-    console.error("Invalid Login - missing username or password");
+    console.error("Invalid auth, couldn't read stored data");
   }
   
   // If we reached this far, give a 401 error as we don't have a valid user state
@@ -606,6 +612,7 @@ app.post("/login", loginLimiter, (req, res) => {
 // Public
 app.post("/new-account", newAccountLimiter, async (req, res) => {
   console.log("***** New account requested as [" + req.body.username + "] from [" + req.body.email + "]"); // Mark with a few stars so this is easier to notice in the logs
+  if (hasInvalidFields(req.body.username, req.body.email)) { return res.status(400).end(); }
   
   if (!ALLOW_EMAIL_SENDING) {
     return res.status(201).end();

@@ -19,7 +19,7 @@
           <label htmlFor="name">Name</label>
         </td>
         <td colspan="2">
-          <input id="name" #nameField pInputText [(ngModel)]="actOn.name" (keyup.enter)="handleEnterKey(submit.bind(this))"/>
+          <input id="name" #nameField pInputText [(ngModel)]="actOn.name" (keyup.enter)="submit()"/>
         </td>
       </tr>
       <tr>

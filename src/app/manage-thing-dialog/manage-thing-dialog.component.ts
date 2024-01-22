@@ -142,10 +142,4 @@ export class ManageThingDialogComponent {
       inputEl.focus();
     }
   }
-  
-  handleEnterKey(toCall: Function): void {
-    if (toCall) {
-      toCall();
-    }
-  }
 }

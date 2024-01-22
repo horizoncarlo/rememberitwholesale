@@ -26,7 +26,7 @@
           <tr>
             <td colspan="5">
               <span class="p-float-label">
-                <input #nameField pInputText [(ngModel)]="actOn.name" (keyup.enter)="handleEnterKey(submit.bind(this))"
+                <input #nameField pInputText [(ngModel)]="actOn.name" (keyup.enter)="submit($event)"
                       (ngModelChange)="createNameChanged()"/>
                 <label>Template Name</label>
                 @if (operation === 'create') {

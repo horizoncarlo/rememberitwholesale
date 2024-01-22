@@ -21,13 +21,13 @@ export class UserSettings {
     }) {
     
     if (options) {
-      this.forceDial = typeof options.forceDial !== 'undefined' ? options.forceDial : false;
-      this.paginatorTable = typeof options.paginatorTable !== 'undefined' ? options.paginatorTable : true;
-      this.paginatorRows = typeof options.paginatorRows !== 'undefined' ? options.paginatorRows : 50;
-      this.showFilters = typeof options.showFilters !== 'undefined' ? options.showFilters : false;
-      this.showReminders = typeof options.showReminders !== 'undefined' ? options.showReminders : false;
-      this.overdueLimitDays = typeof options.overdueLimitDays !== 'undefined' ? options.overdueLimitDays : 2;
-      this.limitDate = typeof options.limitDate !== 'undefined' ? options.limitDate : -1;
+      this.forceDial = this._assignSetting(options.forceDial, 'boolean', false);
+      this.paginatorTable = this._assignSetting(options.paginatorTable, 'boolean', true);
+      this.paginatorRows = this._assignSetting(options.paginatorRows, 'number', 50);
+      this.showFilters = this._assignSetting(options.showFilters, 'boolean', false);
+      this.showReminders = this._assignSetting(options.showReminders, 'boolean', false);
+      this.overdueLimitDays = this._assignSetting(options.overdueLimitDays, 'number', 2);
+      this.limitDate = this._assignSetting(options.limitDate, 'number', -1);
     }
   }
   
@@ -35,12 +35,11 @@ export class UserSettings {
     return new UserSettings({ ...source });
   }
   
-  prepareForSave(): void {
-    // TODO Clean up user settings before save
-  }
-  
-  isValid(): boolean {
-    // TODO isValid needed for user settings?: return Utility.isValidString(this.username);
-    return true;
+  private _assignSetting(val: any, type: string, defaultVal: any): any {
+    // If we're the proper type, return our value, otherwise default
+    if (typeof val === type) {
+      return val;
+    }
+    return defaultVal;
   }
 }

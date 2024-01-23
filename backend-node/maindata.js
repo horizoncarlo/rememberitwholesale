@@ -65,8 +65,17 @@ const newAccountLimiter = rateLimiter({
 	legacyHeaders: false,
 });
 
+if (process.env.NODE_ENV === 'production') {
+  app.enable('trust proxy');
+  app.use(cors({
+    origin: 'https://riw.onrender.com/'
+  }));
+}
+else {
+  app.use(cors()); // TODO Configure CORS to just be from our website, instead of global/public access
+}
+
 app.use(globalLimiter);
-app.use(cors()); // TODO Configure CORS to just be from our website, instead of global/public access
 app.use(express.json());
 
 // Ensure our auth token is valid and the user is logged in
@@ -110,6 +119,9 @@ inMemory[GLOBAL_DATA] = {
 // Fire up the server
 app.listen(PORT_NUM, () => {
   log("Server running on port " + PORT_NUM);
+  log("Test var", config.get('mailjet.apiKey')); // TODO TEMPORARY Logging
+  log("Test env", process.env);
+  log("Test env specific", process.env.MAILJET_API_KEY);
   
   // Ensure our initial files are ready
   readUserFile(GLOBAL_DATA, AUTH_FILE, 'auth', {});

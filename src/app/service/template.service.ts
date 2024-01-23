@@ -90,14 +90,16 @@ export class TemplateService  {
     
     this.loading = true;
     return this.backend.getAllTemplates().pipe(map(res => {
-        // Cast our results for better type checking, and sort by name
-        this.data = res.map((current: Template) => {
-          return Template.cloneFrom(current);
-        }).toSorted((a: Template, b: Template) => a.name.localeCompare(b.name));
-        this.hasCached = true;
-        
-        console.log("--> Get Templates", this.data);
-        this.loading = false;
+      if (Utility.isArray(res)) {
+          // Cast our results for better type checking, and sort by name
+          this.data = res.map((current: Template) => {
+            return Template.cloneFrom(current);
+          }).toSorted((a: Template, b: Template) => a.name.localeCompare(b.name));
+          this.hasCached = true;
+          
+          console.log("--> Get Templates", this.data.length);
+      }
+      this.loading = false;
     }),
     catchError(err => {
       this.loading = false;

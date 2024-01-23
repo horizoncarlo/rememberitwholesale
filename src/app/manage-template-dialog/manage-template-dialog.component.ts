@@ -101,7 +101,19 @@ export class ManageTemplateDialogComponent {
       }
       
       this.nextFieldIndex++;
-      this.actOn.fields?.push(new TemplateField('new' + this.nextFieldIndex, 'New Field'));
+      const propertyID = 'new' + this.nextFieldIndex;
+      this.actOn.fields?.push(new TemplateField(propertyID, 'New Field'));
+      
+      // Try to focus on our field after it renders
+      // Note we only do this on desktop as it's jarring having the keyboard appear on mobile after pressing a button
+      if (!Utility.isMobileSize()) {
+        setTimeout(() => {
+          const ele = document.getElementById(propertyID);
+          if (ele) {
+            ele.focus();
+          }
+        }, 0);
+      }
     }
   }
   

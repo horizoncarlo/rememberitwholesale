@@ -109,11 +109,19 @@ inMemory[GLOBAL_DATA] = {
 
 // Fire up the server
 app.listen(PORT_NUM, () => {
-  console.log("Server running on port " + PORT_NUM);
+  log("Server running on port " + PORT_NUM);
   
   // Ensure our initial files are ready
   readUserFile(GLOBAL_DATA, AUTH_FILE, 'auth', {});
 });
+
+function log(message, ...extra) {
+  console.log(new Date().toLocaleString() + " - " + message, extra);
+}
+
+function error(message, ...extra) {
+  console.error(new Date().toLocaleString() + " - " + message, extra);
+}
 
 function ensureUserFilesAreSetup(authUsername) {
   readUserFile(authUsername, THINGS_FILE, 'things', []);
@@ -221,7 +229,7 @@ function getInMemoryTemplates(authUsername) {
     try{
       saveTemplatesMemoryToFile(authUsername);
     }catch (err) {
-      console.error("Failed to save default Templates", err);
+      error("Failed to save default Templates", err);
     }
   }
   
@@ -241,27 +249,27 @@ function getInMemoryAuth() {
 }
 
 function saveThingsMemoryToFile(authUsername) {
-  console.log("WRITE Things", getInMemoryThings(authUsername).length);
+  log("WRITE Things", getInMemoryThings(authUsername).length);
   writeSafeFile(authUsername, THINGS_FILE, getInMemoryThings(authUsername));
 }
 
 function saveTemplatesMemoryToFile(authUsername) {
-  console.log("WRITE Templates", getInMemoryTemplates(authUsername).length);
+  log("WRITE Templates", getInMemoryTemplates(authUsername).length);
   writeSafeFile(authUsername, TEMPLATES_FILE, getInMemoryTemplates(authUsername));
 }
 
 function saveFavoriteMemoryToFile(authUsername) {
-  console.log("WRITE Favorite Template", getInMemoryFavorite(authUsername));
+  log("WRITE Favorite Template", getInMemoryFavorite(authUsername));
   writeSafeFile(authUsername, FAVORITE_FILE, getInMemoryFavorite(authUsername));
 }
 
 function saveSettingsMemoryToFile(authUsername) {
-  console.log("WRITE Settings", getInMemorySettings(authUsername));
+  log("WRITE Settings", getInMemorySettings(authUsername));
   writeSafeFile(authUsername, SETTINGS_FILE, getInMemorySettings(authUsername));
 }
 
 function saveAuthMemoryToFile() {
-  console.log("WRITE Auth", getInMemoryAuth());
+  log("WRITE Auth");
   writeSafeFile(GLOBAL_DATA, AUTH_FILE, getInMemoryAuth());
 }
 
@@ -278,8 +286,6 @@ function writeSafeFile(authUsername, fileName, data, retryCount = 0) {
     // Write to our actual file
     fs.writeFileSync(fileDirectory + fileName, JSON.stringify(data));
   }catch (err) {
-    console.error("Failed to write a safe file", err);
-    
     try{
       fs.mkdirSync(backupFolder, { recursive: true });
       fs.writeFileSync(backupFile, '', { flag: 'wx' });
@@ -291,6 +297,7 @@ function writeSafeFile(authUsername, fileName, data, retryCount = 0) {
       writeSafeFile(authUsername, fileName, data, retryCount);
     }
     else {
+      error("Failed to write a safe file", err);
       throw new Error('Failed to write the file');
     }
   }
@@ -331,7 +338,7 @@ function checkAuthToken(req) {
   if (req && req.query) {
     message = req.query.token;
   }
-  console.error("Invalid endpoint token of [" + message + "]");
+  error("Invalid endpoint token of [" + message + "]");
   return {
     valid: false
   };
@@ -367,7 +374,7 @@ function getAuthUsername(req) {
 
 /***** API Endpoints *****/
 app.get("/things", (req, res) => {
-  console.log("GET Things", getInMemoryThings(getAuthUsername(req)).length);
+  log("GET Things", getInMemoryThings(getAuthUsername(req)).length);
   
   // Determine if we are limiting by date/time
   let limitDate = -1;
@@ -380,7 +387,7 @@ app.get("/things", (req, res) => {
         limitDate = -1;
       }
     }catch(err) {
-      console.error("Failed to convert passed date limit [" + req.query.limit + "]", err);
+      error("Failed to convert passed date limit [" + req.query.limit + "]", err);
       limitDate = -1;
     }
   }
@@ -398,28 +405,8 @@ app.get("/things", (req, res) => {
 });
 
 app.post("/things", (req, res) => {
-  console.log("POST Thing", req.body);
-  
-  // Check our body for errors
-  let failError = '';
-  if (req.body) {
-    if (!req.body.id) {
-      failError = 'Missing ID';
-    }
-    if (!req.body.name || req.body.name.trim().length === 0) {
-      failError = 'Missing Name';
-    }
-    if (!req.body.templateType || req.body.templateType.trim().length === 0) {
-      failError = 'Missing Template type';
-    }
-  }
-  else {
-    failError = 'Incorrect or no data sent';
-  }
-  
-  if (failError && failError.trim().length > 0) {
-    return res.status(400).json({ status: 400, message: failError }).end();
-  }
+  log("POST Thing", req.body);
+  if (hasInvalidFields(req.body.id, req.body.name, req.body.templateType)) { return res.status(400).end(); }
   
   // Determine if our object exists by ID or not
   let justAdd = true;
@@ -454,12 +441,12 @@ app.delete("/things/:id", (req, res) => {
 });
 
 app.get("/templates", (req, res) => {
-  console.log("GET Templates", getInMemoryTemplates(getAuthUsername(req)).length);
+  log("GET Templates", getInMemoryTemplates(getAuthUsername(req)).length);
   return res.send(getInMemoryTemplates(getAuthUsername(req))).end();
 });
 
 app.post("/templates", (req, res) => {
-  console.log("POST Template", req.body);
+  log("POST Template", req.body);
   if (hasInvalidFields(req.body.name)) { return res.status(400).end(); }
   
   // Check that our template name is unique
@@ -474,17 +461,17 @@ app.post("/templates", (req, res) => {
 });
 
 app.get("/templates/favorite", (req, res) => {
-  // If we are a blank object, return nothing
   const toReturn = getInMemoryFavorite(getAuthUsername(req));
   if (toReturn && Object.keys(toReturn).length > 0) {
-    console.log("GET Favorite Template:", toReturn.name);
+    log("GET Favorite Template:", toReturn.name);
     return res.send(toReturn).end();
   }
+  // If we are a blank object, return nothing
   return res.send().end();
 });
 
 app.post("/templates/favorite", (req, res) => {
-  console.log("POST Favorite Template");
+  log("POST Favorite Template");
   if (hasInvalidFields(req.body.name)) { return res.status(400).end(); }
   
   setInMemoryUserData(getAuthUsername(req), 'favorite', req.body);
@@ -493,7 +480,7 @@ app.post("/templates/favorite", (req, res) => {
 });
 
 app.post("/templates/delete", (req, res) => {
-  console.log("POST Template Delete", req.body);
+  log("POST Template Delete", req.body);
   if (hasInvalidFields(req.body.templateNameToDelete)) { return res.status(400).end(); }
   
   const toSearch = getInMemoryTemplates(getAuthUsername(req));
@@ -521,12 +508,12 @@ app.post("/templates/delete", (req, res) => {
 });
 
 app.get("/settings", (req, res) => {
-  console.log("GET Settings", getInMemorySettings(getAuthUsername(req)));
+  log("GET Settings", getInMemorySettings(getAuthUsername(req)));
   return res.send(getInMemorySettings(getAuthUsername(req))).end();
 });
 
 app.post("/settings", (req, res) => {
-  console.log("POST Settings");
+  log("POST Settings");
   
   setInMemoryUserData(getAuthUsername(req), 'settings', req.body);
   saveSettingsMemoryToFile(getAuthUsername(req));
@@ -534,7 +521,7 @@ app.post("/settings", (req, res) => {
 });
 
 app.post("/change-password", (req, res) => {
-  console.log("POST Change Password", req.body.username);
+  log("POST Change Password", req.body.username);
   if (hasInvalidFields(req.body.username, req.body.currentPassword, req.body.newPassword)) { return res.status(400).end(); }
   
   // Determine if our current password is valid
@@ -559,7 +546,7 @@ app.post("/change-password", (req, res) => {
     }
   }
   else {
-    console.error("Invalid auth, couldn't read stored data");
+    error("Invalid auth, couldn't read stored data");
   }
   
   return res.status(401).end();
@@ -567,7 +554,7 @@ app.post("/change-password", (req, res) => {
 
 // Public
 app.post("/login", loginLimiter, (req, res) => {
-  console.log("POST Login", req.body.username);
+  log("POST Login", req.body.username);
   if (hasInvalidFields(req.body.username, req.body.password)) { return res.status(400).end(); }
   
   const auth = getInMemoryAuth();
@@ -594,12 +581,13 @@ app.post("/login", loginLimiter, (req, res) => {
         if (req.body.saveLogin) {
           toReturn.password = userObj.password;
         }
+        log("Login valid for", req.body.username);
         return res.status(200).end(JSON.stringify(toReturn));
       }
     }
   }
   else {
-    console.error("Invalid auth, couldn't read stored data");
+    error("Invalid auth, couldn't read stored data");
   }
   
   // If we reached this far, give a 401 error as we don't have a valid user state
@@ -608,7 +596,7 @@ app.post("/login", loginLimiter, (req, res) => {
 
 // Public
 app.post("/new-account", newAccountLimiter, async (req, res) => {
-  console.log("***** New account requested as [" + req.body.username + "] from [" + req.body.email + "]"); // Mark with a few stars so this is easier to notice in the logs
+  log("***** New account requested as [" + req.body.username + "] from [" + req.body.email + "]"); // Mark with a few stars so this is easier to notice in the logs
   if (hasInvalidFields(req.body.username, req.body.email)) { return res.status(400).end(); }
   
   let success = false;
@@ -648,18 +636,25 @@ app.post("/new-account", newAccountLimiter, async (req, res) => {
     await request.then((result) => {
       success = true;
     }).catch((err) => {
-      let message = '';
+      let data = null;
       if (err && err.response && err.response.data) {
-        message = err.response.data;
+        data = err.response.data;
       }
-      console.error("***** Failure to send mailjet email", message);
+      
+      // Show as specific a message as we can
+      if (data && data.ErrorMessage) {
+        error("***** Failure to send mailjet email", data.ErrorMessage);
+      }
+      else {
+        error("***** Failure to send mailjet email", data);
+      }
     });
   }catch (err) {
-    console.error("***** General failure to send mailjet email", err);
+    error("***** General failure to send mailjet email", err);
   }
   
   if (!success) {
-    return res.status(401).end();
+    return res.status(500).end();
   }
   return res.status(201).end();
 });

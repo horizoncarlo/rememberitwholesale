@@ -20,12 +20,6 @@
   
   <ng-template pTemplate="footer">
     <p-button (onClick)="hide()" label="Cancel" icon="pi pi-times" iconPos="left" severity="secondary"/>
-    <p-button (onClick)="submit()" label="Send Request" icon="pi pi-check" iconPos="left"/>
-    
-    @if (processing) {
-      <div class="center process-spinner">
-        <p-progressSpinner />
-      </div>
-    }
+    <p-button (onClick)="submit()" label="Send Request" icon="pi pi-check" iconPos="left" [loading]="processing"/>
   </ng-template>
 </p-dialog>

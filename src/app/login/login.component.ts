@@ -58,7 +58,7 @@ export class LoginComponent {
     this.storageService.submitLogin(this.authService.getAuth().username as string, this.password as string, this.saveLogin).subscribe({
       next: res => {
         if (res && res.authToken) {
-          console.log("Logged in with authToken=" + res.authToken);
+          console.log("Logged in with authToken");
           
           this.authService.getAuth().setLoggedIn(res.authToken, res.password);
           this.router.navigate(['/']);
@@ -82,6 +82,12 @@ export class LoginComponent {
     if (toClear) {
       toClear.value = '';
       toClear.focus();
+    }
+  }
+  
+  handleFocus(inputEl: HTMLElement): void {
+    if (inputEl) {
+      inputEl.focus();
     }
   }
   

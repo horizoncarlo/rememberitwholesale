@@ -6,13 +6,10 @@
 - Do a proper pass and componentize any elements that need it
   - Also make sure existing components are "standalone: true" where possible (or at least consistent)
   - Such as menu dial, including it's drag and drop features, table itself maybe?
-- Manage tabIndex focus order, especially for mobile (so for example we can press Next, Next, Go on the floating keyboard)
 - "Demo mode" (once we have user login) that lets you explore the app without changing data, with a free/auto account, and a bunch of default stuff
   - When logging in as demo auto-copy/create preset files and data, and destroy them on logout? Or could swap Storage Service for this case? 
-
-- Detect browser resume on mobile devices
 - Have a "looking back" / "remember this?" feature that shows you memories from the same time X months/years ago, sort of like Facebook. Toggleable option of course
-- Have an "annual repeat" feature for reminders, likely don't want more granular as we're not intending to be a full scheduling app
+- Have an "annual repeat" feature for reminders, likely don't want more granular as we're not intending to be a full scheduling app. Mainly for birthdays
 - Autosort template dropdown (when adding a new Thing) by grouped select items of Regularly Used, less frequent, etc.
 - Eventually segment data files by year? To prevent giant files of 10k+ records? Then date limit filter could integrate with that (by having like 2021, 2022, etc. instead of "2 years ago")
 

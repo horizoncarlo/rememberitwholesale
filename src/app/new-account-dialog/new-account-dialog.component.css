@@ -7,7 +7,3 @@
 .dialog-items > *:first-child {
   padding-top: 0;
 }
-
-.process-spinner {
-  padding-top: 15px;
-}

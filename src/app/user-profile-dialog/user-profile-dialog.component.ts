@@ -35,6 +35,14 @@ export class UserProfileDialogComponent {
     this.isShowing = false;
   }
   
+  getSpeedDialLabel(): string {
+    let message = 'Use speed dial instead of toolbar';
+    if (Utility.isMobileSize()) {
+      message += ' (Desktop only)';
+    }
+    return message;
+  }
+  
   resetPasswordFields(): void {
     this.currentPassword = '';
     this.newPassword = '';

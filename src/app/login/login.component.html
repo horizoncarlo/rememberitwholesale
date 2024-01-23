@@ -46,6 +46,6 @@
     <i class="pi pi-user-plus"></i>
     Or you can manually <a href="" (click)="newAccount.show($event)">request a new account</a><span class="hide-on-mobile"> and I'll get back to you!</span>
   </div>
-  <riw-new-account-dialog #newAccount />
+  <riw-new-account-dialog #newAccount (onHide)="handleFocus(usernameIn)"/>
 </div>
 }

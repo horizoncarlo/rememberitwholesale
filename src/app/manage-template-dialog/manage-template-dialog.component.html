@@ -75,7 +75,7 @@
               </td>
               <td>
                 <span class="p-float-label">
-                  <input pInputText [(ngModel)]="field.property"/>
+                  <input pInputText [id]="field.property" [(ngModel)]="field.property"/>
                   <label>Property/ID</label>
                 </span>
               </td>
@@ -131,7 +131,7 @@
           </div>
           <div><b>Generate Name:</b></div>
           <div class="indent">
-            Name will look like: <b>Favorite - <input pInputText [(ngModel)]="favoriteNameSuffix"/></b>
+            Name will look like: <b>Favorite - <input pInputText [(ngModel)]="favoriteNameSuffix" (keyup.enter)="submit($event)"/></b>
           </div>
           <div class="section">
             <div><b>Autofill Date:</b></div>

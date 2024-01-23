@@ -1,10 +1,9 @@
-import { Component } from '@angular/core';
+import { Component, EventEmitter, Output } from '@angular/core';
 import { FormsModule } from '@angular/forms';
 import { ButtonModule } from 'primeng/button';
 import { DialogModule } from 'primeng/dialog';
 import { InputTextModule } from 'primeng/inputtext';
 import { InputTextareaModule } from 'primeng/inputtextarea';
-import { ProgressSpinnerModule } from 'primeng/progressspinner';
 import { StorageService } from '../service/storage.service';
 import { Utility } from '../util/utility';
 
@@ -19,10 +18,11 @@ import { Utility } from '../util/utility';
     InputTextModule,
     InputTextareaModule,
     DialogModule,
-    ProgressSpinnerModule,
   ]
 })
 export class NewAccountDialogComponent {
+  @Output() onHide = new EventEmitter<null>();
+  
   processing: boolean = false;
   isShowing: boolean = false;
   username: string = '';
@@ -39,6 +39,7 @@ export class NewAccountDialogComponent {
   
   hide(): void {
     this.isShowing = false;
+    this.onHide.emit();
   }
   
   submit(): void {

@@ -1,6 +1,8 @@
 import { Component, EventEmitter, Input, OnInit, Output, inject } from '@angular/core';
+import { AutoCompleteCompleteEvent } from 'primeng/autocomplete';
 import { Template, TemplateEvent } from '../model/template';
 import { TemplateService } from '../service/template.service';
+import { Utility } from '../util/utility';
 
 @Component({
   selector: 'riw-template-dropdown',
@@ -14,6 +16,7 @@ export class TemplateDropdownComponent implements OnInit {
   @Output() selectedTemplateNameChange = new EventEmitter<string | null>();
   @Output() manageTemplateEvent = new EventEmitter<TemplateEvent>();
   templateService: TemplateService = inject(TemplateService);
+  filteredData: Template[] = [];
   
   ngOnInit(): void {
     this.refreshData();
@@ -22,18 +25,44 @@ export class TemplateDropdownComponent implements OnInit {
   refreshData(): void {
     // Note without the setTimeout we get the "NG0100: Expression has changed after it was checked" error
     setTimeout(() => {
-      this.templateService.getAllTemplatesObs().subscribe();
+      this.templateService.getAllTemplatesObs().subscribe({
+        next: () => this.filteredData = this.templateService.getFilteredData(this.hideDefaults)
+      });
     }, 0);
     
     this.selectedTemplateName = null;
   }
   
-  getSelectedTemplate(): Template | null {
-    return this.templateService.getTemplateByName(this.selectedTemplateName as string);
+  autocompleteData(event: AutoCompleteCompleteEvent): void {
+    // If we have a query filter by it, otherwise use all the data
+    if (event && Utility.isValidString(event.query)) {
+      this.filteredData = this.templateService.getFilteredData(this.hideDefaults).filter(
+        (template: Template) => template.name.toLowerCase().includes(event.query.toLowerCase())
+      );
+    }
+    else {
+      this.filteredData = this.templateService.getFilteredData(this.hideDefaults);
+    }
   }
   
   selectedTemplateChanged(): void {
+    // From our autocomplete we get an object back, so strip the name
+    // Remember we intentionally want to track with names so the state of the Fields doesn't disrupt our selection
+    if (this.selectedTemplateName &&
+        typeof this.selectedTemplateName === 'object') {
+        this.selectedTemplateName = (this.selectedTemplateName as Template).name;
+    }
+    
     this.selectedTemplateNameChange.emit(this.selectedTemplateName);
+  }
+  
+  getSelectedTemplate(): Template | null {
+    if (this.selectedTemplateName &&
+      typeof this.selectedTemplateName === 'object') {
+      return this.selectedTemplateName as Template;
+    }
+    
+    return this.templateService.getTemplateByName(this.selectedTemplateName as string);
   }
   
   requestCreateTemplate(): void {

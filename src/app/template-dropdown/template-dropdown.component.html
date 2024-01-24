@@ -1,15 +1,18 @@
-<p-dropdown [options]="templateService.getFilteredData(hideDefaults)"
-            optionValue="name"
-            optionLabel="name"
-            appendTo="body"
-            [(ngModel)]="selectedTemplateName"
-            placeholder="Select a Template"
-            (onChange)="selectedTemplateChanged()"
-            class="consistent-field">
+<p-autoComplete placeholder="Select a Template"
+                [(ngModel)]="selectedTemplateName"
+                [dropdown]="true"
+                appendTo="body"
+                optionLabel="name"
+                [showEmptyMessage]="true"
+                emptyMessage="> No matches"
+                [suggestions]="filteredData"
+                (completeMethod)="autocompleteData($event)"
+                (ngModelChange)="selectedTemplateChanged()"
+                class="consistent-field">
   <ng-template let-template pTemplate="item">
     <span [style.color]="templateService.getColorByTemplateName(template.name)">{{template.name}}</span>
   </ng-template>
-</p-dropdown>
+</p-autoComplete>
 
 @if (!hideControls) {
   &nbsp;

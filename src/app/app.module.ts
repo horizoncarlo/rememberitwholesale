@@ -4,6 +4,7 @@ import { FormsModule } from '@angular/forms';
 import { BrowserModule } from '@angular/platform-browser';
 import { BrowserAnimationsModule } from '@angular/platform-browser/animations';
 import { provideRouter } from '@angular/router';
+import { AutoCompleteModule } from 'primeng/autocomplete';
 import { ButtonModule } from 'primeng/button';
 import { CalendarModule } from 'primeng/calendar';
 import { CheckboxModule } from 'primeng/checkbox';
@@ -55,6 +56,7 @@ import { UserProfileDialogComponent } from './user-profile-dialog/user-profile-d
     HttpClientModule,
     FormsModule,
     ButtonModule,
+    AutoCompleteModule,
     CalendarModule,
     ColorPickerModule,
     ConfirmDialogModule,

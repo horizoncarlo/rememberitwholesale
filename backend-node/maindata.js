@@ -66,13 +66,10 @@ const newAccountLimiter = rateLimiter({
 });
 
 if (process.env.NODE_ENV === 'production') {
-  app.enable('trust proxy');
-  app.use(cors({
-    origin: 'https://riw.onrender.com/'
-  }));
+  app.use(cors()); // TODO Configure CORS to just be from our website, instead of global/public access
 }
 else {
-  app.use(cors()); // TODO Configure CORS to just be from our website, instead of global/public access
+  app.use(cors());
 }
 
 app.use(globalLimiter);
@@ -119,20 +116,17 @@ inMemory[GLOBAL_DATA] = {
 // Fire up the server
 app.listen(PORT_NUM, () => {
   log("Server running on port " + PORT_NUM);
-  log("Test var", config.get('mailjet.apiKey')); // TODO TEMPORARY Logging
-  log("Test env", process.env);
-  log("Test env specific", process.env.MAILJET_API_KEY);
   
   // Ensure our initial files are ready
   readUserFile(GLOBAL_DATA, AUTH_FILE, 'auth', {});
 });
 
 function log(message, ...extra) {
-  console.log(new Date().toLocaleString() + " - " + message, extra);
+  console.log(new Date().toLocaleString() + " - " + message, extra && extra.length > 0 ? extra : '');
 }
 
 function error(message, ...extra) {
-  console.error(new Date().toLocaleString() + " - " + message, extra);
+  console.error(new Date().toLocaleString() + " - " + message, extra && extra.length > 0 ? extra : '');
 }
 
 function ensureUserFilesAreSetup(authUsername) {
@@ -438,17 +432,27 @@ app.post("/things", (req, res) => {
   return res.status(200).end();
 });
 
-app.delete("/things/:id", (req, res) => {
-  if (hasInvalidFields(req.params.id)) { return res.status(400).end(); }
+app.post("/things/delete", (req, res) => {
+  log("POST Things Delete count", req.body.deleteIds?.length);
+  if (hasInvalidFields(req.body.deleteIds)) { return res.status(400).end(); }
   
-  const toWork = getInMemoryThings(getAuthUsername(req));
-  for (let i = toWork.length-1; i >= 0; i--) {
-    if (req.params.id === toWork[i].id) {
-      toWork.splice(i, 1);
+  if (Array.isArray(req.body.deleteIds) && req.body.deleteIds.length > 0) {
+    const toWork = getInMemoryThings(getAuthUsername(req));
+    
+    // Loop through all our items, and determine if they match a deletion request
+    for (let checkIndex = toWork.length-1; checkIndex >= 0; checkIndex--) {
+      for (let deleteIndex = 0; deleteIndex < req.body.deleteIds.length; deleteIndex++) {
+        // Safely try to delete in case any part of our data is invalid
+        try{
+          if (toWork[checkIndex].id === req.body.deleteIds[deleteIndex]) {
+            toWork.splice(checkIndex, 1);
+          }
+        }catch (ignored) { }
+      }
     }
+    saveThingsMemoryToFile(getAuthUsername(req));
   }
   
-  saveThingsMemoryToFile(getAuthUsername(req));
   return res.status(200).end();
 });
 

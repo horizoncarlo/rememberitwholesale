@@ -1,4 +1,4 @@
 export const environment = {
   production: true,
-  baseUrl: 'https://riwapi.onrender.com/'
+  baseUrl: 'http://192.168.0.10:4333/'
 };

@@ -63,6 +63,7 @@
 
 @if (things.loadedAndHasData()) {
 <p-table #thingTable
+         dataKey="id"
          [value]="things.data" [loading]="things.loading"
          class="thing-table" styleClass="p-datatable-striped"
          selectionMode="multiple" [(selection)]="selectedRows"
@@ -155,7 +156,9 @@
         </span>
       </td>
       <td colspan="3">
-        {{ data.fieldsAsString }}
+        <div class="fields-scroller">
+          {{ data.fieldsAsString }}
+        </div>
       </td>
     </tr>
   </ng-template>

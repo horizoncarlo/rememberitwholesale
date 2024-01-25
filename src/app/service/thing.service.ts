@@ -80,46 +80,39 @@ export class ThingService {
   
   deleteThings(toDelete: Thing[], options?: { refreshFromServer?: boolean }): void {
     this.loading = true;
-    let isMultiple = toDelete.length > 1;
-    for (let i = 0; i < toDelete.length; i++) {
-      this.backend.deleteThing(toDelete[i].id).subscribe({
-        next: res => {
-          // Ensure we only notify and refresh our data once
-          if (!isMultiple ||
-            isMultiple && i === toDelete.length-1) {
-            Utility.showSuccess("Successfully deleted " + toDelete.length + " Thing" + Utility.plural(toDelete));
-            
-            if (options?.refreshFromServer) {
-              this.getAllThings();
-            }
-            else {
-              this.preGetAllThings();
-              for (let j = 0; j < toDelete.length; j++) {
-                // Try to just find our delete item, but if we can't, match by ID instead
-                let foundAt = this.data.indexOf(toDelete[j]);
-                if (foundAt === -1) {
-                  const foundThing = this.data.find((currentThing) => currentThing.id === toDelete[j].id);
-                  if (foundThing) {
-                    foundAt = this.data.indexOf(foundThing);
-                  }
-                }
-                
-                if (foundAt !== -1) {
-                  this.data.splice(foundAt, 1);
-                }
+    this.backend.deleteThings(toDelete.map(thing => thing.id)).subscribe({
+      next: res => {
+        Utility.showSuccess("Successfully deleted " + toDelete.length + " Thing" + Utility.plural(toDelete));
+        
+        if (options?.refreshFromServer) {
+          this.getAllThings();
+        }
+        else {
+          this.preGetAllThings();
+          for (let j = 0; j < toDelete.length; j++) {
+            // Try to just find our delete item, but if we can't, match by ID instead
+            let foundAt = this.data.indexOf(toDelete[j]);
+            if (foundAt === -1) {
+              const foundThing = this.data.find((currentThing) => currentThing.id === toDelete[j].id);
+              if (foundThing) {
+                foundAt = this.data.indexOf(foundThing);
               }
-              this.postGetAllThings();
+            }
+            
+            if (foundAt !== -1) {
+              this.data.splice(foundAt, 1);
             }
           }
-        },
-        error: err => {
-          this.loading = false;
-          Utility.showError('Failed to delete "' + toDelete[i].name + '"');
-          console.error(err);
-        },
-        complete: () => this.loading = false
-      });
-    }
+          this.postGetAllThings();
+        }
+      },
+      error: err => {
+        this.loading = false;
+        Utility.showSuccess("Failed to delete " + toDelete.length + " Thing" + Utility.plural(toDelete));
+        console.error(err);
+      },
+      complete: () => this.loading = false
+    });
   }
   
   preGetAllThings(): void {
@@ -224,7 +217,7 @@ export class ThingService {
     this.backend.getAllThings(limitDate).subscribe({
       next: res => {
         // Unwrap the content from the server
-        this.data = res.data;
+        this.data = res.data as Thing[];
         
         // Default the Thing count, but overwrite if we have metadata specifying it
         this.thingCount = this.data.length;

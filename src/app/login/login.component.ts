@@ -39,6 +39,11 @@ export class LoginComponent {
               public authService: AuthService) { }
   
   submitLogin(): void {
+    // If we're already processing just chill
+    if (this.processing) {
+      return;
+    }
+    
     let abort = false;
     this.usernameIn.nativeElement.style.outline = 'none';
     this.passwordIn.nativeElement.style.outline = 'none';

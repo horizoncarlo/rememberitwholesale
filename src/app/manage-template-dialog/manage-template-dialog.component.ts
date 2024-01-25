@@ -26,7 +26,7 @@ export class ManageTemplateDialogComponent {
   isShowing: boolean = false;
   nameIsDuplicate: boolean = false; // Is a create new template Name unique or not?
   lastCheckCount: number = 0;
-  deleteThings: boolean = false;
+  deleteThings: boolean = true;
   fieldTypes = TemplateField.TYPES;
   typeOptions = Object.values(this.fieldTypes);
   // TODO Put the favorite concept into a component
@@ -141,7 +141,7 @@ export class ManageTemplateDialogComponent {
   
   deleteTargetChanged(): void {
     this.lastCheckCount = 0;
-    this.deleteThings = false;
+    this.deleteThings = true;
   }
   
   genericTemplateChanged(newName: string | null): void {

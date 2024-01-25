@@ -9,6 +9,7 @@
   - Also make sure existing components are "standalone: true" where possible (or at least consistent)
   - Such as menu dial, including it's drag and drop features, table itself maybe?
 - Have a "looking back" / "remember this?" feature that shows you memories from the same time X months/years ago, sort of like Facebook. Toggleable option of course
+- Self signed HTTPS certificate, and try to do native mobile push notifications for reminders?
 - Have an "annual repeat" feature for reminders, likely don't want more granular as we're not intending to be a full scheduling app. Mainly for birthdays
 - Eventually segment data files by year? To prevent giant files of 10k+ records? Then date limit filter could integrate with that (by having like 2021, 2022, etc. instead of "2 years ago")
 
@@ -30,6 +31,9 @@
 
 ## PRIMENG BUGS
 - Would be nice to not have to manually set `tooltipPosition="left"` (or bottom) in cases where the tooltip is smooshed along the right edge. Seems to autocalculate for some but not all
+
+- Table Ctrl+A fails with [rows] defined
+  - **FILED** - https://github.com/primefaces/primeng/issues/14634
 
 - Speed Dial has an overlay that extends below the visible button by 44px
   - **FILED** - they marked WONTFIX: https://github.com/primefaces/primeng/issues/14330

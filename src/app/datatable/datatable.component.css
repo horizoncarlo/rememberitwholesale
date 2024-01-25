@@ -72,6 +72,12 @@
   width: calc(100% - var(--updated-col-width) - var(--name-col-width) - var(--time-col-width) - var(--type-col-width));
 }
 
+.fields-scroller {
+  max-height: 150px;
+  overflow: auto;
+  
+}
+
 .no-things-wrap {
   font-size: 24px;
   text-align: center;

@@ -23,7 +23,10 @@ export class UserService implements OnDestroy {
             .subscribe((newSettings: UserSettings) => {
       if (this.ready$.getValue()) {
         this.storageService.submitSettings(newSettings).subscribe({
-          next: res => console.log("Saved user settings", newSettings),
+          next: res => {
+            console.log("Saved user settings", newSettings);
+            this._settings = newSettings;
+          },
           error: err => console.error("Failed to save user settings", err)
         });
       }

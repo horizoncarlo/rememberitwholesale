@@ -48,12 +48,11 @@ a:hover {
 }
 
 .highlight-demo {
-  animation: pulseText 1s 4;
+  animation: underlineText 1s 5;
 }
 
-@keyframes pulseText {
+@keyframes underlineText {
   50% {
-     text-shadow: 0 0 10px white;
      text-decoration: none;
   }
 }

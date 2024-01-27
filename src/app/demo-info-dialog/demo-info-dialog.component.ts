@@ -1,7 +1,8 @@
-import { Component } from '@angular/core';
+import { Component, ViewChild } from '@angular/core';
 import { Router } from '@angular/router';
 import { ButtonModule } from 'primeng/button';
-import { DialogModule } from 'primeng/dialog';
+import { Dialog, DialogModule } from 'primeng/dialog';
+import { Utility } from '../util/utility';
 
 @Component({
   selector: 'riw-demo-info-dialog',
@@ -14,11 +15,19 @@ import { DialogModule } from 'primeng/dialog';
   styleUrl: './demo-info-dialog.component.css'
 })
 export class DemoInfoDialogComponent {
+  // Cast to Dialog instead of this component, so we can set the maximize flag
+  @ViewChild('demoInfoDialog') demoInfoDialog!: Dialog;
+  
   isShowing: boolean = false;
   
   constructor(private router: Router) { }
   
   show(): void {
+    // Auto maximize if we're on mobile, because we've got a lot of text
+    if (Utility.isMobileSize()) {
+      this.demoInfoDialog.maximized = true;
+    }
+    
     this.isShowing = true;
   }
   

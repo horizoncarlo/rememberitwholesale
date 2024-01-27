@@ -21,6 +21,7 @@
 - Block entire page, header and all, with a spinner in the middle (after a couple seconds, to prevent flashing)
   - This is while we're getting the user settings and so on
     - "isInitialized"
+- Remember to use 'cursor: wait' styling
 
 - Progress bar should always show, for ALL loading
   - Maybe a general "has any loading" feature that combines our various rxjs to one result?

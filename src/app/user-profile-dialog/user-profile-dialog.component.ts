@@ -45,6 +45,20 @@ export class UserProfileDialogComponent {
     return message;
   }
   
+  getFriendlyUsername(): string {
+    if (this.authService.getAuth().isDemoAccount) {
+      return 'Demo User';
+    }
+    return this.authService.getAuth().username as string;
+  }
+  
+  getFriendlyLogoutLabel(): string {
+    if (this.authService.getAuth().isDemoAccount) {
+      return 'Logout and End Demo';
+    }
+    return 'Logout';
+  }
+  
   resetPasswordFields(): void {
     this.currentPassword = '';
     this.newPassword = '';

@@ -8,6 +8,7 @@ import { ManageThingDialogComponent } from '../manage-thing-dialog/manage-thing-
 import { TemplateField } from '../model/template-field';
 import { Thing } from '../model/thing';
 import { UserSettings } from '../model/user-settings';
+import { AuthService } from '../service/auth.service';
 import { TemplateService } from '../service/template.service';
 import { ThingService } from '../service/thing.service';
 import { UserService } from '../service/user.service';
@@ -55,7 +56,8 @@ export class DatatableComponent implements OnInit, OnDestroy {
     { value: -1, label: 'All Time (may be slow)'},
   ];
   
-  constructor(private primengConfig: PrimeNGConfig,
+  constructor(public authService: AuthService,
+              private primengConfig: PrimeNGConfig,
               private confirmationService: ConfirmationService) { }
   
   ngOnInit(): void {

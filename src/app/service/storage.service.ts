@@ -31,22 +31,22 @@ export class StorageService {
   }
   
   performLogout(): void {
-    const authObj = this.authService.getAuth();
+    const userObj = this.authService.getAuth();
     
     // If we're a demo account end our demo on logout
     // Note we wait to do afterLogout because we don't want to clear our variables and redirect until our call is complete
-    if (authObj.isDemoAccount) {
-      this.endDemo(authObj.username as string).subscribe().add(() => {
-        this.afterLogout(authObj);
+    if (userObj.isDemoAccount) {
+      this.endDemo(userObj.username as string).subscribe().add(() => {
+        this.afterLogout(userObj);
       });
     }
     else {
-      this.afterLogout(authObj);
+      this.afterLogout(userObj);
     }
   }
   
-  afterLogout(authObj: UserAuth): void {
-    authObj.setLoggedOut();
+  afterLogout(userObj: UserAuth): void {
+    userObj.setLoggedOut();
     
     // Navigate and refresh the page
     this.router.navigate(['/login']).finally(() => location.reload());

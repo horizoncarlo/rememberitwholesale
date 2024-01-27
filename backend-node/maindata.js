@@ -33,11 +33,12 @@ const DEFAULT_TEMPLATES = [
 
 const PORT_NUM = 4333;
 const FILE_DIR = os.homedir() + '/.rememberitwholesale/';
+const DEMO_DATA_DIR = "src-demo$data"; // Directory for the basis to copy for Demo accounts
+const GLOBAL_DATA = "global$data";
 const BACKUP_FOLDER = 'backup/';
 const BACKUP_PREFIX = 'backup_';
-const GLOBAL_DATA = "global$data";
-const THINGS_FILE = 'things.json';
 const TEMPLATES_FILE = 'templates.json';
+const THINGS_FILE = 'things.json';
 const FAVORITE_FILE = 'favorite.json';
 const SETTINGS_FILE = 'settings.json';
 const AUTH_FILE = 'auth.json';
@@ -68,7 +69,7 @@ const newAccountLimiter = rateLimiter({
 // Demo limit: 3 calls per day
 const tryDemoLimiter = rateLimiter({
 	windowMs: 24 * 60 * 60 * 1000,
-	limit: 100, // QUIDEL
+	limit: 3,
 	standardHeaders: false,
 	legacyHeaders: false,
 });
@@ -670,9 +671,21 @@ app.post("/demo-start", tryDemoLimiter, async (req, res) => {
     auth[demoObj.username] = demoObj;
     saveAuthMemoryToFile();
     
-    // TODO QUIDEL PRIORITY - Copy demo files/data to this user's folder structure
-    //ensureUserFilesAreSetup(convertUsernameToFilesafe(demoObj.username));
-    console.error("DEMO OBJ", demoObj);
+    // Setup our directory and file structure
+    ensureUserFilesAreSetup(demoObj.username);
+    
+    // Then copy the latest Demo data in, so we have something to show the user
+    // We'll do these safely, as one failure shouldn't wreck the demo
+    // TODO QUIDEL PRIORITY - Setup our DEMO_DATA_DIR files with good, realistic, interesting data
+    const baseSrcDir = FILE_DIR + DEMO_DATA_DIR + '/';
+    const baseTargetDir = FILE_DIR + demoObj.username + '/';
+    try{ fs.copyFileSync(baseSrcDir + THINGS_FILE, baseTargetDir + THINGS_FILE); }catch (ignored) {}
+    try{ fs.copyFileSync(baseSrcDir + TEMPLATES_FILE, baseTargetDir + TEMPLATES_FILE); }catch (ignored) {}
+    try{ fs.copyFileSync(baseSrcDir + FAVORITE_FILE, baseTargetDir + FAVORITE_FILE); }catch (ignored) {}
+    try{ fs.copyFileSync(baseSrcDir + SETTINGS_FILE, baseTargetDir + SETTINGS_FILE); }catch (ignored) {}
+    
+    // After this, we need to re-read our files to store them in memory
+    ensureUserFilesAreSetup(demoObj.username);
     
     return res.status(200).end(JSON.stringify(demoObj));
   }

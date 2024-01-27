@@ -167,6 +167,24 @@
   margin-left: -50px; /* Keep the Limit to the left of the dropdown, to prevent wrapping on smaller screens */
 }
 
+.demo-text {
+  display: block;
+  position: absolute;
+  bottom: 0;
+  right: 0;
+  text-align: center;
+  padding: 5px 10px;
+  opacity: 0.9;
+  font-size: 14px;
+  font-weight: bold;
+  color: #444444;
+  background-color: orange;
+  border-top: 1px solid white;
+  border-left: 1px solid white;
+  border-top-left-radius: 5px;
+  z-index: 10;
+}
+
 @media (max-width: 1200px) { /* Shrink the Search Things input */
   .global-search-wrap input {
     width: calc(var(--standard-field-width) - 125px);

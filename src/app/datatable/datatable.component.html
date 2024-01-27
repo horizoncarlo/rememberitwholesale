@@ -1,5 +1,9 @@
 <p-progressBar [mode]="things.loading ? 'indeterminate' : 'determinate'" class="loading-bar" />
 
+@if (authService.getAuth().isDemoAccount) {
+  <div class="demo-text">Demo</div>
+}
+
 @if (useDial) {
   <div id="ddOverlay" [draggable]="true" (dragstart)="dialDragStart($event)" (dragend)="dialDragEnd($event)"
        class="menu-dial menu-dial-overlay"

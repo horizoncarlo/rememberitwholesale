@@ -1,0 +1,25 @@
+<p-dialog header="Welcome to your Demo!" [(visible)]="isShowing" [closable]="false" [modal]="true" [maximizable]="true">
+  
+  <div class="paragraph">
+    <i class="pi pi-thumbs-up"></i>&nbsp;Thanks for your interest in my project <b>Remember It Wholesale</b>.<br/>
+    <br/>
+    The purpose of this app is to turn your life into usable data, in any arbitrary form you want.
+    You can store <i>Things</i> of milestones, reminders, goals, events, memories, and more.<br/>
+    <br/>
+    <u>Examples</u><br/>
+    Personally I'm terrible at remembering birthdays, or what boardgame I last played with a group of friends (or even the food I served them).
+    I'm also interested in personal trends like how many times I drove to work compared to walking in a year. Or maybe I need help choosing a movie
+    to watch or a pub to go to. Even boring life stuff like when I bought my fridge to check when the warranty runs out.<br/>
+    These are some examples of the limitless types of data that can be organized and tracked with custom <i>Templates</i> in the app.<br/>
+    <br/>
+    <u>How the Demo Works</u><br/>
+    Feel free to check out the app for the entire day, and start a new demo later if needed.<br/>
+    The demo login information will be stored in your browser, so you can leave your session and come back later.<br/>
+    <br/>
+    Note that once you logout (or the demo ends) all your data and things will be cleaned up.<br/>
+  </div>
+  
+  <ng-template pTemplate="footer">
+    <p-button (onClick)="submit()" label="Get Started" icon="pi pi-map" iconPos="left"/>
+  </ng-template>
+</p-dialog>

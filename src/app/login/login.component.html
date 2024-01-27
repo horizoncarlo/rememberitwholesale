@@ -1,5 +1,5 @@
 @if (!authService.getAuth().processingCheckedStorage) {
-<div class="login-wrap">
+<div class="login-wrap" [hidden]="authService.getAuth().isDemoAccount">
   <riw-typing-header text="Remember It Wholesale" [maxEffectCount]="10"></riw-typing-header>
   
   <div class="fieldset-wrap">
@@ -49,6 +49,8 @@
     <i class="pi pi-user-plus"></i>
     Or you can manually <a href="" (click)="newAccount.show($event)">request a new account</a><span class="hide-on-mobile"> and I'll get back to you!</span>
   </div>
-  <riw-new-account-dialog #newAccount (onHide)="handleFocus(usernameIn)"/>
 </div>
+
+<riw-new-account-dialog #newAccount (onHide)="handleFocus(usernameIn)"/>
+<riw-demo-info-dialog #demoInfo/>
 }

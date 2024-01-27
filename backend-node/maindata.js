@@ -68,7 +68,7 @@ const newAccountLimiter = rateLimiter({
 // Demo limit: 3 calls per day
 const tryDemoLimiter = rateLimiter({
 	windowMs: 24 * 60 * 60 * 1000,
-	limit: 10, // QUIDEL
+	limit: 100, // QUIDEL
 	standardHeaders: false,
 	legacyHeaders: false,
 });
@@ -372,6 +372,14 @@ function generatePlainPassword() {
   return Math.random().toString(36);
 }
 
+function generateDemoUsername() {
+  return 'demo-user_' + generateDemoUsernameSuffix();
+}
+
+function generateDemoUsernameSuffix() {
+  return Math.random().toString(36).slice(2).substring(0, 5);
+}
+
 function checkAuthToken(req) {
   if (req && req.query && req.query.token) {
     for (let key in getInMemoryAuth()) {
@@ -644,11 +652,19 @@ app.post("/demo-start", tryDemoLimiter, async (req, res) => {
     // Create a user object to store in the auth file
     const demoObj = {
       isDemoAccount: true,
-      username: 'demo-user_' + Math.random().toString(36).slice(2).substring(0, 5),
+      username: generateDemoUsername(),
       password: createHashedPassword(generatePlainPassword()),
       authToken: generateAuthToken(),
       // Even though we clear the account on logout, there's a chance the user just leaves, so we will clear demo accounts after a day
       expires: add(new Date(), { days: 1 }).getTime()
+    }
+    
+    // There's a crazy rare chance a username duplicates, I guess?
+    // And that would lead to unintentional data leakage, which is bad enough we'll throw in a check
+    // So if somehow our info already exists, just stack our username with random stuff even more
+    if (auth[demoObj.username]) {
+      error("Unbelievable, but a demo username was going to duplicate [" + demoObj.username + "]");
+      demoObj.username += generateDemoUsernameSuffix();
     }
     
     auth[demoObj.username] = demoObj;

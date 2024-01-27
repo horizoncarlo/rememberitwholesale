@@ -5,6 +5,7 @@ import { CheckboxModule } from 'primeng/checkbox';
 import { FieldsetModule } from 'primeng/fieldset';
 import { InputTextModule } from 'primeng/inputtext';
 import { ProgressSpinnerModule } from 'primeng/progressspinner';
+import { DemoInfoDialogComponent } from '../demo-info-dialog/demo-info-dialog.component';
 import { NewAccountDialogComponent } from '../new-account-dialog/new-account-dialog.component';
 import { AuthService } from '../service/auth.service';
 import { StorageService } from '../service/storage.service';
@@ -21,6 +22,7 @@ import { Utility } from '../util/utility';
     FieldsetModule,
     FormsModule,
     InputTextModule,
+    DemoInfoDialogComponent,
     NewAccountDialogComponent,
     ProgressSpinnerModule,
     TypingHeaderComponent,
@@ -30,6 +32,7 @@ export class LoginComponent {
   @ViewChild('usernameIn') usernameIn!: ElementRef;
   @ViewChild('passwordIn') passwordIn!: ElementRef;
   @ViewChild('newAccount') newAccountDialog!: NewAccountDialogComponent;
+  @ViewChild('demoInfo') demoInfoDialog!: DemoInfoDialogComponent;
   
   password: string | null = null;
   saveLogin: boolean = true;
@@ -99,8 +102,8 @@ export class LoginComponent {
           ourAuth.username = res.username;
           ourAuth.setLoggedIn(res.authToken, res.password);
           
-          // TODO QUIDEL Show a dialog with info about the demo, then navigate the user
-          this.router.navigate(['/']);
+          // Show a dialog to inform the user about the demo
+          this.demoInfoDialog.show();
         }
       },
       error: err => {

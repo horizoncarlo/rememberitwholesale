@@ -61,6 +61,14 @@ export class ManageTemplateDialogComponent {
       this.operationRadioClicked();
       if (event.actOn) {
         this.actOn = event.actOn;
+        
+        // Bit janky, but let the template dropdown initialize (which clears it's selected name)
+        //  and THEN set our name in
+        setTimeout(() => {
+          if (this.actOn) { // Minor annoyance with TS even though we checked this already
+            this.actOnName = this.actOn?.name;
+          }
+        },0);
       }
     }
     else {

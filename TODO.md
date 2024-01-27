@@ -1,5 +1,4 @@
 # TODO
-- BUG: Making a new Thing, choose Template, press Delete, the Template dialog opens but we don't auto-select the dropdown anymore
 - Postpone an overdue reminder to the same time next day at a button press
   - Would be on each reminder panel, and on Edit?
 - Drag and drop to re-order custom fields when making a Template

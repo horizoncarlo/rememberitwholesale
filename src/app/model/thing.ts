@@ -16,7 +16,7 @@ export class Thing {
   reminder?: boolean;
   updated: Date | undefined;
   fields: TemplateField[] = [];
-  fieldsAsString: string; // TODO Convert fields to RxJS so we can maintain a string version automatically instead of manually like we do now
+  fieldsAsString: string | undefined; // TODO Convert fields to RxJS so we can maintain a string version automatically instead of manually like we do now
   
   constructor(name: string,
               templateType: string = TemplateService.getDefaultName(),
@@ -144,6 +144,14 @@ export class Thing {
         }
       });
     }
+    
+    // Clear color (if default)
+    if (Utility.isValidString(this.color) && this.color === 'inherit') {
+      delete this.color;
+    }
+    
+    // Can also remove fieldsAsString as that's purely for the UI
+    delete this.fieldsAsString;
   }
   
   hasFields(): boolean {

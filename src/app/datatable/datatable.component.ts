@@ -435,7 +435,7 @@ export class DatatableComponent implements OnInit, OnDestroy {
   
   filterFields(event: any): void {
     this.thingTable.filteredValue =
-      this.things.data.filter((thing: Thing) => thing.fieldsAsString.toLocaleLowerCase().indexOf(event.target.value.toLowerCase()) !== -1);
+      this.things.data.filter((thing: Thing) => thing.fieldsAsString?.toLocaleLowerCase().indexOf(event.target.value.toLowerCase()) !== -1);
   }
   
   doneEditThing(toEdit: Thing): void {

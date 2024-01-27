@@ -276,10 +276,11 @@ function getInMemoryAuth() {
     let needToSave = false;
     for (let key in authData) {
       if (authData.hasOwnProperty(key)) {
+        // If we find an expired account, clean it up and mark for saving later
         if (typeof authData[key].expires === 'number' &&
             lastExpiryCheck >= authData[key].expires) {
-          log("Cleanup expired user [" + key + "]");
-          delete authData[key];
+          log("Cleanup expired user", key);
+          cleanupDemoAccount(key, authData);
           needToSave = true;
         }
       }
@@ -398,7 +399,7 @@ function checkAuthToken(req) {
   if (req && req.query) {
     message = req.query.token;
   }
-  error("Invalid endpoint token of [" + message + "]");
+  error("Invalid endpoint token", message);
   return {
     valid: false
   };
@@ -432,6 +433,24 @@ function getAuthUsername(req) {
   return req && req.authUsername ? req.authUsername : null;
 }
 
+/**
+ * Cleanup a demo account matching the passed username
+ * This will delete their saved directory/files
+ * Note this doesn't save the auth file, that's up to the caller
+ */
+function cleanupDemoAccount(username, authData) {
+  if (authData &&
+      username && typeof username === 'string' &&
+      username.trim().length > 0) {
+    // Try to remove our storage files for the demo user
+    const fileDirectory = FILE_DIR + username + '/';
+    fs.rmSync(fileDirectory, { recursive: true });
+    
+    // Also delete from our local memory auth setup
+    delete authData[username];
+  }
+}
+
 /***** API Endpoints *****/
 app.get("/things", (req, res) => {
   log("GET Things", getInMemoryThings(getAuthUsername(req)).length);
@@ -443,11 +462,11 @@ app.get("/things", (req, res) => {
       limitDate = parseInt(req.query.limit);
       
       if (isNaN(limitDate)) {
-        error("Couldn't convert date limit to number [" + req.query.limit + "]");
+        error("Couldn't convert date limit to number", req.query.limit);
         limitDate = -1;
       }
-    }catch(err) {
-      error("Failed to convert passed date limit [" + req.query.limit + "]", err);
+    }catch(err) { 
+      error("Failed to convert passed date limit [ "+ req.query.limit + " ]", err);
       limitDate = -1;
     }
   }
@@ -627,18 +646,13 @@ app.post("/demo-end", tryDemoLimiter, async (req, res) => {
   if (hasInvalidFields(req.body.username)) { return res.status(400).end(); }
   
   try{
-    // Try to remove our storage files for the demo user
-    const fileDirectory = FILE_DIR + req.body.username + '/';
-    fs.rmSync(fileDirectory, { recursive: true });
-    
-    // Try to remove the auth info for the demo user
-    // This is technically less important as it will eventually expire
-    delete getInMemoryAuth()[req.body.username];
+    // Cleanup the demo account (storage files and in-memory auth)
+    cleanupDemoAccount(req.body.username, getInMemoryAuth());
     saveAuthMemoryToFile();
     
     return res.status(200).end();
   }catch (err) {
-    error("Failed to remove demo account [" + req.body.username + "]", err);
+    error("Failed to remove demo account [ " + req.body.username + " ]", err);
   }
   
   return res.status(400).end();
@@ -664,7 +678,7 @@ app.post("/demo-start", tryDemoLimiter, async (req, res) => {
     // And that would lead to unintentional data leakage, which is bad enough we'll throw in a check
     // So if somehow our info already exists, just stack our username with random stuff even more
     if (auth[demoObj.username]) {
-      error("Unbelievable, but a demo username was going to duplicate [" + demoObj.username + "]");
+      error("Unbelievable, but a demo username was going to duplicate", demoObj.username);
       demoObj.username += generateDemoUsernameSuffix();
     }
     
@@ -750,7 +764,7 @@ app.post("/login", loginLimiter, (req, res) => {
 
 // Public
 app.post("/new-account", newAccountLimiter, async (req, res) => {
-  log("***** New account requested as [" + req.body.username + "] from [" + req.body.email + "]");
+  log("***** New account requested as [ " + req.body.username + " ] from [ " + req.body.email + " ]");
   if (hasInvalidFields(req.body.username, req.body.email)) { return res.status(400).end(); }
   
   let success = false;

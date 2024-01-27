@@ -1,6 +1,8 @@
 # TODO
+- BUG: Making a new Thing, choose Template, press Delete, the Template dialog opens but we don't auto-select the dropdown anymore
 - Postpone an overdue reminder to the same time next day at a button press
   - Would be on each reminder panel, and on Edit?
+- Drag and drop to re-order custom fields when making a Template
 
 - Reports with custom queries to generate, as well as charts (could be using ChartModule from PrimeNG)
   - Definitely just start with basic queries to get data and numbers, since we'll be using that for charts so having the text first is valuable and simpler

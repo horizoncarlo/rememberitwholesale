@@ -116,6 +116,11 @@ p-columnfilterformelement .p-inputtext {
   display: inline;
 }
 
+/* The native p-chips X was having problems firing, so just hide it */
+.p-chips-token-icon {
+  display: none;
+}
+
 @media (max-width: 850px) { /* var(--mobile-breakpoint) equivalent, just can't use in media queries */
   .hide-on-mobile {
     display: none;

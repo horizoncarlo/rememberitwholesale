@@ -9,6 +9,7 @@ export class UserAuth {
   isLoggedIn: boolean = false;
   hasCheckedStorage: boolean = false;
   processingCheckedStorage: boolean = false;
+  isDemoAccount: boolean = false;
   
   async checkStoredLogin(): Promise<any> {
     this.hasCheckedStorage = true;
@@ -28,6 +29,7 @@ export class UserAuth {
                 console.log("Logged in with saved password");
                 
                 this.setLoggedIn(res.authToken, possiblePassword as string);
+                this.isDemoAccount = res.isDemoAccount ? true : false;
                 return resolve(res.authToken);
               }
               return reject('No auth token');
@@ -69,6 +71,7 @@ export class UserAuth {
     this.processingCheckedStorage = false;
     this.isLoggedIn = false;
     this.saveLogin = false;
+    this.isDemoAccount = false;
     Utility.removeLocalStorageItem(Utility.LS_AUTH_USERNAME);
     Utility.removeLocalStorageItem(Utility.LS_AUTH_PASSWORD);
   }

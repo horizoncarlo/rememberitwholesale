@@ -83,6 +83,40 @@ export class LoginComponent {
     }).add(() => this.processing = false);
   }
   
+  tryDemoMode(e: any): void {
+    if (this.processing) {
+      return;
+    }
+    
+    this.processing = true;
+    this.storageService.startDemo().subscribe({
+      next: res => {
+        if (res && res.authToken) {
+          console.log("Started a demo");
+          
+          const ourAuth = this.authService.getAuth();
+          ourAuth.isDemoAccount = true;
+          ourAuth.username = res.username;
+          ourAuth.setLoggedIn(res.authToken, res.password);
+          
+          // TODO QUIDEL Show a dialog with info about the demo, then navigate the user
+          this.router.navigate(['/']);
+        }
+      },
+      error: err => {
+        if (err && typeof err.status === 'number' &&
+            err.status === 429) {
+          Utility.showError("You've had too many demos for today, try again later");
+        }
+        else {
+          Utility.showError("Error trying to setup a demo, try again later");
+        }
+      }
+    }).add(() => this.processing = false);
+    
+    e.preventDefault();
+  }
+  
   resetField(toClear: HTMLInputElement): void {
     if (toClear) {
       toClear.value = '';

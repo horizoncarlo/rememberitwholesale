@@ -62,12 +62,10 @@ export class ThingService {
         }
       },
       error: err => {
-        this.loading = false;
         Utility.showError('Failed to save your Thing');
         console.error(err);
-      },
-      complete: () => this.loading = false
-    });
+      }
+    }).add(() => this.loading = false);
   }
   
   getExistingThing(toCheck: Thing): Thing | undefined {
@@ -107,12 +105,10 @@ export class ThingService {
         }
       },
       error: err => {
-        this.loading = false;
         Utility.showSuccess("Failed to delete " + toDelete.length + " Thing" + Utility.plural(toDelete));
         console.error(err);
-      },
-      complete: () => this.loading = false
-    });
+      }
+    }).add(() => this.loading = false);
   }
   
   preGetAllThings(): void {

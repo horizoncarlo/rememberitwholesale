@@ -3,7 +3,10 @@
   <riw-typing-header text="Remember It Wholesale" [maxEffectCount]="10"></riw-typing-header>
   
   <div class="fieldset-wrap">
-    <p-fieldset legend="Login">
+    <p-fieldset>
+      <ng-template pTemplate="header">
+        Login or <a href="" (click)="tryDemoMode($event)" class="highlight-demo">try a Demo</a>&nbsp;<i class="pi pi-map"></i>
+      </ng-template>
       <div class="fieldset-inner">
         <div class="field-wrap">
           <span class="p-input-icon-right full-length">

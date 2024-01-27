@@ -111,6 +111,11 @@ p-columnfilterformelement .p-inputtext {
   margin-right: auto;
 }
 
+/* Stop the default style of having links flex */
+.p-fieldset-legend > a {
+  display: inline;
+}
+
 @media (max-width: 850px) { /* var(--mobile-breakpoint) equivalent, just can't use in media queries */
   .hide-on-mobile {
     display: none;

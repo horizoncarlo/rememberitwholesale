@@ -112,12 +112,10 @@ export class TemplateService  {
   getAllTemplates(): void {
     this.getAllTemplatesObs().subscribe({
       error: err => {
-        this.loading = false;
         Utility.showError('Failed to retrieve your Templates');
         console.error(err);
-      },
-      complete: () => this.loading = false
-    });
+      }
+    }).add(() => this.loading = false);
   }
   
   saveNew(toAdd: Template): void {
@@ -139,14 +137,10 @@ export class TemplateService  {
         this.getAllTemplates();
       },
       error: err => {
-        this.loading = false;
         Utility.showError('Failed to save your new Template');
         console.error(err);
-      },
-      complete: () => {
-        this.loading = false;
       }
-    });
+    }).add(() => this.loading = false);
   }
   
   saveFavorite(toAdd: TemplateFavorite): void {
@@ -168,14 +162,12 @@ export class TemplateService  {
         Utility.showSuccess('Successfully set your Favorite Template', this.favorite.name);
       },
       error: err => {
-        this.loading = false;
         Utility.showError('Failed to set your Favorite Template');
         console.error(err);
-      },
-      complete: () => {
-        this.loading = false;
-        this.hasCached = false;
       }
+    }).add(() => {
+      this.loading = false;
+      this.hasCached = false;
     });
   }
   

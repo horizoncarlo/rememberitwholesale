@@ -1,10 +1,12 @@
 import { HttpClient } from '@angular/common/http';
 import { Injectable } from '@angular/core';
+import { Router } from '@angular/router';
 import { Observable } from 'rxjs';
 import { environment } from 'src/environments/environment';
 import { Template } from '../model/template';
 import { TemplateFavorite } from '../model/template-favorite';
 import { Thing } from '../model/thing';
+import { UserAuth } from '../model/user-auth';
 import { UserSettings } from '../model/user-settings';
 import { AuthService } from './auth.service';
 
@@ -18,7 +20,7 @@ export class StorageService {
   defaultHeaders = { headers: { 'Content-Type': 'application/json' }};
   storedLimitDate: number | undefined;
   
-  constructor(private http: HttpClient, private authService: AuthService) { }
+  constructor(private http: HttpClient, private router: Router, private authService: AuthService) { }
   
   getAuthToken(): string {
     let toReturn = '?token=';
@@ -26,6 +28,28 @@ export class StorageService {
       toReturn += this.authService.getAuth().authToken as string;
     }
     return toReturn;
+  }
+  
+  performLogout(): void {
+    const authObj = this.authService.getAuth();
+    
+    // If we're a demo account end our demo on logout
+    // Note we wait to do afterLogout because we don't want to clear our variables and redirect until our call is complete
+    if (authObj.isDemoAccount) {
+      this.endDemo(authObj.username as string).subscribe().add(() => {
+        this.afterLogout(authObj);
+      });
+    }
+    else {
+      this.afterLogout(authObj);
+    }
+  }
+  
+  afterLogout(authObj: UserAuth): void {
+    authObj.setLoggedOut();
+    
+    // Navigate and refresh the page
+    this.router.navigate(['/login']).finally(() => location.reload());
   }
   
   makeUrl(endpoint: string): string {
@@ -92,6 +116,16 @@ export class StorageService {
       username: username,
       password: password,
       saveLogin: saveLogin ? true : false
+    }, this.defaultHeaders);
+  }
+  
+  startDemo(): Observable<any> {
+    return this.http.post(this.makeUrl('demo-start'), {}, this.defaultHeaders);
+  }
+  
+  endDemo(username: string): Observable<any> {
+    return this.http.post(this.makeUrl('demo-end'), {
+      username: username
     }, this.defaultHeaders);
   }
   

@@ -1,9 +1,13 @@
 # TODO
+- Postpone an overdue reminder to the same time next day at a button press
+  - Would be on each reminder panel, and on Edit?
+
 - Reports with custom queries to generate, as well as charts (could be using ChartModule from PrimeNG)
   - Definitely just start with basic queries to get data and numbers, since we'll be using that for charts so having the text first is valuable and simpler
 
 - "Demo mode" (once we have user login) that lets you explore the app without changing data, with a free/auto account, and a bunch of default stuff
   - When logging in as demo auto-copy/create preset files and data, and destroy them on logout? Or could swap Storage Service for this case?
+
 - Try signals and NgRx data store for sharing between parts of app using Ang 17
 - Do a proper pass and componentize any elements that need it
   - Also make sure existing components are "standalone: true" where possible (or at least consistent)

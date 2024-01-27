@@ -9,6 +9,7 @@ const config = require('config');
 const crypto = require('crypto');
 const { v4: uuidv4 } = require('uuid');
 const rateLimiter = require('express-rate-limit');
+const { add } = require("date-fns");
 
 // Set some default templates for a new user
 const DEFAULT_TEMPLATES = [
@@ -64,6 +65,13 @@ const newAccountLimiter = rateLimiter({
 	standardHeaders: false,
 	legacyHeaders: false,
 });
+// Demo limit: 3 calls per day
+const tryDemoLimiter = rateLimiter({
+	windowMs: 24 * 60 * 60 * 1000,
+	limit: 10, // QUIDEL
+	standardHeaders: false,
+	legacyHeaders: false,
+});
 
 if (process.env.NODE_ENV === 'production') {
   app.use(cors()); // TODO Configure CORS to just be from our website, instead of global/public access
@@ -79,7 +87,8 @@ app.use(express.json());
 app.use((req, res, next) => {
   // Allow a few pages that don't need a token
   if (req.originalUrl.startsWith('/login') ||
-      req.originalUrl.startsWith('/new-account')
+      req.originalUrl.startsWith('/new-account') ||
+      req.originalUrl.startsWith('/demo-start')
     ) {
     next();
   }
@@ -112,6 +121,11 @@ let inMemory = {
 inMemory[GLOBAL_DATA] = {
   auth: {}
 };
+
+// Used for determining if there are any expired accounts
+const EXPIRY_CHECK_INTERVAL_H = 4*60*60*1000; // 4 hours
+let lastExpiryCheck = 0;
+let checkingExpired = false;
 
 // Fire up the server
 app.listen(PORT_NUM, () => {
@@ -251,6 +265,33 @@ function getInMemorySettings(authUsername) {
 }
 
 function getInMemoryAuth() {
+  // Check for any expired accounts every X hours
+  if (!checkingExpired &&
+      (new Date().getTime() - lastExpiryCheck) > EXPIRY_CHECK_INTERVAL_H) {
+    const authData = getInMemoryUserData(GLOBAL_DATA, 'auth');
+    checkingExpired = true;
+    lastExpiryCheck = new Date().getTime();
+    
+    let needToSave = false;
+    for (let key in authData) {
+      if (authData.hasOwnProperty(key)) {
+        if (typeof authData[key].expires === 'number' &&
+            lastExpiryCheck >= authData[key].expires) {
+          log("Cleanup expired user [" + key + "]");
+          delete authData[key];
+          needToSave = true;
+        }
+      }
+    }
+    
+    if (needToSave) {
+      saveAuthMemoryToFile(authData);
+    }
+    
+    checkingExpired = false;
+    return authData;
+  }
+  
   return getInMemoryUserData(GLOBAL_DATA, 'auth');
 }
 
@@ -274,9 +315,9 @@ function saveSettingsMemoryToFile(authUsername) {
   writeSafeFile(authUsername, SETTINGS_FILE, getInMemorySettings(authUsername));
 }
 
-function saveAuthMemoryToFile() {
-  log("WRITE Auth");
-  writeSafeFile(GLOBAL_DATA, AUTH_FILE, getInMemoryAuth());
+function saveAuthMemoryToFile(overrideData) {
+  log("WRITE Auth" + (overrideData ? ' (with override)' : ''));
+  writeSafeFile(GLOBAL_DATA, AUTH_FILE, overrideData ? overrideData : getInMemoryAuth());
 }
 
 function writeSafeFile(authUsername, fileName, data, retryCount = 0) {
@@ -325,6 +366,10 @@ function createHashedPassword(password) {
 
 function generateAuthToken() {
   return uuidv4();
+}
+
+function generatePlainPassword() {
+  return Math.random().toString(36);
 }
 
 function checkAuthToken(req) {
@@ -389,7 +434,7 @@ app.get("/things", (req, res) => {
       limitDate = parseInt(req.query.limit);
       
       if (isNaN(limitDate)) {
-        console.warn("Couldn't convert date limit to number [" + req.query.limit + "]");
+        error("Couldn't convert date limit to number [" + req.query.limit + "]");
         limitDate = -1;
       }
     }catch(err) {
@@ -568,6 +613,61 @@ app.post("/change-password", (req, res) => {
   return res.status(401).end();
 });
 
+app.post("/demo-end", tryDemoLimiter, async (req, res) => {
+  log("END demo", req.body.username);
+  if (hasInvalidFields(req.body.username)) { return res.status(400).end(); }
+  
+  try{
+    // Try to remove our storage files for the demo user
+    const fileDirectory = FILE_DIR + req.body.username + '/';
+    fs.rmSync(fileDirectory, { recursive: true });
+    
+    // Try to remove the auth info for the demo user
+    // This is technically less important as it will eventually expire
+    delete getInMemoryAuth()[req.body.username];
+    saveAuthMemoryToFile();
+    
+    return res.status(200).end();
+  }catch (err) {
+    error("Failed to remove demo account [" + req.body.username + "]", err);
+  }
+  
+  return res.status(400).end();
+});
+
+// Public
+app.post("/demo-start", tryDemoLimiter, async (req, res) => {
+  log("***** START demo");
+  
+  const auth = getInMemoryAuth();
+  if (auth) {
+    // Create a user object to store in the auth file
+    const demoObj = {
+      isDemoAccount: true,
+      username: 'demo-user_' + Math.random().toString(36).slice(2).substring(0, 5),
+      password: createHashedPassword(generatePlainPassword()),
+      authToken: generateAuthToken(),
+      // Even though we clear the account on logout, there's a chance the user just leaves, so we will clear demo accounts after a day
+      expires: add(new Date(), { days: 1 }).getTime()
+    }
+    
+    auth[demoObj.username] = demoObj;
+    saveAuthMemoryToFile();
+    
+    // TODO QUIDEL PRIORITY - Copy demo files/data to this user's folder structure
+    //ensureUserFilesAreSetup(convertUsernameToFilesafe(demoObj.username));
+    console.error("DEMO OBJ", demoObj);
+    
+    return res.status(200).end(JSON.stringify(demoObj));
+  }
+  else {
+    error("Invalid auth, couldn't read stored data");
+  }
+  
+  // If we reached this far, give a 401 error as we don't have a valid user state
+  return res.status(401).end();
+});
+
 // Public
 app.post("/login", loginLimiter, (req, res) => {
   log("POST Login", req.body.username);
@@ -590,13 +690,22 @@ app.post("/login", loginLimiter, (req, res) => {
         // Setup our files and in-memory data as needed
         ensureUserFilesAreSetup(convertUsernameToFilesafe(req.body.username));
         
+        // Make our data to return, basic username and auth token
         const toReturn = {
           username: req.body.username,
           authToken: userObj.authToken,
         };
+        
+        // If we requested to save our login, return the hashed password too
         if (req.body.saveLogin) {
           toReturn.password = userObj.password;
         }
+        
+        // Mark our account as a demo if necessary
+        if (userObj.isDemoAccount) {
+          toReturn.isDemoAccount = true;
+        }
+        
         log("Login valid for", req.body.username);
         return res.status(200).end(JSON.stringify(toReturn));
       }
@@ -612,7 +721,7 @@ app.post("/login", loginLimiter, (req, res) => {
 
 // Public
 app.post("/new-account", newAccountLimiter, async (req, res) => {
-  log("***** New account requested as [" + req.body.username + "] from [" + req.body.email + "]"); // Mark with a few stars so this is easier to notice in the logs
+  log("***** New account requested as [" + req.body.username + "] from [" + req.body.email + "]");
   if (hasInvalidFields(req.body.username, req.body.email)) { return res.status(400).end(); }
   
   let success = false;
@@ -622,7 +731,7 @@ app.post("/new-account", newAccountLimiter, async (req, res) => {
       config.get('mailjet.secretKey'),
     );
     
-    const generatedPassword = Math.random().toString(36);
+    const generatedPassword = generatePlainPassword();
     const replyBody = "Hey, I made your account " + req.body.username + " with a password of " + generatedPassword + " (I know it is a weird one, you can reset in the app).";
     const request = mailjetApi.post("send", { version: "v3.1" }).request({
       Messages: [

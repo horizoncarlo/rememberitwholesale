@@ -17,7 +17,9 @@ export class UserProfileDialogComponent {
   currentPassword: string = '';
   newPassword: string = '';
   
-  constructor(public authService: AuthService, private userService: UserService, private storageService: StorageService) { }
+  constructor(public authService: AuthService,
+              public storageService: StorageService,
+              private userService: UserService) { }
   
   show(): void {
     // Refresh our settings from our most recent actual object

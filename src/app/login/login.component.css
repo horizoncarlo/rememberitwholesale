@@ -1,3 +1,7 @@
+a:hover {
+  filter: brightness(1.2);
+}
+
 .login-wrap {
   margin-top: 25vh;
   padding: 40px 20px 20px 20px;
@@ -41,6 +45,17 @@
 
 .field-wrap input {
   width: 100%;
+}
+
+.highlight-demo {
+  animation: pulseText 1s 4;
+}
+
+@keyframes pulseText {
+  50% {
+     text-shadow: 0 0 10px white;
+     text-decoration: none;
+  }
 }
 
 .terminal-image-wrap {

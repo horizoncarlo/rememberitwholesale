@@ -20,11 +20,4 @@ export class AuthService {
 
     return this._auth;
   }
-  
-  performLogout(): void {
-    this._auth.setLoggedOut();
-    
-    // Navigate and refresh the page
-    this.router.navigate(['/login']).finally(() => location.reload());
-  }
 }

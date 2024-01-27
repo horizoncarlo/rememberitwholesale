@@ -39,7 +39,7 @@
   </div>
   
   <ng-template pTemplate="footer">
-    <p-button (onClick)="authService.performLogout()" label="Logout" icon="pi pi-lock-open" iconPos="left" severity="danger" class="fleft"/>
+    <p-button (onClick)="storageService.performLogout()" label="Logout" icon="pi pi-lock-open" iconPos="left" severity="danger" class="fleft"/>
     
     <p-button (onClick)="hide()" label="Cancel" icon="pi pi-times" iconPos="left" severity="secondary"/>
     <p-button (onClick)="submit()" label="Save Profile" icon="pi pi-check" iconPos="left"/>

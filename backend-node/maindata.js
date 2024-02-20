@@ -75,7 +75,9 @@ const tryDemoLimiter = rateLimiter({
 });
 
 if (process.env.NODE_ENV === 'production') {
-  app.use(cors()); // TODO Configure CORS to just be from our website, instead of global/public access
+  app.use(cors({
+    origin: 'http://riw.homelinux.com'
+  }));
 }
 else {
   app.use(cors());

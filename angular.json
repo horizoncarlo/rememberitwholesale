@@ -55,22 +55,7 @@
                                 "with": "src/environments/environment.dev.ts"
                               }
                             ]
-                        },
-                        "live": {
-                            "verbose": true,
-                            "buildOptimizer": false,
-                            "optimization": false,
-                            "vendorChunk": true,
-                            "extractLicenses": false,
-                            "sourceMap": false,
-                            "namedChunks": true,
-                            "fileReplacements": [
-                              {
-                                "replace": "src/environments/environment.ts",
-                                "with": "src/environments/environment.live.ts"
-                              }
-                            ]
-                      }
+                        }
                     },
                     "defaultConfiguration": "production"
                 },
@@ -82,9 +67,6 @@
                         },
                         "development": {
                             "buildTarget": "rememberitwholesale:build:development"
-                        },
-                        "live": {
-                          "buildTarget": "rememberitwholesale:build:live"
                         }
                     },
                     "defaultConfiguration": "development"

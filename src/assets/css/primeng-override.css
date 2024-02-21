@@ -73,6 +73,11 @@ p-columnfilterformelement .p-inputtext {
   max-width: 750px;
 }
 
+/* Consistent width on the manage template dialog submit buttons */
+.template-submit-button .p-button {
+  width: 230px !important;
+}
+
 /* Ensure the dialogs size nicely to the page, regardless of view and content */
 .manage-thing-dialog .p-dialog,
 .manage-template-dialog .p-dialog,
@@ -97,6 +102,11 @@ p-columnfilterformelement .p-inputtext {
 /* Ensure the toast messages don't wrap outside a mobile screen */
 .p-toast {
   max-width: 90vw;
+}
+
+/* To stop some dialogs (mainly manage template) from jumping as the content changes we just scroll all the time */
+.p-dialog-content {
+  overflow-y: scroll;
 }
 
 /* Size our various inputs to a consistent minimum width */
@@ -127,6 +137,9 @@ p-columnfilterformelement .p-inputtext {
   }
   
   /* Less precious whitespace wasted on content padding on dialogs */
+  .p-dialog-content {
+    overflow-y: auto;
+  }
   .p-dialog .p-dialog-content {
     padding: 10px;
   }
@@ -144,6 +157,11 @@ p-columnfilterformelement .p-inputtext {
   
   .p-dialog-header {
     padding: 15px 15px 0 15px;
+  }
+  
+  /* Leave the icon buttons as auto on mobile for manage template */
+  .template-submit-button .p-button {
+    width: auto !important;
   }
   
   /* Don't force a nearly full height like we do on desktop, primarily for the floating mobile keyboard */

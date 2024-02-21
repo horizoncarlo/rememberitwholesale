@@ -1,4 +1,5 @@
 import { Component, EventEmitter, Output, ViewChild, inject } from '@angular/core';
+import { Dialog } from 'primeng/dialog';
 import { Template, TemplateEvent } from '../model/template';
 import { TemplateField } from '../model/template-field';
 import { Thing } from '../model/thing';
@@ -21,6 +22,7 @@ export class ManageThingDialogComponent {
   selectedTemplateName: string | null = null;
   isShowing: boolean = false;
   fieldTypes = TemplateField.TYPES;
+  @ViewChild('manageThingDialog') manageThingDialog!: Dialog;
   @ViewChild('templateDropdown') templateDropdown!: TemplateDropdownComponent;
   @Output() manageTemplateEvent = new EventEmitter<TemplateEvent>();
   @Output() onDelete = new EventEmitter<{ thing: Thing, event: Event }>();
@@ -36,12 +38,9 @@ export class ManageThingDialogComponent {
   
   showAdd(): void {
     this.type = 'add';
-    // Reset our state as well
     this.actOn = new Thing('');
-    
     const defaultTemplate = this.templateService.getFirstDefaultTemplate();
     this.templateNameChanged(defaultTemplate ? defaultTemplate.name : null);
-    
     this.show();
   }
   
@@ -51,7 +50,6 @@ export class ManageThingDialogComponent {
       this.actOn = Thing.cloneFrom(selectedRows[0]);
       this.selectedTemplateName = this.actOn.templateType;
       this.templateNameChanged(this.selectedTemplateName);
-      
       this.show();
     }
     else {
@@ -60,6 +58,10 @@ export class ManageThingDialogComponent {
   }
   
   show(): void {
+    if (Utility.isMobileSize()) {
+      this.manageThingDialog.maximized = true;
+    }
+    
     this.templateDropdown.refreshData();
     
     this.isShowing = true;
@@ -103,7 +105,7 @@ export class ManageThingDialogComponent {
       
       // Apply our initial reminder state if we have it
       // Note if we've manually set reminder, we won't overwrite that
-      if (!this.actOn.reminder) {
+      if (this.type !== 'edit' && !this.actOn.reminder) {
         this.actOn.reminder = this.selectedTemplate.initialReminder;
       }
     }

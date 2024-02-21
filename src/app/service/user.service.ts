@@ -38,6 +38,11 @@ export class UserService implements OnDestroy {
       this.storageService.getSettings().subscribe({
         next: res => {
           this._settings = UserSettings.cloneFrom(res);
+          
+          // Update our login count - note this doesn't immediately persist, to cut down on calls, but next time we set a user prop it will get carried along
+          // Which, given that this isn't critical, is good enough
+          this._settings.loginCount++;
+          
           this.data$.next(this._settings);
           this.ready$.next(true);
           
@@ -69,5 +74,19 @@ export class UserService implements OnDestroy {
     const _user: UserSettings = Object.assign({}, this._settings);
     _user[key] = value;
     this.data$.next(_user);
-  };
+  }
+  
+  /**
+   * Set a series of properties on our user object, which will automatically persist
+   * Usage example: `this.userService.setUserProps({ paginatorTable: false, limitDate: 3 });`
+   */
+  setUserProps(values: any) {
+    const _user: any = Object.assign({}, this._settings);
+    for (let key in values) {
+      if (values.hasOwnProperty(key)) {
+        _user[key] = values[key];
+      }
+    }
+    this.data$.next(_user);
+  }
 }

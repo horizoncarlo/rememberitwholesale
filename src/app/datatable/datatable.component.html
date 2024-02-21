@@ -72,7 +72,7 @@
          class="thing-table" styleClass="p-datatable-striped"
          selectionMode="multiple" [(selection)]="selectedRows"
          (sortFunction)="customSort($event)" [customSort]="true"
-         sortField="updated" [sortOrder]="-1"
+         [sortField]="getUser().tableSortColumn" [sortOrder]="getUser().tableSortOrder"
          [globalFilterFields]="['name', 'time', 'templateType', 'reminder', 'fieldsAsString']"
          [paginator]="getUser().paginatorTable" [rows]="getUser().paginatorRows"
          [pageLinks]="3" [alwaysShowPaginator]="false" [showFirstLastIcon]="false" [showCurrentPageReport]="true"

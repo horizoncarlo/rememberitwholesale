@@ -82,6 +82,11 @@ export class ToastMessageComponent implements OnInit, OnDestroy {
         sticky: sticky,
       };
       
+      // Apply our lifespan time as well, but only if it's defined, otherwise stick to component default
+      if (typeof eventDetail.life === 'number') {
+        opts.life = eventDetail.life;
+      }
+      
       if (opts.key === 'reminderComplete') {
         opts.data = {
           callback: eventDetail.confirmCallback

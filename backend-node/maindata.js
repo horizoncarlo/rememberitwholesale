@@ -46,37 +46,38 @@ const AUTH_FILE = 'auth.json';
 // Setup express-rate-limit (https://express-rate-limit.mintlify.app/reference/configuration)
 // We want a global limiter for all endpoints, and then a more restrictive one for each public endpoint
 // We separate the public endpoints so that we can independently restrict login vs new account
+const limitModifier = (process.env.NODE_ENV === 'production' ? 1 : 500); // Basically remove the limit on non-prod environments
 const globalLimiter = rateLimiter({
 	windowMs: 1 * 60 * 1000, // 1 minute
-  limit: 50, // Max of 50 requests across 1 minute
+  limit: 50 * limitModifier, // Max of 50 requests across 1 minute
 	standardHeaders: false, // Don't return any RateLimit headers
 	legacyHeaders: false, // Don't return any RateLimit headers
 });
 // Login limit: 20 calls per 20 minutes
 const loginLimiter = rateLimiter({
 	windowMs: 20 * 60 * 1000,
-	limit: 20,
+	limit: 20 * limitModifier,
 	standardHeaders: false,
 	legacyHeaders: false,
 });
 // New account limit: 5 calls per 1 hour
 const newAccountLimiter = rateLimiter({
 	windowMs: 60 * 60 * 1000,
-	limit: 5,
+	limit: 5 * limitModifier,
 	standardHeaders: false,
 	legacyHeaders: false,
 });
 // Demo limit: 3 calls per day
 const tryDemoLimiter = rateLimiter({
 	windowMs: 24 * 60 * 60 * 1000,
-	limit: 3,
+	limit: 3 * limitModifier,
 	standardHeaders: false,
 	legacyHeaders: false,
 });
 
 if (process.env.NODE_ENV === 'production') {
   app.use(cors({
-    origin: 'http://riw.homelinux.com'
+    origin: 'http://riw.us.to'
   }));
 }
 else {
@@ -563,9 +564,12 @@ app.get("/templates/favorite", (req, res) => {
 
 app.post("/templates/favorite", (req, res) => {
   log("POST Favorite Template");
-  if (hasInvalidFields(req.body.name)) { return res.status(400).end(); }
-  
-  setInMemoryUserData(getAuthUsername(req), 'favorite', req.body);
+  if (!hasInvalidFields(req.body.name)) {
+    setInMemoryUserData(getAuthUsername(req), 'favorite', req.body);
+  }
+  else {
+    setInMemoryUserData(getAuthUsername(req), 'favorite', null);
+  }
   saveFavoriteMemoryToFile(getAuthUsername(req));
   return res.status(200).end();
 });

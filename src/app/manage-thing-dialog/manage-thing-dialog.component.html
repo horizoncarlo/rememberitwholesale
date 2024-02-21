@@ -1,8 +1,17 @@
-<p-dialog [header]="(isAdd() ? 'Add New' : 'Edit') + ' Thing'" [(visible)]="isShowing" [modal]="true" [maximizable]="true" class="manage-thing-dialog"
+<p-dialog #manageThingDialog
+          [header]="(isAdd() ? 'Add New' : 'Edit') + ' Thing'" [(visible)]="isShowing" [modal]="true" [maximizable]="true" class="manage-thing-dialog"
           (onShow)="handleFocus(nameField)">
   <div class="content-form">
 
     <table cellpadding="10">
+      <tr>
+        <td>
+          <label htmlFor="name">Name</label>
+        </td>
+        <td colspan="2">
+          <input id="name" #nameField pInputText [(ngModel)]="actOn.name" (keyup.enter)="submit()"/>
+        </td>
+      </tr>
       <tr>
         <td>
           Template
@@ -12,14 +21,6 @@
                                 [(selectedTemplateName)]="selectedTemplateName"
                                 (selectedTemplateNameChange)="templateNameChanged($event)"
                                 (manageTemplateEvent)="handleTemplateEvent($event)"/>
-        </td>
-      </tr>
-      <tr>
-        <td>
-          <label htmlFor="name">Name</label>
-        </td>
-        <td colspan="2">
-          <input id="name" #nameField pInputText [(ngModel)]="actOn.name" (keyup.enter)="submit()"/>
         </td>
       </tr>
       <tr>

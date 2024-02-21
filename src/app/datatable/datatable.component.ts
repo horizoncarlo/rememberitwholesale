@@ -670,6 +670,16 @@ export class DatatableComponent implements OnInit, OnDestroy {
   
   customSort(event: SortEvent) {
     if (event && event.data && event.field) {
+      // Determine if we need to store our user sort settings
+      if ((event.field !== this.userService.getUser().tableSortColumn) ||
+          (typeof event.order === 'number' &&
+           event.order !== this.userService.getUser().tableSortOrder)) {
+        this.userService.setUserProps({
+          tableSortColumn: event.field,
+          tableSortOrder: event.order
+        });
+      }
+      
       event.data.sort((thing1: any, thing2: any) => {
         const field: string = event.field as string;
         const value1 = thing1[field];

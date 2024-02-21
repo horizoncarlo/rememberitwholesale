@@ -35,7 +35,7 @@ export class Utility {
     this._dispatchGenericShow('message-info', {
       message: toMark.name + ' (' + toMark.templateType + ') is due',
       header: 'Reminder NOW',
-      sticky: true,
+      life: 10*1000,
       confirmCallback: confirmCallback,
       thingId: toMark.id
     });
@@ -45,7 +45,7 @@ export class Utility {
     this._dispatchGenericShow('message-success', {
       message: toMark.name + ' (' + toMark.templateType + ') is overdue ' + (toMark.time ? formatDistanceToNow(toMark.time, { addSuffix: true }) : ''),
       header: 'Reminder Overdue',
-      sticky: true,
+      life: 8*1000,
       confirmCallback: confirmCallback,
       thingId: toMark.id
     });

@@ -29,8 +29,6 @@ export class TemplateDropdownComponent implements OnInit {
         next: () => this.filteredData = this.templateService.getFilteredData(this.hideDefaults)
       });
     }, 0);
-    
-    this.selectedTemplateName = null;
   }
   
   autocompleteData(event: AutoCompleteCompleteEvent): void {

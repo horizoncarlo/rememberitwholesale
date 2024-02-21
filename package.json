@@ -2,8 +2,8 @@
   "name": "rememberitwholesale",
   "version": "1.0",
   "scripts": {
-    "dev": "ng serve --watch --configuration development",
-    "prod": "ng serve --watch --configuration production --host 0.0.0.0 --public-host riw.homelinux.com",
+    "dev": "ng serve --watch --configuration development --no-live-reload",
+    "prod": "ng serve --watch --configuration production --host 0.0.0.0 --public-host riw.us.to",
     "backend": "nodemon backend-node/maindata.js",
     "build": "ng build --configuration production"
   },

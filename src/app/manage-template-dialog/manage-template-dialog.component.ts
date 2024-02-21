@@ -1,11 +1,13 @@
-import { Component, inject } from '@angular/core';
+import { Component, ViewChild, inject } from '@angular/core';
 import { ConfirmationService } from 'primeng/api';
 import { ColorPicker } from 'primeng/colorpicker';
+import { Dialog } from 'primeng/dialog';
 import { Template, TemplateEvent } from '../model/template';
 import { TemplateFavorite } from '../model/template-favorite';
 import { TemplateField } from '../model/template-field';
 import { TemplateService } from '../service/template.service';
 import { ThingService } from '../service/thing.service';
+import { UserService } from '../service/user.service';
 import { Utility } from '../util/utility';
 
 const DEFAULT_TEMPLATE_NAME = "Basic";
@@ -17,6 +19,7 @@ const DEFAULT_TEMPLATE_NAME = "Basic";
   providers: [ConfirmationService]
 })
 export class ManageTemplateDialogComponent {
+  @ViewChild('manageTemplateDialog') manageTemplateDialog!: Dialog;
   thingService: ThingService = inject(ThingService);
   templateService: TemplateService = inject(TemplateService);
   nextFieldIndex: number = 0;
@@ -47,9 +50,13 @@ export class ManageTemplateDialogComponent {
   ];
   favoriteTimeRange: { value: number, label: string} = this.favoriteTimeOptions[1];
   
-  constructor(private confirmationService: ConfirmationService) { }
+  constructor(private confirmationService: ConfirmationService, public userService: UserService) { }
   
   show(event?: any): void {
+    if (Utility.isMobileSize()) {
+      this.manageTemplateDialog.maximized = true;
+    }
+    
     // Update our template list, if needed
     this.templateService.getAllTemplatesObs().subscribe();
     

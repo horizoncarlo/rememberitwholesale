@@ -8,6 +8,9 @@ export class UserSettings {
   showReminders: boolean = false;
   overdueLimitDays: number = 2;
   limitDate: number = -1;
+  tableSortColumn: string = 'updated';
+  tableSortOrder: number = -1;
+  loginCount: number = 0; // Keep track of our login counts, which we can use for hiding tutorial info, etc.
   
   constructor(options?: {
       forceDial?: boolean,
@@ -17,7 +20,10 @@ export class UserSettings {
       showFilters?: boolean,
       showReminders?: boolean,
       overdueLimitDays?: number,
-      limitDate?: number
+      limitDate?: number,
+      tableSortColumn?: string,
+      tableSortOrder?: number,
+      loginCount?: number
     }) {
     
     if (options) {
@@ -28,6 +34,9 @@ export class UserSettings {
       this.showReminders = this._assignSetting(options.showReminders, 'boolean', false);
       this.overdueLimitDays = this._assignSetting(options.overdueLimitDays, 'number', 2);
       this.limitDate = this._assignSetting(options.limitDate, 'number', -1);
+      this.tableSortColumn = this._assignSetting(options.tableSortColumn, 'string', 'updated');
+      this.tableSortOrder = this._assignSetting(options.tableSortOrder, 'number', -1);
+      this.loginCount = this._assignSetting(options.loginCount, 'number', 0);
     }
   }
   

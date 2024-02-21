@@ -28,11 +28,7 @@
       }
     </span>
     <span class="p-message-detail">
-      {{thing.templateType}}
-      @if (thing.hasFields()) {
-        ,
-      }
-      {{thing.fieldsAsString}}
+      {{thing.templateType}}{{thing.hasFields() ? ',' : ''}} {{thing.fieldsAsString}}
     </span>
   </div>
 </div>

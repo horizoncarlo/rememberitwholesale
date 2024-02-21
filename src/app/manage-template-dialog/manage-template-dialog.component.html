@@ -1,4 +1,4 @@
-<p-dialog header="Manage Templates" [(visible)]="isShowing" [modal]="true" [maximizable]="true" class="manage-template-dialog">
+<p-dialog #manageTemplateDialog header="Manage Templates" [(visible)]="isShowing" [modal]="true" [maximizable]="true" class="manage-template-dialog">
   <div class="content-form">
     <div class="center manage-radio-font">
       Template:&nbsp;
@@ -14,13 +14,17 @@
     <br/>
     
     @if (operation === 'create') {
-      <!-- TODO Auto hide (with an option to expand) this help text based on the user account, once they've logged in X number of times, or show again if they haven't logged in in a while-->
-      <p>Setup the <b>Name</b> of your template (must be unique between all templates).</p>
-      <p>Then you can add as many fields related to the template you want.<br/>
-      Each field has a <b>Property/ID</b> which must be unique in this template, and won't be shown to the user.<br/>
-      The <b>Label</b> is assigned to the input the user enters when using this template.</p>
-      <p>Each template also automatically provides a name input for the user to fill in, and an optional date.</p>
-      <p>Note for the sake of data integrity you cannot edit a template after creation.</p>
+      @if (userService.getUser().loginCount <= 100) {
+        <p-panel header="How to Use" [toggleable]="true" [collapsed]="userService.getUser().loginCount > 10">
+          Setup the <b>Name</b> of your template (must be unique between all templates).
+          <p>Then you can add as many fields related to the template you want.<br/>
+          Each field has a <b>Property/ID</b> which must be unique in this template, and won't be shown to the user.<br/>
+          The <b>Label</b> is assigned to the input the user enters when using this template.</p>
+          <p>Each template also automatically provides a name input for the user to fill in, and an optional date.</p>
+          Note for the sake of data integrity you cannot edit a template after creation.
+        </p-panel>
+      }
+      <br/>
       <table cellspacing="5" cellpading="0" class="template-table">
         @if (actOn) {
           <tr>
@@ -124,6 +128,11 @@
           <riw-template-dropdown [(selectedTemplateName)]="actOnName"
                                  (selectedTemplateNameChange)="genericTemplateChanged($event); favoriteTargetChanged();"
                                  [hideControls]="true" />
+          @if (templateService.hasFavorite()) {
+            &nbsp;
+            <p-button (onClick)="templateService.clearFavorite()" icon="pi pi-heart" label="Clear Current Favorite" severity="danger" [tabindex]="-1"
+                      [pTooltip]="'Favorite: ' + templateService.favorite?.name" />
+          }
         </div>
         @if (actOn) {
           <div class="section" style="padding-bottom: 15px;">
@@ -183,6 +192,7 @@
               [label]="getSubmitLabel()"
               [severity]="getSubmitSeverity()"
               [icon]="'pi ' + getSubmitIcon()"
+              class="template-submit-button"
               iconPos="left"/>
     <p-confirmPopup />
   </ng-template>

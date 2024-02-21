@@ -16,11 +16,11 @@
 
 @if (!hideControls) {
   &nbsp;
-  <p-button (onClick)="requestCreateTemplate()" icon="pi pi-calendar-plus" [rounded]="true" severity="success" pTooltip="Create a new Template" />
+  <p-button (onClick)="requestCreateTemplate()" icon="pi pi-calendar-plus" [rounded]="true" severity="success" pTooltip="Create a new Template" [tabindex]="-1" />
   @if (selectedTemplateName && !getSelectedTemplate()?.isDefault) {
     &nbsp;
     @if (!!getSelectedTemplate()) {
-      <p-button (onClick)="requestDeleteTemplate()" icon="pi pi-calendar-times" [rounded]="true" severity="danger" pTooltip="Delete this Template" />
+      <p-button (onClick)="requestDeleteTemplate()" icon="pi pi-calendar-times" [rounded]="true" severity="danger" pTooltip="Delete this Template" [tabindex]="-1" />
     }
   }
 }

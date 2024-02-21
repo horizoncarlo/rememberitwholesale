@@ -1,4 +1,5 @@
-import { Component, EventEmitter, Output } from '@angular/core';
+import { Component, EventEmitter, Output, ViewChild } from '@angular/core';
+import { Dialog } from 'primeng/dialog';
 import { UserSettings } from '../model/user-settings';
 import { AuthService } from '../service/auth.service';
 import { StorageService } from '../service/storage.service';
@@ -11,6 +12,7 @@ import { Utility } from '../util/utility';
   styleUrls: ['./user-profile-dialog.component.css']
 })
 export class UserProfileDialogComponent {
+  @ViewChild('userProfileDialog') userProfileDialog!: Dialog;
   @Output() onDialChanged = new EventEmitter<boolean>();
   isShowing: boolean = false;
   settings: UserSettings = new UserSettings();
@@ -22,6 +24,10 @@ export class UserProfileDialogComponent {
               private userService: UserService) { }
   
   show(): void {
+    if (Utility.isMobileSize()) {
+      this.userProfileDialog.maximized = true;
+    }
+    
     // Refresh our settings from our most recent actual object
     // Note we don't directly use our settings since we want to have the option to Cancel/Save
     //  whereas the user settings auto-save on change

@@ -1,32 +1,16 @@
 # TODO
-- BUG: Create new Thing, close dialog right away, create another one - the Template dropdown is empty
-- BUG: Editing a Thing that was made from a Template that defaults to Reminder=true sets the checkbox as true, even if the Thing itself wasn't marked as a Reminder. So template is overwriting
 - BUG: No multi-tab or browser support - the autologin works properly from storage, but we get a new token and that invalidates the old one. Most noticeable being on the desktop then hopping to the phone and back
   - Cheap fix is just refresh the page when regaining focus
-- BUG: Broken spacing for reminder panels, blank space between type & comma, extra spaces all around?
-- Put Name above Template when creating a Thing - more natural to tab through
-  - Also clean up tab order (skip Create New Template green circle and delete red circle, and autocomplete dropdown arrow)
 - Postpone an overdue reminder to the same time next day at a button press
   - Would be on each reminder panel, and on Edit?
-- Have a way to delete/remove a Favorite
-- Remember chosen sort as a user setting?
-- On mobile: maximize user profile, add new thing (and edit thing), add new template
-- Cleanup backend async calls:
- return this.http
-   .post(authUrl + 'some/endpoint', data)
-   .pipe(
-     map((res) => {
-       // can do something else here, but still return an observable
-     }
-   ));
-
+- Rich text / basic HTML editor/formatter for Thing? Or just Markdown?
 - Drag and drop to re-order custom fields when making a Template
+- Don't inject so many services, put them in the constructors instead
 
 - Reports with custom queries to generate, as well as charts (could be using ChartModule from PrimeNG)
   - Definitely just start with basic queries to get data and numbers, since we'll be using that for charts so having the text first is valuable and simpler
 
-- "Demo mode" (once we have user login) that lets you explore the app without changing data, with a free/auto account, and a bunch of default stuff
-  - When logging in as demo auto-copy/create preset files and data, and destroy them on logout? Or could swap Storage Service for this case?
+- Finish Demo account data
 
 - Try signals and NgRx data store for sharing between parts of app using Ang 17
 - Do a proper pass and componentize any elements that need it

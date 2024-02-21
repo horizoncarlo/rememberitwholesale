@@ -19,6 +19,7 @@ export class ThingService {
   reminders: Thing[] = [];
   remindersOverdue: Thing[] = []; // Reminders that are a day or less old
   remindersCleanup: any[] = []; // List of setTimeout references for tracking and clearing
+  shownReminders: string[] = []; // List of recently overdue reminders we've shown, to prevent spamming the user
   backend: StorageService = inject(StorageService);
   userService: UserService = inject(UserService);
   
@@ -175,7 +176,10 @@ export class ThingService {
         else {
           if (this.isOverdueReminder(toReturn)) {
             // If we JUST missed the reminder notify with a toast and option to complete on the screen
-            if (toReturn.hasFreshOverdueReminder()) {
+            if (toReturn.hasFreshOverdueReminder() &&
+                this.shownReminders.indexOf(toReturn.id) === -1) {
+              this.shownReminders.push(toReturn.id);
+              
               const _this = this;
               Utility.showReminderOverdue(toReturn, () => {
                 _this.completeReminder(toReturn);

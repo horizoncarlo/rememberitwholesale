@@ -1,4 +1,4 @@
 export const environment = {
   production: true,
-  baseUrl: 'http://riw.homelinux.com:4333/'
+  baseUrl: 'http://riw.us.to:4333/'
 };

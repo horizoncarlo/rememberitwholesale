@@ -99,7 +99,7 @@ export class StorageService {
     return this.http.get(this.makeUrl('templates/favorite'));
   }
   
-  submitFavoriteTemplate(body: TemplateFavorite): Observable<any> {
+  submitFavoriteTemplate(body: TemplateFavorite | null): Observable<any> {
     return this.http.post(this.makeUrl('templates/favorite'), body, this.defaultHeaders);
   }
   

@@ -143,6 +143,21 @@ export class TemplateService  {
     }).add(() => this.loading = false);
   }
   
+  clearFavorite(): void {
+    this.loading = true;
+    this.backend.submitFavoriteTemplate(null).subscribe({
+      next: () => {
+        delete this.favorite;
+      },
+      error: err => {
+        Utility.showError('Failed to clear your Favorite Template');
+        console.error(err);
+      }
+    }).add(() => {
+      this.loading = false;
+    });
+  }
+  
   saveFavorite(toAdd: TemplateFavorite): void {
     if (toAdd && toAdd.isValid()) {
       toAdd.prepareForSave();

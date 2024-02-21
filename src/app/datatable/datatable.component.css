@@ -28,14 +28,13 @@
 
 .thing-table {
   min-width: 50rem;
-  --name-col-width: 350px;
-  --time-col-width: 250px;
   --updated-col-width: 80px;
-  --type-col-width: 300px;
-  --name-col-width: 350px;
+  --name-col-width: 300px;
+  --type-col-width: 250px;
+  --time-col-width: auto;
 }
 
-.name-col, .time-col, .type-col {
+.name-col, .type-col {
   min-width: 250px;
 }
 
@@ -45,6 +44,12 @@
 
 .time-col {
   width: var(--time-col-width);
+  min-width: 200px;
+}
+
+.time-col-td {
+  font-variant-numeric: tabular-nums; /* Behave as much as possible like a fixed width font...without being one */
+  text-align: center;
 }
 
 .updated-col {
@@ -75,7 +80,7 @@
 .fields-scroller {
   max-height: 150px;
   overflow: auto;
-  
+  white-space: pre-wrap; /* Maintain our \n and \t from textarea output */
 }
 
 .no-things-wrap {
@@ -183,6 +188,19 @@
   border-left: 1px solid white;
   border-top-left-radius: 5px;
   z-index: 10;
+}
+
+@media (max-width: 850px) { /* var(--mobile-breakpoint) equivalent, just can't use in media queries */
+  /* Remove set widths on columns to squish more in */
+  .thing-table {
+    --name-col-width: auto;
+    --type-col-width: auto;
+  }
+  
+  /* Smaller min-width to save space on mobile */
+  .name-col, .type-col {
+    min-width: 50px;
+  }
 }
 
 @media (max-width: 1200px) { /* Shrink the Search Things input */

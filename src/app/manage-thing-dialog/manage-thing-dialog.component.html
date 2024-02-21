@@ -68,7 +68,8 @@
               <input [id]="field.property" pInputText [type]="field.type" [required]="field.required || false" [(ngModel)]="field.value"/>
             }
             @else if (field.type === fieldTypes.Textarea) {
-              <textarea [id]="field.property" rows="3" pInputTextarea [(ngModel)]="field.value" [required]="field.required || false"></textarea>
+              <textarea [id]="field.property" [rows]="3" [autoResize]="true" pInputTextarea
+                        [(ngModel)]="field.value" [required]="field.required || false" class="our-textarea"></textarea>
             }
             @else if (field.type === fieldTypes.Radio) {
               <div [id]="field.property">

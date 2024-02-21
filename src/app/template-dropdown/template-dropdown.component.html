@@ -15,7 +15,12 @@
 </p-autoComplete>
 
 @if (!hideControls) {
-  &nbsp;
+  @if (isMobileSize()) {
+    <br/>
+  }
+  @else {
+    &nbsp;
+  }
   <p-button (onClick)="requestCreateTemplate()" icon="pi pi-calendar-plus" [rounded]="true" severity="success" pTooltip="Create a new Template" [tabindex]="-1" />
   @if (selectedTemplateName && !getSelectedTemplate()?.isDefault) {
     &nbsp;

@@ -111,7 +111,8 @@ p-columnfilterformelement .p-inputtext {
 
 /* Size our various inputs to a consistent minimum width */
 .consistent-field .p-dropdown,
-.consistent-field .p-calendar input {
+.consistent-field .p-calendar input,
+.consistent-field .p-autocomplete input {
   width: var(--standard-field-width);
 }
 

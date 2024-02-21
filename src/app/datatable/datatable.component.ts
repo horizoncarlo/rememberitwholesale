@@ -1,4 +1,4 @@
-import { Component, OnDestroy, OnInit, ViewChild, inject } from '@angular/core';
+import { Component, OnDestroy, OnInit, ViewChild } from '@angular/core';
 import { addHours, formatDistanceToNow } from 'date-fns';
 import { Confirmation, ConfirmationService, MenuItem, PrimeNGConfig, SortEvent } from 'primeng/api';
 import { Table } from 'primeng/table';
@@ -29,9 +29,7 @@ export class DatatableComponent implements OnInit, OnDestroy {
   @ViewChild('globalSearch') globalSearchDialog!: GlobalSearchDialogComponent;
   @ViewChild('userProfile') userProfileDialog!: UserProfileDialogComponent;
   @ViewChild('speedDial') speedDial!: any;
-  things: ThingService = inject(ThingService);
-  templateService: TemplateService = inject(TemplateService);
-  userService: UserService = inject(UserService);
+  
   fieldTypes = TemplateField.TYPES;
   selectedRows: Thing[] = [];
   showFilters: boolean = false;
@@ -56,9 +54,12 @@ export class DatatableComponent implements OnInit, OnDestroy {
     { value: -1, label: 'All Time (may be slow)'},
   ];
   
-  constructor(public authService: AuthService,
-              private primengConfig: PrimeNGConfig,
-              private confirmationService: ConfirmationService) { }
+  constructor(private primengConfig: PrimeNGConfig,
+              private confirmationService: ConfirmationService,
+              public authService: AuthService,
+              public things: ThingService,
+              public templateService: TemplateService,
+              public userService: UserService) { }
   
   ngOnInit(): void {
     // Right on initial render determine if we should use the dial, to prevent flicker

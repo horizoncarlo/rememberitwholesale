@@ -81,12 +81,12 @@
   <ng-template pTemplate="header">
     <tr>
       <th pSortableColumn="updated" class="updated-col center" pTooltip="Last Updated">
-        <p-sortIcon field="updated" class="updated-col-sort"/>
-      </th>
-      <th pSortableColumn="name" class="name-col">
         @if (useDial) {
           <span class="pi pi-refresh header-refresh" (click)="refreshThings()" pTooltip="Refresh">&nbsp;</span>
         }
+        <p-sortIcon field="updated" class="updated-col-sort"/>
+      </th>
+      <th pSortableColumn="name" class="name-col">
         {{ getNameColumnHeader() }} <p-sortIcon field="name" />
       </th>
       <th pSortableColumn="templateType" class="type-col">Type <p-sortIcon field="templateType" /></th>
@@ -151,12 +151,12 @@
       <td>
         <span [style]="'color:' + data.color">{{ data.templateType }}</span>
       </td>
-      <td class="center">
+      <td class="time-col-td">
         <span [style]="'color:' + data.color">
           @if (data.hasFutureReminder() || things.isOverdueReminder(data)) {
             <span class="pi pi-clock" pTooltip="Thing is a Reminder"></span>&nbsp;
           }
-          {{ data.time | date: 'MMM dd &rsquo;yy \'at\' hh:mm a' }}
+          {{ data.time | date: 'MMM dd/yy hh:mm a' }}
         </span>
       </td>
       <td colspan="3">
@@ -222,7 +222,7 @@
                    (keyup.enter)="templateService.favorite.hasOneField() && favoriteConfirmDialog.accept()"/>
           }
           @else if (field.type === fieldTypes.Textarea) {
-            <textarea [id]="field.property" rows="3" pInputTextarea [(ngModel)]="field.value" [required]="field.required || false"></textarea>
+            <textarea [id]="field.property" rows="3" [autoResize]="true" pInputTextarea [(ngModel)]="field.value" [required]="field.required || false" class="our-textarea"></textarea>
           }
           @else if (field.type === fieldTypes.Radio) {
             <div [id]="field.property">

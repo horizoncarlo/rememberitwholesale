@@ -1,11 +1,12 @@
 # TODO
 - BUG: No multi-tab or browser support - the autologin works properly from storage, but we get a new token and that invalidates the old one. Most noticeable being on the desktop then hopping to the phone and back
   - Cheap fix is just refresh the page when regaining focus
+- Maybe don't autofocus inputs on mobile, at least on first one
+- Highlight row after adding or editing?
 - Postpone an overdue reminder to the same time next day at a button press
   - Would be on each reminder panel, and on Edit?
 - Rich text / basic HTML editor/formatter for Thing? Or just Markdown?
 - Drag and drop to re-order custom fields when making a Template
-- Don't inject so many services, put them in the constructors instead
 
 - Reports with custom queries to generate, as well as charts (could be using ChartModule from PrimeNG)
   - Definitely just start with basic queries to get data and numbers, since we'll be using that for charts so having the text first is valuable and simpler

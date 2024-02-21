@@ -111,6 +111,11 @@ html {
   max-width: var(--standard-field-width);
 }
 
+.our-textarea {
+  width: 95% !important;
+  max-height: 30vh;
+}
+
 @media (max-width: 850px) { /* var(--mobile-breakpoint) equivalent, just can't use in media queries */
   :root {
     --standard-field-width: 175px;
@@ -123,5 +128,9 @@ html {
   .desktop-fleft,
   .desktop-fright {
     float: none;
+  }
+  
+  .our-textarea {
+    width: calc(95vw - 100px) !important;
   }
 }

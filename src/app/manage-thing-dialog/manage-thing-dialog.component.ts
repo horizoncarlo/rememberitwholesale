@@ -94,8 +94,9 @@ export class ManageThingDialogComponent {
       this.selectedTemplate = Template.cloneFrom(this.selectedTemplate);
       
       // Apply any saved fields to our template
-      // Of course only for editing
-      if (this.isEdit() && this.actOn.fields) {
+      // Of course only for editing, and only if the template hasn't changed
+      if (this.isEdit() && Utility.hasItems(this.actOn.fields) &&
+          this.actOn.templateType === this.selectedTemplate.name) {
         this.selectedTemplate.fields = this.actOn.fields;
       }
       // Otherwise reset our fields
@@ -105,7 +106,7 @@ export class ManageThingDialogComponent {
       
       // Apply our initial reminder state if we have it
       // Note if we've manually set reminder, we won't overwrite that
-      if (this.type !== 'edit' && !this.actOn.reminder) {
+      if (this.isEdit() && !this.actOn.reminder) {
         this.actOn.reminder = this.selectedTemplate.initialReminder;
       }
     }

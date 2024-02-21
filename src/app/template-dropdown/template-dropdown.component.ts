@@ -70,4 +70,8 @@ export class TemplateDropdownComponent implements OnInit {
   requestDeleteTemplate(): void {
     this.manageTemplateEvent.emit({ type: 'delete', actOn: this.getSelectedTemplate() });
   }  
+  
+  isMobileSize(): boolean {
+    return Utility.isMobileSize();
+  }
 }

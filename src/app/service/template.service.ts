@@ -1,4 +1,4 @@
-import { Injectable, inject } from '@angular/core';
+import { Injectable } from '@angular/core';
 import { Observable, catchError, map } from 'rxjs';
 import { Template } from '../model/template';
 import { TemplateFavorite } from '../model/template-favorite';
@@ -10,14 +10,13 @@ import { ThingService } from './thing.service';
   providedIn: 'root'
 })
 export class TemplateService  {
-  things: ThingService = inject(ThingService);
   loading: boolean = false;
   data: Template[] = [];
   hasCached: boolean = false; // After our first fetch, we cache our `data`, and internally manage it and re-fetch when needed
   favorite?: TemplateFavorite;
-  backend: StorageService = inject(StorageService);
   
-  constructor() {
+  constructor(public things: ThingService,
+              public backend: StorageService) {
     // Automatically fetch our favorite on load
     this._getFavorite();
   }

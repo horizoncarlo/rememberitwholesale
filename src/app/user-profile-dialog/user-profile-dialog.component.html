@@ -12,7 +12,9 @@
       <p-button (onClick)="changePassword()" label="Change Password" icon="pi pi-shield" iconPost="left" severity="help"/>
     }
     
-    <p-checkbox [(ngModel)]="settings.forceDial" [binary]="true" [label]="getSpeedDialLabel()"/>
+    <p-checkbox [(ngModel)]="settings.forceDial" [binary]="true" [label]="'Use speed dial instead of toolbar' + getDesktopOnlyNote()"/>
+    
+    <p-checkbox [(ngModel)]="settings.maximizeDialogs" [binary]="true" [label]="'Automatically maximize dialogs' + getDesktopOnlyNote()"/>
     
     <p-checkbox [(ngModel)]="settings.paginatorTable" [binary]="true" label="Pagination on the Things table"/>
     

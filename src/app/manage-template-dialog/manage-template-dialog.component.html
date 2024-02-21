@@ -1,7 +1,13 @@
 <p-dialog #manageTemplateDialog header="Manage Templates" [(visible)]="isShowing" [modal]="true" [maximizable]="true" class="manage-template-dialog">
   <div class="content-form">
     <div class="center manage-radio-font">
-      Template:&nbsp;
+      Template:
+      @if (isMobileSize()) {
+        <br/>
+      }
+      @else {
+        &nbsp;
+      }
       <p-radioButton value="create" [(ngModel)]="operation" (onClick)="operationRadioClicked()" inputId="createIn"></p-radioButton>
       <label for="createIn"> Create</label>
       &nbsp;

@@ -2,6 +2,7 @@
 export class UserSettings {
   // TODO Wrap user settings in a signal once migrated to Ang 17 so that any change will auto-persist to the backend, instead of RxJS
   forceDial: boolean = false;
+  maximizeDialogs: boolean = false;
   paginatorTable: boolean = true;
   paginatorRows: number = 50;
   showFilters: boolean = false;
@@ -14,6 +15,7 @@ export class UserSettings {
   
   constructor(options?: {
       forceDial?: boolean,
+      maximizeDialogs?: boolean,
       paginatorTable?: boolean,
       paginatorRows?: number,
       scrollTable?: boolean,
@@ -28,6 +30,7 @@ export class UserSettings {
     
     if (options) {
       this.forceDial = this._assignSetting(options.forceDial, 'boolean', false);
+      this.maximizeDialogs = this._assignSetting(options.maximizeDialogs, 'boolean', false);
       this.paginatorTable = this._assignSetting(options.paginatorTable, 'boolean', true);
       this.paginatorRows = this._assignSetting(options.paginatorRows, 'number', 50);
       this.showFilters = this._assignSetting(options.showFilters, 'boolean', false);

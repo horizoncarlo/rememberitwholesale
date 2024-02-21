@@ -1,4 +1,4 @@
-import { Injectable, inject } from '@angular/core';
+import { Injectable } from '@angular/core';
 import { differenceInMilliseconds, differenceInMinutes, formatDistanceToNow, isAfter, subDays } from 'date-fns';
 import { Template } from '../model/template';
 import { Thing } from '../model/thing';
@@ -20,8 +20,9 @@ export class ThingService {
   remindersOverdue: Thing[] = []; // Reminders that are a day or less old
   remindersCleanup: any[] = []; // List of setTimeout references for tracking and clearing
   shownReminders: string[] = []; // List of recently overdue reminders we've shown, to prevent spamming the user
-  backend: StorageService = inject(StorageService);
-  userService: UserService = inject(UserService);
+  
+  constructor(public backend: StorageService,
+              public userService: UserService) { }
   
   saveThing(toSave: Thing, options?: { silent?: boolean, refreshFromServer?: boolean, onSuccess?: Function }): void {
     if (toSave && toSave.isValid()) {

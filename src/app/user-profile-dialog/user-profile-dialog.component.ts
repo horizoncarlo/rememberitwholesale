@@ -24,7 +24,7 @@ export class UserProfileDialogComponent {
               private userService: UserService) { }
   
   show(): void {
-    if (Utility.isMobileSize()) {
+    if (Utility.isMobileSize() || this.userService.getUser().maximizeDialogs) {
       this.userProfileDialog.maximized = true;
     }
     
@@ -43,12 +43,11 @@ export class UserProfileDialogComponent {
     this.isShowing = false;
   }
   
-  getSpeedDialLabel(): string {
-    let message = 'Use speed dial instead of toolbar';
+  getDesktopOnlyNote(): string {
     if (Utility.isMobileSize()) {
-      message += ' (Desktop only)';
+      return ' (Desktop only)';
     }
-    return message;
+    return '';
   }
   
   getFriendlyUsername(): string {

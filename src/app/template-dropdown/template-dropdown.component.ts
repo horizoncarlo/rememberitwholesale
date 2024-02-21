@@ -1,4 +1,4 @@
-import { Component, EventEmitter, Input, OnInit, Output, inject } from '@angular/core';
+import { Component, EventEmitter, Input, OnInit, Output } from '@angular/core';
 import { AutoCompleteCompleteEvent } from 'primeng/autocomplete';
 import { Template, TemplateEvent } from '../model/template';
 import { TemplateService } from '../service/template.service';
@@ -15,8 +15,9 @@ export class TemplateDropdownComponent implements OnInit {
   @Input() selectedTemplateName: string | null = null;
   @Output() selectedTemplateNameChange = new EventEmitter<string | null>();
   @Output() manageTemplateEvent = new EventEmitter<TemplateEvent>();
-  templateService: TemplateService = inject(TemplateService);
   filteredData: Template[] = [];
+  
+  constructor(public templateService: TemplateService) { }
   
   ngOnInit(): void {
     this.refreshData();

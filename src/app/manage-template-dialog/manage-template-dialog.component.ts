@@ -1,4 +1,4 @@
-import { Component, ViewChild, inject } from '@angular/core';
+import { Component, ViewChild } from '@angular/core';
 import { ConfirmationService } from 'primeng/api';
 import { ColorPicker } from 'primeng/colorpicker';
 import { Dialog } from 'primeng/dialog';
@@ -20,8 +20,6 @@ const DEFAULT_TEMPLATE_NAME = "Basic";
 })
 export class ManageTemplateDialogComponent {
   @ViewChild('manageTemplateDialog') manageTemplateDialog!: Dialog;
-  thingService: ThingService = inject(ThingService);
-  templateService: TemplateService = inject(TemplateService);
   nextFieldIndex: number = 0;
   operation: TemplateEvent['type'] = 'create';
   actOn: Template | null = new Template(DEFAULT_TEMPLATE_NAME);
@@ -50,10 +48,13 @@ export class ManageTemplateDialogComponent {
   ];
   favoriteTimeRange: { value: number, label: string} = this.favoriteTimeOptions[1];
   
-  constructor(private confirmationService: ConfirmationService, public userService: UserService) { }
+  constructor(private confirmationService: ConfirmationService,
+              public userService: UserService,
+              public thingService: ThingService,
+              public templateService: TemplateService) { }
   
   show(event?: any): void {
-    if (Utility.isMobileSize()) {
+    if (Utility.isMobileSize() || this.userService.getUser().maximizeDialogs) {
       this.manageTemplateDialog.maximized = true;
     }
     
@@ -271,5 +272,9 @@ export class ManageTemplateDialogComponent {
         picker.el.nativeElement.querySelector('input')) {
       picker.el.nativeElement.querySelector('input').click();
     }
+  }
+  
+  isMobileSize() {
+    return Utility.isMobileSize();
   }
 }

@@ -1,10 +1,11 @@
-import { Component, EventEmitter, Output, ViewChild, inject } from '@angular/core';
+import { Component, EventEmitter, Output, ViewChild } from '@angular/core';
 import { Dialog } from 'primeng/dialog';
 import { Template, TemplateEvent } from '../model/template';
 import { TemplateField } from '../model/template-field';
 import { Thing } from '../model/thing';
 import { TemplateService } from '../service/template.service';
 import { ThingService } from '../service/thing.service';
+import { UserService } from '../service/user.service';
 import { TemplateDropdownComponent } from '../template-dropdown/template-dropdown.component';
 import { Utility } from '../util/utility';
 
@@ -15,8 +16,6 @@ import { Utility } from '../util/utility';
 })
 export class ManageThingDialogComponent {
   type: 'add' | 'edit' = 'add';
-  things: ThingService = inject(ThingService);
-  templateService: TemplateService = inject(TemplateService);
   actOn: Thing = new Thing('');
   selectedTemplate: Template | null = null;
   selectedTemplateName: string | null = null;
@@ -27,6 +26,10 @@ export class ManageThingDialogComponent {
   @Output() manageTemplateEvent = new EventEmitter<TemplateEvent>();
   @Output() onDelete = new EventEmitter<{ thing: Thing, event: Event }>();
   @Output() onEdit = new EventEmitter<Thing>();
+  
+  constructor(public things: ThingService,
+              public templateService: TemplateService,
+              public userService: UserService) { }
   
   isAdd(): boolean {
     return this.type === 'add';
@@ -58,7 +61,7 @@ export class ManageThingDialogComponent {
   }
   
   show(): void {
-    if (Utility.isMobileSize()) {
+    if (Utility.isMobileSize() || this.userService.getUser().maximizeDialogs) {
       this.manageThingDialog.maximized = true;
     }
     

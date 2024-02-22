@@ -1,5 +1,5 @@
 import { Injectable } from '@angular/core';
-import { differenceInMilliseconds, differenceInMinutes, formatDistanceToNow, isAfter, subDays } from 'date-fns';
+import { addDays, differenceInMilliseconds, differenceInMinutes, formatDistanceToNow, isAfter, subDays } from 'date-fns';
 import { Template } from '../model/template';
 import { Thing } from '../model/thing';
 import { DebugFlags } from '../util/debug-flags';
@@ -151,8 +151,12 @@ export class ThingService {
               const timeoutMs = DebugFlags.DEBUG_FAST_REMINDERS ? 4000 : differenceInMilliseconds(toReturn.time, nowDate);
               const watchTimer = setTimeout(function() {
                 // TODO Better notify on reminder complete - would be cool to do native app notification (vibrate, popup, etc.) to replace my need for a Reminder app. Note we need HTTPS to use JS native Notification
-                Utility.showReminderComplete(toReturn, () => {
+                Utility.showReminderComplete(toReturn,
+                () => {
                   _this.completeReminder(toReturn);
+                },
+                () => {
+                  _this.postponeReminder(toReturn);
                 });
                 
                 if (Utility.hasItems(_this.reminders)) {
@@ -182,8 +186,12 @@ export class ThingService {
               this.shownReminders.push(toReturn.id);
               
               const _this = this;
-              Utility.showReminderOverdue(toReturn, () => {
+              Utility.showReminderOverdue(toReturn,
+              () => {
                 _this.completeReminder(toReturn);
+              },
+              () => {
+                _this.postponeReminder(toReturn);
               });
             }
             
@@ -247,13 +255,25 @@ export class ThingService {
   }
   
   completeReminder(markDone: Thing): void {
-    const removeIndex = this.remindersOverdue.indexOf(markDone);
-    if (removeIndex !== -1) {
-      this.remindersOverdue.splice(removeIndex, 1);
-    }
+    this._removeReminder(markDone);
     
     delete markDone.reminder;
     this.saveThing(markDone, { silent: true });
+  }
+  
+  postponeReminder(toPostpone: Thing): void {
+    this._removeReminder(toPostpone);
+    
+    toPostpone.time = addDays(toPostpone.time as Date, 1);
+    this.saveThing(toPostpone, { silent: true });
+    Utility.showSuccess('Updated Reminder to tomorrow instead');
+  }
+  
+  _removeReminder(toRemove: Thing): void {
+    const removeIndex = this.remindersOverdue.indexOf(toRemove);
+    if (removeIndex !== -1) {
+      this.remindersOverdue.splice(removeIndex, 1);
+    }
   }
   
   countThingsUsingTemplate(toCount: Template, showNotif?: boolean): number {

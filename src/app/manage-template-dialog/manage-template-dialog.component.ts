@@ -1,3 +1,4 @@
+import { CdkDragDrop, moveItemInArray } from '@angular/cdk/drag-drop';
 import { Component, ViewChild } from '@angular/core';
 import { ConfirmationService } from 'primeng/api';
 import { ColorPicker } from 'primeng/colorpicker';
@@ -16,7 +17,7 @@ const DEFAULT_TEMPLATE_NAME = "Basic";
   selector: 'riw-manage-template-dialog',
   templateUrl: './manage-template-dialog.component.html',
   styleUrls: ['./manage-template-dialog.component.css'],
-  providers: [ConfirmationService]
+  providers: [ConfirmationService],
 })
 export class ManageTemplateDialogComponent {
   @ViewChild('manageTemplateDialog') manageTemplateDialog!: Dialog;
@@ -52,6 +53,12 @@ export class ManageTemplateDialogComponent {
               public userService: UserService,
               public thingService: ThingService,
               public templateService: TemplateService) { }
+  
+  dropFieldToReorder(event: CdkDragDrop<string[]>) {
+    if (this.actOn?.fields) {
+      moveItemInArray(this.actOn.fields, event.previousIndex, event.currentIndex);
+    }
+  }
   
   show(event?: any): void {
     if (Utility.isMobileSize() || this.userService.getUser().maximizeDialogs) {
@@ -120,16 +127,22 @@ export class ManageTemplateDialogComponent {
       const propertyID = 'new' + this.nextFieldIndex;
       this.actOn.fields?.push(new TemplateField(propertyID, 'New Field'));
       
-      // Try to focus on our field after it renders
-      // Note we only do this on desktop as it's jarring having the keyboard appear on mobile after pressing a button
-      if (!Utility.isMobileSize()) {
-        setTimeout(() => {
+      setTimeout(() => {
+        // Try to scroll the dialog to the bottom, so the add button is still visible .p-dialog-content
+        const scrollContainer = document.body.querySelector('.p-dialog-content');
+        if (scrollContainer) {
+          scrollContainer.scrollTo(0, scrollContainer.scrollHeight);
+        }
+        
+        // Try to focus on our field after it renders
+        // Note we only do this on desktop as it's jarring having the keyboard appear on mobile after pressing a button
+        if (!Utility.isMobileSize()) {
           const ele = document.getElementById(propertyID);
           if (ele) {
             ele.focus();
           }
-        }, 0);
-      }
+        }
+      }, 0);
     }
   }
   

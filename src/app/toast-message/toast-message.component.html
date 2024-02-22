@@ -7,8 +7,10 @@
     <div class="flex flex-column" style="flex: 1">
       <b>{{message.summary}}</b>
       <p>{{message.detail}}</p>
-      <div>
-        <p-button (onClick)="confirmResponse(message)" icon="pi pi-check" severity="success" label="Mark Complete" />
+      <div style="width: 100vw;">
+        <p-button (onClick)="confirmResponse(message)" icon="pi pi-check" severity="success" label="Mark Complete" pTooltip="Keep the Thing but mark the reminder as complete" />
+        &nbsp;
+        <p-button (onClick)="postponeReminder(message)" icon="pi pi-check" severity="info" label="Postpone" pTooltip="Postpone this reminder until the same time tomorrow" />
       </div>
     </div>
   </ng-template>

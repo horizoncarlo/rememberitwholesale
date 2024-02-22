@@ -17,6 +17,7 @@ import { DragDropModule } from 'primeng/dragdrop';
 import { DropdownModule } from 'primeng/dropdown';
 import { InputTextModule } from 'primeng/inputtext';
 import { InputTextareaModule } from 'primeng/inputtextarea';
+import { OrderListModule } from 'primeng/orderlist';
 import { PanelModule } from 'primeng/panel';
 import { ProgressBarModule } from 'primeng/progressbar';
 import { ProgressSpinnerModule } from 'primeng/progressspinner';
@@ -69,6 +70,7 @@ import { UserProfileDialogComponent } from './user-profile-dialog/user-profile-d
     DropdownModule,
     InputTextModule,
     InputTextareaModule,
+    OrderListModule,
     PanelModule,
     ProgressBarModule,
     ProgressSpinnerModule,

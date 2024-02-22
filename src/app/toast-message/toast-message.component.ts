@@ -52,11 +52,20 @@ export class ToastMessageComponent implements OnInit, OnDestroy {
     this.messageService.clear('reminderComplete');
   }
   
+  postponeReminder(toMark: Message): void {
+    if (toMark.data && toMark.data.postponeCallback &&
+        typeof toMark.data.postponeCallback === 'function') {
+      toMark.data.postponeCallback();
+    }
+    
+    this.clearReminderMessages();
+  }
+  
   confirmResponse(toMark: Message): void {
     // Fire our callback if we have one, and regardless clear the messages
-    if (toMark.data && toMark.data.callback &&
-        typeof toMark.data.callback === 'function') {
-      toMark.data.callback();
+    if (toMark.data && toMark.data.confirmCallback &&
+        typeof toMark.data.confirmCallback === 'function') {
+      toMark.data.confirmCallback();
     }
     
     this.clearReminderMessages();
@@ -89,7 +98,8 @@ export class ToastMessageComponent implements OnInit, OnDestroy {
       
       if (opts.key === 'reminderComplete') {
         opts.data = {
-          callback: eventDetail.confirmCallback
+          confirmCallback: eventDetail.confirmCallback,
+          postponeCallback: eventDetail.postponeCallback
         };
       }
       

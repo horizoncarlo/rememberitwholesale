@@ -153,10 +153,12 @@
       </td>
       <td class="time-col-td">
         <span [style]="'color:' + data.color">
-          @if (data.hasFutureReminder() || things.isOverdueReminder(data)) {
-            <span class="pi pi-clock" pTooltip="Thing is a Reminder"></span>&nbsp;
-          }
           {{ data.time | date: 'MMM dd/yy hh:mm a' }}
+          @if (data.hasFutureReminder() || things.isOverdueReminder(data)) {
+            <div class="center">
+              <span class="pi pi-clock" pTooltip="Thing is a Reminder"></span>
+            </div>
+          }
         </span>
       </td>
       <td colspan="3">

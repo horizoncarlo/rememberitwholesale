@@ -1,6 +1,7 @@
 /* Define some PrimeNG specific variables */
 :root {
   --table-paginator-height: 70px;
+  --bg-primary: #071426;
 }
 
 /* Make our top loading bar narrower, speed it up slightly, and make sure we stay above the toolbar */
@@ -86,7 +87,7 @@ p-columnfilterformelement .p-inputtext {
   height: 90vh;
 }
 .manage-template-dialog .p-dialog {
-  width: 900px; /* Stop the view from jumping when going between template operations */
+  width: 1200px; /* Stop the view from jumping when going between template operations */
 }
 .p-dialog,
 .p-confirm-dialog {

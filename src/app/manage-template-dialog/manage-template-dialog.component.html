@@ -31,21 +31,19 @@
         </p-panel>
       }
       <br/>
-      <table cellspacing="5" cellpading="0" class="template-table">
-        @if (actOn) {
+      @if (actOn) {
+        <table cellspacing="5" cellpading="0" class="template-table">
           <tr>
             <td colspan="5">
               <span class="p-float-label">
                 <input #nameField pInputText [(ngModel)]="actOn.name" (keyup.enter)="submit($event)"
                       (ngModelChange)="createNameChanged()" [autofocus]="true"/>
                 <label>Template Name</label>
-                @if (operation === 'create') {
-                  @if (nameIsDuplicate) {
-                    <span class="red-error subtext">&nbsp;&nbsp;* Name exists already</span>
-                  }
-                  @else {
-                    <span class="green-success subtext">&nbsp;&nbsp;* Name is unique</span>
-                  }
+                @if (nameIsDuplicate) {
+                  <span class="red-error subtext">&nbsp;&nbsp;* Name exists already</span>
+                }
+                @else {
+                  <span class="green-success subtext">&nbsp;&nbsp;* Name is unique</span>
                 }
               </span>
             </td>
@@ -71,56 +69,58 @@
               <p-checkbox [(ngModel)]="actOn.initialReminder" [binary]="true" label="Set initially as a Reminder?" pTooltip="If checked, any Thing created from this Template will default to being a reminder"/>
             </td>
           </tr>
-          @if (actOn.hasFields()) {
-            <tr>
-              <td colspan="5">
-                <hr/>
-              </td>
-            </tr>
-          }
-          @for (field of actOn.fields; track field.property) {
-            <tr>
-              <td>
-                <p-button icon="pi pi-times" severity="danger" size="small" (onClick)="removeField(field)" pTooltip="Remove this field" />
-              </td>
-              <td>
-                <span class="p-float-label">
-                  <input pInputText [id]="field.property" [(ngModel)]="field.property"/>
-                  <label>Property/ID</label>
+        </table>
+        
+        @if (actOn.hasFields()) {
+          <hr/><br/>
+          <div cdkDropList (cdkDropListDropped)="dropFieldToReorder($event)" class="field-list">
+            @for (field of actOn.fields; track field.property) {
+              <div cdkDrag cdkDragLockAxis="y" cdkDragBoundary=".field-list" class="field-row">
+                <span cdkDragHandle>
+                  <span class="pi pi-ellipsis-v drag-handle"></span>
                 </span>
-              </td>
-              <td>
-                <span class="p-float-label">
-                  <input pInputText [(ngModel)]="field.label"/>
-                  <label>Label</label>
+                <span>
+                  <p-button icon="pi pi-times" severity="danger" size="small" (onClick)="removeField(field)" pTooltip="Remove this field" />
                 </span>
-              </td>
-              <td>
-                <label>Type&nbsp;</label>
-                <p-dropdown [options]="typeOptions"
-                            appendTo="body"
-                            [(ngModel)]="field.type"/>
-              </td>
-              <td>
-                <p-checkbox [(ngModel)]="field.required" [binary]="true" label="Is Required?" class="checkbox-label-on-left"/>
-              </td>
-            </tr>
-            @if (field.type === fieldTypes.Radio || field.type === fieldTypes.Dropdown || field.type === fieldTypes.Chooser) {
-              <tr>
-                <td>&nbsp;</td>
-                <td colspan="4">
+                <span>
                   <span class="p-float-label">
-                    <p-chips [(ngModel)]="field.options" [allowDuplicate]="false" [addOnBlur]="true"/>
-                    <label>List of Options</label>
+                    <p-dropdown [options]="typeOptions"
+                                appendTo="body"
+                                [(ngModel)]="field.type"/>
+                    <label>Type</label>
                   </span>
-                  &nbsp;<span class="subtext">Type in a unique option and press Enter to add to the list, or Backspace to remove an item</span>
-                </td>
-              </tr>
+                </span>
+                <span>
+                  <span class="p-float-label short-field">
+                    <input pInputText [id]="field.property" [(ngModel)]="field.property"/>
+                    <label>Property/ID</label>
+                  </span>
+                </span>
+                <span>
+                  <span class="p-float-label">
+                    <input pInputText [(ngModel)]="field.label"/>
+                    <label>Label</label>
+                  </span>
+                </span>
+                <span>
+                  <p-checkbox [(ngModel)]="field.required" [binary]="true" label="Is Required?" class="checkbox-label-on-left"/>
+                </span>
+                @if (field.type === fieldTypes.Radio || field.type === fieldTypes.Dropdown || field.type === fieldTypes.Chooser) {
+                  <div>
+                    <span>&nbsp;</span>
+                    <span colspan="4">
+                      <span class="p-float-label">
+                        <p-chips [(ngModel)]="field.options" [allowDuplicate]="false" [addOnBlur]="true"/>
+                        <label>List of Options</label>
+                      </span>
+                      &nbsp;<span class="subtext">Type in a unique option and press Enter to add to the list, or Backspace to remove an item</span>
+                    </span>
+                  </div>
+                }
+              </div>
             }
-          }
+          </div>
         }
-      </table>
-      @if (operation === 'create') {
         <p-button (onClick)="addField()" icon="pi pi-plus" [rounded]="true" severity="success" pTooltip="Add a new field" />
       }
     }

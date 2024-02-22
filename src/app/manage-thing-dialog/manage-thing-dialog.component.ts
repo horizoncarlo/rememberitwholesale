@@ -109,7 +109,7 @@ export class ManageThingDialogComponent {
       
       // Apply our initial reminder state if we have it
       // Note if we've manually set reminder, we won't overwrite that
-      if (this.isEdit() && !this.actOn.reminder) {
+      if (this.isAdd() && !this.actOn.reminder) {
         this.actOn.reminder = this.selectedTemplate.initialReminder;
       }
     }

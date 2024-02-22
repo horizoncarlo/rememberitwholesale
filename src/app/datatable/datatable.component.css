@@ -49,7 +49,6 @@
 
 .time-col-td {
   font-variant-numeric: tabular-nums; /* Behave as much as possible like a fixed width font...without being one */
-  text-align: center;
 }
 
 .updated-col {

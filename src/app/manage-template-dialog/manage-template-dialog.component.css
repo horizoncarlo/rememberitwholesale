@@ -2,6 +2,10 @@
   margin-top: 10px;
 }
 
+.short-field input {
+  width: 150px;
+}
+
 .template-table tr td {
   padding: 10px 0 10px 0;
 }
@@ -17,4 +21,34 @@
 
 .section {
   padding: 8px 0 8px 0;
+}
+
+.drag-handle {
+  padding: 0 5px 0 5px;
+  cursor: grab;
+}
+
+.field-row {
+  padding: 15px 0 12px 0;
+  display: flex;
+  flex-direction: row;
+  align-items: center;
+  column-gap: 10px;
+}
+
+/* Element that is under the mouse cursor as we drag */
+.cdk-drag-preview {
+  z-index: 1200 !important; /* Above our dialog */
+  background-color: var(--bg-primary);
+  border-radius: var(--border-radius);
+  border: 1px solid var(--primary-color);
+  opacity: 0.9;
+}
+
+/* Element showing where our potential drop will be */
+.cdk-drag-placeholder {
+  opacity: 0.2;
+  cursor: move;
+  box-shadow: 0 0 10px var(--primary-color);
+  border-radius: var(--border-radius);
 }

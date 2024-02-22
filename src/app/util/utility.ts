@@ -31,22 +31,24 @@ export class Utility {
     window.dispatchEvent(new CustomEvent('message-clear-reminders'));
   }
   
-  static showReminderComplete(toMark: Thing, confirmCallback: Function): void {
+  static showReminderComplete(toMark: Thing, confirmCallback: Function, postponeCallback: Function): void {
     this._dispatchGenericShow('message-info', {
       message: toMark.name + ' (' + toMark.templateType + ') is due',
       header: 'Reminder NOW',
       life: 10*1000,
       confirmCallback: confirmCallback,
+      postponeCallback: postponeCallback,
       thingId: toMark.id
     });
   }
   
-  static showReminderOverdue(toMark: Thing, confirmCallback: Function): void {
+  static showReminderOverdue(toMark: Thing, confirmCallback: Function, postponeCallback: Function): void {
     this._dispatchGenericShow('message-success', {
       message: toMark.name + ' (' + toMark.templateType + ') is overdue ' + (toMark.time ? formatDistanceToNow(toMark.time, { addSuffix: true }) : ''),
       header: 'Reminder Overdue',
       life: 8*1000,
       confirmCallback: confirmCallback,
+      postponeCallback: postponeCallback,
       thingId: toMark.id
     });
   }

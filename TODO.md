@@ -33,6 +33,8 @@
 - Have specific utility calls, like "top right spinner on/off", that hide the logic in the loading service itself
 
 ## PRIMENG BUGS
+- An autosizing text area inside a scrollable dialog causes the dialog to jump positions - see the Add Thing dialog with a complicated enough Template
+
 - Would be nice to not have to manually set `tooltipPosition="left"` (or bottom) in cases where the tooltip is smooshed along the right edge. Seems to autocalculate for some but not all
 
 - Table Ctrl+A fails with [rows] defined

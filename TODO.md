@@ -1,6 +1,4 @@
 # TODO
-- BUG: No multi-tab or browser support - the autologin works properly from storage, but we get a new token and that invalidates the old one. Most noticeable being on the desktop then hopping to the phone and back
-  - Cheap fix is just refresh the page when regaining focus
 - Rich text / basic HTML editor/formatter for Thing? Or just Markdown?
 
 - Finish Demo account data

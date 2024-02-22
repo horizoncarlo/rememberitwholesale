@@ -3,7 +3,7 @@ const app = express();
 const cors = require("cors");
 const fs = require("fs");
 const os = require("os");
-const { subMinutes } = require("date-fns");
+const { differenceInMinutes, subMinutes} = require("date-fns");
 const mailjet = require('node-mailjet');
 const config = require('config');
 const crypto = require('crypto');
@@ -731,8 +731,34 @@ app.post("/login", loginLimiter, (req, res) => {
       
       if (userObj.password === passwordHash ||
           userObj.password === req.body.password) {
-        // Generate a new auth token and save it
-        userObj.authToken = generateAuthToken();
+        // Determine if we have an existing session - this would be another tab or browser
+        // In which case we just use our existing auth token to not invalidate the old session
+        // We count "existing" as a last login of 10 minutes or less
+        let generateNew = true;
+        for (let key in auth) {
+          // Check if we found our user
+          if (req.body.username === key &&
+              auth.hasOwnProperty(key)) {
+            const matchingUser = auth[key];
+            
+            // Determine that we're valid
+            if (matchingUser.authToken && matchingUser.lastLogin) {
+              // Check if the timing of our last login is okay, in which case we just use our existing authToken
+              if (differenceInMinutes(new Date(matchingUser.lastLogin), new Date()) <= 10) {
+                log("Existing session found, using same token for", key);
+                generateNew = false;
+                break;
+              }
+            }
+          }
+        }
+        
+        // If requested update our auth token
+        if (generateNew) {
+          userObj.authToken = generateAuthToken();
+        }
+        
+        // Update our login and store the info
         userObj.lastLogin = new Date().toLocaleString();
         saveAuthMemoryToFile();
         

@@ -2,10 +2,6 @@
   margin-top: 10px;
 }
 
-.short-field input {
-  width: 150px;
-}
-
 .template-table tr td {
   padding: 10px 0 10px 0;
 }
@@ -26,6 +22,11 @@
 .drag-handle {
   padding: 0 5px 0 5px;
   cursor: grab;
+}
+
+.option-row {
+  padding-left: 50px;
+  padding-bottom: 12px;
 }
 
 .field-row {

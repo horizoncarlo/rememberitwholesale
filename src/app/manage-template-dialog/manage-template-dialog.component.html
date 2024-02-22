@@ -75,7 +75,8 @@
           <hr/><br/>
           <div cdkDropList (cdkDropListDropped)="dropFieldToReorder($event)" class="field-list">
             @for (field of actOn.fields; track field.property) {
-              <div cdkDrag cdkDragLockAxis="y" cdkDragBoundary=".field-list" class="field-row">
+              <div cdkDrag cdkDragLockAxis="y" cdkDragBoundary=".field-list" class="field-row"
+                   (cdkDragStarted)="dragStarted($event)">
                 <span cdkDragHandle>
                   <span class="pi pi-ellipsis-v drag-handle"></span>
                 </span>
@@ -86,7 +87,8 @@
                   <span class="p-float-label">
                     <p-dropdown [options]="typeOptions"
                                 appendTo="body"
-                                [(ngModel)]="field.type"/>
+                                [(ngModel)]="field.type"
+                                class="short-field"/>
                     <label>Type</label>
                   </span>
                 </span>
@@ -105,19 +107,16 @@
                 <span>
                   <p-checkbox [(ngModel)]="field.required" [binary]="true" label="Is Required?" class="checkbox-label-on-left"/>
                 </span>
-                @if (field.type === fieldTypes.Radio || field.type === fieldTypes.Dropdown || field.type === fieldTypes.Chooser) {
-                  <div>
-                    <span>&nbsp;</span>
-                    <span colspan="4">
-                      <span class="p-float-label">
-                        <p-chips [(ngModel)]="field.options" [allowDuplicate]="false" [addOnBlur]="true"/>
-                        <label>List of Options</label>
-                      </span>
-                      &nbsp;<span class="subtext">Type in a unique option and press Enter to add to the list, or Backspace to remove an item</span>
-                    </span>
-                  </div>
-                }
               </div>
+              @if (field.type === fieldTypes.Radio || field.type === fieldTypes.Dropdown || field.type === fieldTypes.Chooser) {
+                <div class="option-row">
+                  <span class="p-float-label">
+                    <p-chips [(ngModel)]="field.options" [allowDuplicate]="false" [addOnBlur]="true"/>
+                    <label>List of Options</label>
+                  </span>
+                  &nbsp;<span class="subtext">Type in a unique option and press Enter to add to the list, or Backspace to remove an item</span>
+                </div>
+              }
             }
           </div>
         }

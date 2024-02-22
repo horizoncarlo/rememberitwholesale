@@ -120,6 +120,14 @@ p-columnfilterformelement .p-inputtext {
   width: var(--standard-field-width);
 }
 
+/* Also size a shorter version for widths */
+.short-field > .p-dropdown,
+.short-field .p-calendar input,
+.short-field .p-autocomplete input,
+.short-field input {
+  width: 150px;
+}
+
 /* Center our fieldset legend headers */
 .p-fieldset-legend {
   margin-left: auto;
@@ -136,6 +144,15 @@ p-columnfilterformelement .p-inputtext {
   display: none;
 }
 
+/* Wrap a pair of messages to each line */
+.p-message {
+  cursor: pointer;
+  display: inline-block;
+  width: calc(50% - 10px);
+  vertical-align: middle;
+  margin: 5px;
+}
+
 @media (max-width: 850px) { /* var(--mobile-breakpoint) equivalent, just can't use in media queries */
   .hide-on-mobile {
     display: none;
@@ -150,6 +167,11 @@ p-columnfilterformelement .p-inputtext {
   }
   .manage-thing-dialog .p-dialog .p-dialog-content {
     padding: 0;
+  }
+  
+  /* Calculate for margin/padding */
+  .p-message {
+    width: calc(100% - 10px);
   }
   
   /* For spacing considerations hide the text on footer buttons. Icons should be clear enough */

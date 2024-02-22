@@ -1,4 +1,4 @@
-import { CdkDragDrop, moveItemInArray } from '@angular/cdk/drag-drop';
+import { CdkDragDrop, CdkDragStart, moveItemInArray } from '@angular/cdk/drag-drop';
 import { Component, ViewChild } from '@angular/core';
 import { ConfirmationService } from 'primeng/api';
 import { ColorPicker } from 'primeng/colorpicker';
@@ -53,13 +53,7 @@ export class ManageTemplateDialogComponent {
               public userService: UserService,
               public thingService: ThingService,
               public templateService: TemplateService) { }
-  
-  dropFieldToReorder(event: CdkDragDrop<string[]>) {
-    if (this.actOn?.fields) {
-      moveItemInArray(this.actOn.fields, event.previousIndex, event.currentIndex);
-    }
-  }
-  
+              
   show(event?: any): void {
     if (Utility.isMobileSize() || this.userService.getUser().maximizeDialogs) {
       this.manageTemplateDialog.maximized = true;
@@ -284,6 +278,25 @@ export class ManageTemplateDialogComponent {
     if (picker && picker.el && picker.el.nativeElement &&
         picker.el.nativeElement.querySelector('input')) {
       picker.el.nativeElement.querySelector('input').click();
+    }
+  }
+  
+  dragStarted(event: CdkDragStart) {
+    this._toggleOptionsRowVisibility(false);
+  }
+  
+  dropFieldToReorder(event: CdkDragDrop<string[]>) {
+    this._toggleOptionsRowVisibility(true);
+    
+    if (this.actOn?.fields) {
+      moveItemInArray(this.actOn.fields, event.previousIndex, event.currentIndex);
+    }
+  }
+  
+  private _toggleOptionsRowVisibility(isVisible: boolean) {
+    const optionRows = document.querySelectorAll('.option-row');
+    if (optionRows && optionRows.length > 0) {
+      optionRows.forEach((row: Element) => (row as HTMLElement).style.display = (isVisible ? 'block' : 'none'));
     }
   }
   

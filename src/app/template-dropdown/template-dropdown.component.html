@@ -4,6 +4,7 @@
                 appendTo="body"
                 optionLabel="name"
                 [showEmptyMessage]="true"
+                [delay]="0"
                 emptyMessage="> No matches"
                 [suggestions]="filteredData"
                 (completeMethod)="autocompleteData($event)"

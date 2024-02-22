@@ -79,7 +79,6 @@
 .fields-scroller {
   max-height: 150px;
   overflow: auto;
-  white-space: pre-wrap; /* Maintain our \n and \t from textarea output */
 }
 
 .no-things-wrap {
@@ -165,6 +164,10 @@
 
 .favorite-section label {
   padding-right: 10px;
+}
+
+.zoom-in {
+  cursor: zoom-in;
 }
 
 .limit-text {

@@ -1,0 +1,8 @@
+<p-dialog #quickviewDialog [header]="getHeader()" [(visible)]="isShowing" [modal]="true">
+  
+  <span class="keep-fields-format">{{data?.fieldsAsString}}</span>
+  
+  <ng-template pTemplate="footer">
+    <p-button (onClick)="hide()" label="Done" icon="pi pi-check-square" iconPos="left"/>
+  </ng-template>
+</p-dialog>

@@ -8,6 +8,7 @@ import { ManageThingDialogComponent } from '../manage-thing-dialog/manage-thing-
 import { TemplateField } from '../model/template-field';
 import { Thing } from '../model/thing';
 import { UserSettings } from '../model/user-settings';
+import { QuickviewFieldsDialogComponent } from '../quick-view-fields-dialog/quick-view-fields-dialog.component';
 import { AuthService } from '../service/auth.service';
 import { TemplateService } from '../service/template.service';
 import { ThingService } from '../service/thing.service';
@@ -28,6 +29,7 @@ export class DatatableComponent implements OnInit, OnDestroy {
   @ViewChild('manageThing') manageThingDialog!: ManageThingDialogComponent;
   @ViewChild('globalSearch') globalSearchDialog!: GlobalSearchDialogComponent;
   @ViewChild('userProfile') userProfileDialog!: UserProfileDialogComponent;
+  @ViewChild('quickviewFieldsDialog') quickviewFieldsDialog!: QuickviewFieldsDialogComponent;
   @ViewChild('speedDial') speedDial!: any;
   
   fieldTypes = TemplateField.TYPES;
@@ -574,7 +576,7 @@ export class DatatableComponent implements OnInit, OnDestroy {
           
           if (this.manageThingDialog) {
             this.manageThingDialog.hide();
-          }
+            }
         },
       };
       
@@ -594,6 +596,12 @@ export class DatatableComponent implements OnInit, OnDestroy {
     }
     else {
       Utility.showWarn('Select a row to delete');
+    }
+  }
+  
+  quickviewFields(row: Thing, event: any): void {
+    if (Utility.isValidString(row.fieldsAsString)) {
+      this.quickviewFieldsDialog.show(row);
     }
   }
   

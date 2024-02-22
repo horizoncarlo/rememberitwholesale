@@ -116,6 +116,10 @@ html {
   max-height: 30vh;
 }
 
+.keep-fields-format {
+  white-space: pre-wrap; /* Maintain our \n and \t from textarea output */
+}
+
 @media (max-width: 850px) { /* var(--mobile-breakpoint) equivalent, just can't use in media queries */
   :root {
     --standard-field-width: 175px;

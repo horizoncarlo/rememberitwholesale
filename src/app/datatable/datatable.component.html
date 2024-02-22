@@ -161,8 +161,8 @@
           }
         </span>
       </td>
-      <td colspan="3">
-        <div class="fields-scroller">
+      <td colspan="3" (click)="quickviewFields(data, $event)" class="zoom-in">
+        <div class="fields-scroller keep-fields-format">
           {{ data.fieldsAsString }}
         </div>
       </td>
@@ -206,6 +206,7 @@
 <riw-manage-template-dialog #manageTemplate />
 <riw-global-search-dialog #globalSearch [searchFunction]="globalFilterTable.bind(this)"/>
 <riw-user-profile-dialog #userProfile (onDialChanged)="dialChanged($event)"/>
+<riw-quick-view-fields-dialog #quickviewFieldsDialog />
 
 <p-confirmPopup key="inline" />
 <p-confirmDialog key="dialog"/>

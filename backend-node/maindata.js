@@ -76,9 +76,27 @@ const tryDemoLimiter = rateLimiter({
 });
 
 if (process.env.NODE_ENV === 'production') {
-  app.use(cors({
-    origin: 'http://riw.us.to'
-  }));
+  const allowedOrigins = ['riw.us.to'];
+  app.use(
+    cors({
+      origin: (origin, callback) => {
+        log("ORIGIN CHECK", origin);
+        // Allow requests with no origin, like curl or mobile
+        if (!origin) {
+          return callback(null, true);
+        }
+        
+        // Restrict to our list only
+        if (allowedOrigins.indexOf(origin) === -1) {
+          return callback(new Error("Blocked by CORS"), false);
+        }
+        return callback(null, true);
+      }
+    })
+  );
+  // app.use(cors({
+    // origin: 'http://riw.us.to'
+  // }));
 }
 else {
   app.use(cors());
@@ -135,9 +153,13 @@ let checkingExpired = false;
 app.listen(PORT_NUM, () => {
   log("Server running on port " + PORT_NUM);
   
-  // Ensure our initial files are ready
-  readUserFile(GLOBAL_DATA, AUTH_FILE, 'auth', {});
+  afterStart();
 });
+
+function afterStart() {
+  // Ensure our initial files are ready
+  readUserFile(GLOBAL_DATA, AUTH_FILE, 'auth', {});  
+}
 
 function log(message, ...extra) {
   console.log(new Date().toLocaleString() + " - " + message, extra && extra.length > 0 ? extra : '');

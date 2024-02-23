@@ -2,7 +2,6 @@ import { HttpClient } from '@angular/common/http';
 import { Injectable } from '@angular/core';
 import { Router } from '@angular/router';
 import { Observable } from 'rxjs';
-import { environment } from 'src/environments/environment';
 import { Template } from '../model/template';
 import { TemplateFavorite } from '../model/template-favorite';
 import { Thing } from '../model/thing';
@@ -11,7 +10,7 @@ import { UserSettings } from '../model/user-settings';
 import { AuthService } from './auth.service';
 
 // Determine our base URL for all Node interactions
-const BASE_URL = environment.baseUrl || 'http://localhost:4333/';
+const BASE_URL = window.location.protocol + "//" + window.location.hostname + ':4333/';
 
 @Injectable({
   providedIn: 'root'

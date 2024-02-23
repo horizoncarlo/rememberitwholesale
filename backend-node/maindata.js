@@ -75,33 +75,8 @@ const tryDemoLimiter = rateLimiter({
 	legacyHeaders: false,
 });
 
-if (process.env.NODE_ENV === 'production') {
-  const allowedOrigins = ['riw.us.to'];
-  app.use(
-    cors({
-      origin: (origin, callback) => {
-        log("ORIGIN CHECK", origin);
-        // Allow requests with no origin, like curl or mobile
-        if (!origin) {
-          return callback(null, true);
-        }
-        
-        // Restrict to our list only
-        if (allowedOrigins.indexOf(origin) === -1) {
-          return callback(new Error("Blocked by CORS"), false);
-        }
-        return callback(null, true);
-      }
-    })
-  );
-  // app.use(cors({
-    // origin: 'http://riw.us.to'
-  // }));
-}
-else {
-  app.use(cors());
-}
-
+// Setup our middleware
+app.use(cors());
 app.use(globalLimiter);
 app.use(express.json());
 

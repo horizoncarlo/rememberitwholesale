@@ -14,6 +14,7 @@
 - Self signed HTTPS certificate, and try to do native mobile push notifications for reminders?
 - Have an "annual repeat" feature for reminders, likely don't want more granular as we're not intending to be a full scheduling app. Mainly for birthdays
 - Eventually segment data files by year? To prevent giant files of 10k+ records? Then date limit filter could integrate with that (by having like 2021, 2022, etc. instead of "2 years ago")
+- Allow changing of Themes?
 
 ## LOADING
 - Block entire page, header and all, with a spinner in the middle (after a couple seconds, to prevent flashing)

@@ -4,13 +4,12 @@ X- Leading space on Fields on prod
 X- Show current favorite in template dialog?
 X- Update history with add/edit dialog calls, so that Back on mobile keyboard closes the dialog. Or just a way to hook into Back normally?
 X- Hold on row to edit possible? Touch events?
-- Labels to top of field instead on mobile
-- Confirm button to right of last field on mobile, so easier to go with keyboard, no scrolling needed
-- visibilitychange listener to refresh page if on mobile and resuming focus? Not sure if updates are coming through when turning phone off and back on and going to the page
+X- visibilitychange listener to refresh page if on mobile and resuming focus? Not sure if updates are coming through when turning phone off and back on and going to the page
 X- Quick view dialog should have an edit button on it too
 X- When changing template while editing a Thing, if a field ID matches between the two templates, copy our content over (specifically useful for Notes field)
 X- Mousewheel doesn't work in text area in Edit Thing - something with auto-resize? Same with trying to pan on mobile with it
 X- Select text when clicking the Autocomplete dropdown arrow, or the field? Need to make it faster to find the Template you want in template-dropdown
+- Labels to top of Thing input fields (on mobile) instead of to the left where they use too much space
 - Autoparse links in rendered Notes on View
 - Change rendered fields in the quick view dialog to be more spaced out? Put headers and breaklines instead of commas to separate multiple fields?
   - Maybe get fields renderable as HTML/Markdown and then do this?

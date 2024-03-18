@@ -40,6 +40,7 @@ export class DatatableComponent implements OnInit, OnDestroy {
   isDialOpen = false;
   isDraggingDial: boolean = false;
   tableScrollHeight: string = '400px';
+  lastVisibilityRefresh: number = performance.now(); // For mobile we auto-refresh our Things on visibility change, but we still want to throttle it by time
   limitDate: number = 60*24*30; // Limit to 1 month by default
   limitDateOptions: { value: number, label: string }[] = [
     { value: 60, label: '1 hour'},
@@ -69,6 +70,20 @@ export class DatatableComponent implements OnInit, OnDestroy {
     if (DebugFlags.DEBUG_FORCE_USE_DIAL ||
       Utility.isMobileSize()) {
       this.useDial = true;
+    }
+    
+    // Setup a listener for visibility changed to ensure we re-fetch our Things when becoming visible again
+    // Done just on mobile, mainly if our phone screen is blacked out or we're in another app and come back and want fresh data
+    if (Utility.isMobileSize()) {
+      window.addEventListener('visibilitychange', () => {
+        // Throttle to 10 seconds between grabs
+        if (document.visibilityState === 'visible' &&
+            performance.now() - this.lastVisibilityRefresh > 10*1000) {
+          setTimeout(() => { // Let the page settle first before refreshing, to prevent browser flicker on some mobile devices
+            this.refreshThings();
+          });
+        }
+      });
     }
     
     // TODO Simplify and centralize loading (probably a new service), instead of a flag in things/templates/etc.
@@ -125,6 +140,7 @@ export class DatatableComponent implements OnInit, OnDestroy {
   }
   
   refreshThings(): void {
+    this.lastVisibilityRefresh = performance.now();
     this.things.getAllThings(this.limitDate);
   }
   

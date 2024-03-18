@@ -745,7 +745,6 @@ export class DatatableComponent implements OnInit, OnDestroy {
     // Store when our touch started, and the row we targetted
     this.touchEditStart = performance.now();
     this.touchEditRow = data;
-    this.selectedRows = [this.touchEditRow];
     
     // Automatically start our edit after a set amount of time, so the user isn't left guessing if they can release the touch yet
     this.touchEditTimer = setTimeout(() => {

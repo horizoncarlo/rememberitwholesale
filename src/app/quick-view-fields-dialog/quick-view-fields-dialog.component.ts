@@ -1,5 +1,6 @@
-import { Component, ViewChild } from '@angular/core';
+import { Component, HostListener, OnDestroy, ViewChild } from '@angular/core';
 import { Dialog } from 'primeng/dialog';
+import { ManageThingDialogComponent } from '../manage-thing-dialog/manage-thing-dialog.component';
 import { Thing } from '../model/thing';
 import { UserService } from '../service/user.service';
 import { Utility } from '../util/utility';
@@ -9,14 +10,19 @@ import { Utility } from '../util/utility';
   templateUrl: './quick-view-fields-dialog.component.html',
   styleUrl: './quick-view-fields-dialog.component.css'
 })
-export class QuickviewFieldsDialogComponent {
+export class QuickviewFieldsDialogComponent implements OnDestroy {
   // Cast to Dialog instead of this component, so we can set the maximize flag
   @ViewChild('quickviewDialog') quickviewDialog!: Dialog;
   
   data: Thing | undefined;
+  editDialog?: ManageThingDialogComponent;
   isShowing: boolean = false;
   
   constructor(private userService: UserService) { }
+  
+  ngOnDestroy(): void {
+    Utility.commonDialogDestory();
+  }
   
   getHeader(): string {
     if (this.data && this.data.name) {
@@ -33,7 +39,7 @@ export class QuickviewFieldsDialogComponent {
     return 0;
   }
   
-  show(data: Thing): void {
+  show(data: Thing, editDialog: ManageThingDialogComponent): void {
     // Auto maximize if we're on mobile or have the setting
     // Unless of course our incoming data is super small
     if (Utility.isMobileSize() ||
@@ -43,11 +49,21 @@ export class QuickviewFieldsDialogComponent {
     }
     
     this.data = data;
+    this.editDialog = editDialog;
     this.isShowing = true;
+    Utility.commonDialogShow();
   }
   
+  @HostListener('window:popstate', ['$event'])
   hide(): void {
     this.isShowing = false;
+  }
+  
+  edit(): void {
+    if (this.editDialog && this.data) {
+      this.hide();
+      this.editDialog.showEdit([this.data]);
+    }
   }
   
   submit(): void {

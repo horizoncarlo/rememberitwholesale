@@ -6,6 +6,7 @@ export class Utility {
   static LS_AUTH_USERNAME: string = 'authUsername';
   static LS_AUTH_PASSWORD: string = 'authPassword';
   static numberFormatter: Intl.NumberFormat = new Intl.NumberFormat();
+  static tableScrollPos = 0; // Store our table scroll position to revert to after a delete/add/etc.
   
   static showSuccess(message: string, header?: string, sticky?: boolean): void {
     this._dispatchGenericShow('message-success', { message: message, header: header, sticky: sticky });
@@ -132,7 +133,7 @@ export class Utility {
   static isArray(arr: any): boolean {
     return !!(arr && Array.isArray(arr));
   }
-
+  
   static hasItems(arrOrObj: any): boolean {
     return !!(
       (this.isArray(arrOrObj) && arrOrObj.length > 0) ||
@@ -180,6 +181,26 @@ export class Utility {
     return null;
   }
   
+  static saveTableScrollPos(): void {
+    this._handleTableScrollPos(true);
+  }
+  
+  static loadTableScrollPos(): void {
+    this._handleTableScrollPos();
+  }
+  
+  private static _handleTableScrollPos(shouldSaveToVar?: boolean) {
+    const tableEles = document.getElementsByClassName('p-datatable-wrapper');
+    if (this.hasItems(tableEles)) {
+      if (shouldSaveToVar) {
+        this.tableScrollPos = tableEles[0].scrollTop;
+      }
+      else {
+        tableEles[0].scrollTop = this.tableScrollPos;
+      }
+    }
+  }
+  
   static getRandomInt(min: number, max: number): number {
     return Math.floor(Math.random() * (max - min + 1)) + min;
   }
@@ -198,5 +219,21 @@ export class Utility {
   
   static removeLocalStorageItem(key: string): void {
     window.localStorage.removeItem(key);
+  }
+  
+  static commonDialogShow(): void {
+    history.pushState({
+      modalDialog: true,
+      description: 'Extra state step to allow browser back button to close the dialog'
+    }, '');
+  }
+  
+  static commonDialogDestory(): void {
+    // Remove our fake history element when the dialog is closed
+    if (window.history &&
+        window.history.state &&
+        window.history.state.modalDialog) {
+      history.back();
+    }
   }
 }

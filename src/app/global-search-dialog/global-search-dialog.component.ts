@@ -1,4 +1,4 @@
-import { Component, Input, ViewChild } from '@angular/core';
+import { Component, HostListener, Input, OnDestroy, ViewChild } from '@angular/core';
 import { Utility } from '../util/utility';
 
 @Component({
@@ -6,12 +6,16 @@ import { Utility } from '../util/utility';
   templateUrl: './global-search-dialog.component.html',
   styleUrls: ['./global-search-dialog.component.css']
 })
-export class GlobalSearchDialogComponent {
+export class GlobalSearchDialogComponent implements OnDestroy {
   @ViewChild('searchField') searchInput!: any;
   @Input() searchFunction!: Function;
   searchText: string = '';
   resultCount: number | null = null;
   isShowing: boolean = false;
+  
+  ngOnDestroy(): void {
+    Utility.commonDialogDestory();
+  }
   
   async performSearch() {
     this.searchFunction(this.searchText).then((res: number) => {
@@ -37,8 +41,10 @@ export class GlobalSearchDialogComponent {
   
   show(): void {
     this.isShowing = true;
+    Utility.commonDialogShow();
   }
   
+  @HostListener('window:popstate', ['$event'])
   hide(): void {
     Utility.clearMessages(); // Clear any "no results found"
     

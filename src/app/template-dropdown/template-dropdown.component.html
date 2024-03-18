@@ -1,4 +1,5 @@
-<p-autoComplete placeholder="Select a Template"
+<p-autoComplete #ourDropdown
+                placeholder="Select a Template"
                 [(ngModel)]="selectedTemplateName"
                 [dropdown]="true"
                 appendTo="body"
@@ -8,6 +9,8 @@
                 emptyMessage="> No matches"
                 [suggestions]="filteredData"
                 (completeMethod)="autocompleteData($event)"
+                (onDropdownClick)="selectDropdownText()"
+                (click)="selectDropdownText()"
                 (ngModelChange)="selectedTemplateChanged()"
                 class="consistent-field">
   <ng-template let-template pTemplate="item">

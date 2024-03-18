@@ -74,6 +74,11 @@ p-columnfilterformelement .p-inputtext {
   max-width: 750px;
 }
 
+/* Let the auto-resizing text area scroll properly */
+.p-inputtextarea {
+  overflow-y: auto !important;
+}
+
 /* Consistent width on the manage template dialog submit buttons */
 .template-submit-button .p-button {
   width: 230px !important;

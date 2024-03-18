@@ -128,16 +128,19 @@
         <div class="section">
           You can have one Favorite Template at a time, which will pin to the menu<br/>and have some convenience options to make it one-click to submit a Thing.
         </div>
+        @if (templateService.hasFavorite()) {
+        <div class="section">
+          <label>Current Favorite:&nbsp;</label>
+          {{templateService.favorite?.name}}
+          <p-button (onClick)="templateService.clearFavorite()" icon="pi pi-heart" label="Clear" severity="danger" [tabindex]="-1"
+                    [pTooltip]="'Current Favorite: ' + templateService.favorite?.name" />
+        </div>
+        }
         <div class="section">
           <label>Template to Favorite:&nbsp;</label>
           <riw-template-dropdown [(selectedTemplateName)]="actOnName"
                                  (selectedTemplateNameChange)="genericTemplateChanged($event); favoriteTargetChanged();"
                                  [hideControls]="true" />
-          @if (templateService.hasFavorite()) {
-            &nbsp;
-            <p-button (onClick)="templateService.clearFavorite()" icon="pi pi-heart" label="Clear Current Favorite" severity="danger" [tabindex]="-1"
-                      [pTooltip]="'Favorite: ' + templateService.favorite?.name" />
-          }
         </div>
         @if (actOn) {
           <div class="section" style="padding-bottom: 15px;">

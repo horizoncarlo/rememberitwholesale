@@ -1,4 +1,4 @@
-import { Component, EventEmitter, Output, ViewChild } from '@angular/core';
+import { Component, EventEmitter, HostListener, OnDestroy, Output, ViewChild } from '@angular/core';
 import { Dialog } from 'primeng/dialog';
 import { Template, TemplateEvent } from '../model/template';
 import { TemplateField } from '../model/template-field';
@@ -14,7 +14,7 @@ import { Utility } from '../util/utility';
   templateUrl: './manage-thing-dialog.component.html',
   styleUrls: ['./manage-thing-dialog.component.css']
 })
-export class ManageThingDialogComponent {
+export class ManageThingDialogComponent implements OnDestroy {
   type: 'add' | 'edit' = 'add';
   actOn: Thing = new Thing('');
   selectedTemplate: Template | null = null;
@@ -30,6 +30,10 @@ export class ManageThingDialogComponent {
   constructor(public things: ThingService,
               public templateService: TemplateService,
               public userService: UserService) { }
+  
+  ngOnDestroy(): void {
+    Utility.commonDialogDestory();
+  }
   
   isAdd(): boolean {
     return this.type === 'add';
@@ -68,8 +72,10 @@ export class ManageThingDialogComponent {
     this.templateDropdown.refreshData();
     
     this.isShowing = true;
+    Utility.commonDialogShow();
   }
   
+  @HostListener('window:popstate', ['$event'])
   hide(): void {
     this.isShowing = false;
   }
@@ -90,11 +96,12 @@ export class ManageThingDialogComponent {
   
   templateNameChanged(newName: string | null): void {
     this.selectedTemplateName = newName;
-    this.selectedTemplate = this.templateService.getTemplateByName(this.selectedTemplateName);
+    let changedTemplate = this.templateService.getTemplateByName(this.selectedTemplateName);
     
     // Clone if we found a template, so that we can make changes without affecting the actual template
-    if (this.selectedTemplate) {
-      this.selectedTemplate = Template.cloneFrom(this.selectedTemplate);
+    if (changedTemplate) {
+      let oldTemplate = (this.selectedTemplate ? Template.cloneFrom(this.selectedTemplate as Template) : {}) as Template;
+      this.selectedTemplate = Template.cloneFrom(changedTemplate);
       
       // Apply any saved fields to our template
       // Of course only for editing, and only if the template hasn't changed
@@ -111,6 +118,19 @@ export class ManageThingDialogComponent {
       // Note if we've manually set reminder, we won't overwrite that
       if (this.isAdd() && !this.actOn.reminder) {
         this.actOn.reminder = this.selectedTemplate.initialReminder;
+      }
+      
+      // Now after our fields are setup we want to check if our previous template had any matching fields (by property)
+      // Basically if we had something like Notes we want to re-apply the data from that instead of clearing it
+      if (this.selectedTemplate && this.selectedTemplate.fields &&
+          oldTemplate && oldTemplate.fields) {
+        for (let i = 0; i < this.selectedTemplate.fields?.length; i++) {
+          for (let j = 0; j < oldTemplate.fields.length; j++) {
+            if (this.selectedTemplate.fields[i].property === oldTemplate.fields[j].property) {
+              this.selectedTemplate.fields[i].value = oldTemplate.fields[j].value;
+            }
+          }
+        }
       }
     }
   }

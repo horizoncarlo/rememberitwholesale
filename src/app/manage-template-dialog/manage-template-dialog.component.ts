@@ -1,5 +1,5 @@
 import { CdkDragDrop, CdkDragStart, moveItemInArray } from '@angular/cdk/drag-drop';
-import { Component, ViewChild } from '@angular/core';
+import { Component, HostListener, OnDestroy, ViewChild } from '@angular/core';
 import { ConfirmationService } from 'primeng/api';
 import { ColorPicker } from 'primeng/colorpicker';
 import { Dialog } from 'primeng/dialog';
@@ -19,7 +19,7 @@ const DEFAULT_TEMPLATE_NAME = "Basic";
   styleUrls: ['./manage-template-dialog.component.css'],
   providers: [ConfirmationService],
 })
-export class ManageTemplateDialogComponent {
+export class ManageTemplateDialogComponent implements OnDestroy {
   @ViewChild('manageTemplateDialog') manageTemplateDialog!: Dialog;
   nextFieldIndex: number = 0;
   operation: TemplateEvent['type'] = 'create';
@@ -53,6 +53,10 @@ export class ManageTemplateDialogComponent {
               public userService: UserService,
               public thingService: ThingService,
               public templateService: TemplateService) { }
+  
+  ngOnDestroy(): void {
+    Utility.commonDialogDestory();
+  }
               
   show(event?: any): void {
     if (Utility.isMobileSize() || this.userService.getUser().maximizeDialogs) {
@@ -77,7 +81,7 @@ export class ManageTemplateDialogComponent {
           if (this.actOn) { // Minor annoyance with TS even though we checked this already
             this.actOnName = this.actOn?.name;
           }
-        },0);
+        });
       }
     }
     else {
@@ -88,8 +92,10 @@ export class ManageTemplateDialogComponent {
     this.nextFieldIndex = 0; // Reset our index on hide
     this.createNameChanged(true); // Do an initial name change to check for uniqueness (without debounce)
     this.isShowing = true;
+    Utility.commonDialogShow();
   }
   
+  @HostListener('window:popstate', ['$event'])
   hide(): void {
     this.isShowing = false;
   }
@@ -136,7 +142,7 @@ export class ManageTemplateDialogComponent {
             ele.focus();
           }
         }
-      }, 0);
+      });
     }
   }
   

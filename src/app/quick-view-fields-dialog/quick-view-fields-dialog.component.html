@@ -3,6 +3,7 @@
   <span class="keep-fields-format">{{data?.fieldsAsString}}</span>
   
   <ng-template pTemplate="footer">
-    <p-button (onClick)="hide()" label="Done" icon="pi pi-check-square" iconPos="left"/>
+    <p-button (onClick)="edit()" label="Edit" icon="pi pi-pencil" iconPos="left"/>
+    <p-button (onClick)="hide()" label="Close" icon="pi pi-check-square" iconPos="left"/>
   </ng-template>
 </p-dialog>

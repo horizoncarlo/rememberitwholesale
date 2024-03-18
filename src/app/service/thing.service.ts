@@ -24,6 +24,16 @@ export class ThingService {
   constructor(public backend: StorageService,
               public userService: UserService) { }
   
+  markLoading() {
+    this.loading = true;
+    Utility.saveTableScrollPos();
+  }
+  
+  doneLoading() {
+    this.loading = false;
+    Utility.loadTableScrollPos();
+  }
+  
   saveThing(toSave: Thing, options?: { silent?: boolean, refreshFromServer?: boolean, onSuccess?: Function }): void {
     if (toSave && toSave.isValid()) {
       toSave.prepareForSave();
@@ -35,7 +45,7 @@ export class ThingService {
     
     console.log("Going to save Thing", toSave);
     
-    this.loading = true;
+    this.markLoading();
     this.backend.submitThing(toSave).subscribe({
       next: res => {
         if (!options?.silent) {
@@ -67,7 +77,7 @@ export class ThingService {
         Utility.showError('Failed to save your Thing');
         console.error(err);
       }
-    }).add(() => this.loading = false);
+    }).add(() => this.doneLoading());
   }
   
   getExistingThing(toCheck: Thing): Thing | undefined {
@@ -79,7 +89,7 @@ export class ThingService {
   }
   
   deleteThings(toDelete: Thing[], options?: { refreshFromServer?: boolean }): void {
-    this.loading = true;
+    this.markLoading();
     this.backend.deleteThings(toDelete.map(thing => thing.id)).subscribe({
       next: res => {
         Utility.showSuccess("Successfully deleted " + toDelete.length + " Thing" + Utility.plural(toDelete));
@@ -110,11 +120,11 @@ export class ThingService {
         Utility.showSuccess("Failed to delete " + toDelete.length + " Thing" + Utility.plural(toDelete));
         console.error(err);
       }
-    }).add(() => this.loading = false);
+    }).add(() => this.doneLoading());
   }
   
   preGetAllThings(): void {
-    this.loading = true;
+    this.markLoading();
     this.reminders = [];
     this.remindersOverdue = [];
     Utility.clearReminderMessages(); // Remove any old sticky reminder notifications
@@ -218,7 +228,7 @@ export class ThingService {
     
     // Dispatch a resize event in case the rows changed
     Utility.fireWindowResize();
-    setTimeout(() => this.loading = false );
+    setTimeout(() => { this.doneLoading() });
   }
 
   getAllThings(limitDate?: number): void {
@@ -237,7 +247,7 @@ export class ThingService {
         }
       },
       error: err => {
-        this.loading = false;
+        this.doneLoading();
         Utility.showError('Failed to retrieve your Things');
         console.error(err);
       },
@@ -286,8 +296,7 @@ export class ThingService {
   }
   
   loadedAndHasData(): boolean {
-    return !this.loading &&
-           (Utility.hasItems(this.data) || this.thingCount > 0);
+    return Utility.hasItems(this.data) || this.thingCount > 0;
   }
   
   getReminderBadgeCount(): number {

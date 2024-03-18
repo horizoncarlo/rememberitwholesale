@@ -46,7 +46,7 @@ const AUTH_FILE = 'auth.json';
 // Setup express-rate-limit (https://express-rate-limit.mintlify.app/reference/configuration)
 // We want a global limiter for all endpoints, and then a more restrictive one for each public endpoint
 // We separate the public endpoints so that we can independently restrict login vs new account
-const limitModifier = (process.env.NODE_ENV === 'production' ? 1 : 500); // Basically remove the limit on non-prod environments
+const limitModifier = (process.env.NODE_ENV === 'production' ? 1 : 10000); // Basically remove the limit on non-prod environments
 const globalLimiter = rateLimiter({
 	windowMs: 1 * 60 * 1000, // 1 minute
   limit: 50 * limitModifier, // Max of 50 requests across 1 minute

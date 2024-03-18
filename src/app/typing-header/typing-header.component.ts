@@ -47,7 +47,7 @@ export class TypingHeaderComponent implements AfterViewInit, OnDestroy {
           // Wait a bit, then start writing/backspacing the opposite direction, if allowed
           if (this.backspaceEffect) {
             const _this = this;
-            setTimeout(function() {
+            setTimeout(() => {
               _this.currentEffectCount++;
               modifyCountBy *= -1;
               letterCount += modifyCountBy;

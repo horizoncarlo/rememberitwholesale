@@ -1,5 +1,5 @@
-import { Component, EventEmitter, Input, OnInit, Output } from '@angular/core';
-import { AutoCompleteCompleteEvent } from 'primeng/autocomplete';
+import { Component, EventEmitter, Input, OnInit, Output, ViewChild } from '@angular/core';
+import { AutoComplete, AutoCompleteCompleteEvent } from 'primeng/autocomplete';
 import { Template, TemplateEvent } from '../model/template';
 import { TemplateService } from '../service/template.service';
 import { Utility } from '../util/utility';
@@ -15,6 +15,7 @@ export class TemplateDropdownComponent implements OnInit {
   @Input() selectedTemplateName: string | null = null;
   @Output() selectedTemplateNameChange = new EventEmitter<string | null>();
   @Output() manageTemplateEvent = new EventEmitter<TemplateEvent>();
+  @ViewChild('ourDropdown') ourDropdown!: AutoComplete;
   filteredData: Template[] = [];
   
   constructor(public templateService: TemplateService) { }
@@ -29,7 +30,7 @@ export class TemplateDropdownComponent implements OnInit {
       this.templateService.getAllTemplatesObs().subscribe({
         next: () => this.filteredData = this.templateService.getFilteredData(this.hideDefaults)
       });
-    }, 0);
+    });
   }
   
   autocompleteData(event: AutoCompleteCompleteEvent): void {
@@ -41,6 +42,17 @@ export class TemplateDropdownComponent implements OnInit {
     }
     else {
       this.filteredData = this.templateService.getFilteredData(this.hideDefaults);
+    }
+  }
+  
+  selectDropdownText(): void {
+    // Get our autocomplete dropdown and select the input contents, to make it faster to fill in or start typing to search
+    if (this.ourDropdown && this.ourDropdown.el && this.ourDropdown.el.nativeElement) {
+      const childInput = this.ourDropdown.el.nativeElement.querySelector('input');
+      if (childInput) {
+        childInput.focus();
+        childInput.select();
+      }
     }
   }
   

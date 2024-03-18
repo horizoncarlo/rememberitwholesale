@@ -14,7 +14,7 @@ enum TemplateFieldTypes {
 
 export class TemplateField {
   static TYPES = TemplateFieldTypes;
-  property: string = '';
+  property: string = ''; // Basically the `id`
   label?: string = '';
   required?: boolean = false;
   type?: TemplateFieldTypes = TemplateFieldTypes.Text;

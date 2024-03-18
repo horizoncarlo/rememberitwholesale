@@ -1,4 +1,4 @@
-import { Component, EventEmitter, Output, ViewChild } from '@angular/core';
+import { Component, EventEmitter, HostListener, OnDestroy, Output, ViewChild } from '@angular/core';
 import { Dialog } from 'primeng/dialog';
 import { UserSettings } from '../model/user-settings';
 import { AuthService } from '../service/auth.service';
@@ -11,7 +11,7 @@ import { Utility } from '../util/utility';
   templateUrl: './user-profile-dialog.component.html',
   styleUrls: ['./user-profile-dialog.component.css']
 })
-export class UserProfileDialogComponent {
+export class UserProfileDialogComponent implements OnDestroy {
   @ViewChild('userProfileDialog') userProfileDialog!: Dialog;
   @Output() onDialChanged = new EventEmitter<boolean>();
   isShowing: boolean = false;
@@ -22,6 +22,10 @@ export class UserProfileDialogComponent {
   constructor(public authService: AuthService,
               public storageService: StorageService,
               private userService: UserService) { }
+              
+  ngOnDestroy(): void {
+    Utility.commonDialogDestory();
+  }
   
   show(): void {
     if (Utility.isMobileSize() || this.userService.getUser().maximizeDialogs) {
@@ -37,8 +41,10 @@ export class UserProfileDialogComponent {
     this.resetPasswordFields();
     
     this.isShowing = true;
+    Utility.commonDialogShow();
   }
   
+  @HostListener('window:popstate', ['$event'])
   hide(): void {
     this.isShowing = false;
   }

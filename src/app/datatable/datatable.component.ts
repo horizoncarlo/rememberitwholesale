@@ -72,7 +72,7 @@ export class DatatableComponent implements OnInit, OnDestroy {
     }
     
     // TODO Simplify and centralize loading (probably a new service), instead of a flag in things/templates/etc.
-    this.things.loading = true;
+    this.things.markLoading();
     this.userService.setupSettings();
     this.userService.ready$.subscribe({
       next: (isReady) => {
@@ -93,7 +93,7 @@ export class DatatableComponent implements OnInit, OnDestroy {
           this.refreshThings();
         }
         else {
-          this.things.loading = true;
+          this.things.markLoading();
           setTimeout(() => {
             this.refreshThings();
           }, 5000); // Simulate latency if requested
@@ -324,7 +324,7 @@ export class DatatableComponent implements OnInit, OnDestroy {
             retryCount++;
           }
         }
-      }, 0);
+      });
     }
   }
   
@@ -372,7 +372,7 @@ export class DatatableComponent implements OnInit, OnDestroy {
           this.speedDial.el.nativeElement) {
         const ele = this.speedDial.el.nativeElement.querySelector('button');
         if (ele) {
-          setTimeout(() => { ele.click(); }, 0); // Need to finish handling our current event before we try clicking on the underlying element
+          setTimeout(() => ele.click()); // Need to finish handling our current event before we try clicking on the underlying element
         }
       }
       
@@ -416,7 +416,7 @@ export class DatatableComponent implements OnInit, OnDestroy {
       }
       
       this.tableScrollHeight = calcHeight + 'px';
-    }, 0);
+    });
   }
   
   globalFilterTableByEvent(event: Event): void {
@@ -576,7 +576,7 @@ export class DatatableComponent implements OnInit, OnDestroy {
           
           if (this.manageThingDialog) {
             this.manageThingDialog.hide();
-            }
+          }
         },
       };
       
@@ -601,7 +601,7 @@ export class DatatableComponent implements OnInit, OnDestroy {
   
   quickviewFields(row: Thing, event: any): void {
     if (Utility.isValidString(row.fieldsAsString)) {
-      this.quickviewFieldsDialog.show(row);
+      this.quickviewFieldsDialog.show(row, this.manageThingDialog);
     }
   }
   
@@ -632,7 +632,7 @@ export class DatatableComponent implements OnInit, OnDestroy {
         if (favorite.hasFields() && favorite.fields) { // TODO This approach is throughout the app, so we need a way in Typescript to count our "hasFields" (similar Utility.hasItems) as marking the field as valid, so we don't have to double check it
           document.getElementById(favorite.fields[0].property)?.focus();
         }
-      }, 0);
+      });
     }
     else {
       Utility.showWarn('No Favorite Template has been set yet');
@@ -717,6 +717,45 @@ export class DatatableComponent implements OnInit, OnDestroy {
         
         return (event.order || 0) * result;
       });
+    }
+  }
+  
+  // Touch specific behaviour for table rows - we want to allow Editing if a user holds a touch on a row
+  touchEditStart: number = 0;
+  touchEditRow: Thing | null = null;
+  touchEditTimer: any = null;
+  readonly touchToEditMs: number = 1200;
+  rowTouchStart(data: Thing) {
+    // Store when our touch started, and the row we targetted
+    this.touchEditStart = performance.now();
+    this.touchEditRow = data;
+    this.selectedRows = [this.touchEditRow];
+    
+    // Automatically start our edit after a set amount of time, so the user isn't left guessing if they can release the touch yet
+    this.touchEditTimer = setTimeout(() => {
+      if (this.touchEditTimer) {
+        clearTimeout(this.touchEditTimer);
+        this.touchEditTimer = null;
+      }
+      
+      this.rowTouchEnd(data);
+    }, this.touchToEditMs+10);
+  }
+  
+  rowTouchEnd(data: Thing) {
+    // Determine if we have a valid touch state to edit from
+    if (this.touchEditRow && data &&
+        this.touchEditRow === data &&
+        performance.now() - this.touchEditStart > this.touchToEditMs) {
+      this.selectedRows = [this.touchEditRow];
+      this.requestEditSelected();
+    }
+    
+    // Clear our related variables
+    this.touchEditStart = 0;
+    this.touchEditRow = null;
+    if (this.touchEditTimer) {
+      clearTimeout(this.touchEditTimer);
     }
   }
 }

@@ -159,10 +159,6 @@ p-columnfilterformelement .p-inputtext {
 }
 
 @media (max-width: 850px) { /* var(--mobile-breakpoint) equivalent, just can't use in media queries */
-  .hide-on-mobile {
-    display: none;
-  }
-  
   /* Less precious whitespace wasted on content padding on dialogs */
   .p-dialog-content {
     overflow-y: auto;

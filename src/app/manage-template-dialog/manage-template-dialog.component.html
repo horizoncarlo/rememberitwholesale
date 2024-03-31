@@ -35,7 +35,7 @@
         <table cellspacing="5" cellpading="0" class="template-table">
           <tr>
             <td colspan="5">
-              <span class="p-float-label">
+              <p-floatLabel>
                 <input #nameField pInputText [(ngModel)]="actOn.name" (keyup.enter)="submit($event)"
                       (ngModelChange)="createNameChanged()" [autofocus]="true"/>
                 <label>Template Name</label>
@@ -45,12 +45,12 @@
                 @else {
                   <span class="green-success subtext">&nbsp;&nbsp;* Name is unique</span>
                 }
-              </span>
+              </p-floatLabel>
             </td>
           </tr>
           <tr>
             <td colspan="5">
-              <span class="p-float-label">
+              <p-floatLabel>
                 @if (actOn.color === 'inherit') {
                   <input pInputText value="default (click to change)" [style.cursor]="'alias'" readonly (click)="openColorPicker(colorPicker)" />
                 }
@@ -61,7 +61,7 @@
                 &nbsp;
                 <p-colorPicker #colorPicker [(ngModel)]="actOn.color" appendTo="body"/>
                 <p-button icon="pi pi-ban" pTooltip="Reset the color" severity="secondary" size="small" [rounded]="true" [text]="true" (onClick)="resetColor()" />
-              </span>
+              </p-floatLabel>
             </td>
           </tr>
           <tr>
@@ -84,25 +84,25 @@
                   <p-button icon="pi pi-times" severity="danger" size="small" (onClick)="removeField(field)" pTooltip="Remove this field" />
                 </span>
                 <span>
-                  <span class="p-float-label">
+                  <p-floatLabel>
                     <p-dropdown [options]="typeOptions"
                                 appendTo="body"
                                 [(ngModel)]="field.type"
                                 class="short-field"/>
                     <label>Type</label>
-                  </span>
+                  </p-floatLabel>
                 </span>
                 <span>
-                  <span class="p-float-label short-field">
+                  <p-floatLabel class="short-field">
                     <input pInputText [id]="field.property" [(ngModel)]="field.property"/>
                     <label>Property/ID</label>
-                  </span>
+                  </p-floatLabel>
                 </span>
                 <span>
-                  <span class="p-float-label">
+                  <p-floatLabel>
                     <input pInputText [(ngModel)]="field.label"/>
                     <label>Label</label>
-                  </span>
+                  </p-floatLabel>
                 </span>
                 <span>
                   <p-checkbox [(ngModel)]="field.required" [binary]="true" label="Is Required?" class="checkbox-label-on-left"/>
@@ -110,10 +110,10 @@
               </div>
               @if (field.type === fieldTypes.Radio || field.type === fieldTypes.Dropdown || field.type === fieldTypes.Chooser) {
                 <div class="option-row">
-                  <span class="p-float-label">
+                  <p-floatLabel>
                     <p-chips [(ngModel)]="field.options" [allowDuplicate]="false" [addOnBlur]="true"/>
                     <label>List of Options</label>
-                  </span>
+                  </p-floatLabel>
                   &nbsp;<span class="subtext">Type in a unique option and press Enter to add to the list, or Backspace to remove an item</span>
                 </div>
               }

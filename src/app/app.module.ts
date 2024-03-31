@@ -15,6 +15,7 @@ import { ConfirmPopupModule } from 'primeng/confirmpopup';
 import { DialogModule } from 'primeng/dialog';
 import { DragDropModule } from 'primeng/dragdrop';
 import { DropdownModule } from 'primeng/dropdown';
+import { FloatLabelModule } from 'primeng/floatlabel';
 import { InputTextModule } from 'primeng/inputtext';
 import { InputTextareaModule } from 'primeng/inputtextarea';
 import { OrderListModule } from 'primeng/orderlist';
@@ -70,6 +71,7 @@ import { UserProfileDialogComponent } from './user-profile-dialog/user-profile-d
     DialogModule,
     DragDropModule,
     DropdownModule,
+    FloatLabelModule,
     InputTextModule,
     InputTextareaModule,
     OrderListModule,

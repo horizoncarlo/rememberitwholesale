@@ -46,30 +46,30 @@ const AUTH_FILE = 'auth.json';
 // Setup express-rate-limit (https://express-rate-limit.mintlify.app/reference/configuration)
 // We want a global limiter for all endpoints, and then a more restrictive one for each public endpoint
 // We separate the public endpoints so that we can independently restrict login vs new account
-const limitModifier = (process.env.NODE_ENV === 'production' ? 1 : 10000); // Basically remove the limit on non-prod environments
+const limitModifier = (process.env.NODE_ENV === 'production' ? 1 : 100000); // Basically remove the limit on non-prod environments
 const globalLimiter = rateLimiter({
-	windowMs: 1 * 60 * 1000, // 1 minute
+	windowMs: 1 * 60 * 1000 * limitModifier, // 1 minute
   limit: 50 * limitModifier, // Max of 50 requests across 1 minute
 	standardHeaders: false, // Don't return any RateLimit headers
 	legacyHeaders: false, // Don't return any RateLimit headers
 });
 // Login limit: 20 calls per 20 minutes
 const loginLimiter = rateLimiter({
-	windowMs: 20 * 60 * 1000,
+	windowMs: 20 * 60 * 1000 * limitModifier,
 	limit: 20 * limitModifier,
 	standardHeaders: false,
 	legacyHeaders: false,
 });
 // New account limit: 5 calls per 1 hour
 const newAccountLimiter = rateLimiter({
-	windowMs: 60 * 60 * 1000,
+	windowMs: 60 * 60 * 1000 * limitModifier,
 	limit: 5 * limitModifier,
 	standardHeaders: false,
 	legacyHeaders: false,
 });
 // Demo limit: 3 calls per day
 const tryDemoLimiter = rateLimiter({
-	windowMs: 24 * 60 * 60 * 1000,
+	windowMs: 24 * 60 * 60 * 1000 * limitModifier,
 	limit: 3 * limitModifier,
 	standardHeaders: false,
 	legacyHeaders: false,
@@ -693,7 +693,7 @@ app.post("/demo-start", tryDemoLimiter, async (req, res) => {
     
     // Then copy the latest Demo data in, so we have something to show the user
     // We'll do these safely, as one failure shouldn't wreck the demo
-    // TODO QUIDEL PRIORITY - Setup our DEMO_DATA_DIR files with good, realistic, interesting data
+    // TODO PRIORITY - Setup our live DEMO_DATA_DIR files with good, realistic, interesting data
     const baseSrcDir = FILE_DIR + DEMO_DATA_DIR + '/';
     const baseTargetDir = FILE_DIR + demoObj.username + '/';
     try{ fs.copyFileSync(baseSrcDir + THINGS_FILE, baseTargetDir + THINGS_FILE); }catch (ignored) {}

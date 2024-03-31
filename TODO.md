@@ -1,23 +1,8 @@
 # TODO
-X- Remember scroll position between refreshes, such as deleting something far down the list
-X- Leading space on Fields on prod
-X- Show current favorite in template dialog?
-X- Update history with add/edit dialog calls, so that Back on mobile keyboard closes the dialog. Or just a way to hook into Back normally?
-X- Hold on row to edit possible? Touch events?
-X- visibilitychange listener to refresh page if on mobile and resuming focus? Not sure if updates are coming through when turning phone off and back on and going to the page
-X- Quick view dialog should have an edit button on it too
-X- When changing template while editing a Thing, if a field ID matches between the two templates, copy our content over (specifically useful for Notes field)
-X- Mousewheel doesn't work in text area in Edit Thing - something with auto-resize? Same with trying to pan on mobile with it
-X- Select text when clicking the Autocomplete dropdown arrow, or the field? Need to make it faster to find the Template you want in template-dropdown
-- Labels to top of Thing input fields (on mobile) instead of to the left where they use too much space
-- Autoparse links in rendered Notes on View
-- Change rendered fields in the quick view dialog to be more spaced out? Put headers and breaklines instead of commas to separate multiple fields?
-  - Maybe get fields renderable as HTML/Markdown and then do this?
+- * Finish Demo account data
 
-- Rich text / basic HTML editor/formatter for Thing? Or just Markdown?
-
-- Finish Demo account data
-
+- Image and file uploading?
+- Markdown editor as an option for Thing fields
 - Reports with custom queries to generate, as well as charts (could be using ChartModule from PrimeNG)
   - Definitely just start with basic queries to get data and numbers, since we'll be using that for charts so having the text first is valuable and simpler
 
@@ -29,7 +14,6 @@ X- Select text when clicking the Autocomplete dropdown arrow, or the field? Need
 - Self signed HTTPS certificate, and try to do native mobile push notifications for reminders?
 - Have an "annual repeat" feature for reminders, likely don't want more granular as we're not intending to be a full scheduling app. Mainly for birthdays
 - Eventually segment data files by year? To prevent giant files of 10k+ records? Then date limit filter could integrate with that (by having like 2021, 2022, etc. instead of "2 years ago")
-- Allow changing of Themes?
 
 ## LOADING
 - Block entire page, header and all, with a spinner in the middle (after a couple seconds, to prevent flashing)
@@ -50,11 +34,16 @@ X- Select text when clicking the Autocomplete dropdown arrow, or the field? Need
 
 ## PRIMENG BUGS
 - An autosizing text area inside a scrollable dialog causes the dialog to jump positions - see the Add Thing dialog with a complicated enough Template
+  - For example typing in a Notes textarea on a Thing that is long enough to cause the dialog content to scroll - this will make the dialog scroll jump to the top when typing
 
 - Would be nice to not have to manually set `tooltipPosition="left"` (or bottom) in cases where the tooltip is smooshed along the right edge. Seems to autocalculate for some but not all
 
+- Could use <p-iconField and <p-inputIcon from v17.3, but they require an up to date theme to style properly, which means we'd have to drop Lara v16 and go to the washed out v17 version
+  - Likely will end up having to eventually as components are added/changed, but going to try to resist for a while
+
 - Table Ctrl+A fails with [rows] defined
   - **FILED** - https://github.com/primefaces/primeng/issues/14634
+  - Got moved to https://github.com/primefaces/primeng/issues/14700
 
 - Speed Dial has an overlay that extends below the visible button by 44px
   - **FILED** - they marked WONTFIX: https://github.com/primefaces/primeng/issues/14330

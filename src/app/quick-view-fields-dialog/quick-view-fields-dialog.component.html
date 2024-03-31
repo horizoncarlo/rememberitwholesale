@@ -1,6 +1,6 @@
 <p-dialog #quickviewDialog [header]="getHeader()" [(visible)]="isShowing" [modal]="true">
   
-  <span class="keep-fields-format">{{data?.fieldsAsString}}</span>
+  <span class="keep-fields-format" [innerHTML]="data?.fieldsAsString"></span>
   
   <ng-template pTemplate="footer">
     <p-button (onClick)="edit()" label="Edit" icon="pi pi-pencil" iconPos="left"/>

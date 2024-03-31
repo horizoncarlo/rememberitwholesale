@@ -5,15 +5,15 @@
 
     <table cellpadding="10">
       <tr>
-        <td>
+        <td class="hide-on-mobile">
           <label htmlFor="name">Name</label>
         </td>
         <td colspan="2">
-          <input id="name" #nameField pInputText [(ngModel)]="actOn.name" (keyup.enter)="submit()"/>
+            <input id="name" #nameField pInputText [(ngModel)]="actOn.name" (keyup.enter)="submit()" placeholder="Name"/>
         </td>
       </tr>
       <tr>
-        <td>
+        <td class="hide-on-mobile">
           Template
         </td>
         <td colspan="2">
@@ -24,7 +24,7 @@
         </td>
       </tr>
       <tr>
-        <td>
+        <td class="hide-on-mobile">
           <label htmlFor="time">Date</label>
         </td>
         <td>
@@ -59,10 +59,12 @@
       }
       @for (field of selectedTemplate?.fields; track field.property) {
         <tr>
-          <td>
+          <td class="hide-on-mobile">
             <label [htmlFor]="field.property">{{ field.getLabel() }}</label>
           </td>
           <td colspan="2">
+            <label [htmlFor]="field.property" class="field-label hide-on-desktop"><b>{{ field.getLabel() }}</b></label>
+            
             <!-- TODO Do we need any other field types for Things? Photos? Slider? Ongoing/Routine (aka infinite fields so you can keep adding to the same thing without flooding the table) -->
             @if (field.type === fieldTypes.Text || field.type === fieldTypes.Number) {
               <input [id]="field.property" pInputText [type]="field.type" [required]="field.required || false" [(ngModel)]="field.value"/>

@@ -120,9 +120,20 @@ html {
   white-space: pre-wrap; /* Maintain our \n and \t from textarea output */
 }
 
+.hide-on-desktop {
+  display: none;
+}
+
 @media (max-width: 850px) { /* var(--mobile-breakpoint) equivalent, just can't use in media queries */
   :root {
     --standard-field-width: 175px;
+  }
+  
+  .hide-on-mobile {
+    display: none;
+  }
+  .hide-on-desktop {
+    display: unset;
   }
   
   .desktop-inline {
@@ -136,5 +147,9 @@ html {
   
   .our-textarea {
     width: calc(95vw - 100px) !important;
+  }
+  
+  .field-label {
+    display: block;
   }
 }

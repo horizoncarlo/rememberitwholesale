@@ -160,9 +160,45 @@ export class Thing {
   
   private _convertFieldsToString(): string {
     if (this.hasFields()) {
+      // Some tough choices overall on how to display the custom fields in a usable way
       let toReturn: string = this.fields.map((field) => {
-        return field.getLabel() + ' = ' + ((typeof field.value !== 'undefined' && field.value !== null) ? field.value : 'N/A');
-      }).join(', ');
+        if (typeof field.value !== 'undefined' && field.value !== null) {
+          let textLabel = null;
+          // Special case just for Notes, where we don't need a header
+          if (field.label === 'Notes' &&
+              this.fields.length === 1 &&
+              field.type === TemplateField.TYPES.Textarea) {
+            textLabel = '';
+          }
+          else {
+            // If our label ends with a question mark, don't put a colon
+            let suffix = field.label?.endsWith('?') ? ' ' : ': ';
+            
+            // If the field is a text area, use a breakline so it's more like a header
+            let useBreakline = false;
+            if (field.type === TemplateField.TYPES.Textarea) {
+              suffix = '';
+              useBreakline = true;
+            }
+            
+            textLabel = '<b>' + field.getLabel() + '</b>' + suffix +
+                        (useBreakline ? '<br/>' : '');
+          }
+          
+          // Convert our boolean to Yes/No for readability
+          let textValue = field.value + '';
+          if (typeof field.value === 'boolean') {
+            textValue = field.value ? 'Yes' : 'No';
+          }
+          // Check for any links and automatically parse them to clickable versions
+          else {
+            textValue = Utility.anchorUrlsInText(textValue);
+          }
+          
+          return textLabel + textValue;
+        }
+        return null;
+      }).filter(Boolean).join('<br/>'); // Strip empty results and add a breakline
       
       return toReturn;
     }

@@ -162,7 +162,7 @@
         </span>
       </td>
       <td colspan="3" (click)="quickviewFields(data, $event)" class="zoom-in">
-        <div class="fields-scroller keep-fields-format">{{data.fieldsAsString}}</div>
+        <div class="fields-scroller keep-fields-format" [innerHTML]="data.fieldsAsString"></div>
       </td>
     </tr>
   </ng-template>

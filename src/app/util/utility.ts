@@ -236,4 +236,16 @@ export class Utility {
       history.back();
     }
   }
+  
+  /**
+   * Parse any URLs in our text and wrap them in HTML anchor tags and return the result
+   * Note this only counts http: and https: as links, not www. prefixes, so it's somewhat limited
+   * Buy hey, for a one liner it's not too shabby
+   */
+  static anchorUrlsInText(text: string): string {
+    const urlRegex = /(\b(https?):\/\/[-A-Z0-9+&@#\/%?=~_|!:,.;]*[-A-Z0-9+&@#\/%=~_|])/ig;
+    return text.replace(urlRegex, url => {
+      return '<a href="' + url + '" target="_blank">' + url + '</a>';
+    });
+  }
 }

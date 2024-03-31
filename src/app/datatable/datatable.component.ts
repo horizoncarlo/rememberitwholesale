@@ -617,6 +617,13 @@ export class DatatableComponent implements OnInit, OnDestroy {
   
   quickviewFields(row: Thing, event: any): void {
     if (Utility.isValidString(row.fieldsAsString)) {
+      // Special case where if we're clicking a link inside our fields we don't bring up the dialog
+      if (event && event.target && event.target instanceof Element) {
+        if ('A' === (event.target as Element).tagName) {
+          return;
+        }
+      }
+      
       this.quickviewFieldsDialog.show(row, this.manageThingDialog);
     }
   }

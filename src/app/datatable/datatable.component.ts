@@ -79,9 +79,11 @@ export class DatatableComponent implements OnInit, OnDestroy {
         // Throttle to 10 seconds between grabs
         if (document.visibilityState === 'visible' &&
             performance.now() - this.lastVisibilityRefresh > 10*1000) {
-          setTimeout(() => { // Let the page settle first before refreshing, to prevent browser flicker on some mobile devices
-            this.refreshThings();
-          });
+          if (this.authService.getAuth().isLoggedIn) { // Only bother refreshing if logged in
+            setTimeout(() => { // Let the page settle first before refreshing, to prevent browser flicker on some mobile devices
+              this.refreshThings();
+            });
+          }
         }
       });
     }
@@ -616,7 +618,7 @@ export class DatatableComponent implements OnInit, OnDestroy {
   }
   
   quickviewFields(row: Thing, event: any): void {
-    if (Utility.isValidString(row.fieldsAsString)) {
+    if (row.hasFieldsAsString()) {
       // Special case where if we're clicking a link inside our fields we don't bring up the dialog
       if (event && event.target && event.target instanceof Element) {
         if ('A' === (event.target as Element).tagName) {

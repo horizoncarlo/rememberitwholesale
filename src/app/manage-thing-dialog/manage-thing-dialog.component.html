@@ -60,16 +60,24 @@
       @for (field of selectedTemplate?.fields; track field.property) {
         <tr>
           <td class="hide-on-mobile">
-            <label [htmlFor]="field.property">{{ field.getLabel() }}</label>
+            <label [htmlFor]="field.property">
+              {{ field.getLabel() }}
+              @if (field.type === fieldTypes.Markdown) {
+                <div class="md-note">(Markdown)</div>
+              }
+            </label>
           </td>
           <td colspan="2">
-            <label [htmlFor]="field.property" class="field-label hide-on-desktop"><b>{{ field.getLabel() }}</b></label>
+            <label [htmlFor]="field.property" class="field-label hide-on-desktop">
+              <b>{{ field.getLabel() }}</b>
+              <div class="md-note inline">&nbsp;(Markdown)</div>
+            </label>
             
             <!-- TODO Do we need any other field types for Things? Photos? Slider? Ongoing/Routine (aka infinite fields so you can keep adding to the same thing without flooding the table) -->
             @if (field.type === fieldTypes.Text || field.type === fieldTypes.Number) {
               <input [id]="field.property" pInputText [type]="field.type" [required]="field.required || false" [(ngModel)]="field.value"/>
             }
-            @else if (field.type === fieldTypes.Textarea) {
+            @else if (field.type === fieldTypes.Textarea || field.type === fieldTypes.Markdown) {
               <textarea [id]="field.property" [rows]="3" [autoResize]="true" pInputTextarea
                         [(ngModel)]="field.value" [required]="field.required || false" class="our-textarea"></textarea>
             }

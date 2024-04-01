@@ -2,7 +2,6 @@
 - * Finish Demo account data
 
 - Image and file uploading?
-- Markdown editor as an option for Thing fields
 - Reports with custom queries to generate, as well as charts (could be using ChartModule from PrimeNG)
   - Definitely just start with basic queries to get data and numbers, since we'll be using that for charts so having the text first is valuable and simpler
 

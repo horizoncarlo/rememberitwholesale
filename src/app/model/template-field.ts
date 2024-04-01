@@ -3,6 +3,7 @@ import { Utility } from "../util/utility";
 enum TemplateFieldTypes {
   Text = 'text',
   Textarea = 'textarea',
+  Markdown = 'markdown',
   Number = 'number',
   Dropdown = 'dropdown',
   Radio = 'radio',

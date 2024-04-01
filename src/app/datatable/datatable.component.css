@@ -166,8 +166,12 @@
   padding-right: 10px;
 }
 
-.zoom-in {
+.quickview-zoom {
   cursor: zoom-in;
+}
+.quickview-zoom:hover {
+  box-shadow: 0 0 5px inset var(--primary-color);
+  border-radius: 5px;
 }
 
 .limit-text {

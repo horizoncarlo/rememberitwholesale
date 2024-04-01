@@ -47,7 +47,7 @@ export class ManageThingDialogComponent implements OnDestroy {
     this.type = 'add';
     this.actOn = new Thing('');
     const defaultTemplate = this.templateService.getFirstDefaultTemplate();
-    this.templateNameChanged(defaultTemplate ? defaultTemplate.name : null);
+    this.templateNameChanged(defaultTemplate ? defaultTemplate.name : null, { ignoreOldFields: true });
     this.show();
   }
   
@@ -56,7 +56,7 @@ export class ManageThingDialogComponent implements OnDestroy {
       this.type = 'edit';
       this.actOn = Thing.cloneFrom(selectedRows[0]);
       this.selectedTemplateName = this.actOn.templateType;
-      this.templateNameChanged(this.selectedTemplateName);
+      this.templateNameChanged(this.selectedTemplateName, { ignoreOldFields: true });
       this.show();
     }
     else {
@@ -94,7 +94,7 @@ export class ManageThingDialogComponent implements OnDestroy {
     }
   }
   
-  templateNameChanged(newName: string | null): void {
+  templateNameChanged(newName: string | null, params?: { ignoreOldFields?: boolean }): void {
     this.selectedTemplateName = newName;
     let changedTemplate = this.templateService.getTemplateByName(this.selectedTemplateName);
     
@@ -118,6 +118,11 @@ export class ManageThingDialogComponent implements OnDestroy {
       // Note if we've manually set reminder, we won't overwrite that
       if (this.isAdd() && !this.actOn.reminder) {
         this.actOn.reminder = this.selectedTemplate.initialReminder;
+      }
+      
+      // Ignore any old fields if asked to
+      if (params && params.ignoreOldFields) {
+        oldTemplate = {} as Template;
       }
       
       // Now after our fields are setup we want to check if our previous template had any matching fields (by property)

@@ -116,10 +116,6 @@ html {
   max-height: 30vh;
 }
 
-.keep-fields-format {
-  white-space: pre-wrap; /* Maintain our \n and \t from textarea output */
-}
-
 .hide-on-desktop {
   display: none;
 }

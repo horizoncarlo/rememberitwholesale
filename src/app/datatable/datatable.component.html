@@ -161,8 +161,8 @@
           }
         </span>
       </td>
-      <td colspan="3" (click)="quickviewFields(data, $event)" class="zoom-in">
-        <div class="fields-scroller keep-fields-format" [innerHTML]="data.fieldsAsString"></div>
+      <td colspan="3" (click)="quickviewFields(data, $event)" [class]="data.hasFieldsAsString() ? 'quickview-zoom' : ''">
+        <div class="fields-scroller" [innerHTML]="data.fieldsAsString"></div>
       </td>
     </tr>
   </ng-template>
@@ -222,8 +222,9 @@
             <input [id]="field.property" pInputText [type]="field.type" [required]="field.required || false" [(ngModel)]="field.value"
                    (keyup.enter)="templateService.favorite.hasOneField() && favoriteConfirmDialog.accept()"/>
           }
-          @else if (field.type === fieldTypes.Textarea) {
-            <textarea [id]="field.property" rows="3" [autoResize]="true" pInputTextarea [(ngModel)]="field.value" [required]="field.required || false" class="our-textarea"></textarea>
+          @else if (field.type === fieldTypes.Textarea || field.type === fieldTypes.Markdown) {
+            <textarea [id]="field.property" rows="3" [autoResize]="true" pInputTextarea
+                      [(ngModel)]="field.value" [required]="field.required || false" class="our-textarea">MD</textarea>
           }
           @else if (field.type === fieldTypes.Radio) {
             <div [id]="field.property">

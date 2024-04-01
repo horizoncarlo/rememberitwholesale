@@ -1,4 +1,5 @@
 import { addMonths, formatDistanceStrict, isAfter, isBefore, subHours } from 'date-fns';
+import { marked } from 'marked';
 import { v4 as uuidv4 } from 'uuid';
 import { TemplateService } from '../service/template.service';
 import { Utility } from '../util/utility';
@@ -75,6 +76,10 @@ export class Thing {
     time.setMinutes(0, 0, 0); // Resets also seconds and milliseconds
 
     return time;
+  }
+  
+  hasFieldsAsString(): boolean {
+    return Utility.isValidString(this.fieldsAsString);
   }
   
   getUpdated(): string {
@@ -185,8 +190,19 @@ export class Thing {
                         (useBreakline ? '<br/>' : '');
           }
           
-          // Convert our boolean to Yes/No for readability
+          // If we're a Markdown type, convert to HTML
           let textValue = field.value + '';
+          if (field.type === TemplateField.TYPES.Markdown) {
+            textValue = marked.parse(textValue) as string;
+          }
+          // If we're a plain string replace any \n and \t, such as textareas, so they maintain their formatting
+          // Don't do this for Markdown as we already have converted it
+          else if (typeof field.value === 'string') {
+            textValue = textValue.replaceAll("\n", "<br/>");
+            textValue = textValue.replaceAll("\t", "    ");
+          }
+          
+          // Convert our boolean to Yes/No for readability
           if (typeof field.value === 'boolean') {
             textValue = field.value ? 'Yes' : 'No';
           }

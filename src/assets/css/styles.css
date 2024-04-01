@@ -116,6 +116,10 @@ html {
   max-height: 30vh;
 }
 
+.md-note {
+  font-size: 10px;
+}
+
 .hide-on-desktop {
   display: none;
 }

@@ -217,7 +217,12 @@
       <!-- TODO - Need to componentize the custom field rendering and not repeat it both here and in Manage Thing dialog. Note styling needs to come over too (ie: radio buttons are different) -->
       @for (field of templateService.favorite.fields; track field.property) {
         <div class="favorite-section">
-          <label [htmlFor]="field.property">{{ field.getLabel() }}</label>
+          <label [htmlFor]="field.property">
+            {{ field.getLabel() }}
+            @if (field.type === fieldTypes.Markdown) {
+              <div class="md-note inline">&nbsp;(Markdown)</div>
+            }
+          </label>
           @if (field.type === fieldTypes.Text || field.type === fieldTypes.Number) {
             <input [id]="field.property" pInputText [type]="field.type" [required]="field.required || false" [(ngModel)]="field.value"
                    (keyup.enter)="templateService.favorite.hasOneField() && favoriteConfirmDialog.accept()"/>

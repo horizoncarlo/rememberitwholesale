@@ -32,8 +32,7 @@ export class QuickviewFieldsDialogComponent implements OnDestroy {
   }
   
   private _getFieldLength(data: Thing): number {
-    if (data && data.fieldsAsString &&
-        Utility.isValidString(data.fieldsAsString)) {
+    if (data && data.fieldsAsString && data.hasFieldsAsString()) {
       return data.fieldsAsString.length;
     }
     return 0;

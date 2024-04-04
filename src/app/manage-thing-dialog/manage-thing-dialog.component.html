@@ -70,7 +70,9 @@
           <td colspan="2">
             <label [htmlFor]="field.property" class="field-label hide-on-desktop">
               <b>{{ field.getLabel() }}</b>
-              <div class="md-note inline">&nbsp;(Markdown)</div>
+              @if (field.type === fieldTypes.Markdown) {
+                <div class="md-note inline">&nbsp;(Markdown)</div>
+              }
             </label>
             
             <!-- TODO Do we need any other field types for Things? Photos? Slider? Ongoing/Routine (aka infinite fields so you can keep adding to the same thing without flooding the table) -->

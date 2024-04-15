@@ -343,7 +343,7 @@ function writeSafeFile(authUsername, fileName, data, retryCount = 0) {
     // Also even though we're using a bunch of sync methods, do this off the main thread via a setTimeout
     setTimeout(() => {
     try{
-      const backupTimestamp = '.json_';
+      const backupTimestamp = fileName + '_';
       let performBackup = true;
       let filteredFiles = null;
       let safetyBreak = 0;

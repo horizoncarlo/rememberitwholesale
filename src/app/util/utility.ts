@@ -248,4 +248,28 @@ export class Utility {
       return '<a href="' + url + '" target="_blank">' + url + '</a>';
     });
   }
+  
+  static copyToClipboard(text: string): Promise<void> {
+    // Use the proper modern approach if necessary
+    if (navigator && navigator.clipboard && navigator.clipboard.writeText) {
+      return navigator.clipboard.writeText(text);
+    }
+    
+    // But in case we're not in a secure context or haven't been granted permission or a multitude of other reasons, fallback to the old deprecated approach
+    return new Promise((resolve, reject) => {
+      try{
+        const tempInput = document.createElement('textarea');
+        tempInput.hidden = true;
+        tempInput.value = text;
+        document.body.appendChild(tempInput);
+        tempInput.select();
+        document.execCommand("copy");
+        document.body.removeChild(tempInput);
+        resolve();
+      }catch (err) {
+        console.error("Error copying to clipboard", err);
+        return reject(err);
+      }
+    });
+  }
 }

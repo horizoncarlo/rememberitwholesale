@@ -24,7 +24,7 @@
         <p-button (onClick)="refreshThings()" icon="pi pi-refresh" [loading]="things.loading" severity="info" pTooltip="Refresh Things"/>
         <p-button (onClick)="userProfileDialog.show();" icon="pi pi-user" severity="info" pTooltip="User Profile and Logout"/>
         @if (templateService.hasFavorite()) {
-          <p-button (onClick)="quickfillFavoriteThing()" icon="pi pi-heart" severity="help" pTooltip="Create a new Thing from your Favorite Template"/>
+          <p-button (onClick)="quickfillFavoriteThing()" icon="pi pi-heart-fill" severity="help" pTooltip="Create a new Thing from your Favorite Template"/>
         }
         <p-button (onClick)="clearSelectedRows(); manageTemplate.show()" icon="pi pi-list" [label]="getManageTemplateLabel()" />
         <p-button (onClick)="clearSelectedRows(); manageThing.showAdd()" icon="pi pi-plus-circle" label="New Thing" />

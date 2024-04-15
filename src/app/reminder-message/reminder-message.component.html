@@ -27,8 +27,7 @@
         {{distanceDate()}} ({{relativeDate()}})
       }
     </span>
-    <span class="p-message-detail">
-      {{thing.templateType}}{{thing.hasFields() ? ',' : ''}} {{thing.fieldsAsString}}
-    </span>
+    <span class="p-message-detail"
+          [innerHTML]="thing.templateType + (thing.hasFields() ? ', ' : '') + thing.fieldsAsString"></span>
   </div>
 </div>

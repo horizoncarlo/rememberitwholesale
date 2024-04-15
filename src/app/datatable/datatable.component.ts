@@ -626,6 +626,15 @@ export class DatatableComponent implements OnInit, OnDestroy {
         }
       }
       
+      // After the row selection fires, we want to manage it manually
+      // This is because if we have 4 rows selected from the user, then quickview
+      //  something, and they go to delete the quickviewed item after edit,
+      //  it can be easy to miss that such an action would actually delete the other 4 rows
+      setTimeout(() => {
+        this.clearSelectedRows();
+        this.selectedRows.push(row);
+      });
+      
       this.quickviewFieldsDialog.show(row, this.manageThingDialog);
     }
   }
@@ -749,7 +758,7 @@ export class DatatableComponent implements OnInit, OnDestroy {
   touchEditStart: number = 0;
   touchEditRow: Thing | null = null;
   touchEditTimer: any = null;
-  readonly touchToEditMs: number = 1200;
+  readonly touchToEditMs: number = 1400;
   rowTouchStart(data: Thing) {
     // Store when our touch started, and the row we targetted
     this.touchEditStart = performance.now();

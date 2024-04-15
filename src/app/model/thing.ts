@@ -29,6 +29,8 @@ export class Thing {
                 updated: Date | undefined,
                 fields?: TemplateField[],
               }) {
+    this._setupMarkedParsing();
+                
     this.name = name;
     this.templateType = templateType;
     this.id = (options && options.id) ? options.id : DEFAULT_ID;
@@ -61,6 +63,18 @@ export class Thing {
       });
     }
     this.fieldsAsString = this._convertFieldsToString();
+  }
+  
+  private _setupMarkedParsing(): void {
+    const renderer = new marked.Renderer();
+    renderer.link = (href, title, text) => {
+      // Add target="_blank" to our Marked link renderer
+      return marked.Renderer.prototype.link.call(this, href, title, text).replace("<a","<a target='_blank' ");
+    }
+    
+    marked.setOptions({
+      renderer: renderer
+    });
   }
   
   static cloneFrom(source: Thing): Thing {
@@ -207,7 +221,8 @@ export class Thing {
             textValue = field.value ? 'Yes' : 'No';
           }
           // Check for any links and automatically parse them to clickable versions
-          else {
+          // Except, again, for Markdown, which does it automatically
+          else if (field.type !== TemplateField.TYPES.Markdown) {
             textValue = Utility.anchorUrlsInText(textValue);
           }
           

@@ -117,7 +117,7 @@ export class ThingService {
         }
       },
       error: err => {
-        Utility.showSuccess("Failed to delete " + toDelete.length + " Thing" + Utility.plural(toDelete));
+        Utility.showError("Failed to delete " + toDelete.length + " Thing" + Utility.plural(toDelete));
         console.error(err);
       }
     }).add(() => this.doneLoading());

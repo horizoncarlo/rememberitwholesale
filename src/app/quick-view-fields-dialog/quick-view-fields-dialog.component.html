@@ -1,9 +1,10 @@
-<p-dialog #quickviewDialog [header]="getHeader()" [(visible)]="isShowing" [modal]="true">
+<p-dialog #quickviewDialog [header]="getHeader()" [(visible)]="isShowing" [maximizable]="true" [modal]="true">
   
   <span [innerHTML]="data?.fieldsAsString"></span>
   
   <ng-template pTemplate="footer">
+    <p-button (onClick)="copy()" icon="pi pi-copy" iconPos="left" severity="info" pTooltip="Copy the field data"/>
     <p-button (onClick)="edit()" label="Edit" icon="pi pi-pencil" iconPos="left"/>
-    <p-button (onClick)="hide()" label="Close" icon="pi pi-check-square" iconPos="left"/>
+    <p-button (onClick)="hide()" label="Close" icon="pi pi-check-square" iconPos="left" severity="secondary"/>
   </ng-template>
 </p-dialog>

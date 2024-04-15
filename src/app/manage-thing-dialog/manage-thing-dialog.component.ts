@@ -84,7 +84,7 @@ export class ManageThingDialogComponent implements OnDestroy {
     this.isShowing ? this.hide() : this.showAdd();
   }
   
-  shouldWrapReminder(): boolean {
+  isMobileSize(): boolean {
     return Utility.isMobileSize();
   }
   

@@ -35,8 +35,11 @@ const PORT_NUM = 4333;
 const FILE_DIR = os.homedir() + '/.rememberitwholesale/';
 const DEMO_DATA_DIR = "src-demo$data"; // Directory for the basis to copy for Demo accounts
 const GLOBAL_DATA = "global$data";
+const MAX_BACKUP_COUNT = 5;
 const BACKUP_FOLDER = 'backup/';
 const BACKUP_PREFIX = 'backup_';
+const BACKUP_TIME_SPACING = 60 * 60 * 1000; // 1 hour
+const TEMPORARY_FILE_PREFIX = 'temporary_';
 const TEMPLATES_FILE = 'templates.json';
 const THINGS_FILE = 'things.json';
 const FAVORITE_FILE = 'favorite.json';
@@ -325,19 +328,87 @@ function saveAuthMemoryToFile(overrideData) {
 function writeSafeFile(authUsername, fileName, data, retryCount = 0) {
   const fileDirectory = FILE_DIR + (authUsername ? authUsername + '/' : '');
   const backupFolder = fileDirectory + BACKUP_FOLDER;
-  const backupFile = backupFolder + BACKUP_PREFIX + fileName;
+  const tempFile = backupFolder + TEMPORARY_FILE_PREFIX + fileName;
   
   try{
     // Write to a temporary file first
     // This might fail due to not existing, but we retry in the catch
-    fs.writeFileSync(backupFile, JSON.stringify(data));
+    fs.writeFileSync(tempFile, JSON.stringify(data));
     
     // Write to our actual file
     fs.writeFileSync(fileDirectory + fileName, JSON.stringify(data));
+    
+    // Once complete, take a copy as a backup if needed
+    // Note we do this in a separate try-catch because we don't want it to interrupt the user
+    // Also even though we're using a bunch of sync methods, do this off the main thread via a setTimeout
+    setTimeout(() => {
+    try{
+      const backupTimestamp = '.json_';
+      let performBackup = true;
+      let filteredFiles = null;
+      let safetyBreak = 0;
+      do {
+        safetyBreak++;
+        
+        const contents = fs.readdirSync(backupFolder, { withFileTypes: true });
+        
+        // Grab all our files to work with
+        filteredFiles = contents
+          .filter(dirent => dirent.isFile() && dirent.name.includes(backupTimestamp))
+          .map(dirent => dirent.name);
+        
+        const timeList = filteredFiles.map(file =>
+          Number.parseInt(file.substring(file.indexOf(backupTimestamp) + backupTimestamp.length)));
+        if (timeList && timeList.length > 0) {
+          const maxTime = Math.max(...timeList);
+          
+          // Delete the oldest backup files until we're at MAX_BACKUP_COUNT
+          if (!Number.isNaN(maxTime) &&
+              filteredFiles && filteredFiles.length >= MAX_BACKUP_COUNT) {
+            const oldestFile = backupFolder + filteredFiles.filter(file => file.includes('' + maxTime))[0]; // This is safe given the filters we do before
+            fs.unlinkSync(oldestFile, (err) => {
+              if (err) {
+                error("Failed to delete the desired oldest file", oldestFile);
+                throw new Error(err);
+              }
+            });
+          }
+          
+          // We only want to backup every BACKUP_TIME_SPACING as a maximum, otherwise there's less value in the backups
+          // So if the newest file is fresher than that, don't bother backing up
+          if (!Number.isNaN(maxTime) && Date.now() - maxTime <= BACKUP_TIME_SPACING) {
+            performBackup = false;
+          }
+        }
+        
+        // Break out safely if the loop seems to be running too long
+        // If we somehow end up with more than 100 backup files, next time we'll just chop the list down smaller
+        //  basically a 100 at a time
+        // Realistically we'll only be running this loop once since we won't get above MAX_BACKUP_COUNT by design
+        if (safetyBreak > 100) {
+          error("Broke out of file writing loop for backup files as we hit the cap, dir contents are:", contents);
+          break;
+        }
+      } while (filteredFiles && filteredFiles.length > MAX_BACKUP_COUNT);
+      
+      // Do the actual backup copy of our temporary file
+      if (performBackup) {
+        const backupFile = backupFolder + BACKUP_PREFIX + fileName + '_' + Date.now();
+        fs.copyFile(tempFile, backupFile, (err) => {
+          if (err) {
+            error("Failed to create a backup to: ", backupFile);
+            throw new Error(err);
+          }
+        });
+      }
+    }catch (backupErr) {
+      error("Failed on managing backup files", err);
+    }
+    });
   }catch (err) {
     try{
       fs.mkdirSync(backupFolder, { recursive: true });
-      fs.writeFileSync(backupFile, '', { flag: 'wx' });
+      fs.writeFileSync(tempFile, '', { flag: 'wx' });
     }catch (ignored) { }
     
     // Retry up to 5 times

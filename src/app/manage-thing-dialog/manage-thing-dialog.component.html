@@ -9,7 +9,7 @@
           <label htmlFor="name">Name</label>
         </td>
         <td colspan="2">
-            <input id="name" #nameField pInputText [(ngModel)]="actOn.name" (keyup.enter)="submit()" placeholder="Name"/>
+            <input id="name" #nameField pInputText [(ngModel)]="actOn.name" (keyup.enter)="submit()" [placeholder]="isMobileSize() ? 'Name' : ''"/>
         </td>
       </tr>
       <tr>
@@ -37,7 +37,7 @@
         </td>
         <td>
           <!-- TODO Should make this less repetitive (with the wrapped version below), either with a component or better styling -->
-          @if (!shouldWrapReminder()) {
+          @if (!isMobileSize()) {
             <p-checkbox [(ngModel)]="actOn.reminder" (onChange)="reminderCheckboxChanged()"
                         [binary]="true" label="Reminder?"
                         pTooltip="Click to make this Thing a reminder that will display time left and notify you when due" />
@@ -48,7 +48,7 @@
           }
         </td>
       </tr>
-      @if (shouldWrapReminder()) {
+      @if (isMobileSize()) {
         <tr>
           <td colspan="3">
             <p-checkbox [(ngModel)]="actOn.reminder" (onChange)="reminderCheckboxChanged()"

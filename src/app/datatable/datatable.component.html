@@ -38,12 +38,12 @@
                         [label]="getReminderLabel()"
                         class="reminder-button" styleClass="p-button-secondary p-button-sm"/>
         }
-        @if (!things.loading) {
-          <span class="global-search-wrap p-input-icon-left">
-            <i class="pi pi-search"></i>
-            <input pInputText (input)="globalFilterTableByEvent($event)" placeholder="Search Things" />
-          </span>
-        }
+        <span class="global-search-wrap p-input-icon-left p-input-icon-right" [hidden]="things.loading"> <!-- Use hidden instead of ngIf to maintain the user text state while loading -->
+          <i class="pi pi-search"></i>
+          <input #globalSearchIn pInputText (input)="globalFilterTableByEvent($event)" placeholder="Search Things" />
+          <i class="pi pi-times-circle header-tiny-button" title="Clear the search input"
+             (click)="clearGlobalFilter(globalSearchIn)"></i>
+        </span>
         @if (things.loading) {
           <p-progressSpinner />
         }
@@ -76,7 +76,7 @@
          [globalFilterFields]="['name', 'time', 'templateType', 'reminder', 'fieldsAsString']"
          [paginator]="getUser().paginatorTable" [rows]="getUser().paginatorRows"
          [pageLinks]="3" [alwaysShowPaginator]="false" [showFirstLastIcon]="false" [showCurrentPageReport]="true"
-         [scrollable]="true" [scrollHeight]="tableScrollHeight"
+         [scrollable]="tableScrollable" [scrollHeight]="tableScrollHeight"
          >
   <ng-template pTemplate="header">
     <tr>
@@ -229,6 +229,7 @@
           }
           @else if (field.type === fieldTypes.Textarea || field.type === fieldTypes.Markdown) {
             <textarea [id]="field.property" rows="3" [autoResize]="true" pInputTextarea
+                      (keydown.control.enter)="templateService.favorite.hasOneField() && favoriteConfirmDialog.accept()"
                       [(ngModel)]="field.value" [required]="field.required || false" class="our-textarea">MD</textarea>
           }
           @else if (field.type === fieldTypes.Radio) {

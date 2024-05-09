@@ -168,6 +168,25 @@ export class ManageThingDialogComponent implements OnDestroy {
   }
   
   handleFocus(inputEl: HTMLElement): void {
+    // If we're Editing, try to focus any Notes field, as realistically that's what we'll change most of the time
+    // If we can't find a Notes field, try to focus the first field
+    if (this.isEdit()) {
+      let matchingFields = this.selectedTemplate?.fields?.filter(field => {
+        return field?.property?.toLowerCase() === 'notes';
+      });
+      if (!matchingFields || matchingFields.length === 0 &&
+          (this.selectedTemplate?.fields && this.selectedTemplate?.fields.length > 0)) {
+        matchingFields = this.selectedTemplate?.fields?[0];
+      }
+      
+      if (matchingFields && Array.isArray(matchingFields) && matchingFields.length > 0) {
+        const noteEle = document.getElementById(matchingFields[0].property);
+        if (noteEle) {
+          inputEl = noteEle;
+        }
+      }
+    }
+    
     if (inputEl) {
       inputEl.focus();
     }

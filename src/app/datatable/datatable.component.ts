@@ -39,7 +39,8 @@ export class DatatableComponent implements OnInit, OnDestroy {
   useDial: boolean = false;
   isDialOpen = false;
   isDraggingDial: boolean = false;
-  tableScrollHeight: string = '400px';
+  tableScrollable: boolean = Utility.isMobileSize();
+  tableScrollHeight: string | undefined = Utility.isMobileSize() ? '400px' : undefined;
   lastVisibilityRefresh: number = performance.now(); // For mobile we auto-refresh our Things on visibility change, but we still want to throttle it by time
   limitDate: number = 60*24*30; // Limit to 1 month by default
   limitDateOptions: { value: number, label: string }[] = [
@@ -399,6 +400,13 @@ export class DatatableComponent implements OnInit, OnDestroy {
   }
   
   calcTableScrollHeight(): void {
+    // If we're on desktop, don't use the table component scroller
+    // TODO Had a problem where arrow keys wouldn't scroll - didn't bother debugging or filing an issue, so just ditch it
+    if (!Utility.isMobileSize()) {
+      this.tableScrollHeight = undefined;
+      return;
+    }
+    
     setTimeout(() => { // Wait for the current table to resolve and then do our calculations
       let calcHeight = document.documentElement.getBoundingClientRect().height;
       
@@ -441,6 +449,11 @@ export class DatatableComponent implements OnInit, OnDestroy {
     if (event && event.target) {
       this.globalFilterTable((event.target as HTMLInputElement).value);
     }
+  }
+  
+  clearGlobalFilter(inputEl: HTMLInputElement): void {
+    inputEl.value = '';
+    this.globalFilterTable('');
   }
   
   async globalFilterTable(value: string): Promise<number> {

@@ -197,7 +197,7 @@ export class ManageTemplateDialogComponent implements OnDestroy {
     }
   }
   
-  getSubmitSeverity(): string {
+  getSubmitSeverity(): any {
     switch (this.operation) {
       case 'create': return 'primary';
       case 'favorite': return 'help';

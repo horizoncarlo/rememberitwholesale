@@ -174,9 +174,10 @@ export class ManageThingDialogComponent implements OnDestroy {
       let matchingFields = this.selectedTemplate?.fields?.filter(field => {
         return field?.property?.toLowerCase() === 'notes';
       });
-      if (!matchingFields || matchingFields.length === 0 &&
-          (this.selectedTemplate?.fields && this.selectedTemplate?.fields.length > 0)) {
-        matchingFields = this.selectedTemplate?.fields?[0];
+      if (!matchingFields || matchingFields.length === 0) {
+        if (this.selectedTemplate && this.selectedTemplate.fields && this.selectedTemplate.fields.length > 0) {
+          matchingFields = [this.selectedTemplate.fields[0]];
+        }
       }
       
       if (matchingFields && Array.isArray(matchingFields) && matchingFields.length > 0) {

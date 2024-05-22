@@ -68,11 +68,11 @@ export class QuickviewFieldsDialogComponent implements OnDestroy {
   copy(): void {
     if (this.data && this._getFieldLength(this.data) > 0) {
       Utility.copyToClipboard(this.data.fieldsAsString as string).then(res => {
-          Utility.showSuccess('Copied fields to your clipboard');
-        }).catch(err => {
-          Utility.showError('Failed to copy the fields to your clipboard');
-          console.error(err);
-        });
+        Utility.showSuccess('Copied fields to your clipboard');
+      }).catch(err => {
+        Utility.showError('Failed to copy the fields to your clipboard');
+        console.error(err);
+      });
     }
   }
   

@@ -69,6 +69,10 @@ export class StorageService {
     return this.http.get(this.makeUrl('things') + '&limit=' + limitDate);
   }
   
+  getThingById(id: string): Observable<any> {
+    return this.http.get(this.makeUrl('pthing/' + id));
+  }
+  
   deleteThings(toDeleteIds: string[]): Observable<any> {
     return this.http.post(this.makeUrl('things/delete'), {
       deleteIds: toDeleteIds

@@ -8,8 +8,13 @@
         <td class="hide-on-mobile">
           <label htmlFor="name">Name</label>
         </td>
-        <td colspan="2">
+        <td>
             <input id="name" #nameField pInputText [(ngModel)]="actOn.name" (keyup.enter)="submit()" [placeholder]="isMobileSize() ? 'Name' : ''"/>
+        </td>
+        <td>
+          <p-checkbox [(ngModel)]="actOn.public" [binary]="true" label="Public?"
+                      (onChange)="publicCheckboxChanged()"
+                      pTooltip="Click to make this Thing public and generate a shareable link that ANYONE can access to view just this Thing" />
         </td>
       </tr>
       <tr>
@@ -128,6 +133,13 @@
     @if (isEdit()) {
       <p-button (onClick)="handleDeleteThing($event)"
                 icon="pi pi-trash"  [rounded]="true" severity="danger" pTooltip="Delete this Thing" class="fleft"/>
+    }
+    @if (actOn.public) {
+      <div class="fleft">
+        <i class="pi pi-share-alt"></i>
+        &nbsp;Share:&nbsp;
+        <input pInputText [(ngModel)]="actOn.publicLink" readonly="true" (click)="clickPublicLink($event)" style="cursor: copy;"/>
+      </div>
     }
     <p-button (onClick)="hide()" label="Cancel" icon="pi pi-times" iconPos="left" severity="secondary"/>
     <p-button (onClick)="submit()" label="Save Thing" icon="pi pi-check" iconPos="left"/>

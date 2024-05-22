@@ -250,6 +250,10 @@ export class Utility {
   }
   
   static copyToClipboard(text: string): Promise<void> {
+    /* TODO Given that the app currently isn't in an HTTPS environment, both of these approaches will fail.
+     *      As a temporary workaround the "Insecure origins treated as secure" flag has been set in Chrome for the browsers I use
+     *      Absolutely hacky and short term, so we should get HTTPS going properly
+     */
     // Use the proper modern approach if necessary
     if (navigator && navigator.clipboard && navigator.clipboard.writeText) {
       return navigator.clipboard.writeText(text);

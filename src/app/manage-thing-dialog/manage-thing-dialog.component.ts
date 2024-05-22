@@ -94,6 +94,27 @@ export class ManageThingDialogComponent implements OnDestroy {
     }
   }
   
+  publicCheckboxChanged(): void {
+    if (this.actOn) {
+      if (this.actOn.public) {
+        this.actOn.generatePublicLink();
+        this.actOn.copyPublicLink();
+      }
+      else {
+        this.actOn.clearPublicLink();
+      }
+    }
+  }
+  
+  clickPublicLink(event: any): void {
+    if (event && event.target) {
+      event.target.select();
+    }
+    if (this.actOn) {
+      this.actOn.copyPublicLink();
+    }
+  }
+  
   templateNameChanged(newName: string | null, params?: { ignoreOldFields?: boolean }): void {
     this.selectedTemplateName = newName;
     let changedTemplate = this.templateService.getTemplateByName(this.selectedTemplateName);

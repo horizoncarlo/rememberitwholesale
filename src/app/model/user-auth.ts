@@ -42,9 +42,10 @@ export class UserAuth {
           });
         }).finally(() => this.processingCheckedStorage = false);
         
-        await ourPromise;
+        return await ourPromise;
       }
     }
+    return await new Promise((resolve, reject) => reject('No saved login'));
   }
   
   setLoggedIn(authToken: string, passwordToSave?: string): void {

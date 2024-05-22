@@ -1,18 +1,15 @@
 # TODO
 - * Finish Demo account data
 
-- Image and file uploading? Would make for a useful storage system as a secondary benefit
 - Reports with custom queries to generate, as well as charts (could be using ChartModule from PrimeNG)
   - Definitely just start with basic queries to get data and numbers, since we'll be using that for charts so having the text first is valuable and simpler
+- Self signed HTTPS certificate, and try to do native mobile push notifications for reminders? Also needed for copyToClipboard functionality
 
-- Bookmarkable/direct links to just one thing, so for example I can put shortcuts on the phone. Example would be a thing of "stuff to bring on next work drive" that I can ongoing edit
-  - These could be marked public? So you can share to a custom new view of just a single item?
 - Try signals and NgRx data store for sharing between parts of app using Ang 17
 - Do a proper pass and componentize any elements that need it
   - Also make sure existing components are "standalone: true" where possible (or at least consistent)
   - Such as menu dial, including it's drag and drop features, table itself maybe?
 - Have a "looking back" / "remember this?" feature that shows you memories from the same time X months/years ago, sort of like Facebook. Toggleable option of course
-- Self signed HTTPS certificate, and try to do native mobile push notifications for reminders?
 - Have an "annual repeat" feature for reminders, likely don't want more granular as we're not intending to be a full scheduling app. Mainly for birthdays
 - Eventually segment data files by year? To prevent giant files of 10k+ records? Then date limit filter could integrate with that (by having like 2021, 2022, etc. instead of "2 years ago")
 - Basic calendar view that translates Dates from Things onto it?

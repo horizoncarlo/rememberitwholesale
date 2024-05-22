@@ -6,6 +6,7 @@ import { Utility } from '../util/utility';
 import { Template } from './template';
 import { TemplateField } from './template-field';
 
+export const PUBLIC_THING_PARAM = 't';
 export const DEFAULT_ID = "progress";
 
 export class Thing {
@@ -15,6 +16,8 @@ export class Thing {
   time?: Date;
   color?: string;
   reminder?: boolean;
+  public?: boolean = false;
+  publicLink?: string | undefined;
   updated: Date | undefined;
   fields: TemplateField[] = [];
   fieldsAsString: string | undefined; // TODO Convert fields to RxJS so we can maintain a string version automatically instead of manually like we do now
@@ -26,6 +29,8 @@ export class Thing {
                 color?: string,
                 time?: Date,
                 reminder?: boolean,
+                public?: boolean,
+                publicLink?: string | undefined;
                 updated: Date | undefined,
                 fields?: TemplateField[],
               }) {
@@ -36,6 +41,8 @@ export class Thing {
     this.id = (options && options.id) ? options.id : DEFAULT_ID;
     this.color = options && options.color || 'inherit';
     this.reminder = options && options.reminder || false;
+    this.public = options && options.public || false;
+    this.publicLink = options && options.publicLink;
     this.fields = options && options.fields || [];
     
     // If we have an existing date just cast it
@@ -79,7 +86,40 @@ export class Thing {
   
   static cloneFrom(source: Thing): Thing {
     return new Thing(source.name, source.templateType,
-                     { id: source.id, color: source.color, time: source.time, reminder: source.reminder, updated: source.updated, fields: source.fields });
+                     { id: source.id,
+                      color: source.color,
+                      time: source.time,
+                      reminder: source.reminder,
+                      public: source.public,
+                      publicLink: source.publicLink,
+                      updated: source.updated,
+                      fields: source.fields });
+  }
+  
+  generatePublicLink(): string {
+    let publicId = 'test'; // TTODO
+    
+    // TTODO Probably don't want to store the ENTIRE link, just the publicId basically? Likely don't even need this as we can get the ID directly from the Thing and dynamically assemble the rest on the fly
+    this.publicLink = window.location.protocol + "//" +
+                      window.location.hostname +
+                      (Utility.isValidString(window.location.port) ? (':' + window.location.port) : '') +
+                      '/?' + PUBLIC_THING_PARAM + '=' + publicId;
+    return this.publicLink;
+  }
+  
+  clearPublicLink(): void {
+    this.publicLink = undefined;
+  }
+  
+  copyPublicLink(): void {
+    if (this.publicLink) {
+      Utility.copyToClipboard(this.publicLink).then(res => {
+        Utility.showSuccess('Copied shareable link to your clipboard');
+      }).catch(err => {
+        Utility.showError('Failed to copy the fields to your clipboard');
+        console.error(err);
+      });
+    }
   }
   
   roundDownToHour(time: Date): Date {
@@ -148,6 +188,7 @@ export class Thing {
     
     // Can slightly trim down the object by removing false/empty values
     if (!this.reminder) { delete this.reminder; }
+    if (!this.public) { delete this.publicLink; }
     if (Utility.hasItems(this.fields)) {
       this.fields?.forEach((currentField) => {
         if (!Utility.isDefinedNotNull(currentField.value)) {

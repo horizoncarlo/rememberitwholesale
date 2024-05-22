@@ -86,9 +86,11 @@ app.use(express.json());
 // Ensure our auth token is valid and the user is logged in
 app.use((req, res, next) => {
   // Allow a few pages that don't need a token
+  // TODO Should put these under a similar /public/[endpoint] path and just match on that prefix, so we don't have to maintain a list manually
   if (req.originalUrl.startsWith('/login') ||
       req.originalUrl.startsWith('/new-account') ||
-      req.originalUrl.startsWith('/demo-start')
+      req.originalUrl.startsWith('/demo-start') ||
+      req.originalUrl.startsWith('/pthing/')
     ) {
     next();
   }
@@ -553,6 +555,11 @@ app.get("/things", (req, res) => {
   
   return res.send(toReturn).end();
 });
+
+app.get("/pthing/:id", (req, res) => {
+  console.error("req for thing ID", req.params); // TTODO Potentially pass a username as part of our shareable links, to narrow down where to search? Otherwise we have to load every JSON file to find the matching ID. Will need safer authUsername checking for getting a thing though
+  return res.send({}).end();
+})
 
 app.post("/things", (req, res) => {
   log("POST Thing", req.body);

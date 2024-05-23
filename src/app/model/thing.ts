@@ -69,7 +69,7 @@ export class Thing {
         return TemplateField.cloneFrom(field);
       });
     }
-    this.fieldsAsString = this._convertFieldsToString();
+    this.fieldsAsString = this.convertFieldsToString();
   }
   
   private _setupMarkedParsing(): void {
@@ -167,7 +167,7 @@ export class Thing {
       
       if (source.fields) {
         this.fields = source.fields;
-        this.fieldsAsString = this._convertFieldsToString();
+        this.fieldsAsString = this.convertFieldsToString();
       }
     }
   }
@@ -218,7 +218,7 @@ export class Thing {
     return Utility.hasItems(this.fields);
   }
   
-  private _convertFieldsToString(): string {
+  convertFieldsToString(params?: { noLabels?: boolean }): string {
     if (this.hasFields()) {
       // Some tough choices overall on how to display the custom fields in a usable way
       let toReturn: string = this.fields.map((field) => {
@@ -265,6 +265,11 @@ export class Thing {
           // Except, again, for Markdown, which does it automatically
           else if (field.type !== TemplateField.TYPES.Markdown) {
             textValue = Utility.anchorUrlsInText(textValue);
+          }
+          
+          // After all that work don't append our label if asked
+          if (params && params.noLabels) {
+            return textValue;
           }
           
           return textLabel + textValue;

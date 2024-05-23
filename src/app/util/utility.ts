@@ -254,9 +254,15 @@ export class Utility {
      *      As a temporary workaround the "Insecure origins treated as secure" flag has been set in Chrome for the browsers I use
      *      Absolutely hacky and short term, so we should get HTTPS going properly
      */
+    
+    // Strip HTML or Markdown first, so for example if we want to copy a link it just grabs the link and not an anchor
+    const strippedDiv = document.createElement('div');
+    strippedDiv.innerHTML = text;
+    const strippedText = strippedDiv.textContent || text;
+    
     // Use the proper modern approach if necessary
     if (navigator && navigator.clipboard && navigator.clipboard.writeText) {
-      return navigator.clipboard.writeText(text);
+      return navigator.clipboard.writeText(strippedText);
     }
     
     // But in case we're not in a secure context or haven't been granted permission or a multitude of other reasons, fallback to the old deprecated approach
@@ -264,7 +270,7 @@ export class Utility {
       try{
         const tempInput = document.createElement('textarea');
         tempInput.hidden = true;
-        tempInput.value = text;
+        tempInput.value = strippedText;
         document.body.appendChild(tempInput);
         tempInput.select();
         document.execCommand("copy");

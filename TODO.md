@@ -14,7 +14,6 @@
 - Eventually segment data files by year? To prevent giant files of 10k+ records? Then date limit filter could integrate with that (by having like 2021, 2022, etc. instead of "2 years ago")
 - Basic calendar view that translates Dates from Things onto it?
 - Probably could rewrite to use https://github.com/typicode/lowdb instead of manual JSON files?
-- Use SimpleMDE for Markdown editing?
 
 ## LOADING
 - Block entire page, header and all, with a spinner in the middle (after a couple seconds, to prevent flashing)

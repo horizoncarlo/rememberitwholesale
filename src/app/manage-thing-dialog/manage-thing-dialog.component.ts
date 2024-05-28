@@ -20,6 +20,7 @@ export class ManageThingDialogComponent implements OnDestroy {
   selectedTemplate: Template | null = null;
   selectedTemplateName: string | null = null;
   isShowing: boolean = false;
+  hasShownPublicNote: boolean = false;
   fieldTypes = TemplateField.TYPES;
   @ViewChild('manageThingDialog') manageThingDialog!: Dialog;
   @ViewChild('templateDropdown') templateDropdown!: TemplateDropdownComponent;
@@ -71,6 +72,7 @@ export class ManageThingDialogComponent implements OnDestroy {
     
     this.templateDropdown.refreshData();
     
+    this.hasShownPublicNote = false;
     this.isShowing = true;
     Utility.commonDialogShow();
   }
@@ -95,13 +97,15 @@ export class ManageThingDialogComponent implements OnDestroy {
   }
   
   publicCheckboxChanged(): void {
-    if (this.actOn) {
-      if (this.actOn.public) {
-        this.actOn.generatePublicLink();
+    if (this.actOn && this.actOn.public) {
+      // If we have an updated field that means we've been saved before
+      if (this.actOn.updated) {
         this.actOn.copyPublicLink();
       }
-      else {
-        this.actOn.clearPublicLink();
+      // Otherwise just notify the user they can come back to copy their link
+      else if (!this.hasShownPublicNote) {
+        this.hasShownPublicNote = true;
+        Utility.showInfo("Your public link will be available after you save this Thing");
       }
     }
   }

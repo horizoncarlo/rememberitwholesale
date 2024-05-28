@@ -556,9 +556,31 @@ app.get("/things", (req, res) => {
   return res.send(toReturn).end();
 });
 
-app.get("/pthing/:id", (req, res) => {
-  console.error("req for thing ID", req.params); // TTODO Potentially pass a username as part of our shareable links, to narrow down where to search? Otherwise we have to load every JSON file to find the matching ID. Will need safer authUsername checking for getting a thing though
-  return res.send({}).end();
+app.get("/pthing/:thingId", (req, res) => {
+  try{
+    // We have the desired Thing ID as a param, and the Username to look in as a query string
+    const thingId = req.params?.thingId;
+    const username = req.query?.username;
+    
+    if (!thingId || !username) {
+      throw new Error('Missing Thing ID or User');
+    }
+    
+    log("GET Public Thing", thingId, username);
+    
+    // Pull in the Things for the desired user, then find our matching ID
+    const userThings = getInMemoryThings(username);
+    if (userThings && userThings.length > 0) {
+      const toReturn = userThings.filter(thing => thing.id === thingId);
+      if (toReturn && toReturn.length > 0) {
+        return res.send(toReturn[0]).end();
+      }
+    }
+  }catch (err) {
+    error(err);
+  }
+  
+  return res.status(400).end();
 })
 
 app.post("/things", (req, res) => {
@@ -771,7 +793,7 @@ app.post("/demo-start", tryDemoLimiter, async (req, res) => {
     
     // Then copy the latest Demo data in, so we have something to show the user
     // We'll do these safely, as one failure shouldn't wreck the demo
-    // TODO PRIORITY - Setup our live DEMO_DATA_DIR files with good, realistic, interesting data
+    // TODO Setup our live DEMO_DATA_DIR files with good, realistic, interesting data
     const baseSrcDir = FILE_DIR + DEMO_DATA_DIR + '/';
     const baseTargetDir = FILE_DIR + demoObj.username + '/';
     try{ fs.copyFileSync(baseSrcDir + THINGS_FILE, baseTargetDir + THINGS_FILE); }catch (ignored) {}

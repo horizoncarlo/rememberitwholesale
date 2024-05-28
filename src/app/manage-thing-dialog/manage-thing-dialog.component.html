@@ -134,11 +134,11 @@
       <p-button (onClick)="handleDeleteThing($event)"
                 icon="pi pi-trash"  [rounded]="true" severity="danger" pTooltip="Delete this Thing" class="fleft"/>
     }
-    @if (actOn.public) {
+    @if (actOn.public && actOn.updated) {
       <div class="fleft">
         <i class="pi pi-share-alt"></i>
         &nbsp;Share:&nbsp;
-        <input pInputText [(ngModel)]="actOn.publicLink" readonly="true" (click)="clickPublicLink($event)" style="cursor: copy;"/>
+        <input pInputText [value]="actOn.generatePublicLink()" readonly="true" (click)="clickPublicLink($event)" style="cursor: copy;"/>
       </div>
     }
     <p-button (onClick)="hide()" label="Cancel" icon="pi pi-times" iconPos="left" severity="secondary"/>

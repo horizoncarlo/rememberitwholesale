@@ -1,4 +1,20 @@
 # TODO
+**Notes:**
+- Image uploading & public Thing (see below)
+- Allow Edit of Templates - doesn't retroactively change Thing data, just going forward uses the new version
+- Touch to edit cancel the timer on touch move so that slow scrolling doesn't trigger it?
+- Maintain scroll / paginator after deleting an item
+
+**Image uploading**
+- Ditch the transfer-vault project, as beautiful as the layout is
+- Integrate into RIW instead
+- Can mark a Thing as "public", which generates a link you can share that goes JUST to that Thing
+- Do we want "Public" to be a toggleable default on a Template? PROBABLY
+- Can attach images/files to a Thing, perhaps as a new type of field? Do a similar uploader to transfer-vault with a droppable area on desktop and 2 Upload buttons
+- Store the various files under .riw/user/uploads/* and reference them in the Thing? By name? Require unique name or overwrite old?
+- Cap max storage size of /uploads/ file by user, hardcoded in their settings file under the hood?
+- Figure out copy-to-clipboard behaviour that works properly
+
 - * Finish Demo account data
 
 - Reports with custom queries to generate, as well as charts (could be using ChartModule from PrimeNG)

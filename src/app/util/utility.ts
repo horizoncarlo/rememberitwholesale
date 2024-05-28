@@ -221,6 +221,10 @@ export class Utility {
     window.localStorage.removeItem(key);
   }
   
+  static getLocalUsername(): string | null {
+    return this.getLocalStorageItem(this.LS_AUTH_USERNAME);
+  }
+  
   static commonDialogShow(): void {
     history.pushState({
       modalDialog: true,

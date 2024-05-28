@@ -51,8 +51,9 @@ export class StorageService {
     this.router.navigate(['/login']).finally(() => location.reload());
   }
   
-  makeUrl(endpoint: string): string {
-    return BASE_URL + endpoint + this.getAuthToken();
+  makeUrl(endpoint: string, extraParams?: string): string {
+    return BASE_URL + endpoint + this.getAuthToken() +
+           (extraParams ? `&${extraParams}` : '');
   }
   
   getAllThings(limitDate?: number): Observable<any> {
@@ -69,8 +70,9 @@ export class StorageService {
     return this.http.get(this.makeUrl('things') + '&limit=' + limitDate);
   }
   
-  getThingById(id: string): Observable<any> {
-    return this.http.get(this.makeUrl('pthing/' + id));
+  getPublicThingById(thingId: string, username?: string): Observable<any> {
+    return this.http.get(this.makeUrl(`pthing/${thingId}`,
+                                      (username ? `username=${username}` : '')));
   }
   
   deleteThings(toDeleteIds: string[]): Observable<any> {

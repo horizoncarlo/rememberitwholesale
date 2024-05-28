@@ -14,7 +14,7 @@ export class UserAuth {
   async checkStoredLogin(): Promise<any> {
     this.hasCheckedStorage = true;
     
-    const possibleUsername = Utility.getLocalStorageItem(Utility.LS_AUTH_USERNAME);
+    const possibleUsername = Utility.getLocalUsername();
     const possiblePassword = Utility.getLocalStorageItem(Utility.LS_AUTH_PASSWORD);
     if (Utility.isValidString(possibleUsername) &&
         Utility.isValidString(possiblePassword)) {

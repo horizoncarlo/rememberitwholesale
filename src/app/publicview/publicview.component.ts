@@ -1,12 +1,44 @@
 import { Component } from '@angular/core';
+import { Router } from '@angular/router';
+import { Thing } from '../model/thing';
+import { AuthService } from '../service/auth.service';
 import { PublicService } from '../service/public.service';
+import { Utility } from '../util/utility';
 
 @Component({
   selector: 'riw-publicview',
-  standalone: true,
   templateUrl: './publicview.component.html',
   styleUrl: './publicview.component.css'
 })
 export class PublicviewComponent {
-  constructor(public publicService: PublicService) { }
+  loading: boolean = true;
+  hasError: boolean = false;
+  thing: Thing | null = null;
+  
+  constructor(public publicService: PublicService,
+              public authService: AuthService,
+              private router: Router) {
+    this.publicService.thing$.subscribe({
+      next: thing => {
+        if (thing) {
+          this.loading = false;
+          this.thing = thing;
+        }
+      },
+      error: err => {
+        console.error(err);
+        
+        this.loading = false;
+        this.hasError = true;
+      }
+    });
+  }
+  
+  isMobileSize() {
+    return Utility.isMobileSize();
+  }
+  
+  navigateToLogin() {
+    this.router.navigate(['/login']);
+  }
 }

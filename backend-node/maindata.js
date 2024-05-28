@@ -572,7 +572,8 @@ app.get("/pthing/:thingId", (req, res) => {
     const userThings = getInMemoryThings(username);
     if (userThings && userThings.length > 0) {
       const toReturn = userThings.filter(thing => thing.id === thingId);
-      if (toReturn && toReturn.length > 0) {
+      if (toReturn && toReturn.length > 0 &&
+          toReturn[0].public) {
         return res.send(toReturn[0]).end();
       }
     }

@@ -1,0 +1,66 @@
+.main-wrap {
+  padding: 15px;
+}
+
+.panel-wrap {
+  padding: 20px;
+  border-radius: 40px;
+  background-color: var(--surface-ground);
+  outline: 2px dashed var(--primary-color);
+}
+
+.header {
+  width: 100%;
+  padding: 5px 10px 5px 20px;
+  font-size: 120%;
+  font-weight: bold;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+
+.left {
+  display: flex;
+  align-items: center;
+}
+
+.left .header-sub {
+  font-size: 85%;
+  font-weight: normal;
+}
+
+.right {
+  display: flex;
+  align-items: center;
+}
+
+.main-error, .main-error i {
+  font-size: 170%;
+}
+
+.main-error {
+  padding-top: 10%;
+  text-align: center;
+  font-weight: bold;
+}
+
+.main-error i {
+  color: red;
+}
+
+.main-error .smaller {
+  font-size: 80%;
+  font-weight: normal;
+}
+
+@media (max-width: 850px) { /* var(--mobile-breakpoint) equivalent, just can't use in media queries */
+  .main-wrap {
+    padding: 0;
+  }
+  
+  .panel-wrap {
+    padding: 10px;
+    border-radius: 0;
+    outline: 0;
+  }
+}

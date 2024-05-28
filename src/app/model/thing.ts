@@ -127,7 +127,7 @@ export class Thing {
     return Utility.isValidString(this.fieldsAsString);
   }
   
-  getUpdated(): string {
+  getUpdated(longForm?: boolean): string {
     if (this.updated) {
       let toReturn = formatDistanceStrict(this.updated, new Date(), { addSuffix: true });
       
@@ -136,15 +136,17 @@ export class Thing {
         return 'New';
       }
       
-      // Otherwise shorthand format
-      toReturn = toReturn.replace(' minute', 'm');
-      toReturn = toReturn.replace(' hour', 'h');
-      toReturn = toReturn.replace(' day', 'd');
-      toReturn = toReturn.replace(' month', 'mon');
-      toReturn = toReturn.replace(' year', 'y');
+      if (!longForm) {
+        // Otherwise shorthand format
+        toReturn = toReturn.replace(' minute', 'm');
+        toReturn = toReturn.replace(' hour', 'h');
+        toReturn = toReturn.replace(' day', 'd');
+        toReturn = toReturn.replace(' month', 'mon');
+        toReturn = toReturn.replace(' year', 'y');
       
-      // Then remove any plural leftovers
-      toReturn = toReturn.replace('s', '');
+        // Then remove any plural leftovers
+        toReturn = toReturn.replace('s', '');
+      }
       
       return toReturn;
     }

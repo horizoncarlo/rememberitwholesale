@@ -20,7 +20,7 @@ export class Thing {
   public?: boolean = false;
   updated: Date | undefined;
   fields: TemplateField[] = [];
-  fieldsAsString: string | undefined; // TODO Convert fields to RxJS so we can maintain a string version automatically instead of manually like we do now
+  fieldsAsString: string | undefined; // TODO Convert fields to Angular Signals or RxJS so we can maintain a string version automatically instead of manually like we do now
   
   constructor(name: string,
               templateType: string = TemplateService.getDefaultName(),

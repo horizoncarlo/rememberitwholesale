@@ -1,5 +1,6 @@
-import { Component } from '@angular/core';
+import { Component, OnDestroy } from '@angular/core';
 import { Router } from '@angular/router';
+import { Subscription } from 'rxjs';
 import { Thing } from '../model/thing';
 import { AuthService } from '../service/auth.service';
 import { PublicService } from '../service/public.service';
@@ -10,7 +11,9 @@ import { Utility } from '../util/utility';
   templateUrl: './publicview.component.html',
   styleUrl: './publicview.component.css'
 })
-export class PublicviewComponent {
+export class PublicviewComponent implements OnDestroy {
+  private _thing_sub: Subscription;
+  
   loading: boolean = true;
   hasError: boolean = false;
   thing: Thing | null = null;
@@ -18,7 +21,7 @@ export class PublicviewComponent {
   constructor(public publicService: PublicService,
               public authService: AuthService,
               private router: Router) {
-    this.publicService.thing$.subscribe({
+    this._thing_sub = this.publicService.thing$.subscribe({
       next: thing => {
         if (thing) {
           this.loading = false;
@@ -33,6 +36,12 @@ export class PublicviewComponent {
       }
     });
   }
+  
+  ngOnDestroy(): void {
+    if (this._thing_sub) {
+      this._thing_sub.unsubscribe();
+    }
+  }  
   
   isMobileSize(): boolean {
     return Utility.isMobileSize();

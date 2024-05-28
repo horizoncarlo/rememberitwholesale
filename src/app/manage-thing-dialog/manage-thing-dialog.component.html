@@ -12,6 +12,7 @@
             <input id="name" #nameField pInputText [(ngModel)]="actOn.name" (keyup.enter)="submit()" [placeholder]="isMobileSize() ? 'Name' : ''"/>
         </td>
         <td>
+          <!-- TODO If we add a "Gallery" checkbox we need to consolidate these 3 (Public, Reminder, Gallery) - maybe a new paradigm instead of checkboxes? Icons instead of text? All in one row? Consider mobile as well -->
           <p-checkbox [(ngModel)]="actOn.public" [binary]="true" label="Public?"
                       (onChange)="publicCheckboxChanged()"
                       pTooltip="Click to make this Thing public and generate a shareable link that ANYONE can access to view just this Thing" />

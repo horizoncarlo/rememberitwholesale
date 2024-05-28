@@ -34,11 +34,11 @@ export class PublicviewComponent {
     });
   }
   
-  isMobileSize() {
+  isMobileSize(): boolean {
     return Utility.isMobileSize();
   }
   
-  navigateToLogin() {
+  navigateToLogin(): void {
     this.router.navigate(['/login']);
   }
 }

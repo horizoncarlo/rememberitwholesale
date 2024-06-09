@@ -3,6 +3,8 @@
   <span [innerHTML]="data?.fieldsAsString"></span>
   
   <ng-template pTemplate="footer">
+    <p-button (onClick)="handleDeleteThing($event)" tabindex="-1" [rounded]="true"
+              icon="pi pi-trash" severity="danger" pTooltip="Delete this Thing" class="fleft"/>
     <p-button (onClick)="copy()" icon="pi pi-copy" iconPos="left" severity="info" pTooltip="Copy the field data"/>
     <p-button (onClick)="edit()" label="Edit" icon="pi pi-pencil" iconPos="left"/>
     <p-button (onClick)="hide()" label="Close" icon="pi pi-check-square" iconPos="left" severity="secondary"/>

@@ -149,7 +149,12 @@
         </span>
       </td>
       <td>
-        <span [style]="'color:' + data.color">{{ data.templateType }}</span>
+        <span [style]="'color:' + data.color">
+          {{ data.templateType }}
+          @if (data.public) {
+            &nbsp;<span class="pi pi-globe" pTooltip="Thing is Public"></span>
+          }
+        </span>
       </td>
       <td class="time-col-td">
         <span [style]="'color:' + data.color">
@@ -204,7 +209,8 @@
 <riw-manage-template-dialog #manageTemplate />
 <riw-global-search-dialog #globalSearch [searchFunction]="globalFilterTable.bind(this)"/>
 <riw-user-profile-dialog #userProfile (onDialChanged)="dialChanged($event)"/>
-<riw-quick-view-fields-dialog #quickviewFieldsDialog />
+<riw-quick-view-fields-dialog #quickviewFieldsDialog
+                              (onDelete)="confirmDeleteSelected($event.event, true)"/>
 
 <p-confirmPopup key="inline" />
 <p-confirmDialog key="dialog"/>
@@ -214,59 +220,64 @@
       <span class="p-dialog-title" [style.color]="templateService.favorite.color">Favorite - {{templateService.favorite.name}}</span>
     </ng-template>
     <ng-template pTemplate="message">
-      <!-- TODO - Need to componentize the custom field rendering and not repeat it both here and in Manage Thing dialog. Note styling needs to come over too (ie: radio buttons are different) -->
-      @for (field of templateService.favorite.fields; track field.property) {
-        <div class="favorite-section">
-          <label [htmlFor]="field.property">
-            {{ field.getLabel() }}
-            @if (field.type === fieldTypes.Markdown) {
-              <div class="md-note inline">&nbsp;(Markdown)</div>
-            }
-          </label>
-          @if (field.type === fieldTypes.Text || field.type === fieldTypes.Number) {
-            <input [id]="field.property" pInputText [type]="field.type" [required]="field.required || false" [(ngModel)]="field.value"
-                   (keyup.enter)="templateService.favorite.hasOneField() && favoriteConfirmDialog.accept()"/>
-          }
-          @else if (field.type === fieldTypes.Textarea || field.type === fieldTypes.Markdown) {
-            <textarea [id]="field.property" rows="3" [autoResize]="true" pInputTextarea
-                      (keydown.control.enter)="templateService.favorite.hasOneField() && favoriteConfirmDialog.accept()"
-                      [(ngModel)]="field.value" [required]="field.required || false" class="our-textarea">MD</textarea>
-          }
-          @else if (field.type === fieldTypes.Radio) {
-            <div [id]="field.property">
-              @for (option of field.options; track $index) {
-                <p-radioButton [value]="option" [(ngModel)]="field.value" [inputId]="'option' + $index" [required]="field.required || false"
-                               (ngModelChange)="templateService.favorite.hasOneField() && favoriteConfirmDialog.accept()" />
-                <label [for]="'option' + $index"> {{option}}</label>
+      @if (!templateService.favorite.hasFields()) {
+        <h2>No additional fields to fill in</h2>
+      }
+      @else {
+        <!-- TODO - Need to componentize the custom field rendering and not repeat it both here and in Manage Thing dialog. Note styling needs to come over too (ie: radio buttons are different) -->
+        @for (field of templateService.favorite.fields; track field.property) {
+          <div class="favorite-section">
+            <label [htmlFor]="field.property">
+              {{ field.getLabel() }}
+              @if (field.type === fieldTypes.Markdown) {
+                <div class="md-note inline">&nbsp;(Markdown)</div>
               }
-            </div>
-          }
-          @else if (field.type === fieldTypes.Chooser) {
-            <p-button (onClick)="field.handleRandomChooser(field); (templateService.favorite.hasOneField() && favoriteConfirmDialog.accept());"
-                      icon="pi pi-bolt" [label]="'Randomly choose from ' + field.options?.length + ' options'"/>
-          }
-          @else if (field.type === fieldTypes.Boolean) {
-            <p-triStateCheckbox [id]="field.property" [(ngModel)]="field.value" [required]="field.required || false" />
-          }
-          @else if (field.type === fieldTypes.Dropdown) {
-            <p-dropdown [id]="field.property" [(ngModel)]="field.value"
-                        [options]="field.options"
-                        [required]="field.required || false"
-                        (ngModelChange)="(field.value && templateService.favorite.hasOneField()) && favoriteConfirmDialog.accept()"
-                        class="consistent-field" appendTo="body"/>
-          }
-          @else if (field.type === fieldTypes.Date || field.type === fieldTypes.Datetime) {
-            <p-calendar [id]="field.property" [(ngModel)]="field.value" dataType="string"
-                        (ngModelChange)="templateService.favorite.hasOneField() && favoriteConfirmDialog.accept()"
-                        [required]="field.required || false"
-                        [showTime]="field.type === fieldTypes.Datetime" [showIcon]="true"
-                        hourFormat="12" [stepMinute]="5"
-                        [hideOnDateTimeSelect]="field.type === fieldTypes.Date"
-                        [tabindex]="-1"
-                        class="consistent-field" appendTo="body" ></p-calendar>
-          }
-        </div>
-    }
+            </label>
+            @if (field.type === fieldTypes.Text || field.type === fieldTypes.Number) {
+              <input [id]="field.property" pInputText [type]="field.type" [required]="field.required || false" [(ngModel)]="field.value"
+                    (keyup.enter)="templateService.favorite.hasOneField() && favoriteConfirmDialog.accept()"/>
+            }
+            @else if (field.type === fieldTypes.Textarea || field.type === fieldTypes.Markdown) {
+              <textarea [id]="field.property" rows="3" [autoResize]="true" pInputTextarea
+                        (keydown.control.enter)="templateService.favorite.hasOneField() && favoriteConfirmDialog.accept()"
+                        [(ngModel)]="field.value" [required]="field.required || false" class="our-textarea">MD</textarea>
+            }
+            @else if (field.type === fieldTypes.Radio) {
+              <div [id]="field.property">
+                @for (option of field.options; track $index) {
+                  <p-radioButton [value]="option" [(ngModel)]="field.value" [inputId]="'option' + $index" [required]="field.required || false"
+                                (ngModelChange)="templateService.favorite.hasOneField() && favoriteConfirmDialog.accept()" />
+                  <label [for]="'option' + $index"> {{option}}</label>
+                }
+              </div>
+            }
+            @else if (field.type === fieldTypes.Chooser) {
+              <p-button (onClick)="field.handleRandomChooser(field); (templateService.favorite.hasOneField() && favoriteConfirmDialog.accept());"
+                        icon="pi pi-bolt" [label]="'Randomly choose from ' + field.options?.length + ' options'"/>
+            }
+            @else if (field.type === fieldTypes.Boolean) {
+              <p-triStateCheckbox [id]="field.property" [(ngModel)]="field.value" [required]="field.required || false" />
+            }
+            @else if (field.type === fieldTypes.Dropdown) {
+              <p-dropdown [id]="field.property" [(ngModel)]="field.value"
+                          [options]="field.options"
+                          [required]="field.required || false"
+                          (ngModelChange)="(field.value && templateService.favorite.hasOneField()) && favoriteConfirmDialog.accept()"
+                          class="consistent-field" appendTo="body"/>
+            }
+            @else if (field.type === fieldTypes.Date || field.type === fieldTypes.Datetime) {
+              <p-calendar [id]="field.property" [(ngModel)]="field.value" dataType="string"
+                          (ngModelChange)="templateService.favorite.hasOneField() && favoriteConfirmDialog.accept()"
+                          [required]="field.required || false"
+                          [showTime]="field.type === fieldTypes.Datetime" [showIcon]="true"
+                          hourFormat="12" [stepMinute]="5"
+                          [hideOnDateTimeSelect]="field.type === fieldTypes.Date"
+                          [tabindex]="-1"
+                          class="consistent-field" appendTo="body" ></p-calendar>
+            }
+          </div>
+        }
+      }
     </ng-template>
     <ng-template pTemplate="footer">
       <p-button (onClick)="favoriteConfirmDialog.reject()" label="Cancel" icon="pi pi-times" iconPos="left" severity="secondary"/>

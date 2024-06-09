@@ -3,7 +3,19 @@
           (onShow)="handleFocus(nameField)">
   <div class="content-form">
 
-    <table cellpadding="10">
+    <table cellpadding="10" class="thing-in-table">
+      <tr>
+        <td colspan="2" class="type-col">
+          <p-checkbox [(ngModel)]="actOn.public" [binary]="true" [label]="(isMobileSize() ? '' : ' 🌐 ') + 'Public'"
+                      (onChange)="publicCheckboxChanged()"
+                      pTooltip="Make this Thing public and generate a shareable link that can be given to anyone to view just this Thing, without needing a login" showDelay="750" />
+          <p-checkbox [(ngModel)]="actOn.gallery" [binary]="true" [label]="(isMobileSize() ? '' : ' 🖼 ') + 'Gallery'"
+                      pTooltip="Make this Thing include a gallery of uploaded images and files" showDelay="750" />
+          <p-checkbox [(ngModel)]="actOn.reminder" [binary]="true" [label]="(isMobileSize() ? '' : ' 🕒 ') + 'Reminder'"
+                      (onChange)="reminderCheckboxChanged()"
+                      pTooltip="Make this Thing a reminder that will display time left and notify you when due" showDelay="750" />
+        </td>
+      </tr>
       <tr>
         <td class="hide-on-mobile">
           <label htmlFor="name">Name</label>
@@ -11,18 +23,12 @@
         <td>
             <input id="name" #nameField pInputText [(ngModel)]="actOn.name" (keyup.enter)="submit()" [placeholder]="isMobileSize() ? 'Name' : ''"/>
         </td>
-        <td>
-          <!-- TODO If we add a "Gallery" checkbox we need to consolidate these 3 (Public, Reminder, Gallery) - maybe a new paradigm instead of checkboxes? Icons instead of text? All in one row? Consider mobile as well -->
-          <p-checkbox [(ngModel)]="actOn.public" [binary]="true" label="Public?"
-                      (onChange)="publicCheckboxChanged()"
-                      pTooltip="Click to make this Thing public and generate a shareable link that ANYONE can access to view just this Thing" />
-        </td>
       </tr>
       <tr>
         <td class="hide-on-mobile">
           Template
         </td>
-        <td colspan="2">
+        <td>
           <riw-template-dropdown #templateDropdown
                                 [(selectedTemplateName)]="selectedTemplateName"
                                 (selectedTemplateNameChange)="templateNameChanged($event)"
@@ -41,25 +47,30 @@
                       [tabindex]="-1"
                       class="consistent-field" appendTo="body" ></p-calendar>
         </td>
-        <td>
-          <!-- TODO Should make this less repetitive (with the wrapped version below), either with a component or better styling -->
-          @if (!isMobileSize()) {
-            <p-checkbox [(ngModel)]="actOn.reminder" (onChange)="reminderCheckboxChanged()"
-                        [binary]="true" label="Reminder?"
-                        pTooltip="Click to make this Thing a reminder that will display time left and notify you when due" />
-          }
-          @else {
-            <!-- Hack to ensure the Add/Delete template circle buttons above don't wrap -->
-            <div style="width: 80px;">&nbsp;</div>
-          }
-        </td>
       </tr>
-      @if (isMobileSize()) {
+      @if (actOn.gallery) {
         <tr>
-          <td colspan="3">
-            <p-checkbox [(ngModel)]="actOn.reminder" (onChange)="reminderCheckboxChanged()"
-                        [binary]="true" label="Reminder?"
-                        pTooltip="Click to make this Thing a reminder that will display time left and notify you when due" />
+          <td colspan="2">
+            <p-panel header="Gallery Uploads" [toggleable]="true" class="no-panel-pad">
+              <div [class]="'drop-area ' + (dropHighlight ? 'drop-highlight' : '')"
+                   (dragenter)="handleDragEnter($event)"
+                   (dragleave)="handleDragLeave($event)"
+                   (dragover)="$event.preventDefault()"
+                   (drop)="handleDraggedFiles($event)"
+                   >
+                <span class="text-label">
+                  <i class="pi pi-folder-open"></i> Drag and drop files here or use the buttons to add uploads
+                </span>
+                <p-button label="Upload Files" size="small" severity="help" (onClick)="fileUpload.click()"/>
+                <p-button label="Upload Images" size="small" severity="help" (onClick)="imageUpload.click()"/>
+                
+                <input #fileUpload [style.display]="'none'"
+                       type="file" multiple (change)="handleDraggedFiles($event)" />
+                <input #imageUpload [style.display]="'none'"
+                       type="file" multiple (change)="handleDraggedFiles($event)"
+                       accept="image/*" />
+              </div>
+            </p-panel>
           </td>
         </tr>
       }
@@ -73,7 +84,7 @@
               }
             </label>
           </td>
-          <td colspan="2">
+          <td>
             <label [htmlFor]="field.property" class="field-label hide-on-desktop">
               <b>{{ field.getLabel() }}</b>
               @if (field.type === fieldTypes.Markdown) {
@@ -133,7 +144,7 @@
   <ng-template pTemplate="footer">
     @if (isEdit()) {
       <p-button (onClick)="handleDeleteThing($event)"
-                icon="pi pi-trash"  [rounded]="true" severity="danger" pTooltip="Delete this Thing" class="fleft"/>
+                icon="pi pi-trash" [rounded]="true" severity="danger" pTooltip="Delete this Thing" class="fleft"/>
     }
     @if (actOn.public && actOn.updated) {
       <div class="fleft">

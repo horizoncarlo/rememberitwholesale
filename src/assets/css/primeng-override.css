@@ -158,6 +158,10 @@ p-columnfilterformelement .p-inputtext {
   margin: 5px;
 }
 
+.no-panel-pad .p-panel-content {
+  padding: 0 !important;
+}
+
 @media (max-width: 850px) { /* var(--mobile-breakpoint) equivalent, just can't use in media queries */
   /* Less precious whitespace wasted on content padding on dialogs */
   .p-dialog-content {

@@ -1,4 +1,4 @@
-import { Component, HostListener, OnDestroy, ViewChild } from '@angular/core';
+import { Component, EventEmitter, HostListener, OnDestroy, Output, ViewChild } from '@angular/core';
 import { Dialog } from 'primeng/dialog';
 import { ManageThingDialogComponent } from '../manage-thing-dialog/manage-thing-dialog.component';
 import { Thing } from '../model/thing';
@@ -13,6 +13,7 @@ import { Utility } from '../util/utility';
 export class QuickviewFieldsDialogComponent implements OnDestroy {
   // Cast to Dialog instead of this component, so we can set the maximize flag
   @ViewChild('quickviewDialog') quickviewDialog!: Dialog;
+  @Output() onDelete = new EventEmitter<{ thing: Thing, event: Event }>();
   
   data: Thing | undefined;
   editDialog?: ManageThingDialogComponent;
@@ -56,6 +57,13 @@ export class QuickviewFieldsDialogComponent implements OnDestroy {
   @HostListener('window:popstate', ['$event'])
   hide(): void {
     this.isShowing = false;
+  }
+  
+  handleDeleteThing(event: Event): void {
+    if (this.data) {
+      this.hide();
+      this.onDelete.emit({ thing: this.data, event: event });
+    }
   }
   
   edit(): void {

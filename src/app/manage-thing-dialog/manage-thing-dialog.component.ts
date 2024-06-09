@@ -21,7 +21,9 @@ export class ManageThingDialogComponent implements OnDestroy {
   selectedTemplateName: string | null = null;
   isShowing: boolean = false;
   hasShownPublicNote: boolean = false;
+  dropHighlight: boolean = false;
   fieldTypes = TemplateField.TYPES;
+  dragDropCounter: number = 0; // Since dragleave fires when mousing over child elements, we track our drag enter vs leave counter and change our highlight based on that
   @ViewChild('manageThingDialog') manageThingDialog!: Dialog;
   @ViewChild('templateDropdown') templateDropdown!: TemplateDropdownComponent;
   @Output() manageTemplateEvent = new EventEmitter<TemplateEvent>();
@@ -215,6 +217,46 @@ export class ManageThingDialogComponent implements OnDestroy {
     
     if (inputEl) {
       inputEl.focus();
+    }
+  }
+  
+  handleDraggedFiles(event: any) {
+    event.preventDefault();
+    this.dropHighlight = false;
+    this.dragDropCounter = 0;
+    
+    // Get a list of files depending on our source
+    let files = null;
+    
+    // Drag and drop from something like a file explorer
+    if (event.dataTransfer && event.dataTransfer.files && event.dataTransfer.files.length > 0) {
+      files = event.dataTransfer.files;
+    }
+    // Native file upload
+    else if (event.target && event.target.files && event.target.files.length > 0) {
+      files = event.target.files;
+    }
+    else {
+      Utility.showWarn('Unknown drag and drop type requested');
+    }
+    
+    console.error("Dragged Files", files); // QUIDEL
+    
+    // Reset the field so that future onchange events will continue to fire
+    (event.target as HTMLInputElement).value = '';
+  }
+  
+  handleDragEnter(event: any) {
+    event.preventDefault();
+    this.dragDropCounter++;
+    this.dropHighlight = true;
+  }
+  
+  handleDragLeave(event: any) {
+    this.dragDropCounter--;
+    
+    if (this.dragDropCounter <= 0) {
+      this.dropHighlight = false;
     }
   }
 }

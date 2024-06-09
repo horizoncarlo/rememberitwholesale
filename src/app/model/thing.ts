@@ -18,6 +18,7 @@ export class Thing {
   color?: string;
   reminder?: boolean;
   public?: boolean = false;
+  gallery?: boolean = false;
   updated: Date | undefined;
   fields: TemplateField[] = [];
   fieldsAsString: string | undefined; // TODO Convert fields to Angular Signals or RxJS so we can maintain a string version automatically instead of manually like we do now
@@ -30,6 +31,7 @@ export class Thing {
                 time?: Date,
                 reminder?: boolean,
                 public?: boolean,
+                gallery?: boolean,
                 updated: Date | undefined,
                 fields?: TemplateField[],
               }) {
@@ -41,6 +43,7 @@ export class Thing {
     this.color = options && options.color || 'inherit';
     this.reminder = options && options.reminder || false;
     this.public = options && options.public || false;
+    this.gallery = options && options.gallery || false;
     this.fields = options && options.fields || [];
     
     // If we have an existing date just cast it
@@ -89,6 +92,7 @@ export class Thing {
                       time: source.time,
                       reminder: source.reminder,
                       public: source.public,
+                      gallery: source.gallery,
                       updated: source.updated,
                       fields: source.fields });
   }
@@ -182,6 +186,7 @@ export class Thing {
     // Can slightly trim down the object by removing false/empty values
     if (!this.reminder) { delete this.reminder; }
     if (!this.public) { delete this.public; }
+    if (!this.gallery) { delete this.gallery; }
     if (Utility.hasItems(this.fields)) {
       this.fields?.forEach((currentField) => {
         if (!Utility.isDefinedNotNull(currentField.value)) {

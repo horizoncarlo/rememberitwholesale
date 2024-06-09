@@ -1,20 +1,33 @@
 # TODO
-**Notes:**
-- Image uploading & public Thing (see below)
+Priority: Gallery concept - have the checkbox and Thing.gallery flag, need to add the uploading, etc. (see below)
+
 - Allow Edit of Templates - doesn't retroactively change Thing data, just going forward uses the new version
-- Touch to edit cancel the timer on touch move so that slow scrolling doesn't trigger it?
-- Maintain scroll / paginator after deleting an item
+- Touch-to-edit we should cancel the timer on touch move so that slow scrolling doesn't trigger it?
+- Maintain paginator / scroll after deleting an item
+- What about a "pin" concept that keeps a certain Thing at the top of the list regardless of sorting?
+- Save inputs as local storage or something? Because if a save of a Thing fails the inputs end up cleared which is crazy frustrating
+- Reorder main table columns, notes right after name, then type and date?
+- Figure out copy-to-clipboard behaviour that works properly (needs HTTPS)
 
-**Image uploading**
-- Ditch the transfer-vault project, as beautiful as the layout is
-- Integrate into RIW instead
-- Can mark a Thing as "public", which generates a link you can share that goes JUST to that Thing
-- Do we want "Public" to be a toggleable default on a Template? PROBABLY
-- Can attach images/files to a Thing, perhaps as a new type of field? Do a similar uploader to transfer-vault with a droppable area on desktop and 2 Upload buttons
-- Store the various files under .riw/user/uploads/* and reference them in the Thing? By name? Require unique name or overwrite old?
-- Cap max storage size of /uploads/ file by user, hardcoded in their settings file under the hood?
-- Figure out copy-to-clipboard behaviour that works properly
+### Image uploading
+- Step 1: Update UI to allow uploads
+- Step 2: Upload images/files and put in proper directory
+- Step 3: Return a list of images for each Thing when retrieved
+- Step 4: Create new Node endpoint for processing image/file request and returning proper data
 
+- Render a similar uploader to transfer-vault (drop area and 2 upload buttons) when Thing.gallery is true, put below Date and before custom fields
+- Don't need to store uploaded path, it'll be generated from Thing and similar
+- Would store per user under .riw/[username]/uploads/[thing-id]/
+  - Ensures the path is valid for spaces and similar
+- Then need a Node endpoint that given a username, thing-id, filename, and access token returns the base64 (maybe?) of the content
+  - Slower but protected at least
+- Then if we load a Thing with the `gallery` flag, we do a new endpoint call and look in the related folder, and create a list of hardcoded links as part of the returned thing
+  - Under Thing.uploads = [ { url: 'http://address/new-node-endpoint/[username]/[thing-id]/filename', type: 'png' }]
+  - Or generate the URL on the client side instead? To trim down returned payload
+  - Then we can use an <img> tag or whatever to directly link to the full Node endpoint URL
+- Cap max storage size of /uploads/ file by user, default a value in their settings under the hood, but also can manually change in the filesystem directly (no endpoint or overall admin thing needed)
+
+## OLDER NOTES
 - * Finish Demo account data
 
 - Reports with custom queries to generate, as well as charts (could be using ChartModule from PrimeNG)

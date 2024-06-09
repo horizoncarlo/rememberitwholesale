@@ -56,8 +56,13 @@
 @else if (!loading) {
   <div class="main-wrap">
     <div class="panel-wrap">
-      <!-- Note that instead of using a package like sanitize-html we just rely on the built-in Angular DOMSanitizer to prevent XSS -->
-      <span [innerHTML]="thing?.fieldsAsString"></span>
+      @if (thing?.hasFieldsAsString()) {
+        <!-- Note that instead of using a package like sanitize-html we just rely on the built-in Angular DOMSanitizer to prevent XSS -->
+        <span [innerHTML]="thing?.fieldsAsString"></span>
+      }
+      @else {
+        <span>No additional content is provided</span>
+      }
     </div>
   </div>
 }

@@ -7,6 +7,10 @@
   padding-right: 15px;
 }
 
+.share-text {
+  padding-left: 5%;
+}
+
 .thing-in-table {
   width: 100%;
 }
@@ -44,6 +48,43 @@
 .type-col p-checkbox {
   margin-left: 20px;
   margin-right: 20px;
+}
+
+.upload-remove-note {
+  font-style: italic;
+  padding-top: 5px;
+}
+
+.upload-results {
+  padding: 0 10px 5px 10px;
+}
+
+.upload-files {
+  display: grid;
+  gap: 2px;
+  grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
+  margin-bottom: 5px;
+}
+
+.upload-item {
+  cursor: not-allowed;
+  text-align: center;
+}
+
+:host ::ng-deep .upload-item .p-chip {
+  min-height: 40px;
+}
+
+:host ::ng-deep .upload-item .p-chip:hover {
+  color: #BB0000 !important;
+}
+
+img.upload-item {
+  margin: 2px;
+}
+
+img.upload-item:hover {
+  box-shadow: 0 0 10px red;
 }
 
 @media (max-width: 850px) { /* var(--mobile-breakpoint) equivalent, just can't use in media queries */

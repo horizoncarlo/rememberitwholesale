@@ -8,6 +8,7 @@ import { AutoCompleteModule } from 'primeng/autocomplete';
 import { ButtonModule } from 'primeng/button';
 import { CalendarModule } from 'primeng/calendar';
 import { CheckboxModule } from 'primeng/checkbox';
+import { ChipModule } from 'primeng/chip';
 import { ChipsModule } from 'primeng/chips';
 import { ColorPickerModule } from 'primeng/colorpicker';
 import { ConfirmDialogModule } from 'primeng/confirmdialog';
@@ -69,6 +70,7 @@ import { UserProfileDialogComponent } from './user-profile-dialog/user-profile-d
     ConfirmDialogModule,
     ConfirmPopupModule,
     CheckboxModule,
+    ChipModule,
     ChipsModule,
     DialogModule,
     DragDropModule,

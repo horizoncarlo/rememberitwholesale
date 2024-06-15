@@ -158,8 +158,15 @@ p-columnfilterformelement .p-inputtext {
   margin: 5px;
 }
 
+/* Option to remove padding from the panel content */
 .no-panel-pad .p-panel-content {
   padding: 0 !important;
+}
+
+/* Slightly smaller header/footer dialog padding, and more centered content */
+.p-dialog .p-dialog-header,
+.p-dialog .p-dialog-footer {
+  padding: 1rem;
 }
 
 @media (max-width: 850px) { /* var(--mobile-breakpoint) equivalent, just can't use in media queries */

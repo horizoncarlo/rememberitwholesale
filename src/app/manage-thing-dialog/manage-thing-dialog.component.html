@@ -51,24 +51,50 @@
       @if (actOn.gallery) {
         <tr>
           <td colspan="2">
-            <p-panel header="Gallery Uploads" [toggleable]="true" class="no-panel-pad">
+            <p-panel [toggleable]="true" class="no-panel-pad">
+              <ng-template pTemplate="header">
+                <b>Gallery Uploads</b>
+                @if (hasUploads()) {
+                  &nbsp;({{uploadList.length}})
+                }
+              </ng-template>
               <div [class]="'drop-area ' + (dropHighlight ? 'drop-highlight' : '')"
                    (dragenter)="handleDragEnter($event)"
                    (dragleave)="handleDragLeave($event)"
                    (dragover)="$event.preventDefault()"
                    (drop)="handleDraggedFiles($event)"
                    >
-                <span class="text-label">
-                  <i class="pi pi-folder-open"></i> Drag and drop files here or use the buttons to add uploads
-                </span>
-                <p-button label="Upload Files" size="small" severity="help" (onClick)="fileUpload.click()"/>
-                <p-button label="Upload Images" size="small" severity="help" (onClick)="imageUpload.click()"/>
-                
-                <input #fileUpload [style.display]="'none'"
-                       type="file" multiple (change)="handleDraggedFiles($event)" />
-                <input #imageUpload [style.display]="'none'"
-                       type="file" multiple (change)="handleDraggedFiles($event)"
-                       accept="image/*" />
+                @if (uploadLoading) {
+                  <p-progressSpinner/>
+                }                   
+                @else {
+                  <span class="text-label">
+                    <i class="pi pi-folder-open"></i> Drag and drop files here or use the buttons to add uploads
+                  </span>
+                  <p-button label="Upload Files" size="small" severity="help" (onClick)="fileUpload.click()"/>
+                  <p-button label="Upload Images" size="small" severity="help" (onClick)="imageUpload.click()"/>
+                  
+                  <input #fileUpload [style.display]="'none'"
+                        type="file" multiple (change)="handleDraggedFiles($event)" />
+                  <input #imageUpload [style.display]="'none'"
+                        type="file" multiple (change)="handleDraggedFiles($event)"
+                        accept="image/*" />
+                  
+                  @if (hasUploads()) {
+                    <div class="upload-remove-note">(Click any file or image to remove upload)</div>
+                  }
+                }
+              </div>
+              
+              <div class="upload-results" title="Click to remove the upload">
+                <div class="upload-files">
+                  @for (upload of getUploadListOfFiles(); track $index) {
+                    <p-chip (click)="removeUpload(upload)" class="upload-item">{{upload.data}}</p-chip>
+                  }
+                </div>
+                @for (upload of getUploadListOfImages(); track $index) {
+                  <img (click)="removeUpload(upload)" class="upload-item" [src]="upload.data" />
+                }
               </div>
             </p-panel>
           </td>
@@ -147,14 +173,15 @@
                 icon="pi pi-trash" [rounded]="true" severity="danger" pTooltip="Delete this Thing" class="fleft"/>
     }
     @if (actOn.public && actOn.updated) {
-      <div class="fleft">
+      <div class="fleft share-text">
         <i class="pi pi-share-alt"></i>
         &nbsp;Share:&nbsp;
         <input pInputText [value]="actOn.generatePublicLink()" readonly="true" (click)="clickPublicLink($event)" style="cursor: copy;"/>
       </div>
     }
     <p-button (onClick)="hide()" label="Cancel" icon="pi pi-times" iconPos="left" severity="secondary"/>
-    <p-button (onClick)="submit()" label="Save Thing" icon="pi pi-check" iconPos="left"/>
+    <p-button (onClick)="submit()" [label]="(hasUploads() ? ('Upload ' + uploadList.length + ' Files and ') : '') + 'Save Thing'"
+              [icon]="'pi pi-' + (hasUploads() ? 'arrow-circle-up' : 'check')" iconPos="left"/>
     <p-confirmPopup />
   </ng-template>
 </p-dialog>

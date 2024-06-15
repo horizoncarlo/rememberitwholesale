@@ -9,12 +9,17 @@ import { UserService } from '../service/user.service';
 import { TemplateDropdownComponent } from '../template-dropdown/template-dropdown.component';
 import { Utility } from '../util/utility';
 
+interface SimpleUpload { data: string, type: 'image' | 'title' };
+
 @Component({
   selector: 'riw-manage-thing-dialog',
   templateUrl: './manage-thing-dialog.component.html',
   styleUrls: ['./manage-thing-dialog.component.css']
 })
 export class ManageThingDialogComponent implements OnDestroy {
+  imageMaxWidth: number = 200 as const;
+  imageMaxHeight: number = 200 as const;
+  
   type: 'add' | 'edit' = 'add';
   actOn: Thing = new Thing('');
   selectedTemplate: Template | null = null;
@@ -23,7 +28,9 @@ export class ManageThingDialogComponent implements OnDestroy {
   hasShownPublicNote: boolean = false;
   dropHighlight: boolean = false;
   fieldTypes = TemplateField.TYPES;
-  dragDropCounter: number = 0; // Since dragleave fires when mousing over child elements, we track our drag enter vs leave counter and change our highlight based on that
+  uploadList: SimpleUpload[] = [];
+  uploadLoading: boolean = false;
+  private dragDropCounter: number = 0; // Since dragleave fires when mousing over child elements, we track our drag enter vs leave counter and change our highlight based on that
   @ViewChild('manageThingDialog') manageThingDialog!: Dialog;
   @ViewChild('templateDropdown') templateDropdown!: TemplateDropdownComponent;
   @Output() manageTemplateEvent = new EventEmitter<TemplateEvent>();
@@ -219,6 +226,20 @@ export class ManageThingDialogComponent implements OnDestroy {
       inputEl.focus();
     }
   }
+
+  handleDragEnter(event: any) {
+    event.preventDefault();
+    this.dragDropCounter++;
+    this.dropHighlight = true;
+  }
+  
+  handleDragLeave(event: any) {
+    this.dragDropCounter--;
+    
+    if (this.dragDropCounter <= 0) {
+      this.dropHighlight = false;
+    }
+  }
   
   handleDraggedFiles(event: any) {
     event.preventDefault();
@@ -240,23 +261,194 @@ export class ManageThingDialogComponent implements OnDestroy {
       Utility.showWarn('Unknown drag and drop type requested');
     }
     
-    console.error("Dragged Files", files); // QUIDEL
-    
-    // Reset the field so that future onchange events will continue to fire
-    (event.target as HTMLInputElement).value = '';
-  }
-  
-  handleDragEnter(event: any) {
-    event.preventDefault();
-    this.dragDropCounter++;
-    this.dropHighlight = true;
-  }
-  
-  handleDragLeave(event: any) {
-    this.dragDropCounter--;
-    
-    if (this.dragDropCounter <= 0) {
-      this.dropHighlight = false;
+    if (files) {
+      this.uploadLoading = true;
+      
+      const promises = [];
+      for (let i = 0; i < files.length; i++) {
+        promises.push(this._readFile(files[i]));
+      }
+      
+      Promise.allSettled(promises).then(res => {
+        // Actual upload to the server isn't done until we save this Thing
+      }).catch(err => {
+        Utility.showError('Failed to upload files');
+        console.error(err);
+      }).finally(() => {
+        this.uploadLoading = false;
+        
+        // Reset the field so that future onchange events will continue to fire
+        (event.target as HTMLInputElement).value = '';
+      });
     }
   }
+  
+  hasUploads(): boolean {
+    return Utility.hasItems(this.uploadList);
+  }
+  
+  getUploadListOfImages(): SimpleUpload[] {
+    if (this.hasUploads()) {
+      return this.uploadList.filter(upload => upload.type === 'image');
+    }
+    return [];
+  }
+  
+  getUploadListOfFiles(): SimpleUpload[] {
+    if (this.hasUploads()) {
+      return this.uploadList.filter(upload => upload.type === 'title');
+    }
+    return [];
+  }
+  
+  removeUpload(toRemove: SimpleUpload) {
+    const removeIndex = this.uploadList?.indexOf(toRemove);
+    if (typeof removeIndex === 'number' && removeIndex >= 0) {
+      this.uploadList.splice(removeIndex, 1);
+    }
+  }
+  
+  private _readFile(file: File) {
+    return new Promise((resolve, reject) => {
+      const reader = new FileReader();
+      reader.onloadend = () => {
+        this._processFile(file, reader.result);
+        resolve(null);
+      }
+      
+      reader.onerror = (e) => {
+        reject(e);
+      }
+      
+      // Start our reader based on our file type
+      if (Utility.isImage(file.type)) {
+        reader.readAsDataURL(file);
+      }
+      else {
+        reader.readAsArrayBuffer(file);
+      }
+    });
+  }
+  
+  private _processFile(file: File, data: string | ArrayBuffer | null) {
+    // If weren't not an image we can just send the file along right away
+    if (!Utility.isImage(file.type)) {
+      this._sendFile(file, data);
+      return;
+    }
+    // Otherwise determine if we need to resize the image
+    else if (data) {
+      const image = new Image();
+      image.src = data as string;
+      
+      image.onload = () => {
+        const width = image.width;
+        const height = image.height;
+        const needResize = (width > this.imageMaxWidth) || (height > this.imageMaxHeight);
+        
+        // If we don't need to resize just send along the file
+        if (!needResize) {
+          this._sendFile(file, data);
+          return;
+        }
+        
+        // Otherwise scale but maintain the aspect ratio
+        let newWidth, newHeight;
+        if (width > height) {
+          newHeight = height * (this.imageMaxWidth / width);
+          newWidth = this.imageMaxWidth;
+        }
+        else {
+          newWidth = width * (this.imageMaxHeight / height);
+          newHeight = this.imageMaxHeight;
+        }
+        
+        // Apply to the canvas and send along the scaled result
+        const canvas = document.createElement('canvas');
+        canvas.width = newWidth;
+        canvas.height = newHeight;
+        
+        const context = canvas.getContext('2d');
+        context?.drawImage(image, 0, 0, newWidth, newHeight);
+        
+        this._sendFile(file, canvas.toDataURL(file.type));
+      }
+      
+      image.onerror = (err) => {
+        Utility.showError('Error on upload of files');
+        console.error(err);
+      }
+    }
+  }
+  
+  private _sendFile(file: File, data: string | ArrayBuffer | null) {
+    // TTODO Need to change this call to be done on Save of thing, and actually send and receive on the server
+    if (Utility.isImage(file.type)) {
+      console.error("DATA", data);
+      this.uploadList.push({ data: data as string, type: 'image' });
+      // TTODO
+      // const img = document.createElement('img');
+      // img.classList.add('preview-image');
+      // img.src = data as string;
+      // document.getElementById('preview').appendChild(img);
+    }
+    else {
+      console.error("DATA of file", file.name);
+      this.uploadList.push({ data: file.name, type: 'title' });
+      // TTODO
+      // const text = document.createElement('div');
+      // text.innerText = file.name + ' (' + (file.size/1000).toFixed(1) + 'kb)';
+      // document.getElementById('preview').appendChild(text);
+    }
+    
+    console.log("Would send file of size", file.size);
+    return;
+    
+    /*
+    var formData = new FormData();
+  
+    formData.append('imageData', fileData);
+  
+    $.ajax({
+      type: 'POST',
+      url: '/your/upload/url',
+      data: formData,
+      contentType: false,
+      processData: false,
+      success: function (data) {
+        if (data.success) {
+          alert('Your file was successfully uploaded!');
+        } else {
+          alert('There was an error uploading your file!');
+        }
+      },
+      error: function (data) {
+        alert('There was an error uploading your file!');
+      }
+    });
+    */
+    
+    /*
+    // TODO: On NodeJS side
+    server.on('request', (req, res) => {
+  
+    if(req.url === '/' && req.method == 'GET') {
+        return res.end(fs.readFileSync(__dirname + '/index.html'))
+    }
+  
+    if(req.url=== '/upload' && req.method == 'POST') {
+        const query = new URLSearchParams(req.url);
+            const fileName = query.get(‘/upload?fileName’);
+  
+        req.on('data', chunk => {
+            fs.appendFileSync(fileName, chunk); // append to a file on the disk
+        })
+  
+  
+        return res.end('Yay! File is uploaded.')
+    }
+    })
+    */
+  }
 }
+

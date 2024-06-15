@@ -241,6 +241,11 @@ export class Utility {
     }
   }
   
+  static isImage(fileType: string) {
+    const imageType = /^image\//;
+    return imageType.test(fileType);
+  }
+  
   /**
    * Parse any URLs in our text and wrap them in HTML anchor tags and return the result
    * Note this only counts http: and https: as links, not www. prefixes, so it's somewhat limited

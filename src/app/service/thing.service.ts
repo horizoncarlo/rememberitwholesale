@@ -1,5 +1,6 @@
 import { Injectable } from '@angular/core';
 import { addDays, differenceInMilliseconds, differenceInMinutes, formatDistanceToNow, isAfter, subDays } from 'date-fns';
+import { lastValueFrom } from 'rxjs';
 import { Template } from '../model/template';
 import { Thing } from '../model/thing';
 import { DebugFlags } from '../util/debug-flags';
@@ -8,6 +9,9 @@ import { StorageService } from './storage.service';
 import { UserService } from './user.service';
 
 const REMINDER_MINUTES_TO_WATCH = 60; // Minimum number of minutes remaining on a reminder before we observe it for completion, in case of the app being idle
+const UPLOAD_BATCH_SIZE: number = 5 as const;
+
+export interface SimpleUpload { file: File, data: string, type: 'image' | 'title' };
 
 @Injectable({
   providedIn: 'root'
@@ -34,7 +38,68 @@ export class ThingService {
     Utility.loadTableScrollPos();
   }
   
-  saveThing(toSave: Thing, options?: { silent?: boolean, refreshFromServer?: boolean, onSuccess?: Function }): void {
+  uploadSingleFile(thingId: string, file: File): Promise<any> {
+    const toUpload = new FormData();
+    toUpload.append('file', file, file.name);
+    return lastValueFrom(this.backend.uploadThing(thingId, toUpload));
+  }
+  
+  async uploadAllFiles(attachedThing: Thing, uploadList: SimpleUpload[]) {
+    // Upload any files
+    if (Utility.hasItems(uploadList)) {
+      // We want to batch our uploads to not overwhelm the server
+      let successCount = 0;
+      let errorCount = 0;
+      const batchCount = Math.floor(uploadList.length / UPLOAD_BATCH_SIZE);
+      const batchLeftover = uploadList.length % UPLOAD_BATCH_SIZE;
+      
+      for (let i = 1; i <= batchCount; i++) {
+        await handleBatchUpload((i-1)*UPLOAD_BATCH_SIZE, i*UPLOAD_BATCH_SIZE, uploadList, this);
+      }
+      if (batchLeftover > 0) {
+        await handleBatchUpload(batchCount*UPLOAD_BATCH_SIZE, (batchCount*UPLOAD_BATCH_SIZE + batchLeftover), uploadList, this);
+      }
+      
+      async function handleBatchUpload(indexStart: number, indexEnd: number, uploadList: SimpleUpload[], things: ThingService) {
+        const currentBatchArray = uploadList.slice(indexStart, indexEnd);
+        const batchPromises = currentBatchArray.map((currentFile: SimpleUpload) => {
+          return new Promise(async (resolve, reject) => {
+            try{
+              await things.uploadSingleFile(attachedThing.id, currentFile.file);
+              successCount++;
+              resolve(successCount);
+            }catch(err) {
+              errorCount++;
+              console.error("Failed to upload a file", err);
+              return reject(err);
+            }
+          });
+        });
+        
+        await Promise.allSettled(batchPromises);
+      }
+      
+      if (errorCount > 0) {
+        if (successCount > 0) {
+          Utility.showWarn(`Saved your Thing but failed to upload ${errorCount} files (${successCount} succeeded)`, attachedThing.name);
+        }
+        else {
+          Utility.showWarn(`Saved your Thing but failed to upload ALL ${errorCount} files`, attachedThing.name);
+        }
+      }
+      else if (successCount > 0) {
+        Utility.showSuccess(`Saved your Thing and uploaded ${successCount} files`, attachedThing.name);
+      }
+    }
+  }
+  
+  saveThing(toSave: Thing,
+            options?: {
+              silent?: boolean,
+              refreshFromServer?: boolean,
+              onSuccess?: Function,
+              uploadList?: SimpleUpload[]
+            }): void {
     if (toSave && toSave.isValid()) {
       toSave.prepareForSave();
     }
@@ -47,8 +112,12 @@ export class ThingService {
     
     this.markLoading();
     this.backend.submitThing(toSave).subscribe({
-      next: res => {
-        if (!options?.silent) {
+      next: async res => {
+        if (options && options.uploadList &&
+            Utility.hasItems(options.uploadList)) {
+          await this.uploadAllFiles(toSave, options.uploadList);
+        }
+        else if (!options?.silent) {
           Utility.showSuccess('Successfully saved your Thing', toSave.name);
         }
         

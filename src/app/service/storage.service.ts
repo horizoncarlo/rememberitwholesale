@@ -81,6 +81,10 @@ export class StorageService {
     }, this.defaultHeaders);
   }
   
+  uploadThing(thingId: string, formData: FormData): Observable<any> {
+    return this.http.post(this.makeUrl('upload-thing/' + thingId), formData);
+  }
+  
   submitThing(body: Thing): Observable<any> {
     return this.http.post(this.makeUrl('things'), body, this.defaultHeaders);
   }

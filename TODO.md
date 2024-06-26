@@ -2,12 +2,12 @@
 Priority: Gallery concept - have the checkbox and Thing.gallery flag, need to add the uploading, etc. (see below)
 
 - Allow Edit of Templates - doesn't retroactively change Thing data, just going forward uses the new version
-- Touch-to-edit we should cancel the timer on touch move so that slow scrolling doesn't trigger it?
-- Maintain paginator / scroll after deleting an item
-- What about a "pin" concept that keeps a certain Thing at the top of the list regardless of sorting?
+- Touch to edit cancel the timer on touch move so that slow scrolling doesn't trigger it?
+- Maintain scroll / paginator after deleting an item
+- What about a "pin" concept that keeps a certain Thing at the top of the list regardless of sorting
 - Save inputs as local storage or something? Because if a save of a Thing fails the inputs end up cleared which is crazy frustrating
-- Reorder main table columns, notes right after name, then type and date?
-- Figure out copy-to-clipboard behaviour that works properly (needs HTTPS)
+- Reorder columns, notes right after name, then type and date?
+- Add an X to clear desktop global Search input
 
 ### Image uploading
 - Step 1: Update UI to allow uploads

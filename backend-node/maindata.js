@@ -10,6 +10,8 @@ const crypto = require('crypto');
 const { v4: uuidv4 } = require('uuid');
 const rateLimiter = require('express-rate-limit');
 const { add } = require("date-fns");
+const path = require("path");
+const fileUpload = require("express-fileupload");
 
 // Set some default templates for a new user
 const DEFAULT_TEMPLATES = [
@@ -32,11 +34,12 @@ const DEFAULT_TEMPLATES = [
 ];
 
 const PORT_NUM = 4333;
-const FILE_DIR = os.homedir() + '/.rememberitwholesale/';
+const FILE_DIR = os.homedir() + '/.rememberitwholesale';
 const DEMO_DATA_DIR = "src-demo$data"; // Directory for the basis to copy for Demo accounts
 const GLOBAL_DATA = "global$data";
+const UPLOADS_DIR = 'uploads';
 const MAX_BACKUP_COUNT = 5;
-const BACKUP_FOLDER = 'backup/';
+const BACKUP_DIR = 'backup';
 const BACKUP_PREFIX = 'backup_';
 const BACKUP_TIME_SPACING = 60 * 60 * 1000; // 1 hour
 const TEMPORARY_FILE_PREFIX = 'temporary_';
@@ -82,6 +85,7 @@ const tryDemoLimiter = rateLimiter({
 app.use(cors());
 app.use(globalLimiter);
 app.use(express.json());
+app.use(fileUpload());
 
 // Ensure our auth token is valid and the user is logged in
 app.use((req, res, next) => {
@@ -170,21 +174,21 @@ function ensureUserInMemorySetup(authUsername, noReadFiles) {
 }
 
 function readUserFile(authUsername, fileName, property, defaultVal, recursiveCount) {
-  const fileDirectory = FILE_DIR + (authUsername ? authUsername + '/' : '');
+  const fileDirectory = path.join(FILE_DIR, authUsername);
   let toSet = defaultVal;
   
   try{
     // Determine if our file is empty, in which case we'll use the default value above,
     //  otherwise read our file
     // If we error during the reading, try to create our file and attempt a single more time
-    const contents = fs.readFileSync(fileDirectory + fileName);
+    const contents = fs.readFileSync(path.join(fileDirectory, fileName));
     if (contents && contents.length > 0) {
       toSet = JSON.parse(contents);
     }
   }catch(err) {
     try{
       fs.mkdirSync(fileDirectory, { recursive: true });
-      fs.writeFileSync(fileDirectory + fileName, '', { flag: 'wx' });
+      fs.writeFileSync(path.join(fileDirectory, fileName), '', { flag: 'wx' });
     }catch (ignored) { }
     
     // Determine if we should try again, up to 10 times
@@ -328,9 +332,9 @@ function saveAuthMemoryToFile(overrideData) {
 }
 
 function writeSafeFile(authUsername, fileName, data, retryCount = 0) {
-  const fileDirectory = FILE_DIR + (authUsername ? authUsername + '/' : '');
-  const backupFolder = fileDirectory + BACKUP_FOLDER;
-  const tempFile = backupFolder + TEMPORARY_FILE_PREFIX + fileName;
+  const fileDirectory = path.join(FILE_DIR, authUsername);
+  const backupDirectory = path.join(fileDirectory, BACKUP_DIR);
+  const tempFile = path.join(backupDirectory, TEMPORARY_FILE_PREFIX+fileName);
   
   try{
     // Write to a temporary file first
@@ -338,7 +342,7 @@ function writeSafeFile(authUsername, fileName, data, retryCount = 0) {
     fs.writeFileSync(tempFile, JSON.stringify(data));
     
     // Write to our actual file
-    fs.writeFileSync(fileDirectory + fileName, JSON.stringify(data));
+    fs.writeFileSync(path.join(fileDirectory, fileName), JSON.stringify(data));
     
     // Once complete, take a copy as a backup if needed
     // Note we do this in a separate try-catch because we don't want it to interrupt the user
@@ -352,7 +356,7 @@ function writeSafeFile(authUsername, fileName, data, retryCount = 0) {
       do {
         safetyBreak++;
         
-        const contents = fs.readdirSync(backupFolder, { withFileTypes: true });
+        const contents = fs.readdirSync(backupDirectory, { withFileTypes: true });
         
         // Grab all our files to work with
         filteredFiles = contents
@@ -367,7 +371,7 @@ function writeSafeFile(authUsername, fileName, data, retryCount = 0) {
           // Delete the oldest backup files until we're at MAX_BACKUP_COUNT
           if (!Number.isNaN(maxTime) &&
               filteredFiles && filteredFiles.length >= MAX_BACKUP_COUNT) {
-            const oldestFile = backupFolder + filteredFiles.filter(file => file.includes('' + maxTime))[0]; // This is safe given the filters we do before
+            const oldestFile = path.join(backupDirectory, filteredFiles.filter(file => file.includes('' + maxTime))[0]); // This is safe given the filters we do before
             fs.unlinkSync(oldestFile, (err) => {
               if (err) {
                 error("Failed to delete the desired oldest file", oldestFile);
@@ -395,7 +399,7 @@ function writeSafeFile(authUsername, fileName, data, retryCount = 0) {
       
       // Do the actual backup copy of our temporary file
       if (performBackup) {
-        const backupFile = backupFolder + BACKUP_PREFIX + fileName + '_' + Date.now();
+        const backupFile = path.join(backupDirectory, BACKUP_PREFIX+fileName+'_'+Date.now());
         fs.copyFile(tempFile, backupFile, (err) => {
           if (err) {
             error("Failed to create a backup to: ", backupFile);
@@ -409,7 +413,7 @@ function writeSafeFile(authUsername, fileName, data, retryCount = 0) {
     });
   }catch (err) {
     try{
-      fs.mkdirSync(backupFolder, { recursive: true });
+      fs.mkdirSync(backupDirectory, { recursive: true });
       fs.writeFileSync(tempFile, '', { flag: 'wx' });
     }catch (ignored) { }
     
@@ -516,7 +520,7 @@ function cleanupDemoAccount(username, authData) {
       username && typeof username === 'string' &&
       username.trim().length > 0) {
     // Try to remove our storage files for the demo user
-    const fileDirectory = FILE_DIR + username + '/';
+    const fileDirectory = path.join(FILE_DIR, username);
     fs.rmSync(fileDirectory, { recursive: true });
     
     // Also delete from our local memory auth setup
@@ -613,6 +617,8 @@ app.post("/things/delete", (req, res) => {
   if (Array.isArray(req.body.deleteIds) && req.body.deleteIds.length > 0) {
     const toWork = getInMemoryThings(getAuthUsername(req));
     
+    // TTODO On delete of a thing also remove any uploads/[thingId] directory and contents
+    
     // Loop through all our items, and determine if they match a deletion request
     for (let checkIndex = toWork.length-1; checkIndex >= 0; checkIndex--) {
       for (let deleteIndex = 0; deleteIndex < req.body.deleteIds.length; deleteIndex++) {
@@ -628,6 +634,46 @@ app.post("/things/delete", (req, res) => {
   }
   
   return res.status(200).end();
+});
+
+app.post('/upload-thing/:thingId', async (req, res) => {
+  const thingId = req.params?.thingId;
+  const authUsername = getAuthUsername(req);
+  const uploadedFiles = req.files;
+  if (!thingId || !authUsername ||
+      !uploadedFiles || Object.keys(uploadedFiles).length === 0) {
+    return res.status(400).end();
+  }
+  
+  // Only take the first file, we're a single upload after all
+  const toUpload = req.files[Object.keys(req.files)[0]];
+  
+  log('POST Upload File "' + toUpload.name + '" for ' + authUsername);
+  
+  const userDirectory = path.join(FILE_DIR, authUsername);
+  const uploadDirectory = path.join(userDirectory, UPLOADS_DIR);
+  const finalDirectory = path.join(uploadDirectory, thingId);
+  try{
+    fs.mkdirSync(finalDirectory, { recursive: true });
+  }catch (err) {
+    error('Failed to make upload directory', finalDirectory);
+    return res.status(500).end();
+  }
+  
+  const finalFinalPath = path.join(finalDirectory, toUpload.name); // v1.1_FiNal_Extra_v2_FINAL for sure, lol just for fun
+  
+  // Move our uploaded file to the final path
+  await toUpload.mv(finalFinalPath, function(err) {
+    // setTimeout(() => { // TTODO Can be used to simulate upload latency to test a loading indicator
+    if (err) {
+      error("Error while trying to move uploaded file to ", finalFinalPath);
+      return res.status(500).end();
+    }
+    
+    log("Uploaded file: " + finalFinalPath);
+    return res.status(200).end();
+    // }, 3000);
+  });
 });
 
 app.get("/templates", (req, res) => {
@@ -795,12 +841,12 @@ app.post("/demo-start", tryDemoLimiter, async (req, res) => {
     // Then copy the latest Demo data in, so we have something to show the user
     // We'll do these safely, as one failure shouldn't wreck the demo
     // TODO Setup our live DEMO_DATA_DIR files with good, realistic, interesting data
-    const baseSrcDir = FILE_DIR + DEMO_DATA_DIR + '/';
-    const baseTargetDir = FILE_DIR + demoObj.username + '/';
-    try{ fs.copyFileSync(baseSrcDir + THINGS_FILE, baseTargetDir + THINGS_FILE); }catch (ignored) {}
-    try{ fs.copyFileSync(baseSrcDir + TEMPLATES_FILE, baseTargetDir + TEMPLATES_FILE); }catch (ignored) {}
-    try{ fs.copyFileSync(baseSrcDir + FAVORITE_FILE, baseTargetDir + FAVORITE_FILE); }catch (ignored) {}
-    try{ fs.copyFileSync(baseSrcDir + SETTINGS_FILE, baseTargetDir + SETTINGS_FILE); }catch (ignored) {}
+    const baseSrcDir = path.join(FILE_DIR, DEMO_DATA_DIR);
+    const baseTargetDir = path.join(FILE_DIR, demoObj.username);
+    try{ fs.copyFileSync(path.join(baseSrcDir, THINGS_FILE), path.join(baseTargetDir, THINGS_FILE)); }catch (ignored) {}
+    try{ fs.copyFileSync(path.join(baseSrcDir, TEMPLATES_FILE), path.join(baseTargetDir, TEMPLATES_FILE)); }catch (ignored) {}
+    try{ fs.copyFileSync(path.join(baseSrcDir, FAVORITE_FILE), path.join(baseTargetDir, FAVORITE_FILE)); }catch (ignored) {}
+    try{ fs.copyFileSync(path.join(baseSrcDir, SETTINGS_FILE), path.join(baseTargetDir, SETTINGS_FILE)); }catch (ignored) {}
     
     // After this, we need to re-read our files to store them in memory
     ensureUserFilesAreSetup(demoObj.username);

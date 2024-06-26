@@ -4,12 +4,10 @@ import { Template, TemplateEvent } from '../model/template';
 import { TemplateField } from '../model/template-field';
 import { Thing } from '../model/thing';
 import { TemplateService } from '../service/template.service';
-import { ThingService } from '../service/thing.service';
+import { SimpleUpload, ThingService } from '../service/thing.service';
 import { UserService } from '../service/user.service';
 import { TemplateDropdownComponent } from '../template-dropdown/template-dropdown.component';
 import { Utility } from '../util/utility';
-
-interface SimpleUpload { data: string, type: 'image' | 'title' };
 
 @Component({
   selector: 'riw-manage-thing-dialog',
@@ -81,6 +79,7 @@ export class ManageThingDialogComponent implements OnDestroy {
     
     this.templateDropdown.refreshData();
     
+    this.uploadList = [];
     this.hasShownPublicNote = false;
     this.isShowing = true;
     Utility.commonDialogShow();
@@ -174,7 +173,7 @@ export class ManageThingDialogComponent implements OnDestroy {
     }
   }
   
-  submit(): void {
+  async submit() {
     if (!this.actOn || !this.actOn.isValid()) {
       Utility.showError('Enter a name for this Thing');
       return;
@@ -188,8 +187,15 @@ export class ManageThingDialogComponent implements OnDestroy {
       this.onEdit.emit(this.actOn);
     }
     
-    this.things.saveThing(this.actOn);
-    this.toggleThingDialog(); // Close our dialog
+    // TTODO Better loading indicator, perhaps hide the thing dialog and show a main overlay, or change thing dialog state. Likely use a signal to get a count of done files
+    this.uploadLoading = Utility.hasItems(this.uploadList);
+    this.things.saveThing(this.actOn, {
+      uploadList: this.uploadList,
+      onSuccess: () => {
+        this.uploadLoading = false;
+        this.toggleThingDialog();
+      }
+    });
   }
   
   handleDeleteThing(event: Event): void {
@@ -331,13 +337,8 @@ export class ManageThingDialogComponent implements OnDestroy {
   }
   
   private _processFile(file: File, data: string | ArrayBuffer | null) {
-    // If weren't not an image we can just send the file along right away
-    if (!Utility.isImage(file.type)) {
-      this._sendFile(file, data);
-      return;
-    }
-    // Otherwise determine if we need to resize the image
-    else if (data) {
+    // If we're an image we can just process the content
+    if (Utility.isImage(file.type) && data) {
       const image = new Image();
       image.src = data as string;
       
@@ -346,9 +347,8 @@ export class ManageThingDialogComponent implements OnDestroy {
         const height = image.height;
         const needResize = (width > this.imageMaxWidth) || (height > this.imageMaxHeight);
         
-        // If we don't need to resize just send along the file
+        // If we don't need to resize just mark the file for upload
         if (!needResize) {
-          this._sendFile(file, data);
           return;
         }
         
@@ -371,7 +371,7 @@ export class ManageThingDialogComponent implements OnDestroy {
         const context = canvas.getContext('2d');
         context?.drawImage(image, 0, 0, newWidth, newHeight);
         
-        this._sendFile(file, canvas.toDataURL(file.type));
+        this.uploadList.push({ file: file, data: canvas.toDataURL(file.type), type: 'image' });
       }
       
       image.onerror = (err) => {
@@ -379,76 +379,10 @@ export class ManageThingDialogComponent implements OnDestroy {
         console.error(err);
       }
     }
-  }
-  
-  private _sendFile(file: File, data: string | ArrayBuffer | null) {
-    // TTODO Need to change this call to be done on Save of thing, and actually send and receive on the server
-    if (Utility.isImage(file.type)) {
-      console.error("DATA", data);
-      this.uploadList.push({ data: data as string, type: 'image' });
-      // TTODO
-      // const img = document.createElement('img');
-      // img.classList.add('preview-image');
-      // img.src = data as string;
-      // document.getElementById('preview').appendChild(img);
-    }
+    // Add files to our upload list as they don't need extra processing
     else {
-      console.error("DATA of file", file.name);
-      this.uploadList.push({ data: file.name, type: 'title' });
-      // TTODO
-      // const text = document.createElement('div');
-      // text.innerText = file.name + ' (' + (file.size/1000).toFixed(1) + 'kb)';
-      // document.getElementById('preview').appendChild(text);
+      this.uploadList.push({ file: file, data: file.name, type: 'title' });
     }
-    
-    console.log("Would send file of size", file.size);
-    return;
-    
-    /*
-    var formData = new FormData();
-  
-    formData.append('imageData', fileData);
-  
-    $.ajax({
-      type: 'POST',
-      url: '/your/upload/url',
-      data: formData,
-      contentType: false,
-      processData: false,
-      success: function (data) {
-        if (data.success) {
-          alert('Your file was successfully uploaded!');
-        } else {
-          alert('There was an error uploading your file!');
-        }
-      },
-      error: function (data) {
-        alert('There was an error uploading your file!');
-      }
-    });
-    */
-    
-    /*
-    // TODO: On NodeJS side
-    server.on('request', (req, res) => {
-  
-    if(req.url === '/' && req.method == 'GET') {
-        return res.end(fs.readFileSync(__dirname + '/index.html'))
-    }
-  
-    if(req.url=== '/upload' && req.method == 'POST') {
-        const query = new URLSearchParams(req.url);
-            const fileName = query.get(‘/upload?fileName’);
-  
-        req.on('data', chunk => {
-            fs.appendFileSync(fileName, chunk); // append to a file on the disk
-        })
-  
-  
-        return res.end('Yay! File is uploaded.')
-    }
-    })
-    */
   }
 }
 

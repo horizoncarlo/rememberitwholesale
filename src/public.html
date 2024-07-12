@@ -1,0 +1,328 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <title>Remember It Wholesale</title>
+    <base href="/" />
+    <meta name="viewport" content="width=device-width, height=device-height, initial-scale=1" />
+    <link rel="icon" href="./assets/favicon/favicon-32.png" sizes="32x32" />
+    <link rel="manifest" href="./assets/favicon/manifest.webmanifest" />
+    
+    <script src="https://cdn.jsdelivr.net/npm/date-fns/cdn.min.js"></script>
+    <script defer src="https://cdn.jsdelivr.net/npm/alpinejs/dist/cdn.min.js"></script>
+    <style>
+      :root {
+        --primary-color: #5EEAD4;
+        --surface-ground: #040D19;
+      }
+      
+      html, body {
+        background-color: black;
+        color: white;
+        padding: 0;
+        margin: 0;
+        width: 100%;
+        height: 100%;
+      }
+      
+      .main-wrap {
+        padding: 15px;
+      }
+
+      .panel-wrap {
+        padding: 20px;
+        border-radius: 40px;
+        background-color: var(--surface-ground);
+        outline: 2px dashed var(--primary-color);
+      }
+      
+      .header {
+        width: 100%;
+        box-sizing: border-box;
+        padding: 5px 10px 5px 20px;
+        font-size: 120%;
+        font-weight: bold;
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        border: 1px solid var(--primary-color);
+        background: linear-gradient(90deg, rgb(0, 0, 0) 10%, var(--primary-color) 100%);
+      }
+      
+      .left {
+        display: flex;
+        align-items: center;
+      }
+
+      .left .header-sub {
+        font-size: 85%;
+        font-weight: normal;
+      }
+
+      .right {
+        display: flex;
+        align-items: center;
+      }
+
+      .main-error, .main-error i {
+        font-size: 170%;
+      }
+
+      .main-error {
+        padding-top: 10%;
+        text-align: center;
+        font-weight: bold;
+      }
+
+      .main-error i {
+        color: red;
+      }
+
+      .main-error .smaller {
+        font-size: 80%;
+        font-weight: normal;
+      }
+      
+      .show-on-mobile {
+        display: none;
+      }
+      
+      .show-on-desktop {
+        display: inline-block;
+      }
+      
+      @media (max-width: 850px) { /* var(--mobile-breakpoint) equivalent, just can't use in media queries */
+        .show-on-mobile {
+          display: inline-block;
+        }
+        
+        .show-on-desktop {
+          display: none;
+        }
+      
+        .main-wrap {
+          padding: 0;
+        }
+        
+        .panel-wrap {
+          padding: 10px;
+          border-radius: 0;
+          outline: 0;
+        }
+      }
+    </style>
+  </head>
+  <body x-data="state"
+        x-init="Alpine.nextTick(() => { bodyReady = true })"
+        style="display: none;" x-show="bodyReady" x-transition.opacity x-transition.duration.750ms>
+    <div x-show="!loading" class="header"
+         x-bind:style="thing && { border: `1px solid ${thing.color}`, background: `linear-gradient(90deg, rgb(0, 0, 0) 10%, ${thing.color} 100%)` }">
+      <div class="left">
+        <span class="show-on-desktop">Remember It Wholesale</span>
+        <span class="show-on-mobile">RIW</span>
+        <template x-if="thing">
+          <div>
+            &nbsp;|&nbsp;<span x-text="thing.name"></span>&nbsp;-
+            <span class="header-sub">
+              <span class="show-on-desktop">Updated</span>
+              <span x-text="getUpdated(thing, !isMobileSize())"></span>
+            </span>
+          </div>
+        </template>
+      </div>
+      <div class="right">
+        🔒 <button @click="location.href = 'login'" title="Login to the main app">Login</button>
+      </div>
+    </div>
+    <!-- TTODO Loading indicator <p-progressBar [mode]="loading ? 'indeterminate' : 'determinate'" class="loading-bar" /> -->
+      
+    <template x-if="invalidLink">
+      <div class="main-error">
+        <i class="pi pi-exclamation-triangle"></i>
+        <br/>
+        Failed to load public link<br/>
+        <span class="smaller">Contact whoever gave it to you</span>
+      </div>
+    </template>
+    <template x-if="!invalidLink && !loading">
+      <div class="main-wrap">
+        <div class="panel-wrap">
+          <template x-if="isValidString(thing?.fieldsAsString)">
+            <span x-html="thing?.fieldsAsString"></span>
+          </template>
+          <template x-if="!isValidString(thing?.fieldsAsString)">
+            <span>No additional content is provided</span>
+          </template>
+        </div>
+      </div>
+    </template>
+  </body>
+  <script>
+    const PUBLIC_THING_PARAM = 't';
+    const PUBLIC_USER_PARAM = 'u';
+    
+    var state = {
+      bodyReady: false,
+      loading: false,
+      invalidLink: false,
+      thing: null,
+    }
+    
+    function main() {
+      document.addEventListener('alpine:initialized', () => {
+        state = Alpine.reactive(state);
+      
+        const queryParams = new URLSearchParams(window.location.search);
+        const toLoadId = queryParams && isValidString(queryParams.get(PUBLIC_THING_PARAM)) ? queryParams.get(PUBLIC_THING_PARAM) : null;
+        const username = queryParams && isValidString(queryParams.get(PUBLIC_USER_PARAM)) ? queryParams.get(PUBLIC_USER_PARAM) : null;
+        if (toLoadId && username) {
+          loadPublicThing(toLoadId, username).then(res => {
+            console.log("Load link results", res);
+            state.thing = res;
+            state.thing.fieldsAsString = convertFieldsToString();
+          }).catch(err => {
+            state.invalidLink = true;
+            console.error("Failed to load link", err);
+          });
+        }
+        else {
+          state.invalidLink = true;
+        }
+      });
+    }
+    main();
+    
+    async function _fetchWithLoading(url, body) {
+      state.loading = true;
+      try {
+        const options = {
+          method: 'GET'
+        };
+        if (body) {
+          options.body = body;
+        }
+        
+        const response = await fetch(url, options);
+        if (response.ok) {
+          return response.json();
+        }
+        
+        throw new Error(response.status + ": " + response.statusText);
+      }catch (error) {
+        throw error;
+      }finally {
+        state.loading = false;
+      }
+    }
+    
+    async function loadPublicThing(thingId, username) {
+      return _fetchWithLoading(
+        `${window.location.protocol}//${window.location.hostname}:4333/pthing/${thingId}?username=${username}`
+      );
+    }
+    
+    function getUpdated(thing, longForm) {
+      if (thing) {
+        let toReturn = dateFns.formatDistanceStrict(thing.updated, new Date(), { addSuffix: true });
+        
+        // If we're at "seconds", just return simple text instead
+        if (toReturn.indexOf('second') !== -1) {
+          return 'New';
+        }
+        
+        if (!longForm) {
+          // Otherwise shorthand format
+          toReturn = toReturn.replace(' minute', 'm');
+          toReturn = toReturn.replace(' hour', 'h');
+          toReturn = toReturn.replace(' day', 'd');
+          toReturn = toReturn.replace(' month', 'mon');
+          toReturn = toReturn.replace(' year', 'y');
+        
+          // Then remove any plural leftovers
+          toReturn = toReturn.replace('s', '');
+        }
+        
+        return toReturn;
+      }
+      return '?';
+    }
+    
+    // Utility functions
+    function isMobileSize() {
+      return window.matchMedia("(max-width: 850px)").matches;
+    }    
+    
+    function isValidString(str) {
+      return !!(str && typeof str === 'string' && str.trim().length > 0);
+    }
+    
+    function convertFieldsToString() {
+      return state.thing?.fields.join(', ');
+      /* TTODO
+      if (state.thing && state.thing.fields &&
+          Array.isArray(state.thing.fields) &&
+          state.things.field.length > 0) {
+        // Some tough choices overall on how to display the custom fields in a usable way
+        let toReturn = state.thing.map((field) => {
+          if (typeof field.value !== 'undefined' && field.value !== null) {
+            let textLabel = null;
+            // Special case just for Notes, where we don't need a header
+            if (field.label === 'Notes' &&
+                state.thing.length === 1 &&
+                field.type === TemplateField.TYPES.Textarea) {
+              textLabel = '';
+            }
+            else {
+              // If our label ends with a question mark, don't put a colon
+              let suffix = field.label?.endsWith('?') ? ' ' : ': ';
+              
+              // If the field is a text area, use a breakline so it's more like a header
+              let useBreakline = false;
+              if (field.type === TemplateField.TYPES.Textarea) {
+                suffix = '';
+                useBreakline = true;
+              }
+              
+              textLabel = '<b>' + field.getLabel() + '</b>' + suffix +
+                          (useBreakline ? '<br/>' : '');
+            }
+            
+            // If we're a Markdown type, convert to HTML
+            let textValue = field.value + '';
+            if (field.type === TemplateField.TYPES.Markdown) {
+              textValue = marked.parse(textValue) as string;
+            }
+            // If we're a plain string replace any \n and \t, such as textareas, so they maintain their formatting
+            // Don't do this for Markdown as we already have converted it
+            else if (typeof field.value === 'string') {
+              textValue = textValue.replaceAll("\n", "<br/>");
+              textValue = textValue.replaceAll("\t", "    ");
+            }
+            
+            // Convert our boolean to Yes/No for readability
+            if (typeof field.value === 'boolean') {
+              textValue = field.value ? 'Yes' : 'No';
+            }
+            // Check for any links and automatically parse them to clickable versions
+            // Except, again, for Markdown, which does it automatically
+            else if (field.type !== TemplateField.TYPES.Markdown) {
+              textValue = Utility.anchorUrlsInText(textValue);
+            }
+            
+            // After all that work don't append our label if asked
+            if (params && params.noLabels) {
+              return textValue;
+            }
+            
+            return textLabel + textValue;
+          }
+          return null;
+        }).filter(Boolean).join('<br/>'); // Strip empty results and add a breakline
+        
+        return toReturn;
+      }
+      return '';
+      */
+    }
+  </script>
+</html>

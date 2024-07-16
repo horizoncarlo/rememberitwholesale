@@ -38,6 +38,7 @@ const FILE_DIR = os.homedir() + '/.rememberitwholesale';
 const DEMO_DATA_DIR = "src-demo$data"; // Directory for the basis to copy for Demo accounts
 const GLOBAL_DATA = "global$data";
 const UPLOADS_DIR = 'uploads';
+const STATIC_PATH = 'static';
 const MAX_BACKUP_COUNT = 5;
 const BACKUP_DIR = 'backup';
 const BACKUP_PREFIX = 'backup_';
@@ -86,6 +87,11 @@ app.use(cors());
 app.use(globalLimiter);
 app.use(express.json());
 app.use(fileUpload());
+app.use(`/${STATIC_PATH}`, express.static(FILE_DIR));
+
+// To prevent needless favicon.ico logging for our static files we just return NO CONTENT for the request
+// Of course the app itself can manage a proper favicon, we just want to skip this default browser behaviour
+app.get('/favicon.ico', (req, res) => res.status(204).end());
 
 // Ensure our auth token is valid and the user is logged in
 app.use((req, res, next) => {
@@ -94,7 +100,8 @@ app.use((req, res, next) => {
   if (req.originalUrl.startsWith('/login') ||
       req.originalUrl.startsWith('/new-account') ||
       req.originalUrl.startsWith('/demo-start') ||
-      req.originalUrl.startsWith('/pthing/')
+      req.originalUrl.startsWith('/pthing/') ||
+      req.originalUrl.startsWith('/static/')
     ) {
     next();
   }
@@ -151,6 +158,39 @@ function log(message, ...extra) {
 
 function error(message, ...extra) {
   console.error(new Date().toLocaleString() + " - " + message, extra && extra.length > 0 ? extra : '');
+}
+
+/**
+ * Create a gallery URL path for an uploaded file
+ * For example /static/[username]/uploads/[thing-id]/[fileName]
+ * Later the reference to this backend API can be prefixed to make a direct link to the file
+ */
+function makeGalleryURL(authUsername, thingId, fileName) {
+  return path.join(STATIC_PATH, authUsername, UPLOADS_DIR, thingId, fileName);
+}
+
+function addURLsToThings(authUsername, things) {
+  // Dynamically append a URL for any gallery items
+  // We don't save this to the Things file as we want to be more flexible on changing it
+  if (things && Array.isArray(things)) {
+    things.forEach(thing => {
+      if (thing.gallery &&
+          Array.isArray(thing.uploads) && thing.uploads.length > 0) {
+        // Note we specifically don't check for existence of the uploaded file here
+        // This is because then it will intentionally show as a broken link to the user,
+        //   and they can properly delete or reupload or _deal_ with it somehow
+        thing.uploads.forEach(upload => {
+          if (upload && upload.name) {
+            upload.url = makeGalleryURL(authUsername, thing.id, upload.name);
+          }
+        });
+      }
+      
+      return thing;
+    });
+  }
+  
+  return things;
 }
 
 function ensureUserFilesAreSetup(authUsername) {
@@ -542,7 +582,7 @@ app.get("/things", (req, res) => {
         error("Couldn't convert date limit to number", req.query.limit);
         limitDate = -1;
       }
-    }catch(err) { 
+    }catch(err) {
       error("Failed to convert passed date limit [ "+ req.query.limit + " ]", err);
       limitDate = -1;
     }
@@ -554,7 +594,7 @@ app.get("/things", (req, res) => {
     metadata: {
       totalCount: getInMemoryThings(getAuthUsername(req)).length
     },
-    data: limitedThings
+    data: addURLsToThings(getAuthUsername(req), limitedThings)
   };
   
   return res.send(toReturn).end();
@@ -575,9 +615,10 @@ app.get("/pthing/:thingId", (req, res) => {
     // Pull in the Things for the desired user, then find our matching ID
     const userThings = getInMemoryThings(username);
     if (userThings && userThings.length > 0) {
-      const toReturn = userThings.filter(thing => thing.id === thingId);
+      let toReturn = userThings.filter(thing => thing.id === thingId);
       if (toReturn && toReturn.length > 0 &&
           toReturn[0].public) {
+        toReturn = addURLsToThings(username, toReturn);
         return res.send(toReturn[0]).end();
       }
     }

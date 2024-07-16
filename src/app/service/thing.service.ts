@@ -11,7 +11,17 @@ import { UserService } from './user.service';
 const REMINDER_MINUTES_TO_WATCH = 60; // Minimum number of minutes remaining on a reminder before we observe it for completion, in case of the app being idle
 const UPLOAD_BATCH_SIZE: number = 5 as const;
 
-export interface SimpleUpload { file: File, data: string, type: 'image' | 'title' };
+export interface SimpleUpload {
+  // For storing in Thing
+  name?: string,
+  size?: number,
+  url?: string,
+  // For processing from the client
+  file?: File,
+  data?: string,
+  // For both
+  type?: 'image' | 'title'
+};
 
 @Injectable({
   providedIn: 'root'
@@ -65,7 +75,7 @@ export class ThingService {
         const batchPromises = currentBatchArray.map((currentFile: SimpleUpload) => {
           return new Promise(async (resolve, reject) => {
             try{
-              await things.uploadSingleFile(attachedThing.id, currentFile.file);
+              await things.uploadSingleFile(attachedThing.id, currentFile.file as File);
               successCount++;
               resolve(successCount);
             }catch(err) {
@@ -109,6 +119,18 @@ export class ThingService {
     }
     
     console.log("Going to save Thing", toSave);
+    
+    // Convert any uploaded files into a friendly list we can save in the Thing
+    if (options && options.uploadList &&
+        Utility.hasItems(options.uploadList)) {
+      toSave.uploads = options.uploadList.map(upload => {
+        return {
+          name: upload.file?.name,
+          size: upload.file?.size,
+          type: upload.type
+        } as SimpleUpload;
+      });
+    }
     
     this.markLoading();
     this.backend.submitThing(toSave).subscribe({

@@ -8,12 +8,24 @@
     <link rel="icon" href="./assets/favicon/favicon-32.png" sizes="32x32" />
     <link rel="manifest" href="./assets/favicon/manifest.webmanifest" />
     
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Noto+Sans:ital,wght@0,100..900;1,100..900&display=swap" rel="stylesheet">
+    
+    <script src="https://cdn.jsdelivr.net/npm/marked/lib/marked.umd.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/dompurify/dist/purify.min.js"></script>
+    
     <script src="https://cdn.jsdelivr.net/npm/date-fns/cdn.min.js"></script>
+    
     <script defer src="https://cdn.jsdelivr.net/npm/alpinejs/dist/cdn.min.js"></script>
     <style>
       :root {
         --primary-color: #5EEAD4;
         --surface-ground: #040D19;
+      }
+      
+      * {
+        font-family: 'Noto Sans', sans-serif !important;
       }
       
       html, body {
@@ -25,6 +37,14 @@
         height: 100%;
       }
       
+      a {
+        color: #9499CC;
+      }
+      
+      a:visited {
+        color: #D0ADF0;
+      }
+      
       .main-wrap {
         padding: 15px;
       }
@@ -34,12 +54,14 @@
         border-radius: 40px;
         background-color: var(--surface-ground);
         outline: 2px dashed var(--primary-color);
+        max-width: 100%;
+        word-wrap: break-word;
       }
       
       .header {
         width: 100%;
         box-sizing: border-box;
-        padding: 5px 10px 5px 20px;
+        padding: 15px 15px 15px 20px;
         font-size: 120%;
         font-weight: bold;
         display: flex;
@@ -63,6 +85,10 @@
         display: flex;
         align-items: center;
       }
+      
+      .smaller-text {
+        font-size: 80%;
+      }
 
       .main-error, .main-error i {
         font-size: 170%;
@@ -83,6 +109,14 @@
         font-weight: normal;
       }
       
+      .icon-button {
+        cursor: pointer;
+      }
+      
+      .icon-button:hover {
+        filter: drop-shadow(0 0 5px white);
+      }
+      
       .show-on-mobile {
         display: none;
       }
@@ -98,6 +132,10 @@
         
         .show-on-desktop {
           display: none;
+        }
+        
+        .header {
+          padding: 5px 10px 5px 10px;
         }
       
         .main-wrap {
@@ -119,10 +157,12 @@
          x-bind:style="thing && { border: `1px solid ${thing.color}`, background: `linear-gradient(90deg, rgb(0, 0, 0) 10%, ${thing.color} 100%)` }">
       <div class="left">
         <span class="show-on-desktop">Remember It Wholesale</span>
-        <span class="show-on-mobile">RIW</span>
         <template x-if="thing">
           <div>
-            &nbsp;|&nbsp;<span x-text="thing.name"></span>&nbsp;-
+            <span class="show-on-desktop">&nbsp;|</span>
+            <span x-text="thing.name"></span>
+            <span class="show-on-desktop">&nbsp;-</span>
+            <br class="show-on-mobile"/>
             <span class="header-sub">
               <span class="show-on-desktop">Updated</span>
               <span x-text="getUpdated(thing, !isMobileSize())"></span>
@@ -130,8 +170,8 @@
           </div>
         </template>
       </div>
-      <div class="right">
-        🔒 <button @click="location.href = 'login'" title="Login to the main app">Login</button>
+      <div class="right icon-button" @click="location.href = 'login'" title="Login to the main app">
+        🔒
       </div>
     </div>
     <!-- TTODO Loading indicator <p-progressBar [mode]="loading ? 'indeterminate' : 'determinate'" class="loading-bar" /> -->
@@ -150,7 +190,30 @@
           <template x-if="isValidString(thing?.fieldsAsString)">
             <span x-html="thing?.fieldsAsString"></span>
           </template>
-          <template x-if="!isValidString(thing?.fieldsAsString)">
+          
+          <template x-if="hasUploads()">
+            <div> <!-- TTODO Gallery style wrapping, including image sizing, maybe a carousel -->
+              <br/>
+              <template x-for="upload in thing.uploads">
+                <div>
+                  <template x-if="upload.type === 'title'">
+                    <span>
+                      Attached File:
+                      <a :href="upload.url" target="_blank"
+                        x-text="upload.name"></a>
+                      <span x-text="`(size ${readableSize(upload.size)})`" class="smaller-text"></span>
+                    </span>
+                  </template>
+                  <template x-if="upload.type === 'image'">
+                    <img :alt="upload.name" :src="upload.url" loading="lazy"
+                         :title="`${upload.name} (size ${readableSize(upload.size)})`"/>
+                  </template>
+                </div>
+              </template>
+            </div>
+          </template>
+          
+          <template x-if="!hasUploads() && !isValidString(thing?.fieldsAsString)">
             <span>No additional content is provided</span>
           </template>
         </div>
@@ -160,6 +223,7 @@
   <script>
     const PUBLIC_THING_PARAM = 't';
     const PUBLIC_USER_PARAM = 'u';
+    const BACKEND_API = `${window.location.protocol}//${window.location.hostname}:4333`;
     
     var state = {
       bodyReady: false,
@@ -180,6 +244,15 @@
             console.log("Load link results", res);
             state.thing = res;
             state.thing.fieldsAsString = convertFieldsToString();
+            
+            // Apply our base URL to the path provided by any uploaded file
+            if (hasUploads()) {
+              state.thing.uploads.forEach(upload => {
+                if (upload && upload.url) {
+                  upload.url = `${BACKEND_API}/${upload.url}`;
+                }
+              })
+            }
           }).catch(err => {
             state.invalidLink = true;
             console.error("Failed to load link", err);
@@ -217,7 +290,7 @@
     
     async function loadPublicThing(thingId, username) {
       return _fetchWithLoading(
-        `${window.location.protocol}//${window.location.hostname}:4333/pthing/${thingId}?username=${username}`
+        `${BACKEND_API}/pthing/${thingId}?username=${username}`
       );
     }
     
@@ -256,20 +329,37 @@
       return !!(str && typeof str === 'string' && str.trim().length > 0);
     }
     
+    function readableSize(size) {
+      const i = size == 0 ? 0 : Math.floor(Math.log(size) / Math.log(1024));
+      return +((size / Math.pow(1024, i)).toFixed(2)) * 1 + ' ' + ['B', 'kB', 'MB', 'GB', 'TB'][i];
+    }
+    
+    function hasUploads() {
+      return state && state.thing && state.thing.uploads &&
+             Array.isArray(state.thing.uploads) &&
+             state.thing.uploads.length > 0;
+    }
+    
+    function anchorUrlsInText(text) {
+      const urlRegex = /(\b(https?):\/\/[-A-Z0-9+&@#\/%?=~_|!:,.;]*[-A-Z0-9+&@#\/%=~_|])/ig;
+      return text.replace(urlRegex, url => {
+        return '<a href="' + url + '" target="_blank">' + url + '</a>';
+      });
+    }
+    
     function convertFieldsToString() {
-      return state.thing?.fields.join(', ');
-      /* TTODO
+      // TODO Determine a way to share the convertFieldsToString between main Angular code (in thing.ts) and public Alpine code here
       if (state.thing && state.thing.fields &&
           Array.isArray(state.thing.fields) &&
-          state.things.field.length > 0) {
+          state.thing.fields.length > 0) {
         // Some tough choices overall on how to display the custom fields in a usable way
-        let toReturn = state.thing.map((field) => {
+        let toReturn = state.thing.fields.map((field) => {
           if (typeof field.value !== 'undefined' && field.value !== null) {
             let textLabel = null;
             // Special case just for Notes, where we don't need a header
             if (field.label === 'Notes' &&
                 state.thing.length === 1 &&
-                field.type === TemplateField.TYPES.Textarea) {
+                field.type === 'textarea') {
               textLabel = '';
             }
             else {
@@ -278,19 +368,19 @@
               
               // If the field is a text area, use a breakline so it's more like a header
               let useBreakline = false;
-              if (field.type === TemplateField.TYPES.Textarea) {
+              if (field.type === 'textarea') {
                 suffix = '';
                 useBreakline = true;
               }
               
-              textLabel = '<b>' + field.getLabel() + '</b>' + suffix +
+              textLabel = '<b>' + field?.label + '</b>' + suffix +
                           (useBreakline ? '<br/>' : '');
             }
             
             // If we're a Markdown type, convert to HTML
             let textValue = field.value + '';
-            if (field.type === TemplateField.TYPES.Markdown) {
-              textValue = marked.parse(textValue) as string;
+            if (field.type === 'markdown') {
+              textValue = marked.parse(textValue);
             }
             // If we're a plain string replace any \n and \t, such as textareas, so they maintain their formatting
             // Don't do this for Markdown as we already have converted it
@@ -305,14 +395,13 @@
             }
             // Check for any links and automatically parse them to clickable versions
             // Except, again, for Markdown, which does it automatically
-            else if (field.type !== TemplateField.TYPES.Markdown) {
-              textValue = Utility.anchorUrlsInText(textValue);
+            else if (field.type !== 'markdown') {
+              textValue = anchorUrlsInText(textValue);
             }
             
-            // After all that work don't append our label if asked
-            if (params && params.noLabels) {
-              return textValue;
-            }
+            // Since we can't rely on Angular's built in XSS prevention, we need to use DOMPurify to do so
+            // Allow 'target' for our links to open in a _blank new window
+            textValue = DOMPurify.sanitize(textValue, { ADD_ATTR: ['target'] });
             
             return textLabel + textValue;
           }
@@ -322,7 +411,6 @@
         return toReturn;
       }
       return '';
-      */
     }
   </script>
 </html>

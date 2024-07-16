@@ -2,10 +2,12 @@ import { addMonths, formatDistanceStrict, isAfter, isBefore, subHours } from 'da
 import { marked } from 'marked';
 import { v4 as uuidv4 } from 'uuid';
 import { TemplateService } from '../service/template.service';
+import { SimpleUpload } from '../service/thing.service';
 import { Utility } from '../util/utility';
 import { Template } from './template';
 import { TemplateField } from './template-field';
 
+export const PUBLIC_THING_PAGE = 'public.html';
 export const PUBLIC_THING_PARAM = 't';
 export const PUBLIC_USER_PARAM = 'u';
 export const DEFAULT_ID = "progress";
@@ -19,6 +21,7 @@ export class Thing {
   reminder?: boolean;
   public?: boolean = false;
   gallery?: boolean = false;
+  uploads?: SimpleUpload[];
   updated: Date | undefined;
   fields: TemplateField[] = [];
   fieldsAsString: string | undefined; // TODO Convert fields to Angular Signals or RxJS so we can maintain a string version automatically instead of manually like we do now
@@ -32,6 +35,7 @@ export class Thing {
                 reminder?: boolean,
                 public?: boolean,
                 gallery?: boolean,
+                uploads?: SimpleUpload[],
                 updated: Date | undefined,
                 fields?: TemplateField[],
               }) {
@@ -44,6 +48,9 @@ export class Thing {
     this.reminder = options && options.reminder || false;
     this.public = options && options.public || false;
     this.gallery = options && options.gallery || false;
+    if (options && options.uploads) {
+      this.uploads = options && options.uploads;
+    }
     this.fields = options && options.fields || [];
     
     // If we have an existing date just cast it
@@ -93,6 +100,7 @@ export class Thing {
                       reminder: source.reminder,
                       public: source.public,
                       gallery: source.gallery,
+                      uploads: source.uploads,
                       updated: source.updated,
                       fields: source.fields });
   }
@@ -101,7 +109,7 @@ export class Thing {
     if (this.updated) {
       // If we've been saved before then we can generate a link
       // Lengthy way to try to efficiently generate a link like http://oursite.com/?t=thingid&u=username
-      return `${window.location.protocol}//${window.location.hostname}${Utility.isValidString(window.location.port) ? (':' + window.location.port) : ''}/?${PUBLIC_THING_PARAM}=${this.id}&${PUBLIC_USER_PARAM}=${Utility.getLocalUsername()}`;
+      return `${window.location.protocol}//${window.location.hostname}${Utility.isValidString(window.location.port) ? (':' + window.location.port) : ''}/${PUBLIC_THING_PAGE}?${PUBLIC_THING_PARAM}=${this.id}&${PUBLIC_USER_PARAM}=${Utility.getLocalUsername()}`;
     }
     return 'Needs to save first';
   }
@@ -187,6 +195,7 @@ export class Thing {
     if (!this.reminder) { delete this.reminder; }
     if (!this.public) { delete this.public; }
     if (!this.gallery) { delete this.gallery; }
+    if (!this.uploads) { delete this.uploads; }
     if (Utility.hasItems(this.fields)) {
       this.fields?.forEach((currentField) => {
         if (!Utility.isDefinedNotNull(currentField.value)) {

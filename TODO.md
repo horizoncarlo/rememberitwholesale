@@ -1,31 +1,31 @@
 # TODO
-Priority: Gallery concept - have the checkbox and Thing.gallery flag, need to add the uploading, etc. (see below)
+### Priority: Gallery concept
+- Ensure that non-public galleries can't be accessed via /static but instead require an access token. Unlikely to guess a random URL, but you never know
+- Show proper gallery on public.html, with error messages, file sizes, pagination, formatting, etc.
+- Perhaps have a way to scale images automatically from /static to get a thumbnail version on the fly?
+  - Could leverage Sharp? https://sharp.pixelplumbing.com/
+- Handle loading/editing of existing images in main app for a Thing
+- Handle deleting an upload directory when deleting a Thing
+  - Is there any case files will hang around without a parent Thing?
+- Cap max storage size of /uploads/ file by user, default a value in their settings under the hood, but also can manually change in the filesystem directly (no endpoint or overall admin thing needed)
+  - Can show this in the User Profile dialog?
+- When all done remove the old publicview.component.* concept
+- Will need to check rate limiter, as we don't want to hit a cap on image loading just from a big gallery
+  - Should be avoidable with smart/lazy loading or pagination in general, but something to keep in mind
 
+### Other important
+- Bug: Row count by Name in main table doesn't update when adding a new Thing
+- Better/smoother/less steps to get a public link - currently need to save the thing, re-edit, copy from a field
+  - Perhaps auto-copy to clipboard on save? Or a special toast with a button to copy?
 - Allow Edit of Templates - doesn't retroactively change Thing data, just going forward uses the new version
 - Touch to edit cancel the timer on touch move so that slow scrolling doesn't trigger it?
+- How to filter or search by Public/Gallery/Reminder? Maybe a special keyword in the global search? Or a row filter option (currently not used a ton though)
 - Maintain scroll / paginator after deleting an item
 - What about a "pin" concept that keeps a certain Thing at the top of the list regardless of sorting
 - Save inputs as local storage or something? Because if a save of a Thing fails the inputs end up cleared which is crazy frustrating
 - Reorder columns, notes right after name, then type and date?
-- Add an X to clear desktop global Search input
-
-### Image uploading
-- Step 1: Update UI to allow uploads
-- Step 2: Upload images/files and put in proper directory
-- Step 3: Return a list of images for each Thing when retrieved
-- Step 4: Create new Node endpoint for processing image/file request and returning proper data
-
-- Render a similar uploader to transfer-vault (drop area and 2 upload buttons) when Thing.gallery is true, put below Date and before custom fields
-- Don't need to store uploaded path, it'll be generated from Thing and similar
-- Would store per user under .riw/[username]/uploads/[thing-id]/
-  - Ensures the path is valid for spaces and similar
-- Then need a Node endpoint that given a username, thing-id, filename, and access token returns the base64 (maybe?) of the content
-  - Slower but protected at least
-- Then if we load a Thing with the `gallery` flag, we do a new endpoint call and look in the related folder, and create a list of hardcoded links as part of the returned thing
-  - Under Thing.uploads = [ { url: 'http://address/new-node-endpoint/[username]/[thing-id]/filename', type: 'png' }]
-  - Or generate the URL on the client side instead? To trim down returned payload
-  - Then we can use an <img> tag or whatever to directly link to the full Node endpoint URL
-- Cap max storage size of /uploads/ file by user, default a value in their settings under the hood, but also can manually change in the filesystem directly (no endpoint or overall admin thing needed)
+- Upgrade to Angular 18
+- Split package.json for Angular and Node project instead of having them combined (...yaaaay build stuff)
 
 ## OLDER NOTES
 - * Finish Demo account data

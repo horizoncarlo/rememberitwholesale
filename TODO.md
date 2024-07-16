@@ -12,9 +12,11 @@
 - When all done remove the old publicview.component.* concept
 - Will need to check rate limiter, as we don't want to hit a cap on image loading just from a big gallery
   - Should be avoidable with smart/lazy loading or pagination in general, but something to keep in mind
+- BUG: Start uploading a ton (200+ images), then close the Thing dialog as it's processing, and add a new Thing, and the button is still updated with the count
+  - Need a way to interrupt and abort uploading on dialog close
 
 ### Other important
-- Bug: Row count by Name in main table doesn't update when adding a new Thing
+- BUG: Row count by Name in main table doesn't update when adding a new Thing
 - Better/smoother/less steps to get a public link - currently need to save the thing, re-edit, copy from a field
   - Perhaps auto-copy to clipboard on save? Or a special toast with a button to copy?
 - Allow Edit of Templates - doesn't retroactively change Thing data, just going forward uses the new version

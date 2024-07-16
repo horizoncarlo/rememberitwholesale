@@ -205,8 +205,10 @@
                     </span>
                   </template>
                   <template x-if="upload.type === 'image'">
-                    <img :alt="upload.name" :src="upload.url" loading="lazy"
-                         :title="`${upload.name} (size ${readableSize(upload.size)})`"/>
+                    <!-- TTODO Need a more complete solution for loading a ton of images, as loading="lazy" is pretty forgiving on page length before it considers an image out of view -->
+                    <img loading="lazy" :alt="upload.name" :src="upload.url"
+                         :title="`${upload.name} (size ${readableSize(upload.size)})`"
+                         style="max-width: 400px; max-height: 400px;"/>
                   </template>
                 </div>
               </template>
@@ -251,7 +253,18 @@
                 if (upload && upload.url) {
                   upload.url = `${BACKEND_API}/${upload.url}`;
                 }
-              })
+              });
+              
+              // Sort with non-images first
+              state.thing.uploads.sort((a, b) => {
+                if (a.type === 'title' && b.type !== 'title') {
+                  return -1;
+                } else if (a.type !== 'title' && b.type === 'title') {
+                  return 1;
+                } else {
+                  return 0;
+                }
+              });
             }
           }).catch(err => {
             state.invalidLink = true;

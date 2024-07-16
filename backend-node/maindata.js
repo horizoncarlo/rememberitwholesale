@@ -53,31 +53,31 @@ const AUTH_FILE = 'auth.json';
 // Setup express-rate-limit (https://express-rate-limit.mintlify.app/reference/configuration)
 // We want a global limiter for all endpoints, and then a more restrictive one for each public endpoint
 // We separate the public endpoints so that we can independently restrict login vs new account
-const limitModifier = (process.env.NODE_ENV === 'production' ? 1 : 100000); // Basically remove the limit on non-prod environments
 const globalLimiter = rateLimiter({
-	windowMs: 1 * 60 * 1000 * limitModifier, // 1 minute
-  limit: 50 * limitModifier, // Max of 50 requests across 1 minute
+  skip: () => process.env.NODE_ENV !== 'production',
+	windowMs: 1 * 60 * 1000, // 1 minute
+  limit: 50, // Max of 50 requests across 1 minute
 	standardHeaders: false, // Don't return any RateLimit headers
 	legacyHeaders: false, // Don't return any RateLimit headers
 });
 // Login limit: 20 calls per 20 minutes
 const loginLimiter = rateLimiter({
-	windowMs: 20 * 60 * 1000 * limitModifier,
-	limit: 20 * limitModifier,
+	windowMs: 20 * 60 * 1000,
+	limit: 20,
 	standardHeaders: false,
 	legacyHeaders: false,
 });
 // New account limit: 5 calls per 1 hour
 const newAccountLimiter = rateLimiter({
-	windowMs: 60 * 60 * 1000 * limitModifier,
-	limit: 5 * limitModifier,
+	windowMs: 60 * 60 * 1000,
+	limit: 5,
 	standardHeaders: false,
 	legacyHeaders: false,
 });
 // Demo limit: 3 calls per day
 const tryDemoLimiter = rateLimiter({
-	windowMs: 24 * 60 * 60 * 1000 * limitModifier,
-	limit: 3 * limitModifier,
+	windowMs: 24 * 60 * 60 * 1000,
+	limit: 3,
 	standardHeaders: false,
 	legacyHeaders: false,
 });
@@ -711,7 +711,6 @@ app.post('/upload-thing/:thingId', async (req, res) => {
       return res.status(500).end();
     }
     
-    log("Uploaded file: " + finalFinalPath);
     return res.status(200).end();
     // }, 3000);
   });

@@ -5,15 +5,11 @@
 - Perhaps have a way to scale images automatically from /static to get a thumbnail version on the fly?
   - Could leverage Sharp? https://sharp.pixelplumbing.com/
 - Handle loading/editing of existing images in main app for a Thing
-- Handle deleting an upload directory when deleting a Thing
-  - Is there any case files will hang around without a parent Thing?
 - Cap max storage size of /uploads/ file by user, default a value in their settings under the hood, but also can manually change in the filesystem directly (no endpoint or overall admin thing needed)
   - Can show this in the User Profile dialog?
 - When all done remove the old publicview.component.* concept
 - Will need to check rate limiter, as we don't want to hit a cap on image loading just from making a big gallery
   - Should be avoidable with smart/lazy loading or pagination in general, but something to keep in mind
-- BUG: Start uploading a ton (200+ images), then close the Thing dialog as it's processing, and add a new Thing, and the button is still updated with the count
-  - Need a way to interrupt and abort uploading on dialog close
 
 ### Other important
 - Allow Edit of Templates - doesn't retroactively change Thing data, just going forward uses the new version
@@ -23,7 +19,7 @@
 - What about a "pin" concept that keeps a certain Thing at the top of the list regardless of sorting
 - Save inputs as local storage or something? Because if a save of a Thing fails the inputs end up cleared which is crazy frustrating
 - Reorder columns, notes right after name, then type and date?
-- Upgrade to Angular 18
+- Upgrade to Angular 18 and any other `ncu` required updates
 - Split package.json for Angular and Node project instead of having them combined (...yaaaay build stuff)
 
 ## OLDER NOTES

@@ -169,6 +169,12 @@ function makeGalleryURL(authUsername, thingId, fileName) {
   return path.join(STATIC_PATH, authUsername, UPLOADS_DIR, thingId, fileName);
 }
 
+function getGalleryPath(authUsername, thingId) {
+  const userDirectory = path.join(FILE_DIR, authUsername);
+  const uploadDirectory = path.join(userDirectory, UPLOADS_DIR);
+  return path.join(uploadDirectory, thingId);
+}
+
 function addURLsToThings(authUsername, things) {
   // Dynamically append a URL for any gallery items
   // We don't save this to the Things file as we want to be more flexible on changing it
@@ -658,19 +664,32 @@ app.post("/things/delete", (req, res) => {
   if (Array.isArray(req.body.deleteIds) && req.body.deleteIds.length > 0) {
     const toWork = getInMemoryThings(getAuthUsername(req));
     
-    // TTODO On delete of a thing also remove any uploads/[thingId] directory and contents
-    
     // Loop through all our items, and determine if they match a deletion request
     for (let checkIndex = toWork.length-1; checkIndex >= 0; checkIndex--) {
       for (let deleteIndex = 0; deleteIndex < req.body.deleteIds.length; deleteIndex++) {
         // Safely try to delete in case any part of our data is invalid
         try{
-          if (toWork[checkIndex].id === req.body.deleteIds[deleteIndex]) {
+          if (toWork[checkIndex]?.id === req.body.deleteIds[deleteIndex]) {
+            // Also if we have any associated uploads burn 'em all
+            // ALL OF THEM
+            // The entire directory, no one is safe!
+            try {
+              if (toWork[checkIndex].gallery ||
+                  (toWork[checkIndex].uploads || Array.isArray(toWork[checkIndex].uploads) || toWork[checkIndex].uploads.length > 0)) {
+                fs.rmSync(getGalleryPath(getAuthUsername(req), toWork[checkIndex].id),
+                          { recursive: true, force: true },
+                          callback => {});
+              }
+            // Even more safety, as we can potentially end up with leftover directories, but still want to remove the Thing
+            }catch (ignored) { }
+            
+            // Finally remove from our list
             toWork.splice(checkIndex, 1);
           }
         }catch (ignored) { }
       }
     }
+    // TODO Run a scheduled task to determine if there's any hanging directories (with no related Thing) and auto-clean them up
     saveThingsMemoryToFile(getAuthUsername(req));
   }
   
@@ -691,9 +710,7 @@ app.post('/upload-thing/:thingId', async (req, res) => {
   
   log('POST Upload File "' + toUpload.name + '" for ' + authUsername);
   
-  const userDirectory = path.join(FILE_DIR, authUsername);
-  const uploadDirectory = path.join(userDirectory, UPLOADS_DIR);
-  const finalDirectory = path.join(uploadDirectory, thingId);
+  const finalDirectory = getGalleryPath(authUsername, thingId);
   try{
     fs.mkdirSync(finalDirectory, { recursive: true });
   }catch (err) {

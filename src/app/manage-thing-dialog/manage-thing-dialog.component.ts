@@ -324,8 +324,13 @@ export class ManageThingDialogComponent implements OnDestroy {
     return new Promise((resolve, reject) => {
       const reader = new FileReader();
       reader.onloadend = () => {
-        this._processFile(file, reader.result);
-        resolve(null);
+        if (this.isShowing) {
+          this._processFile(file, reader.result);
+          resolve(null);
+        }
+        else {
+          reject('Dialog closed');
+        }
       }
       
       reader.onerror = (e) => {
@@ -349,6 +354,11 @@ export class ManageThingDialogComponent implements OnDestroy {
       image.src = data as string;
       
       image.onload = () => {
+        // Abort if we're not showing the dialog
+        if (!this.isShowing) {
+          return;
+        }
+        
         const width = image.width;
         const height = image.height;
         const needResize = (width > this.imageMaxWidth) || (height > this.imageMaxHeight);

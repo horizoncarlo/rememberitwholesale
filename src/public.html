@@ -249,7 +249,7 @@
                 <div class="giw"
                      x-data="{ scale: 1 }"
                      @click="scale += 0.5"
-                     @contextmenu.prevent="scale = Math.max(scale-0.5, 1.75)"
+                     @contextmenu="scale = Math.max(scale-0.5, 1.75); if (scale !== 1.75) { $event.preventDefault() }"
                      @mouseover="scale = 1.75"
                      @mouseout="scale = 1">
                   <template x-if="upload.type === 'title'">

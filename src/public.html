@@ -326,7 +326,7 @@
       🔝
     </div>
     
-    <div class="paginator-box">
+    <div class="paginator-box" x-show="!invalidLink">
       <span @click="firstPage()">⏮</span>
       <span @click="prevPage()">⏪</span>
       <b x-text="`${pageNum+1} / ${pageData.length}`"></b>

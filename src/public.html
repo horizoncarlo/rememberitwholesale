@@ -162,6 +162,7 @@
         max-height: 25vh;
         vertical-align: middle;
         position: relative;
+        background-color: darkred;
         /* TTODO Tweaks - Make transition toggleable (or don't use it) as it can be quite jarring to mouse around the page
         transition: transform 100ms linear; */
       }
@@ -203,7 +204,9 @@
   </head>
   <body x-data="state"
         x-init="Alpine.nextTick(() => { bodyReady = true })"
-        style="display: none;" x-show="bodyReady" x-transition.opacity x-transition.duration.750ms>
+        style="display: none;" x-show="bodyReady" x-transition.opacity x-transition.duration.750ms
+        @keydown.left.window="prevPage()"
+        @keydown.right.window="nextPage()">
     <div x-show="!loading" class="header"
          x-bind:style="thing && { border: `1px solid ${thing.color}`, background: `linear-gradient(90deg, rgb(0, 0, 0) 10%, ${thing.color} 100%)` }">
       <div class="left">
@@ -251,7 +254,7 @@
           <template x-if="hasUploads()">
             <div style="text-align: center;">
               <br/>
-              <template x-for="upload in thing.uploads">
+              <template x-for="upload in pageData[pageNum]">
                 <div class="giw"
                      x-data="{ scale: 1 }"
                      @click="scale += 0.5"
@@ -286,16 +289,25 @@
     </template>
     
     <div @click="window.scrollTo({ top: 0, behavior: 'smooth'})"
-         @scroll.window.throttle.100ms="showScrollTop = document.documentElement.scrollTop/document.documentElement.scrollHeight >= 0.20;"
+         @scroll.window.throttle.100ms="showScrollTop = document.documentElement.scrollTop/document.documentElement.scrollHeight >= 0.25;"
          x-show="showScrollTop" x-transition.opacity x-transition.duration.500ms
          class="scroll-top-button">
       🔝
+    </div>
+    
+    <div style="position: fixed; left: 0; bottom: 0; z-index: 20; padding: 5px; font-size: 120%; cursor: pointer; background-color: rgba(0,0,0,0.9); border-top-right-radius: 5px; border-right: 1px solid var(--primary-color); border-top: 1px solid var(--primary-color);">
+      <span @click="firstPage()">⏮</span>
+      <span @click="prevPage()">⏪</span>
+      <b x-text="`${pageNum+1} / ${pageData.length}`"></b>
+      <span @click="nextPage()">⏩</span>
+      <span @click="lastPage()">⏭</span>
     </div>
   </body>
   <script>
     const PUBLIC_THING_PARAM = 't';
     const PUBLIC_USER_PARAM = 'u';
     const BACKEND_API = `${window.location.protocol}//${window.location.hostname}:4333`;
+    const PAGE_SIZE = 20;
     
     var state = {
       bodyReady: false,
@@ -303,6 +315,8 @@
       loading: false,
       invalidLink: null, // Could be 'true' or 'empty'
       thing: null,
+      pageNum: 0,
+      pageData: [], // 2D array of images, split from thing.uploads
     }
     
     function main() {
@@ -339,6 +353,17 @@
                   return 0;
                 }
               });
+              
+              // Now parse into pages
+              state.pageData = state.thing.uploads.reduce((data, item, index) => {
+                const pageIndex = Math.floor(index / PAGE_SIZE);
+                if (!data[pageIndex]) {
+                  data[pageIndex] = [];
+                }
+                data[pageIndex].push(item);
+                
+                return data;
+              }, []);
             }
           }).catch(err => {
             state.invalidLink = 'true';
@@ -405,6 +430,32 @@
         return toReturn;
       }
       return '?';
+    }
+    
+    function firstPage() {
+      state.pageNum = 0;
+      document.documentElement.scrollTop = 0;
+    }
+    
+    function prevPage() {
+      state.pageNum--;
+      if (state.pageNum < 0) {
+        state.pageNum = 0;
+      }
+      document.documentElement.scrollTop = 0;
+    }
+    
+    function nextPage() {
+      state.pageNum++;
+      if (state.pageNum > state.pageData.length-1) {
+        state.pageNum = state.pageData.length-1;
+      }
+      document.documentElement.scrollTop = 0;
+    }
+    
+    function lastPage() {
+      state.pageNum = state.pageData.length-1;
+      document.documentElement.scrollTop = 0;
     }
     
     // Utility functions

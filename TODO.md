@@ -1,6 +1,5 @@
 # TODO
 ### Priority: Gallery concept
-- Ensure that non-public galleries can't be accessed via /static but instead require an access token. Unlikely to guess a random URL, but you never know
 - Show proper gallery on public.html, with error messages, file sizes, pagination, formatting, etc.
 - Perhaps have a way to scale images automatically from /static to get a thumbnail version on the fly?
   - Could leverage Sharp? https://sharp.pixelplumbing.com/

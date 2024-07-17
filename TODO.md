@@ -10,7 +10,7 @@
 - Cap max storage size of /uploads/ file by user, default a value in their settings under the hood, but also can manually change in the filesystem directly (no endpoint or overall admin thing needed)
   - Can show this in the User Profile dialog?
 - When all done remove the old publicview.component.* concept
-- Will need to check rate limiter, as we don't want to hit a cap on image loading just from a big gallery
+- Will need to check rate limiter, as we don't want to hit a cap on image loading just from making a big gallery
   - Should be avoidable with smart/lazy loading or pagination in general, but something to keep in mind
 - BUG: Start uploading a ton (200+ images), then close the Thing dialog as it's processing, and add a new Thing, and the button is still updated with the count
   - Need a way to interrupt and abort uploading on dialog close

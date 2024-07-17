@@ -37,6 +37,11 @@
         height: 100%;
       }
       
+      body {
+        overflow-y: scroll;
+        overflow-x: hidden;
+      }
+      
       a {
         color: #9499CC;
       }
@@ -125,6 +130,52 @@
         display: inline-block;
       }
       
+      .scroll-top-button {
+        position: fixed;
+        z-index: 20;
+        bottom: 0;
+        right: 0;
+        cursor: n-resize;
+        font-size: 32px;
+      }
+      
+      .giw { /* Gallery image wrapper */
+        /* TTODO Tweaks
+         - Set max-width: 15% instead of width to avoid horizontal square
+         - Set max-height: 25vh and remove line-height to avoid vertical square
+         - Change width to higher/lower percent to do a diferent grid size
+         - For mobile probably do max-width: 50% and call it a day
+        */
+        display: inline-block;
+        vertical-align: middle;
+        text-align: center;
+        width: 25%;
+        height: 25vh;
+        line-height: 25vh;
+        cursor: zoom-in;
+      }
+      
+      .giw img {
+        border-radius: 5px;
+        box-shadow: 0 0 5px #666666;
+        max-width: 100%;
+        max-height: 25vh;
+        vertical-align: middle;
+        position: relative;
+        /* TTODO Tweaks - Make transition toggleable (or don't use it) as it can be quite jarring to mouse around the page
+        transition: transform 100ms linear; */
+      }
+      
+      .giw:hover {
+        position: relative;
+        z-index: 5;
+      }
+      
+      .giw:hover img {
+        box-shadow: 0 0 20px #666666;
+        outline: 1px solid black;
+      }
+      
       @media (max-width: 850px) { /* var(--mobile-breakpoint) equivalent, just can't use in media queries */
         .show-on-mobile {
           display: inline-block;
@@ -156,10 +207,8 @@
     <div x-show="!loading" class="header"
          x-bind:style="thing && { border: `1px solid ${thing.color}`, background: `linear-gradient(90deg, rgb(0, 0, 0) 10%, ${thing.color} 100%)` }">
       <div class="left">
-        <span class="show-on-desktop">Remember It Wholesale</span>
         <template x-if="thing">
           <div>
-            <span class="show-on-desktop">&nbsp;|</span>
             <span x-text="thing.name"></span>
             <span class="show-on-desktop">&nbsp;-</span>
             <br class="show-on-mobile"/>
@@ -167,8 +216,10 @@
               <span class="show-on-desktop">Updated</span>
               <span x-text="getUpdated(thing, !isMobileSize())"></span>
             </span>
+            <span class="show-on-desktop">|&nbsp;</span>
           </div>
         </template>
+        <span class="show-on-desktop">Remember It Wholesale</span>
       </div>
       <div class="right icon-button" @click="location.href = 'login'" title="Login to the main app">
         🔒
@@ -192,10 +243,15 @@
           </template>
           
           <template x-if="hasUploads()">
-            <div> <!-- TTODO Gallery style wrapping, including image sizing, maybe a carousel -->
+            <div style="text-align: center;">
               <br/>
               <template x-for="upload in thing.uploads">
-                <div>
+                <div class="giw"
+                     x-data="{ scale: 1 }"
+                     @click="scale += 0.5"
+                     @contextmenu.prevent="scale = Math.max(scale-0.5, 1.75)"
+                     @mouseover="scale = 1.75"
+                     @mouseout="scale = 1">
                   <template x-if="upload.type === 'title'">
                     <span>
                       Attached File:
@@ -205,10 +261,11 @@
                     </span>
                   </template>
                   <template x-if="upload.type === 'image'">
-                    <!-- TTODO Need a more complete solution for loading a ton of images, as loading="lazy" is pretty forgiving on page length before it considers an image out of view -->
+                    <!-- TTODO Because the page height is 0 while loading, lazy considers ALL images to be in view, so they all load at once
+                               Realistically we need to stagger these somehow, so that as the first page full loads the rest are lazy for later -->
                     <img loading="lazy" :alt="upload.name" :src="upload.url"
                          :title="`${upload.name} (size ${readableSize(upload.size)})`"
-                         style="max-width: 400px; max-height: 400px;"/>
+                         :style="'transform: scale(' + scale + ')'"/>
                   </template>
                 </div>
               </template>
@@ -221,6 +278,13 @@
         </div>
       </div>
     </template>
+    
+    <div @click="window.scrollTo({ top: 0, behavior: 'smooth'})"
+         @scroll.window.throttle.100ms="showScrollTop = document.documentElement.scrollTop/document.documentElement.scrollHeight >= 0.20;"
+         x-show="showScrollTop" x-transition.opacity x-transition.duration.500ms
+         class="scroll-top-button">
+      🔝
+    </div>
   </body>
   <script>
     const PUBLIC_THING_PARAM = 't';
@@ -229,6 +293,7 @@
     
     var state = {
       bodyReady: false,
+      showScrollTop: false,
       loading: false,
       invalidLink: false,
       thing: null,
@@ -237,7 +302,7 @@
     function main() {
       document.addEventListener('alpine:initialized', () => {
         state = Alpine.reactive(state);
-      
+        
         const queryParams = new URLSearchParams(window.location.search);
         const toLoadId = queryParams && isValidString(queryParams.get(PUBLIC_THING_PARAM)) ? queryParams.get(PUBLIC_THING_PARAM) : null;
         const username = queryParams && isValidString(queryParams.get(PUBLIC_USER_PARAM)) ? queryParams.get(PUBLIC_USER_PARAM) : null;
@@ -246,6 +311,9 @@
             console.log("Load link results", res);
             state.thing = res;
             state.thing.fieldsAsString = convertFieldsToString();
+            
+            // Update our page title
+            document.title = state.thing.name + ' - RIW';
             
             // Apply our base URL to the path provided by any uploaded file
             if (hasUploads()) {

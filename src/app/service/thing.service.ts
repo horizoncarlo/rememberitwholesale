@@ -232,6 +232,11 @@ export class ThingService {
   postGetAllThings(details?: { fromService?: boolean }): void {
     const nowDate = new Date();
     
+    // Update our count if we're refreshing from a local cache or don't have the field yet
+    if (this.thingCount === -1 || !details?.fromService) {
+      this.thingCount = this.data.length;
+    }
+    
     this.data = this.data.map((current: Thing) => {
       const toReturn = Thing.cloneFrom(current);
       
@@ -329,8 +334,8 @@ export class ThingService {
         // Unwrap the content from the server
         this.data = res.data as Thing[];
         
-        // Default the Thing count, but overwrite if we have metadata specifying it
-        this.thingCount = this.data.length;
+        // Overwrite the thingCount if we have metadata specifying it
+        this.thingCount = -1;
         if (res.metadata) {
           if (Utility.isDefined(res.metadata.totalCount)) {
             this.thingCount = res.metadata.totalCount;

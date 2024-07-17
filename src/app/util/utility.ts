@@ -54,6 +54,15 @@ export class Utility {
     });
   }
   
+  static showPublicLinkToast(forThing: Thing): void {
+    this._dispatchGenericShow('message-info', {
+      message: '',
+      header: forThing.name + ' - public link ready',
+      life: 6*1000,
+      forThing: forThing
+    });
+  }
+  
   static showSuccessSticky(message: string, header?: string) {
     this.showSuccess(message, header, true);
   }

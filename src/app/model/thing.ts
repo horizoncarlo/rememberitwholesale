@@ -114,12 +114,16 @@ export class Thing {
     return 'Needs to save first';
   }
   
-  copyPublicLink(): void {
+  copyPublicLink(silent?: boolean): void {
     if (this.public) {
       Utility.copyToClipboard(this.generatePublicLink()).then(res => {
-        Utility.showSuccess('Copied shareable link to your clipboard');
+        if (!silent) {
+          Utility.showSuccess('Copied shareable link to your clipboard');
+        }
       }).catch(err => {
-        Utility.showError('Failed to copy the fields to your clipboard');
+        if (!silent) {
+          Utility.showError('Failed to copy the fields to your clipboard');
+        }
         console.error(err);
       });
     }

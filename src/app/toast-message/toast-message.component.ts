@@ -82,7 +82,12 @@ export class ToastMessageComponent implements OnInit, OnDestroy {
         default: console.log(detail, summary); break;
       }
       
-      const key = (eventDetail.confirmCallback && typeof eventDetail.confirmCallback === 'function') ? 'reminderComplete' : 'basic';
+      // Determine our type of toast based on the incoming data
+      let key = (eventDetail.confirmCallback && typeof eventDetail.confirmCallback === 'function') ? 'reminderComplete' : 'basic';
+      if (eventDetail.forThing) {
+        key = 'publicLink';
+      }
+      
       const opts: Message = {
         key: key || 'basic',
         severity: type,
@@ -100,6 +105,11 @@ export class ToastMessageComponent implements OnInit, OnDestroy {
         opts.data = {
           confirmCallback: eventDetail.confirmCallback,
           postponeCallback: eventDetail.postponeCallback
+        };
+      }
+      else if (opts.key === 'publicLink') {
+        opts.data = {
+          forThing: eventDetail.forThing
         };
       }
       

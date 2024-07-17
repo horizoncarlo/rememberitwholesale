@@ -16,9 +16,6 @@
   - Need a way to interrupt and abort uploading on dialog close
 
 ### Other important
-- BUG: Row count by Name in main table doesn't update when adding a new Thing
-- Better/smoother/less steps to get a public link - currently need to save the thing, re-edit, copy from a field
-  - Perhaps auto-copy to clipboard on save? Or a special toast with a button to copy?
 - Allow Edit of Templates - doesn't retroactively change Thing data, just going forward uses the new version
 - Touch to edit cancel the timer on touch move so that slow scrolling doesn't trigger it?
 - How to filter or search by Public/Gallery/Reminder? Maybe a special keyword in the global search? Or a row filter option (currently not used a ton though)

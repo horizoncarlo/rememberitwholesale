@@ -194,6 +194,12 @@ export class ManageThingDialogComponent implements OnDestroy {
       onSuccess: () => {
         this.uploadLoading = false;
         this.toggleThingDialog();
+        
+        // Copy and show our public link right after creation for ease
+        if (this.actOn.public && this.isAdd()) {
+          this.actOn.copyPublicLink(true);
+          Utility.showPublicLinkToast(this.actOn);
+        }
       }
     });
   }

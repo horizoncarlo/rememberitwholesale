@@ -15,3 +15,18 @@
     </div>
   </ng-template>
 </p-toast>
+
+<!-- Special custom toast for displaying a public link after save -->
+<p-toast key="publicLink" position="bottom-left">
+  <ng-template let-message pTemplate="message">
+    <div class="flex flex-column" style="flex: 1">
+      <b>{{message.summary}}</b>
+      <p>{{message.detail}}</p>
+      <div style="text-align: center;" (click)="message.data?.forThing?.copyPublicLink()">
+        <input pInputText [value]="message.data?.forThing?.generatePublicLink()" readonly="true" style="cursor: copy;"/>
+        <br/>
+        <p-button icon="pi pi-clipboard" severity="info" label="Copy to Clipboard" pTooltip="Copy the public link to your clipboard" />
+      </div>
+    </div>
+  </ng-template>
+</p-toast>

@@ -180,7 +180,7 @@
       </div>
     }
     <p-button (onClick)="hide()" label="Cancel" icon="pi pi-times" iconPos="left" severity="secondary"/>
-    <p-button (onClick)="submit()" [label]="(hasUploads() ? ('Upload ' + uploadList.length + ' Files and ') : '') + 'Save Thing'"
+    <p-button #submitButton (onClick)="submit()" [label]="(hasUploads() ? ('Upload ' + uploadList.length + ' Files and ') : '') + 'Save Thing'"
               [icon]="'pi pi-' + (hasUploads() ? 'arrow-circle-up' : 'check')" iconPos="left"/>
     <p-confirmPopup />
   </ng-template>

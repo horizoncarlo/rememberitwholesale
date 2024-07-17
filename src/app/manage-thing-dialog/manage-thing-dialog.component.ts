@@ -1,4 +1,6 @@
 import { Component, EventEmitter, HostListener, OnDestroy, Output, ViewChild } from '@angular/core';
+import { ConfirmationService } from 'primeng/api';
+import { Button } from 'primeng/button';
 import { Dialog } from 'primeng/dialog';
 import { Template, TemplateEvent } from '../model/template';
 import { TemplateField } from '../model/template-field';
@@ -31,13 +33,15 @@ export class ManageThingDialogComponent implements OnDestroy {
   private dragDropCounter: number = 0; // Since dragleave fires when mousing over child elements, we track our drag enter vs leave counter and change our highlight based on that
   @ViewChild('manageThingDialog') manageThingDialog!: Dialog;
   @ViewChild('templateDropdown') templateDropdown!: TemplateDropdownComponent;
+  @ViewChild('submitButton') submitButton!: Button;
   @Output() manageTemplateEvent = new EventEmitter<TemplateEvent>();
   @Output() onDelete = new EventEmitter<{ thing: Thing, event: Event }>();
   @Output() onEdit = new EventEmitter<Thing>();
   
   constructor(public things: ThingService,
               public templateService: TemplateService,
-              public userService: UserService) { }
+              public userService: UserService,
+              private confirmationService: ConfirmationService) { }
   
   ngOnDestroy(): void {
     Utility.commonDialogDestory();
@@ -87,7 +91,22 @@ export class ManageThingDialogComponent implements OnDestroy {
   
   @HostListener('window:popstate', ['$event'])
   hide(): void {
-    this.isShowing = false;
+    // If we're currently processing uploaded images let's warn the user
+    if (this.uploadLoading) {
+      this.confirmationService.confirm({
+        target: this.submitButton?.el?.nativeElement as EventTarget,
+        message: 'You are currently uploading files, are you sure you want to cancel?',
+        icon: 'pi pi-exclamation-triangle',
+        accept: () => {
+          this.isShowing = false;
+        },
+        reject:() => {
+        },
+      });
+    }
+    else {
+      this.isShowing = false;
+    }
   }
   
   toggleThingDialog(): void {

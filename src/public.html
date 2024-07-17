@@ -225,9 +225,11 @@
           width: 95%;
           height: auto;
           line-height: normal;
+          padding: 2px 0 2px 0;
         }
         
         .giw img {
+          box-shadow: unset;
           max-height: none;
         }
       }
@@ -290,8 +292,8 @@
                      x-data="{ scale: 1 }"
                      @click="if (!isMobileSize()) scale += 0.5"
                      @contextmenu="if (!isMobileSize()) { scale = Math.max(scale-0.5, 1.75); if (scale !== 1.75) $event.preventDefault() }"
-                     @mouseover="scale = 1.75"
-                     @mouseout="scale = 1">
+                     @mouseover="if (!isMobileSize()) scale = 1.75"
+                     @mouseout="if (!isMobileSize()) scale = 1">
                   <template x-if="upload.type === 'title'">
                     <span>
                       Attached File:

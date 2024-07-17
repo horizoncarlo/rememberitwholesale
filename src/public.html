@@ -231,8 +231,14 @@
       <div class="main-error">
         <i class="pi pi-exclamation-triangle"></i>
         <br/>
-        Failed to load public link<br/>
-        <span class="smaller">Contact whoever gave it to you</span>
+        <span x-show="invalidLink === 'true'">
+          Failed to load public link<br/>
+          <span class="smaller">Contact whoever gave it to you</span>
+        </span>
+        <span x-show="invalidLink === 'empty'">
+          No link information provided<br/>
+          <span class="smaller"><a href="/login">Join the app now!</a></span>
+        </span>
       </div>
     </template>
     <template x-if="!invalidLink && !loading">
@@ -295,7 +301,7 @@
       bodyReady: false,
       showScrollTop: false,
       loading: false,
-      invalidLink: false,
+      invalidLink: null, // Could be 'true' or 'empty'
       thing: null,
     }
     
@@ -335,12 +341,12 @@
               });
             }
           }).catch(err => {
-            state.invalidLink = true;
+            state.invalidLink = 'true';
             console.error("Failed to load link", err);
           });
         }
         else {
-          state.invalidLink = true;
+          state.invalidLink = 'empty';
         }
       });
     }

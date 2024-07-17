@@ -130,13 +130,27 @@
         display: inline-block;
       }
       
-      .scroll-top-button {
+      .scroll-top-button, .paginator-box {
         position: fixed;
         z-index: 20;
         bottom: 0;
+      }
+      
+      .scroll-top-button {
         right: 0;
         cursor: n-resize;
-        font-size: 32px;
+        font-size: 200%;
+      }
+      
+      .paginator-box {
+        left: 0;
+        padding: 5px;
+        font-size: 130%;
+        cursor: pointer;
+        background-color: rgba(0,0,0,0.9);
+        border-top-right-radius: 5px;
+        border-right: 1px solid var(--primary-color);
+        border-top: 1px solid var(--primary-color);
       }
       
       .giw { /* Gallery image wrapper */
@@ -199,6 +213,16 @@
           border-radius: 0;
           outline: 0;
         }
+        
+        .giw {
+          width: 95%;
+          height: auto;
+          line-height: normal;
+        }
+        
+        .giw img {
+          max-height: none;
+        }
       }
     </style>
   </head>
@@ -257,8 +281,8 @@
               <template x-for="upload in pageData[pageNum]">
                 <div class="giw"
                      x-data="{ scale: 1 }"
-                     @click="scale += 0.5"
-                     @contextmenu="scale = Math.max(scale-0.5, 1.75); if (scale !== 1.75) { $event.preventDefault() }"
+                     @click="if (!isMobileSize()) scale += 0.5"
+                     @contextmenu="if (!isMobileSize()) { scale = Math.max(scale-0.5, 1.75); if (scale !== 1.75) $event.preventDefault() }"
                      @mouseover="scale = 1.75"
                      @mouseout="scale = 1">
                   <template x-if="upload.type === 'title'">
@@ -295,7 +319,7 @@
       🔝
     </div>
     
-    <div style="position: fixed; left: 0; bottom: 0; z-index: 20; padding: 5px; font-size: 120%; cursor: pointer; background-color: rgba(0,0,0,0.9); border-top-right-radius: 5px; border-right: 1px solid var(--primary-color); border-top: 1px solid var(--primary-color);">
+    <div class="paginator-box">
       <span @click="firstPage()">⏮</span>
       <span @click="prevPage()">⏪</span>
       <b x-text="`${pageNum+1} / ${pageData.length}`"></b>

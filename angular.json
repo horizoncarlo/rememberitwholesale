@@ -14,7 +14,8 @@
                     "builder": "@angular/build:application",
                     "options": {
                         "outputPath": {
-                          "base": "dist/rememberitwholesale"
+                          "base": "dist/",
+                          "browser": ""
                         },
                         "index": "src/index.html",
                         "polyfills": ["zone.js"],

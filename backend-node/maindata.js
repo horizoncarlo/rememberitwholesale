@@ -685,6 +685,7 @@ app.get("/pdownload/:thingId", async (req, res) => {
     archive.directory(downloadPath, false);
     
     await archive.finalize().then(() => {
+      log('Download ZIP file ' + downloadFilename + ' from ' + username + ' and Thing ' + thingId);
       return res.status(200).end();
     }).catch(err => {
       throw err;

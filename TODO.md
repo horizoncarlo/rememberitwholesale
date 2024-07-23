@@ -1,5 +1,6 @@
 # TODO
 ### Priority: Gallery concept
+- Add a "Load Images" button on gallery (with a total image count and size total), that can optionally be clicked instead of "Download as ZIP", in the case we just want to go to a link and download and don't need to see the images first. Sort of a "choose your approach" initial screen on public.html
 - Add customization options for public gallery, see TTODO
 - Handle loading/editing of existing images in main app for a Thing
 - Perhaps have a way to scale images automatically from /static to get a thumbnail version on the fly?
@@ -7,6 +8,7 @@
 - Cap max storage size of /uploads/ file by user, default a value in their settings under the hood, but also can manually change in the filesystem directly (no endpoint or overall admin thing needed)
   - Can show this in the User Profile dialog?
   - Maybe use an npm package like `du` instead of recursively checking folders/files manually?
+  - Not huge priority given the user count
 - Will need to check rate limiter, as we don't want to hit a cap on image loading just from making a big gallery
   - Should be avoidable with smart/lazy loading or pagination in general, but something to keep in mind
 
@@ -14,7 +16,7 @@
 - Put an app version scheme somewhere, and show on Profile dialog?
 - Allow Edit of Templates - doesn't retroactively change Thing data, just going forward uses the new version
 - Touch to edit cancel the timer on touch move so that slow scrolling doesn't trigger it?
-- How to filter or search by Public/Gallery/Reminder? Maybe a special keyword in the global search? Or a row filter option (currently not used a ton though)
+- How to filter or search by Public/Gallery/Reminder? Maybe a special keyword in the global search? Or a row filter option (currently filters are not used a ton though)
 - Maintain scroll / paginator after deleting an item
 - What about a "pin" concept that keeps a certain Thing at the top of the list regardless of sorting
 - Save inputs as local storage or something? Because if a save of a Thing fails the inputs end up cleared which is crazy frustrating

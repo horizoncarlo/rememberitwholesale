@@ -1,5 +1,7 @@
 # TODO
 ### Priority: Gallery concept
+- See the TTODO for loading indicator, as a non-local setup we just kind of spin with no progress indicator on upload
+- Do a "select images for download" button where you can check/select images and get a ZIP of them, instead of just Download All
 - Handle loading/editing of existing images in main app for a Thing
 - Perhaps have a way to scale images automatically from /static to get a thumbnail version on the fly?
   - Could leverage Sharp? https://sharp.pixelplumbing.com/
@@ -11,6 +13,7 @@
   - Should be avoidable with smart/lazy loading or pagination in general, but something to keep in mind
 
 ### Other important
+- Need a better and smoother and less manual process for deploying the app to prod environment
 - Put an app version scheme somewhere, and show on Profile dialog?
 - Allow Edit of Templates - doesn't retroactively change Thing data, just going forward uses the new version
 - Touch to edit cancel the timer on touch move so that slow scrolling doesn't trigger it?

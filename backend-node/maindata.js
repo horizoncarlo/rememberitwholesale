@@ -57,7 +57,7 @@ const AUTH_FILE = 'auth.json';
 const globalLimiter = rateLimiter({
   skip: () => process.env.NODE_ENV !== 'production',
 	windowMs: 1 * 60 * 1000, // 1 minute
-  limit: 50, // Max of 50 requests across 1 minute
+  limit: 200, // Max of 200 requests across 1 minute
 	standardHeaders: false, // Don't return any RateLimit headers
 	legacyHeaders: false, // Don't return any RateLimit headers
 });

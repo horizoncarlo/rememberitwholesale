@@ -25,6 +25,7 @@ export class Thing {
   updated: Date | undefined;
   fields: TemplateField[] = [];
   fieldsAsString: string | undefined; // TODO Convert fields to Angular Signals or RxJS so we can maintain a string version automatically instead of manually like we do now
+  flagsAsString: string | undefined;
   
   constructor(name: string,
               templateType: string = TemplateService.getDefaultName(),
@@ -78,6 +79,7 @@ export class Thing {
       });
     }
     this.fieldsAsString = this.convertFieldsToString();
+    this.flagsAsString = this.convertFlagsToString();
   }
   
   private _setupMarkedParsing(): void {
@@ -177,6 +179,7 @@ export class Thing {
       if (source.fields) {
         this.fields = source.fields;
         this.fieldsAsString = this.convertFieldsToString();
+        this.flagsAsString = this.convertFlagsToString();
       }
     }
   }
@@ -223,6 +226,7 @@ export class Thing {
     
     // Can also remove fieldsAsString as that's purely for the UI
     delete this.fieldsAsString;
+    delete this.flagsAsString;
   }
   
   hasFields(): boolean {
@@ -291,6 +295,20 @@ export class Thing {
       return toReturn;
     }
     return '';
+  }
+  
+  convertFlagsToString(): string {
+    const flagArray = [];
+    if (this.reminder) {
+      flagArray.push('reminder');
+    }
+    if (this.public) {
+      flagArray.push('public');
+    }
+    if (this.gallery) {
+      flagArray.push('gallery');
+    }
+    return flagArray.join(',');
   }
   
   timeInFuture(): boolean {

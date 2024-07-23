@@ -73,7 +73,7 @@
          selectionMode="multiple" [(selection)]="selectedRows"
          (sortFunction)="customSort($event)" [customSort]="true"
          [sortField]="getUser().tableSortColumn" [sortOrder]="getUser().tableSortOrder"
-         [globalFilterFields]="['name', 'time', 'templateType', 'reminder', 'fieldsAsString']"
+         [globalFilterFields]="['name', 'time', 'templateType', 'flagsAsString', 'fieldsAsString']"
          [paginator]="getUser().paginatorTable" [rows]="getUser().paginatorRows"
          [pageLinks]="3" [alwaysShowPaginator]="false" [showFirstLastIcon]="false" [showCurrentPageReport]="true"
          [scrollable]="tableScrollable" [scrollHeight]="tableScrollHeight"

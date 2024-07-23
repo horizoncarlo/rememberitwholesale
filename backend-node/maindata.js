@@ -82,13 +82,20 @@ const tryDemoLimiter = rateLimiter({
 	standardHeaders: false,
 	legacyHeaders: false,
 });
+// Demo limit: 3 calls per day
+const staticLimiter = rateLimiter({
+	windowMs: 1 * 60 * 1000,
+	limit: 300,
+	standardHeaders: false,
+	legacyHeaders: false,
+});
 
 // Setup our middleware
 app.use(cors());
 app.use(globalLimiter);
 app.use(express.json());
 app.use(fileUpload());
-app.use(`/${STATIC_PATH}`, express.static(FILE_DIR));
+app.use(`/${STATIC_PATH}`, staticLimiter, express.static(FILE_DIR));
 
 // To prevent needless favicon.ico logging for our static files we just return NO CONTENT for the request
 // Of course the app itself can manage a proper favicon, we just want to skip this default browser behaviour

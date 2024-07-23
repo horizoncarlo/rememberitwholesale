@@ -189,7 +189,7 @@
         max-height: 25vh;
         vertical-align: middle;
         position: relative;
-        background-color: darkred;
+        background-color: #000088;
         /* TTODO Tweaks - Make transition toggleable (or don't use it) as it can be quite jarring to mouse around the page
         transition: transform 100ms linear; */
       }
@@ -202,6 +202,10 @@
       .giw:hover img {
         box-shadow: 0 0 20px var(--shadowy-color);
         outline: 1px solid black;
+      }
+      
+      .giw-e {
+        background-color: darkred !important;
       }
       
       .gfw { /* Gallery file wrapper */
@@ -386,8 +390,9 @@
                       <!-- TTODO Because the page height is 0 while loading, lazy considers ALL images to be in view, so they all load at once
                                 Realistically we need to stagger these somehow, so that as the first page full loads the rest are lazy for later -->
                       <img loading="lazy" :alt="upload.name" :src="upload.url"
-                          :title="`${upload.name} (size ${readableSize(upload.size)})`"
-                          :style="'transform: scale(' + scale + ')'"/>
+                           :title="`${upload.name} (size ${readableSize(upload.size)})`"
+                           :style="'transform: scale(' + scale + ')'"
+                           @error="$el.classList.add('giw-e')"/>
                   </div>
                 </template>
               </template>

@@ -1,7 +1,6 @@
 # TODO
 ### Priority: Gallery concept
 - See the TTODO for loading indicator, as a non-local setup we just kind of spin with no progress indicator on upload
-- Different color than darkred for images as they load? Can we detect a broken image and use darkred for that only?
 - Do a "select images for download" button where you can check/select images and get a ZIP of them, instead of just Download All
 - Handle loading/editing of existing images in main app for a Thing
 - Perhaps have a way to scale images automatically from /static to get a thumbnail version on the fly?
@@ -20,7 +19,6 @@
 - Put an app version scheme somewhere, and show on Profile dialog?
 - Allow Edit of Templates - doesn't retroactively change Thing data, just going forward uses the new version
 - Touch to edit cancel the timer on touch move so that slow scrolling doesn't trigger it?
-- How to filter or search by Public/Gallery/Reminder? Maybe a special keyword in the global search? Or a row filter option (currently filters are not used a ton though)
 - Maintain scroll / paginator after deleting an item
 - What about a "pin" concept that keeps a certain Thing at the top of the list regardless of sorting
 - Save inputs as local storage or something? Because if a save of a Thing fails the inputs end up cleared which is crazy frustrating

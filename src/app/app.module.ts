@@ -1,4 +1,4 @@
-import { HttpClientModule } from '@angular/common/http';
+import { provideHttpClient, withInterceptorsFromDi } from '@angular/common/http';
 import { NgModule } from '@angular/core';
 import { FormsModule } from '@angular/forms';
 import { BrowserModule } from '@angular/platform-browser';
@@ -43,55 +43,49 @@ import { TemplateDropdownComponent } from './template-dropdown/template-dropdown
 import { ToastMessageComponent } from './toast-message/toast-message.component';
 import { UserProfileDialogComponent } from './user-profile-dialog/user-profile-dialog.component';
 
-@NgModule({
-  declarations: [
-    AppComponent,
-    DatatableComponent,
-    ToastMessageComponent,
-    TemplateDropdownComponent,
-    ManageTemplateDialogComponent,
-    ManageThingDialogComponent,
-    ReminderMessageComponent,
-    GlobalSearchDialogComponent,
-    UserProfileDialogComponent,
-    QuickviewFieldsDialogComponent,
-  ],
-  imports: [
-    BrowserModule,
-    BrowserAnimationsModule,
-    HttpClientModule,
-    FormsModule,
-    ButtonModule,
-    AutoCompleteModule,
-    CalendarModule,
-    ColorPickerModule,
-    ConfirmDialogModule,
-    ConfirmPopupModule,
-    CheckboxModule,
-    ChipModule,
-    ChipsModule,
-    DialogModule,
-    DragDropModule,
-    DropdownModule,
-    FloatLabelModule,
-    InputTextModule,
-    InputTextareaModule,
-    OrderListModule,
-    PanelModule,
-    ProgressBarModule,
-    ProgressSpinnerModule,
-    RadioButtonModule,
-    SliderModule,
-    SpeedDialModule,
-    SplitButtonModule,
-    TableModule,
-    ToastModule,
-    TooltipModule,
-    TriStateCheckboxModule
-  ],
-  providers: [
-    provideRouter(routes)
-  ],
-  bootstrap: [AppComponent]
-})
+@NgModule({ declarations: [
+        AppComponent,
+        DatatableComponent,
+        ToastMessageComponent,
+        TemplateDropdownComponent,
+        ManageTemplateDialogComponent,
+        ManageThingDialogComponent,
+        ReminderMessageComponent,
+        GlobalSearchDialogComponent,
+        UserProfileDialogComponent,
+        QuickviewFieldsDialogComponent,
+    ],
+    bootstrap: [AppComponent], imports: [BrowserModule,
+        BrowserAnimationsModule,
+        FormsModule,
+        ButtonModule,
+        AutoCompleteModule,
+        CalendarModule,
+        ColorPickerModule,
+        ConfirmDialogModule,
+        ConfirmPopupModule,
+        CheckboxModule,
+        ChipModule,
+        ChipsModule,
+        DialogModule,
+        DragDropModule,
+        DropdownModule,
+        FloatLabelModule,
+        InputTextModule,
+        InputTextareaModule,
+        OrderListModule,
+        PanelModule,
+        ProgressBarModule,
+        ProgressSpinnerModule,
+        RadioButtonModule,
+        SliderModule,
+        SpeedDialModule,
+        SplitButtonModule,
+        TableModule,
+        ToastModule,
+        TooltipModule,
+        TriStateCheckboxModule], providers: [
+        provideRouter(routes),
+        provideHttpClient(withInterceptorsFromDi())
+    ] })
 export class AppModule { }

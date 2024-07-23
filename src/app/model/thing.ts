@@ -82,14 +82,14 @@ export class Thing {
   
   private _setupMarkedParsing(): void {
     const renderer = new marked.Renderer();
-    renderer.link = (href, title, text) => {
-      // Add target="_blank" to our Marked link renderer
-      return marked.Renderer.prototype.link.call(this, href, title, text).replace("<a","<a target='_blank' ");
-    }
     
-    marked.setOptions({
-      renderer: renderer
-    });
+    // Append a blank target to all our links so we ensure they open in a new window/tab
+    renderer.link = ({ href, title, text }: any): string => {
+      const defaultLink = `<a href="${href}"${title ? ` title="${title}"` : ''}>${text}</a>`;
+      return defaultLink.replace('<a', '<a target="_blank"');
+    };
+    
+    marked.use({ renderer });
   }
   
   static cloneFrom(source: Thing): Thing {

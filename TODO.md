@@ -11,7 +11,6 @@
   - Should be avoidable with smart/lazy loading or pagination in general, but something to keep in mind
 
 ### Other important
-- Update to Angular 18 and PrimeNG as well - just a general `ncu`
 - Put an app version scheme somewhere, and show on Profile dialog?
 - Allow Edit of Templates - doesn't retroactively change Thing data, just going forward uses the new version
 - Touch to edit cancel the timer on touch move so that slow scrolling doesn't trigger it?

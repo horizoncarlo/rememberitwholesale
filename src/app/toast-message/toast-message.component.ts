@@ -116,4 +116,10 @@ export class ToastMessageComponent implements OnInit, OnDestroy {
       this.messageService.add(opts);
     }
   }
+  
+  clickPublicLinkInput(event: any): void {
+    if (event && event.target) {
+      event.target.select();
+    }
+  }
 }

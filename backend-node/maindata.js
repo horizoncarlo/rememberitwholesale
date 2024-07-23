@@ -7,6 +7,7 @@ const { differenceInMinutes, subMinutes} = require("date-fns");
 const mailjet = require('node-mailjet');
 const config = require('config');
 const crypto = require('crypto');
+const archiver = require('archiver');
 const { v4: uuidv4 } = require('uuid');
 const rateLimiter = require('express-rate-limit');
 const { add } = require("date-fns");
@@ -101,6 +102,7 @@ app.use((req, res, next) => {
       req.originalUrl.startsWith('/new-account') ||
       req.originalUrl.startsWith('/demo-start') ||
       req.originalUrl.startsWith('/pthing/') ||
+      req.originalUrl.startsWith('/pdownload/') ||
       req.originalUrl.startsWith('/static/')
     ) {
     next();
@@ -633,7 +635,66 @@ app.get("/pthing/:thingId", (req, res) => {
   }
   
   return res.status(400).end();
-})
+});
+
+app.get("/pdownload/:thingId", async (req, res) => {
+  try{
+    // We have the desired Thing ID as a param, and the Username to look in as a query string
+    const thingId = req.params?.thingId;
+    const username = req.query?.username;
+    
+    if (!thingId || !username) {
+      throw new Error('Missing Thing ID or User');
+    }
+    
+    log("GET Download Public Thing", thingId, username);
+    
+    // Pull in the Things for the desired user, then find our matching ID and ensure we're valid to ZIP
+    let downloadFilename = null;
+    let downloadPath = null;
+    const userThings = getInMemoryThings(username);
+    if (userThings && userThings.length > 0) {
+      let checkThings = userThings.filter(thing => thing.id === thingId);
+      if (checkThings && checkThings.length > 0 &&
+          checkThings[0].public && checkThings[0].gallery &&
+          Array.isArray(checkThings[0].uploads) && checkThings[0].uploads.length > 0) {
+        downloadPath = getGalleryPath(username, thingId);
+        downloadFilename = checkThings[0].name + '.zip';
+      }
+    }
+    
+    // If we couldn't find a valid Thing to try to download, error out
+    if (!downloadPath || !downloadFilename) {
+      error("Download path or filename is invalid when trying to get a ZIP");
+      return res.status(400).end();
+    }
+    
+    res.setHeader('Content-Disposition', 'attachment; filename=' + encodeURIComponent(downloadFilename));
+    res.setHeader('Content-Type', 'application/zip');
+    
+    const archive = archiver('zip', {
+      zlib: { level: 9 } // It's over 9000!!!
+    });
+    
+    archive.on('error', (err) => {
+      throw err;
+    });
+    
+    // Pipe to our return stream so the browser can download, then zip the contents and finalize
+    archive.pipe(res);
+    archive.directory(downloadPath, false);
+    
+    await archive.finalize().then(() => {
+      return res.status(200).end();
+    }).catch(err => {
+      throw err;
+    });
+  }catch (err) {
+    error(err);
+  }
+  
+  return res.status(400).end();
+});
 
 app.post("/things", (req, res) => {
   log("POST Thing", req.body);

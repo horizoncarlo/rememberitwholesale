@@ -37,7 +37,6 @@ import { DatatableComponent } from './datatable/datatable.component';
 import { GlobalSearchDialogComponent } from './global-search-dialog/global-search-dialog.component';
 import { ManageTemplateDialogComponent } from './manage-template-dialog/manage-template-dialog.component';
 import { ManageThingDialogComponent } from './manage-thing-dialog/manage-thing-dialog.component';
-import { PublicviewComponent } from './publicview/publicview.component';
 import { QuickviewFieldsDialogComponent } from './quick-view-fields-dialog/quick-view-fields-dialog.component';
 import { ReminderMessageComponent } from './reminder-message/reminder-message.component';
 import { TemplateDropdownComponent } from './template-dropdown/template-dropdown.component';
@@ -56,7 +55,6 @@ import { UserProfileDialogComponent } from './user-profile-dialog/user-profile-d
     GlobalSearchDialogComponent,
     UserProfileDialogComponent,
     QuickviewFieldsDialogComponent,
-    PublicviewComponent,
   ],
   imports: [
     BrowserModule,

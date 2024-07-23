@@ -22,6 +22,7 @@
       :root {
         --primary-color: #5EEAD4;
         --surface-ground: #040D19;
+        --shadowy-color: #666666;
       }
       
       * {
@@ -40,6 +41,10 @@
       body {
         overflow-y: scroll;
         overflow-x: hidden;
+      }
+      
+      button {
+        font-size: 105%;
       }
       
       a {
@@ -173,12 +178,13 @@
         width: 25%;
         height: 25vh;
         line-height: 25vh;
+        margin-bottom: 10px;
         cursor: zoom-in;
       }
       
       .giw img {
         border-radius: 5px;
-        box-shadow: 0 0 5px #666666;
+        box-shadow: 0 0 5px var(--shadowy-color);
         max-width: 100%;
         max-height: 25vh;
         vertical-align: middle;
@@ -194,8 +200,42 @@
       }
       
       .giw:hover img {
-        box-shadow: 0 0 20px #666666;
+        box-shadow: 0 0 20px var(--shadowy-color);
         outline: 1px solid black;
+      }
+      
+      .gfw { /* Gallery file wrapper */
+        margin: 10px;
+        border-radius: 5px;
+        background-color: black;
+        border: 1px solid var(--shadowy-color);
+        box-shadow: 0 0 5px var(--shadowy-color);
+        padding: 5px 10px 5px 10px;
+      }
+      
+      .gfw:hover {
+        background-color: var(--shadowy-color);
+      }
+      
+      .upload-controls {
+        text-align: right;
+        padding: 0 0 5px 0;
+      }
+      
+      .upload-title-wrap {
+        padding-bottom: 20px;
+        margin-top: 5px;
+        margin-bottom: 10px;
+        border-bottom: 1px solid var(--shadowy-color);
+      }
+      
+      .upload-title-text {
+        padding-bottom: 15px;
+      }
+      
+      .upload-wrap {
+        text-align: center;
+        border-top: 1px solid var(--shadowy-color);
       }
       
       @media (max-width: 850px) { /* var(--mobile-breakpoint) equivalent, just can't use in media queries */
@@ -231,6 +271,25 @@
         .giw img {
           box-shadow: unset;
           max-height: none;
+        }
+        
+        .gfw {
+          display: block;
+          width: fit-content;
+          margin-left: auto;
+          margin-right: auto;
+        }
+        
+        .upload-controls {
+          text-align: center;
+        }
+        
+        .upload-title-wrap {
+          padding-bottom: 5px;
+        }
+        
+        .upload-title-text {
+          padding-bottom: 0;
         }
       }
     </style>
@@ -285,31 +344,44 @@
           </template>
           
           <template x-if="hasUploads()">
-            <div style="text-align: center;">
-              <br/>
-              <template x-for="upload in pageData[pageNum]">
-                <div class="giw"
-                     x-data="{ scale: 1 }"
-                     @click="if (!isMobileSize()) scale += 0.5"
-                     @contextmenu="if (!isMobileSize()) { scale = Math.max(scale-0.5, 1.75); if (scale !== 1.75) $event.preventDefault() }"
-                     @mouseover="if (!isMobileSize()) scale = 1.75"
-                     @mouseout="if (!isMobileSize()) scale = 1">
-                  <template x-if="upload.type === 'title'">
-                    <span>
-                      Attached File:
-                      <a :href="upload.url" target="_blank"
-                        x-text="upload.name"></a>
-                      <span x-text="`(size ${readableSize(upload.size)})`" class="smaller-text"></span>
-                    </span>
-                  </template>
-                  <template x-if="upload.type === 'image'">
-                    <!-- TTODO Because the page height is 0 while loading, lazy considers ALL images to be in view, so they all load at once
-                               Realistically we need to stagger these somehow, so that as the first page full loads the rest are lazy for later -->
-                    <img loading="lazy" :alt="upload.name" :src="upload.url"
-                         :title="`${upload.name} (size ${readableSize(upload.size)})`"
-                         :style="'transform: scale(' + scale + ')'"/>
+            <div class="upload-controls">
+              <button @click="downloadZIP">📂 Download All in ZIP</button>
+            </div>
+          </template>
+          
+          <template x-if="hasUploads()">
+            <div class="upload-wrap">
+              <template x-if="!hasUploadedTitles">
+                <br/>
+              </template>
+              <template x-if="hasUploadedTitles">
+                <div class="upload-title-wrap">
+                  <div class="upload-title-text">Attached Files:</div>
+                  <template x-for="upload in pageData[pageNum]">
+                    <template x-if="upload.type === 'title'">
+                      <span class="gfw">
+                        <a :href="upload.url" target="_blank" x-text="upload.name"></a>
+                        <span x-text="`(size ${readableSize(upload.size)})`" class="smaller-text"></span>
+                      </span>
+                    </template>
                   </template>
                 </div>
+              </template>
+              <template x-for="upload in pageData[pageNum]">
+                <template x-if="upload.type === 'image'">
+                  <div class="giw"
+                       x-data="{ scale: 1 }"
+                       @click="if (!isMobileSize()) scale += 0.5"
+                       @contextmenu="if (!isMobileSize()) { scale = Math.max(scale-0.5, 1.75); if (scale !== 1.75) $event.preventDefault() }"
+                       @mouseover="if (!isMobileSize()) scale = 1.75"
+                       @mouseout="if (!isMobileSize()) scale = 1">
+                      <!-- TTODO Because the page height is 0 while loading, lazy considers ALL images to be in view, so they all load at once
+                                Realistically we need to stagger these somehow, so that as the first page full loads the rest are lazy for later -->
+                      <img loading="lazy" :alt="upload.name" :src="upload.url"
+                          :title="`${upload.name} (size ${readableSize(upload.size)})`"
+                          :style="'transform: scale(' + scale + ')'"/>
+                  </div>
+                </template>
               </template>
             </div>
           </template>
@@ -328,7 +400,7 @@
       🔝
     </div>
     
-    <div class="paginator-box" x-show="!invalidLink">
+    <div class="paginator-box" x-show="!invalidLink && pageData.length > 1">
       <span @click="firstPage()">⏮</span>
       <span @click="prevPage()">⏪</span>
       <b x-text="`${pageNum+1} / ${pageData.length}`"></b>
@@ -345,8 +417,10 @@
     var state = {
       bodyReady: false,
       showScrollTop: false,
+      hasUploadedTitles: false, // Mark if we have non-image uploads as well
       loading: false,
       invalidLink: null, // Could be 'true' or 'empty'
+      username: null,
       thing: null,
       pageNum: 0,
       pageData: [], // 2D array of images, split from thing.uploads
@@ -362,6 +436,7 @@
         if (toLoadId && username) {
           loadPublicThing(toLoadId, username).then(res => {
             console.log("Load link results", res);
+            state.username = username;
             state.thing = res;
             state.thing.fieldsAsString = convertFieldsToString();
             
@@ -371,8 +446,14 @@
             // Apply our base URL to the path provided by any uploaded file
             if (hasUploads()) {
               state.thing.uploads.forEach(upload => {
-                if (upload && upload.url) {
-                  upload.url = `${BACKEND_API}/${upload.url}`;
+                if (upload) {
+                  if (upload.url) {
+                    upload.url = `${BACKEND_API}/${upload.url}`;
+                  }
+                  
+                  if (upload.type === 'title') {
+                    state.hasUploadedTitles = true;
+                  }
                 }
               });
               
@@ -433,7 +514,7 @@
       }
     }
     
-    async function loadPublicThing(thingId, username) {
+    function loadPublicThing(thingId, username) {
       return _fetchWithLoading(
         `${BACKEND_API}/pthing/${thingId}?username=${username}`
       );
@@ -463,6 +544,10 @@
         return toReturn;
       }
       return '?';
+    }
+    
+    function downloadZIP() {
+      window.open(`${BACKEND_API}/pdownload/${state.thing.id}?username=${state.username}`, '_blank');
     }
     
     function firstPage() {

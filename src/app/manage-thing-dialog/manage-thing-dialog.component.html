@@ -73,12 +73,20 @@
                   </span>
                   <p-button label="Upload Files" size="small" severity="help" (onClick)="fileUpload.click()"/>
                   <p-button label="Upload Images" size="small" severity="help" (onClick)="imageUpload.click()"/>
+                  @if (isMobileSize()) {
+                    <div style="padding-top: 5px;">
+                      <p-button icon="pi pi-camera" label="Take Photo" size="small" severity="help" (onClick)="captureUpload.click()"/>
+                    </div>
+                  }
                   
                   <input #fileUpload [style.display]="'none'"
                         type="file" multiple (change)="handleDraggedFiles($event)" />
                   <input #imageUpload [style.display]="'none'"
                         type="file" multiple (change)="handleDraggedFiles($event)"
                         accept="image/*" />
+                  <!-- TODO Does this reliably work on various devices, or is it not worth including? -->
+                  <input #captureUpload [style.display]="'none'" capture="environment"
+                         type="file" accept="image/*" />
                   
                   @if (hasUploads()) {
                     <div class="upload-remove-note">(Click any file or image to remove upload)</div>
@@ -181,7 +189,8 @@
     }
     <p-button (onClick)="hide()" label="Cancel" icon="pi pi-times" iconPos="left" severity="secondary"/>
     <p-button #submitButton (onClick)="submit()" [label]="(hasUploads() ? ('Upload ' + uploadList.length + ' Files and ') : '') + 'Save Thing'"
-              [icon]="'pi pi-' + (hasUploads() ? 'arrow-circle-up' : 'check')" iconPos="left"/>
+              [icon]="'pi pi-' + (hasUploads() ? 'arrow-circle-up' : 'check')" iconPos="left"
+              [disabled]="uploadLoading"/>
     <p-confirmPopup />
   </ng-template>
 </p-dialog>

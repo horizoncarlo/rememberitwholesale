@@ -23,7 +23,8 @@
       <b>{{message.summary}}</b>
       <p>{{message.detail}}</p>
       <div style="text-align: center;" (click)="message.data?.forThing?.copyPublicLink()">
-        <input pInputText [value]="message.data?.forThing?.generatePublicLink()" readonly="true" style="cursor: copy;"/>
+        <input pInputText [value]="message.data?.forThing?.generatePublicLink()" readonly="true" style="cursor: copy;"
+               (click)="clickPublicLinkInput($event)"/>
         <br/>
         <p-button icon="pi pi-clipboard" severity="info" label="Copy to Clipboard" pTooltip="Copy the public link to your clipboard" />
       </div>

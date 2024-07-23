@@ -1,16 +1,18 @@
 # TODO
 ### Priority: Gallery concept
-- Show proper gallery on public.html, with error messages, file sizes, pagination, formatting, etc.
+- Add customization options for public gallery, see TTODO
+- Handle loading/editing of existing images in main app for a Thing
 - Perhaps have a way to scale images automatically from /static to get a thumbnail version on the fly?
   - Could leverage Sharp? https://sharp.pixelplumbing.com/
-- Handle loading/editing of existing images in main app for a Thing
 - Cap max storage size of /uploads/ file by user, default a value in their settings under the hood, but also can manually change in the filesystem directly (no endpoint or overall admin thing needed)
   - Can show this in the User Profile dialog?
-- When all done remove the old publicview.component.* concept
+  - Maybe use an npm package like `du` instead of recursively checking folders/files manually?
 - Will need to check rate limiter, as we don't want to hit a cap on image loading just from making a big gallery
   - Should be avoidable with smart/lazy loading or pagination in general, but something to keep in mind
 
 ### Other important
+- Update to Angular 18 and PrimeNG as well - just a general `ncu`
+- Put an app version scheme somewhere, and show on Profile dialog?
 - Allow Edit of Templates - doesn't retroactively change Thing data, just going forward uses the new version
 - Touch to edit cancel the timer on touch move so that slow scrolling doesn't trigger it?
 - How to filter or search by Public/Gallery/Reminder? Maybe a special keyword in the global search? Or a row filter option (currently not used a ton though)
@@ -18,7 +20,6 @@
 - What about a "pin" concept that keeps a certain Thing at the top of the list regardless of sorting
 - Save inputs as local storage or something? Because if a save of a Thing fails the inputs end up cleared which is crazy frustrating
 - Reorder columns, notes right after name, then type and date?
-- Upgrade to Angular 18 and any other `ncu` required updates
 - Split package.json for Angular and Node project instead of having them combined (...yaaaay build stuff)
 
 ## OLDER NOTES

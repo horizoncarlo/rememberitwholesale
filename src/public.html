@@ -344,7 +344,13 @@
               <template x-if="pageData.length === 0">
                 <span>
                   Uploads Available:&nbsp;
+                  <template x-if="isMobileSize()">
+                    <div><br/></div>
+                  </template>
                   <button @click="pageData = availablePageData.uploads">🔍 Show <b x-text="thing.uploads.length"></b> Files</button>
+                  <template x-if="isMobileSize()">
+                    <div><br/></div>
+                  </template>
                 </span>
               </template>
               <button @click="downloadZIP">📂 Download All Files (<span x-text="(availablePageData.totalSize/1024/1024).toFixed(1)"></span>mb zip)</button>

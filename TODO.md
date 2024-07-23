@@ -1,7 +1,5 @@
 # TODO
 ### Priority: Gallery concept
-- Add a "Load Images" button on gallery (with a total image count and size total), that can optionally be clicked instead of "Download as ZIP", in the case we just want to go to a link and download and don't need to see the images first. Sort of a "choose your approach" initial screen on public.html
-- Add customization options for public gallery, see TTODO
 - Handle loading/editing of existing images in main app for a Thing
 - Perhaps have a way to scale images automatically from /static to get a thumbnail version on the fly?
   - Could leverage Sharp? https://sharp.pixelplumbing.com/

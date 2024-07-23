@@ -218,7 +218,7 @@
       }
       
       .upload-controls {
-        text-align: right;
+        text-align: center;
         padding: 0 0 5px 0;
       }
       
@@ -278,10 +278,6 @@
           width: fit-content;
           margin-left: auto;
           margin-right: auto;
-        }
-        
-        .upload-controls {
-          text-align: center;
         }
         
         .upload-title-wrap {
@@ -345,11 +341,17 @@
           
           <template x-if="hasUploads()">
             <div class="upload-controls">
-              <button @click="downloadZIP">📂 Download All in ZIP</button>
+              <template x-if="pageData.length === 0">
+                <span>
+                  Uploads Available:&nbsp;
+                  <button @click="pageData = availablePageData.uploads">🔍 Show <b x-text="thing.uploads.length"></b> Files</button>
+                </span>
+              </template>
+              <button @click="downloadZIP">📂 Download All Files (<span x-text="(availablePageData.totalSize/1024/1024).toFixed(1)"></span>mb zip)</button>
             </div>
           </template>
           
-          <template x-if="hasUploads()">
+          <template x-if="hasUploads() && pageData.length > 0">
             <div class="upload-wrap">
               <template x-if="!hasUploadedTitles">
                 <br/>
@@ -413,6 +415,7 @@
     const PUBLIC_USER_PARAM = 'u';
     const BACKEND_API = `${window.location.protocol}//${window.location.hostname}:4333`;
     const PAGE_SIZE = 20;
+    const MAX_SIZE_BEFORE_PROMPT = 5*1024*1024; // Maximum size of potential uploads before prompting the user to load them
     
     var state = {
       bodyReady: false,
@@ -423,7 +426,12 @@
       username: null,
       thing: null,
       pageNum: 0,
-      pageData: [], // 2D array of images, split from thing.uploads
+      pageData: [], // 2D array of images, split from thing.uploads, set when the user requests it (based on size)
+      availablePageData: {
+        totalSize: 0,
+        totalSizeImages: 0,
+        uploads: []
+      }
     }
     
     function main() {
@@ -468,8 +476,10 @@
                 }
               });
               
-              // Now parse into pages
-              state.pageData = state.thing.uploads.reduce((data, item, index) => {
+              // Determine if we should auto-load the files or let the user request them
+              state.availablePageData.totalSize = state.thing.uploads.reduce((data, item) => data + item.size, 0); 
+              state.availablePageData.totalSizeImages = state.thing.uploads.reduce((data, item) => { if (item.type === 'image') { return data + item.size } return data; }, 0); 
+              state.availablePageData.uploads = state.thing.uploads.reduce((data, item, index) => {
                 const pageIndex = Math.floor(index / PAGE_SIZE);
                 if (!data[pageIndex]) {
                   data[pageIndex] = [];
@@ -478,6 +488,11 @@
                 
                 return data;
               }, []);
+              
+              // If we're under our cap just auto-load the files
+              if (state.availablePageData.totalSizeImages <= MAX_SIZE_BEFORE_PROMPT) {
+                state.pageData = state.availablePageData.uploads;
+              }
             }
           }).catch(err => {
             state.invalidLink = 'true';

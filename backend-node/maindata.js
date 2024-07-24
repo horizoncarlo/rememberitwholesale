@@ -676,12 +676,10 @@ app.get("/pdownload/:thingId", async (req, res) => {
       return res.status(400).end();
     }
     
-    res.setHeader('Content-Disposition', 'attachment; filename=' + encodeURIComponent(downloadFilename));
+    res.attachment(downloadFilename);
     res.setHeader('Content-Type', 'application/zip');
     
-    const archive = archiver('zip', {
-      store: true // Can't use zlib compression as the default Windows unzipper will complain about "invalid format"
-    });
+    const archive = archiver('zip');
     
     archive.on('error', (err) => {
       throw err;
@@ -691,12 +689,8 @@ app.get("/pdownload/:thingId", async (req, res) => {
     archive.pipe(res);
     archive.directory(downloadPath, false);
     
-    await archive.finalize().then(() => {
-      log('Download ZIP file ' + downloadFilename + ' from ' + username + ' and Thing ' + thingId);
-      return res.status(200).end();
-    }).catch(err => {
-      throw err;
-    });
+    await archive.finalize();
+    log('Download ZIP file ' + downloadFilename + ' from ' + username + ' and Thing ' + thingId);
   }catch (err) {
     error(err);
   }

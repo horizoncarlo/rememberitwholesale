@@ -485,7 +485,7 @@
               <template x-if="isMobileSize()">
                 <div><br/></div>
               </template>
-              <button @click="downloadZIP" title="Download all images and files as a single ZIP file - may be slow">📂 Download All Files (<span x-text="(availablePageData.totalSize/1024/1024).toFixed(1)"></span>mb zip)</button>
+              <button @click="downloadZIP" title="Download all images and files as a single ZIP file - may be slow">📂 Download All Files (<span x-text="Math.max((availablePageData.totalSize/1024/1024).toFixed(1), 0.1)"></span>mb zip)</button>
             </div>
           </template>
           

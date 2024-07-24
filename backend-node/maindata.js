@@ -680,7 +680,7 @@ app.get("/pdownload/:thingId", async (req, res) => {
     res.setHeader('Content-Type', 'application/zip');
     
     const archive = archiver('zip', {
-      zlib: { level: 9 } // It's over 9000!!!
+      store: true // Can't use zlib compression as the default Windows unzipper will complain about "invalid format"
     });
     
     archive.on('error', (err) => {

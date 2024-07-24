@@ -95,7 +95,7 @@ app.use(cors());
 app.use(globalLimiter);
 app.use(express.json());
 app.use(fileUpload());
-app.use(`/${STATIC_PATH}`, staticLimiter, express.static(FILE_DIR));
+app.use(`/${STATIC_PATH}`, staticLimiter, express.static(FILE_DIR, { maxAge: 1000*60*60*24*30 })); // Host static files directly, and cache for 30 days
 
 // To prevent needless favicon.ico logging for our static files we just return NO CONTENT for the request
 // Of course the app itself can manage a proper favicon, we just want to skip this default browser behaviour

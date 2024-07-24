@@ -299,7 +299,7 @@
         style="display: none;" x-show="bodyReady" x-transition.opacity x-transition.duration.750ms
         @keydown.left.window="prevPage()"
         @keydown.right.window="nextPage()">
-    <div x-show="!loading" class="header"
+    <div x-show="!thingLoading" class="header"
          x-bind:style="thing && { border: `1px solid ${thing.color}`, background: `linear-gradient(90deg, rgb(0, 0, 0) 10%, ${thing.color} 100%)` }">
       <div class="left">
         <template x-if="thing">
@@ -320,7 +320,7 @@
         🔒
       </div>
     </div>
-    <!-- TTODO Loading indicator <p-progressBar [mode]="loading ? 'indeterminate' : 'determinate'" class="loading-bar" /> -->
+    <!-- TTODO Loading indicator <p-progressBar [mode]="thingLoading ? 'indeterminate' : 'determinate'" class="loading-bar" /> -->
       
     <template x-if="invalidLink">
       <div class="main-error">
@@ -336,7 +336,7 @@
         </span>
       </div>
     </template>
-    <template x-if="!invalidLink && !loading">
+    <template x-if="!invalidLink && !thingLoading">
       <div class="main-wrap">
         <div class="panel-wrap">
           <template x-if="isValidString(thing?.fieldsAsString)">
@@ -392,7 +392,8 @@
                       <img loading="lazy" :alt="upload.name" :src="upload.url"
                            :title="`${upload.name} (size ${readableSize(upload.size)})`"
                            :style="'transform: scale(' + scale + ')'"
-                           @error="$el.classList.add('giw-e')"/>
+                           @load="imageLoadedCount++"
+                           @error="imageLoadedCount++; $el.classList.add('giw-e');"/>
                   </div>
                 </template>
               </template>
@@ -413,7 +414,9 @@
       🔝
     </div>
     
-    <div class="paginator-box" x-show="!invalidLink && pageData.length > 1">
+    <div class="paginator-box" x-transition.opacity
+         x-transition:enter.duration.500ms x-transition:leave.duration.0ms
+         x-show="!invalidLink && pageData.length > 1 && imageLoadedCount === pageData[pageNum].length">
       <span @click="firstPage()">⏮</span>
       <span @click="prevPage()">⏪</span>
       <b x-text="`${pageNum+1} / ${pageData.length}`"></b>
@@ -432,12 +435,13 @@
       bodyReady: false,
       showScrollTop: false,
       hasUploadedTitles: false, // Mark if we have non-image uploads as well
-      loading: false,
+      thingLoading: false,
       invalidLink: null, // Could be 'true' or 'empty'
       username: null,
       thing: null,
       pageNum: 0,
       pageData: [], // 2D array of images, split from thing.uploads, set when the user requests it (based on size)
+      imageLoadedCount: 0, // Number of images that have reported as loading (or errored)
       availablePageData: {
         totalSize: 0,
         totalSizeImages: 0,
@@ -446,6 +450,8 @@
     }
     
     function main() {
+      setupMarkedParsing();
+      
       document.addEventListener('alpine:initialized', () => {
         state = Alpine.reactive(state);
         
@@ -517,8 +523,20 @@
     }
     main();
     
+    function setupMarkedParsing() {
+      const renderer = new marked.Renderer();
+      
+      // Append a blank target to all our links so we ensure they open in a new window/tab
+      renderer.link = (href, title, text) => {
+        const defaultLink = `<a href="${href}"${title ? ` title="${title}"` : ''}>${text}</a>`;
+        return defaultLink.replace('<a', '<a target="_blank"');
+      };
+      
+      marked.use({ renderer });
+    }
+    
     async function _fetchWithLoading(url, body) {
-      state.loading = true;
+      state.thingLoading = true;
       try {
         const options = {
           method: 'GET'
@@ -536,7 +554,7 @@
       }catch (error) {
         throw error;
       }finally {
-        state.loading = false;
+        state.thingLoading = false;
       }
     }
     
@@ -578,7 +596,7 @@
     
     function firstPage() {
       state.pageNum = 0;
-      document.documentElement.scrollTop = 0;
+      _genericPageChange();
     }
     
     function prevPage() {
@@ -586,7 +604,7 @@
       if (state.pageNum < 0) {
         state.pageNum = 0;
       }
-      document.documentElement.scrollTop = 0;
+      _genericPageChange();
     }
     
     function nextPage() {
@@ -594,11 +612,16 @@
       if (state.pageNum > state.pageData.length-1) {
         state.pageNum = state.pageData.length-1;
       }
-      document.documentElement.scrollTop = 0;
+      _genericPageChange();
     }
     
     function lastPage() {
       state.pageNum = state.pageData.length-1;
+      _genericPageChange();
+    }
+    
+    function _genericPageChange() {
+      state.imageLoadedCount = 0;
       document.documentElement.scrollTop = 0;
     }
     

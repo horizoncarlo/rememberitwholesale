@@ -1,18 +1,11 @@
 # TODO
 ### Priority: Gallery concept
+- Handle loading/editing of existing images in main app for a Thing
 - See the TTODO for loading indicator, as a non-local setup we just kind of spin with no progress indicator on upload
 - Do a "select images for download" button where you can check/select images and get a ZIP of them, instead of just Download All
-- Handle loading/editing of existing images in main app for a Thing
 - Perhaps have a way to scale images automatically from /static to get a thumbnail version on the fly?
   - Could leverage Sharp? https://sharp.pixelplumbing.com/
   - Add additional download option for lower quality images as a ZIP, so like a 70mb full res, 40mb half res, etc.
-- Cap max storage size of /uploads/ file by user, default a value in their settings under the hood, but also can manually change in the filesystem directly (no endpoint or overall admin thing needed)
-  - Can show this in the User Profile dialog?
-  - Maybe use an npm package like `du` instead of recursively checking folders/files manually?
-  - Not huge priority given the user count
-- Will need to check rate limiter, as we don't want to hit a cap on image loading just from making a big gallery
-  - Should be avoidable with smart/lazy loading or pagination in general, but something to keep in mind
-  - Maybe have a higher limit for the /static/ folder?
 
 ### Other important
 - Need a better and smoother and less manual process for deploying the app to prod environment
@@ -41,6 +34,11 @@
 - Eventually segment data files by year? To prevent giant files of 10k+ records? Then date limit filter could integrate with that (by having like 2021, 2022, etc. instead of "2 years ago")
 - Basic calendar view that translates Dates from Things onto it?
 - Probably could rewrite to use https://github.com/typicode/lowdb instead of manual JSON files?
+
+- Cap max storage size of /uploads/ file by user, default a value in their settings under the hood, but also can manually change in the filesystem directly (no endpoint or overall admin thing needed)
+  - Not huge priority given the user count
+  - Can show this in the User Profile dialog?
+  - Maybe use an npm package like `du` instead of recursively checking folders/files manually?
 
 ## LOADING
 - Block entire page, header and all, with a spinner in the middle (after a couple seconds, to prevent flashing)

@@ -23,6 +23,7 @@
         --primary-color: #5EEAD4;
         --surface-ground: #040D19;
         --shadowy-color: #666666;
+        --slideshow-nav-size: 40px;
       }
       
       * {
@@ -137,7 +138,7 @@
       
       .scroll-top-button, .paginator-box {
         position: fixed;
-        z-index: 20;
+        z-index: 1;
         bottom: 0;
       }
       
@@ -148,6 +149,7 @@
       }
       
       .paginator-box {
+        z-index: 5;
         left: 0;
         padding: 5px;
         font-size: 130%;
@@ -163,6 +165,99 @@
       
       .paginator-box span:hover {
         filter: brightness(0.5);
+      }
+      
+      .slideshow-box {
+        z-index: 10;
+        position: absolute;
+        top: 50%;
+        left: 50%;
+        transform: translate(-50%, -50%);
+        background-color: var(--shadowy-color);
+        background: linear-gradient(0deg, var(--primary-color) 0%, rgb(0,0,15) 10%, rgba(0,0,15) 90%, var(--primary-color) 100%);
+        border-radius: 20px;
+        box-shadow: 0 0 20px black;
+        width: 95%;
+        height: 95vh;
+        user-select: none; /* Prevent accidental highlighting/selection when clicking rapidly */
+        display: flex;
+        justify-content: center;
+        align-items: center;
+      }
+      
+      .slideshow-box img {
+        outline: 1px solid black;
+        box-shadow: 0 0 5px black;
+        max-height: calc(100% - 20px);
+        max-width: calc(100% - var(--slideshow-nav-size) - var(--slideshow-nav-size));
+        line-height: 100vh;
+      }
+      
+      .slideshow-count,
+      .slideshow-name,
+      .slideshow-buttons {
+        z-index: 15;
+        position: absolute;
+        top: 10px;
+      }
+      
+      .slideshow-count {
+        left: 10px;
+        font-size: 135%;
+        font-weight: bold;
+      }
+      
+      .slideshow-name {
+        left: 50%;
+        transform: translateX(-50%);
+        background-color: rgba(0,0,0,0.5);
+        padding: 10px;
+        border-radius: 50px;
+      }
+      
+      .slideshow-buttons {
+        right: 10px;
+      }
+      
+      .chevron-left,
+      .chevron-right {
+        display: inline-block;
+        position: fixed;
+        font-family: monospace !important;
+        height: 100%;
+        width: 35%;
+        z-index: 5;
+        font-size: 100px;
+        vertical-align: middle;
+        cursor: pointer;
+        line-height: 95vh;
+      }
+      
+      .chevron-left {
+        left: 0;
+        padding-left: 5px;
+        text-align: left;
+      }
+      
+      .chevron-right {
+        right: 0;
+        padding-right: 5px;
+        text-align: right;
+      }
+      
+      .chevron-left:before {
+        content:"\2039";
+      }
+      
+      .chevron-right:before {
+        content:"\203A";
+      }
+      
+      .chevron-left:hover,
+      .chevron-right:hover {
+        color: var(--primary-color);
+        text-shadow: 0 0 15px var(--primary-color);
+        font-size: 125px;
       }
       
       .giw { /* Gallery image wrapper */
@@ -219,6 +314,12 @@
       
       .gfw:hover {
         background-color: var(--shadowy-color);
+      }
+      
+      .gfw-slideshow {
+        padding: 50px;
+        font-size: 150%;
+        max-width: 75%;
       }
       
       .upload-controls {
@@ -284,6 +385,11 @@
           margin-right: auto;
         }
         
+        .gfw-slideshow {
+          padding: 20px;
+          max-width: 60%;
+        }
+        
         .upload-title-wrap {
           padding-bottom: 5px;
         }
@@ -291,16 +397,32 @@
         .upload-title-text {
           padding-bottom: 0;
         }
+        
+        .slideshow-box {
+          width: 100%;
+          height: 100vh;
+          border-radius: 0;
+          outline: 1px solid var(--primary-color);
+        }
+        
+        .slideshow-box img {
+          max-width: 99%;
+        }
+        
+        .slideshow-name {
+          top: auto;
+          bottom: 10px;
+          white-space: nowrap;
+        }
       }
     </style>
   </head>
   <body x-data="state"
         x-init="Alpine.nextTick(() => { bodyReady = true })"
         style="display: none;" x-show="bodyReady" x-transition.opacity x-transition.duration.750ms
-        @keydown.left.window="prevPage()"
-        @keydown.right.window="nextPage()">
-    <div x-show="!thingLoading" class="header"
-         x-bind:style="thing && { border: `1px solid ${thing.color}`, background: `linear-gradient(90deg, rgb(0, 0, 0) 10%, ${thing.color} 100%)` }">
+        @keydown.left.window.throttle.200ms="handleKeyLeft()"
+        @keydown.right.window.throttle.200ms="handleKeyRight()">
+    <div x-show="!thingLoading" class="header">
       <div class="left">
         <template x-if="thing">
           <div>
@@ -336,7 +458,9 @@
         </span>
       </div>
     </template>
-    <template x-if="!invalidLink && !thingLoading">
+    
+    <template x-if="!invalidLink && !thingLoading && slideshowNum === SLIDESHOW_HIDE">
+    <div>
       <div class="main-wrap">
         <div class="panel-wrap">
           <template x-if="isValidString(thing?.fieldsAsString)">
@@ -351,13 +475,17 @@
                   <template x-if="isMobileSize()">
                     <div><br/></div>
                   </template>
-                  <button @click="pageData = availablePageData.uploads">🔍 Show <b x-text="thing.uploads.length"></b> Files</button>
+                  <button @click="pageData = availablePageData.uploads" title="Begin loading the gallery of images and files">🔍 Show <b x-text="thing.uploads.length"></b> Files</button>
                   <template x-if="isMobileSize()">
                     <div><br/></div>
                   </template>
                 </span>
               </template>
-              <button @click="downloadZIP">📂 Download All Files (<span x-text="(availablePageData.totalSize/1024/1024).toFixed(1)"></span>mb zip)</button>
+              <button @click="startSlideshow" title="View the images and files one by one in a carousel slideshow">🎞 View Slideshow</button>
+              <template x-if="isMobileSize()">
+                <div><br/></div>
+              </template>
+              <button @click="downloadZIP" title="Download all images and files as a single ZIP file - may be slow">📂 Download All Files (<span x-text="(availablePageData.totalSize/1024/1024).toFixed(1)"></span>mb zip)</button>
             </div>
           </template>
           
@@ -388,12 +516,11 @@
                        @mouseover="if (!isMobileSize()) scale = 1.75"
                        @mouseout="if (!isMobileSize()) scale = 1">
                       <!-- TTODO Because the page height is 0 while loading, lazy considers ALL images to be in view, so they all load at once
-                                Realistically we need to stagger these somehow, so that as the first page full loads the rest are lazy for later -->
+                                 Realistically we need to stagger these somehow, so that as the first page full loads the rest are lazy for later -->
                       <img loading="lazy" :alt="upload.name" :src="upload.url"
                            :title="`${upload.name} (size ${readableSize(upload.size)})`"
                            :style="'transform: scale(' + scale + ')'"
-                           @load="imageLoadedCount++"
-                           @error="imageLoadedCount++; $el.classList.add('giw-e');"/>
+                           @error="$el.classList.add('giw-e')"/>
                   </div>
                 </template>
               </template>
@@ -405,30 +532,69 @@
           </template>
         </div>
       </div>
+      
+      <div @click="window.scrollTo({ top: 0, behavior: 'smooth'})"
+      @scroll.window.throttle.100ms="showScrollTop = document.documentElement.scrollTop/document.documentElement.scrollHeight >= 0.25;"
+      x-show="showScrollTop" x-transition.opacity x-transition.duration.500ms
+      class="scroll-top-button">
+        🔝
+      </div>
+      
+      <div class="paginator-box" x-transition.opacity
+            x-transition:enter.duration.500ms x-transition:leave.duration.0ms
+            x-show="!invalidLink && pageData.length > 1">
+        <span @click="firstPage()">⏮</span>
+        <span @click="prevPage()">⏪</span>
+        <b x-text="`${pageNum+1} / ${pageData.length}`"></b>
+        <span @click="nextPage()">⏩</span>
+        <span @click="lastPage()">⏭</span>
+      </div>
+    </div>
     </template>
     
-    <div @click="window.scrollTo({ top: 0, behavior: 'smooth'})"
-         @scroll.window.throttle.100ms="showScrollTop = document.documentElement.scrollTop/document.documentElement.scrollHeight >= 0.25;"
-         x-show="showScrollTop" x-transition.opacity x-transition.duration.500ms
-         class="scroll-top-button">
-      🔝
-    </div>
-    
-    <div class="paginator-box" x-transition.opacity
-         x-transition:enter.duration.500ms x-transition:leave.duration.0ms
-         x-show="!invalidLink && pageData.length > 1 && imageLoadedCount === pageData[pageNum].length">
-      <span @click="firstPage()">⏮</span>
-      <span @click="prevPage()">⏪</span>
-      <b x-text="`${pageNum+1} / ${pageData.length}`"></b>
-      <span @click="nextPage()">⏩</span>
-      <span @click="lastPage()">⏭</span>
-    </div>
+    <template x-if="!invalidLink && !thingLoading && hasUploads() && slideshowNum !== SLIDESHOW_HIDE">
+      <div class="slideshow-box"
+           @keydown.page-up.window.throttle.200ms="prevSlideshow(5)"
+           @keydown.page-down.window.throttle.200ms="nextSlideshow(5)"
+           @keyup.home.window="slideshowNum = 0"
+           @keyup.end.window="slideshowNum = thing.uploads.length-1"
+           @keyup.escape.window="closeSlideshow()"
+           x-data="{ upload: null }"
+           x-effect="upload = thing.uploads[slideshowNum]">
+        <div class="slideshow-buttons">
+          <button @click="toggleAutoSlideshow()" title="Automatically move through the slideshow every little bit"
+                  x-text="slideshowAuto ? '⏹ Stop Auto' : '⏯ Play Auto'"></button>
+          <button @click="closeSlideshow()">❌ Close</button>
+        </div>
+        
+        <span class="slideshow-count" x-text="`${slideshowNum+1} / ${thing.uploads.length}`"></span>
+        
+        <span class="slideshow-name" x-text="stripExtension(upload.name)"></span>
+        
+        <div @click="prevSlideshow()" class="chevron-left"></div>
+        <template x-if="upload.type === 'image'">
+          <img :alt="upload.name" :src="upload.url"
+              :title="`${upload.name} (size ${readableSize(upload.size)})`"
+              @error="$el.classList.add('giw-e');"/>
+        </template>
+        <template x-if="upload.type === 'title'">
+          <span class="gfw gfw-slideshow">
+            File:<br/>
+            <a :href="upload.url" target="_blank" x-text="upload.name"></a>
+            <span x-text="`(size ${readableSize(upload.size)})`" class="smaller-text"></span>
+          </span>
+        </template>
+        <div @click="nextSlideshow()" class="chevron-right"></div>
+      </div>
+    </template>
   </body>
   <script>
     const PUBLIC_THING_PARAM = 't';
     const PUBLIC_USER_PARAM = 'u';
     const BACKEND_API = `${window.location.protocol}//${window.location.hostname}:4333`;
     const PAGE_SIZE = 20;
+    const SLIDESHOW_HIDE = -1;
+    const SLIDESHOW_AUTO_SPEED_MS = 2500;
     const MAX_SIZE_BEFORE_PROMPT = 5*1024*1024; // Maximum size of potential uploads before prompting the user to load them
     
     var state = {
@@ -439,15 +605,17 @@
       invalidLink: null, // Could be 'true' or 'empty'
       username: null,
       thing: null,
+      slideshowNum: SLIDESHOW_HIDE, // If >= 0 we're in slideshow mode and are tracking what image/file we're viewing
+      slideshowAuto: false, // true to automatically move through the slideshow
       pageNum: 0,
       pageData: [], // 2D array of images, split from thing.uploads, set when the user requests it (based on size)
-      imageLoadedCount: 0, // Number of images that have reported as loading (or errored)
       availablePageData: {
         totalSize: 0,
         totalSizeImages: 0,
         uploads: []
       }
     }
+    var slideshowInterval = null;
     
     function main() {
       setupMarkedParsing();
@@ -467,6 +635,12 @@
             
             // Update our page title
             document.title = state.thing.name + ' - RIW';
+            
+            // Update our primary color to match the thing, if possible
+            if (state.thing.color) {
+              const rootStyle = document.querySelector(':root');
+              rootStyle?.style.setProperty('--primary-color', state.thing.color);
+            }
             
             // Apply our base URL to the path provided by any uploaded file
             if (hasUploads()) {
@@ -590,8 +764,70 @@
       return '?';
     }
     
+    function startSlideshow() {
+      // If we're already on a later page, start from there
+      if (state.pageData.length > 0) {
+        state.slideshowNum = PAGE_SIZE * state.pageNum;
+      }
+      else {
+        state.slideshowNum = 0;
+      }
+    }
+    
+    function closeSlideshow() {
+      stopAutoSlideshow();
+      state.slideshowNum = SLIDESHOW_HIDE;
+    }
+    
+    function toggleAutoSlideshow() {
+      state.slideshowAuto ? stopAutoSlideshow() : startAutoSlideshow();
+    }
+    
+    function startAutoSlideshow() {
+      stopAutoSlideshow(); // Stop any previous interval
+      
+      state.slideshowAuto = true;
+      
+      // Give the user some feedback right away by moving to the next slide
+      setTimeout(() => {
+        nextSlideshow();
+      }, 200);
+      
+      slideshowInterval = setInterval(() => {
+        nextSlideshow();
+      }, SLIDESHOW_AUTO_SPEED_MS);
+    }
+    
+    function stopAutoSlideshow() {
+      state.slideshowAuto = false;
+      
+      if (slideshowInterval) {
+        clearInterval(slideshowInterval);
+        slideshowInterval = null;
+      }
+    }
+    
     function downloadZIP() {
       window.open(`${BACKEND_API}/pdownload/${state.thing.id}?username=${state.username}`, '_blank');
+    }
+    
+    function handleKeyLeft() {
+      // If we're showing the slideshow, utilize that, otherwise try to paginate
+      if (state.slideshowNum !== SLIDESHOW_HIDE) {
+        prevSlideshow(1);
+      }
+      else {
+        prevPage();
+      }
+    }
+    
+    function handleKeyRight() {
+      if (state.slideshowNum !== SLIDESHOW_HIDE) {
+        nextSlideshow(1);
+      }
+      else {
+        nextPage();
+      }
     }
     
     function firstPage() {
@@ -620,8 +856,21 @@
       _genericPageChange();
     }
     
+    function prevSlideshow(count = 1) {
+      state.slideshowNum -= count;
+      if (state.slideshowNum < 0) {
+        state.slideshowNum = state.thing.uploads.length-1; // Loop to end
+      }
+    }
+    
+    function nextSlideshow(count = 1) {
+      state.slideshowNum += count;
+      if (state.slideshowNum > state.thing.uploads.length-1) {
+        state.slideshowNum = 0;
+      }
+    }
+    
     function _genericPageChange() {
-      state.imageLoadedCount = 0;
       document.documentElement.scrollTop = 0;
     }
     
@@ -643,6 +892,13 @@
       return state && state.thing && state.thing.uploads &&
              Array.isArray(state.thing.uploads) &&
              state.thing.uploads.length > 0;
+    }
+    
+    function stripExtension(filename) {
+      if (filename && filename.indexOf('.') !== -1) {
+        return filename.substring(0, filename.indexOf('.'));
+      }
+      return filename;
     }
     
     function anchorUrlsInText(text) {

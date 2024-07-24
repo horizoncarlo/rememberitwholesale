@@ -1,4 +1,4 @@
-<p-dialog #userProfileDialog header="User Profile" [(visible)]="isShowing" [modal]="true" [maximizable]="true" class="user-profile-dialog">
+<p-dialog #userProfileDialog header="User Profile" [(visible)]="isShowing" [modal]="true" [maximizable]="true" class="user-profile-dialog" [focusOnShow]="false">
 
   <div class="dialog-items">
     <span class="inline">Username: <b>{{getFriendlyUsername()}}</b></span>

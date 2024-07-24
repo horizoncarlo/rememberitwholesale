@@ -1,6 +1,6 @@
 <p-dialog #manageThingDialog
           [header]="(isAdd() ? 'Add New' : 'Edit') + ' Thing'" [(visible)]="isShowing" [modal]="true" [maximizable]="true" class="manage-thing-dialog"
-          (onShow)="handleFocus(nameField)">
+          [focusOnShow]="false" (onShow)="handleFocus(nameField)">
   <div class="content-form">
 
     <table cellpadding="10" class="thing-in-table">
@@ -55,7 +55,7 @@
               <ng-template pTemplate="header">
                 <b>Gallery Uploads</b>
                 @if (hasUploads()) {
-                  &nbsp;({{uploadList.length}})
+                  &nbsp;({{uploadCount()}})
                 }
               </ng-template>
               <div [class]="'drop-area ' + (dropHighlight ? 'drop-highlight' : '')"
@@ -66,7 +66,7 @@
                    >
                 @if (uploadLoading) {
                   <p-progressSpinner/>
-                }                   
+                }
                 @else {
                   <span class="text-label">
                     <i class="pi pi-folder-open"></i> Drag and drop files here or use the buttons to add uploads
@@ -94,14 +94,29 @@
                 }
               </div>
               
-              <div class="upload-results" title="Click to remove the upload">
+              <div class="upload-results">
                 <div class="upload-files">
                   @for (upload of getUploadListOfFiles(); track $index) {
-                    <p-chip (click)="removeUpload(upload)" class="upload-item">{{upload.data}}</p-chip>
+                    <p-chip (click)="removeUpload(upload, uploadList)" class="upload-item"
+                            title="Click to remove this file">{{upload.data}}</p-chip>
                   }
                 </div>
                 @for (upload of getUploadListOfImages(); track $index) {
-                  <img (click)="removeUpload(upload)" class="upload-item" [src]="upload.data" />
+                  @if (upload.data) {
+                    <span class="upload-item-wrap">
+                      <img (click)="removeUpload(upload, uploadList)" class="upload-item"
+                          [src]="upload.data"
+                          title="Click to remove this image"/>
+                      <span class="upload-new">New</span>
+                    </span>
+                  }
+                  @else if (upload.url && actOn.uploads) {
+                    <img (click)="removeUpload(upload, actOn.uploads)" class="upload-item"
+                         [src]="makeFullGalleryURL(upload.url)"
+                         [title]="'Click to remove: ' + upload.name"
+                         [style.maxWidth]="imageMaxWidth + 'px'"
+                         [style.maxHeight]="imageMaxHeight + 'px'" />
+                  }
                 }
               </div>
             </p-panel>
@@ -188,8 +203,8 @@
       </div>
     }
     <p-button (onClick)="hide()" label="Cancel" icon="pi pi-times" iconPos="left" severity="secondary"/>
-    <p-button #submitButton (onClick)="submit()" [label]="(hasUploads() ? ('Upload ' + uploadList.length + ' Files and ') : '') + 'Save Thing'"
-              [icon]="'pi pi-' + (hasUploads() ? 'arrow-circle-up' : 'check')" iconPos="left"
+    <p-button #submitButton (onClick)="submit()" [label]="(hasNewUploads() ? ('Upload ' + uploadList.length + ' Files and ') : '') + 'Save Thing'"
+              [icon]="'pi pi-' + (hasNewUploads() ? 'arrow-circle-up' : 'check')" iconPos="left"
               [disabled]="uploadLoading"/>
     <p-confirmPopup />
   </ng-template>

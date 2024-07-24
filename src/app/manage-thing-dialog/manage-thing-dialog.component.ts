@@ -211,6 +211,8 @@ export class ManageThingDialogComponent implements OnDestroy {
     this.things.saveThing(this.actOn, {
       uploadList: this.uploadList,
       onSuccess: () => {
+        // TTODO Technically after saving a new Thing we don't re-fetch the Things, so our `uploads` list won't be populated, which means editing the Thing won't have the images right away
+        
         this.uploadLoading = false;
         this.toggleThingDialog();
         
@@ -315,28 +317,57 @@ export class ManageThingDialogComponent implements OnDestroy {
   }
   
   hasUploads(): boolean {
+    return this.hasNewUploads() || Utility.hasItems(this.actOn.uploads);
+  }
+  
+  hasNewUploads(): boolean {
     return Utility.hasItems(this.uploadList);
   }
   
-  getUploadListOfImages(): SimpleUpload[] {
-    if (this.hasUploads()) {
-      return this.uploadList.filter(upload => upload.type === 'image');
-    }
-    return [];
+  uploadCount(): number {
+    let toReturn = 0;
+    toReturn += Utility.hasItems(this.uploadList) ? this.uploadList.length : 0;
+    toReturn += Utility.hasItems(this.actOn.uploads) ? (this.actOn.uploads as any).length : 0; // Annoyingly getting around TS not detecting hasItems validates array existence
+    return toReturn;
   }
   
-  getUploadListOfFiles(): SimpleUpload[] {
+  getUploadListOfImages(): any[] {
+    let toReturn: any[] = [];
     if (this.hasUploads()) {
-      return this.uploadList.filter(upload => upload.type === 'title');
+      if (Utility.hasItems(this.uploadList)) {
+        toReturn = toReturn.concat(this.uploadList.filter(upload => upload.type === 'image'));
+      }
+      if (Utility.hasItems(this.actOn.uploads)) {
+        toReturn = toReturn.concat((this.actOn.uploads as any).filter((upload: any) => upload.type === 'image'));
+      }
+      
     }
-    return [];
+    return toReturn;
   }
   
-  removeUpload(toRemove: SimpleUpload) {
-    const removeIndex = this.uploadList?.indexOf(toRemove);
+  getUploadListOfFiles(): any[] {
+    let toReturn: any[] = [];
+    if (this.hasUploads()) {
+      if (Utility.hasItems(this.uploadList)) {
+        toReturn = toReturn.concat(this.uploadList.filter(upload => upload.type === 'title'));
+      }
+      if (Utility.hasItems(this.actOn.uploads)) {
+        toReturn = toReturn.concat((this.actOn.uploads as any).filter((upload: any) => upload.type === 'title'));
+      }
+      
+    }
+    return toReturn;
+  }
+  
+  removeUpload(toRemove: SimpleUpload, fromList: any[]) {
+    const removeIndex = fromList?.indexOf(toRemove);
     if (typeof removeIndex === 'number' && removeIndex >= 0) {
-      this.uploadList.splice(removeIndex, 1);
+      fromList.splice(removeIndex, 1);
     }
+  }
+  
+  makeFullGalleryURL(basePath: string): string {
+    return `${window.location.protocol}//${window.location.hostname}:4333/${basePath}`
   }
   
   private _readFile(file: File) {

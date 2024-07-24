@@ -152,7 +152,7 @@
         <span [style]="'color:' + data.color">
           {{ data.templateType }}
           @if (data.public) {
-            &nbsp;<span class="pi pi-globe" pTooltip="Thing is Public"></span>
+            &nbsp;<span class="pi pi-globe" pTooltip="Thing is Public" (click)="data.copyPublicLink()"></span>
           }
         </span>
       </td>

@@ -1,9 +1,11 @@
 # TODO
 ### Priority: Gallery concept
+- BUG: Zip file of images doesn't seem to open on Windows with the default unzipper
 - Handle loading/editing of existing images in main app for a Thing
-- See the TTODO for loading indicator, as a non-local setup we just kind of spin with no progress indicator on upload
+- See the TTODO for loading indicator, as a non-local setup we just kind of spin with no progress indicator on upload. Remember TTODO to simulate latency locally
+- Customize public gallery page with options outlined in TTODO in the public CSS
 - Do a "select images for download" button where you can check/select images and get a ZIP of them, instead of just Download All
-- Perhaps have a way to scale images automatically from /static to get a thumbnail version on the fly?
+- Perhaps have a way to scale images automatically from /static to get a thumbnail version on the fly? Desperately needed for editing/managing existing Thing on creator side
   - Could leverage Sharp? https://sharp.pixelplumbing.com/
   - Add additional download option for lower quality images as a ZIP, so like a 70mb full res, 40mb half res, etc.
 

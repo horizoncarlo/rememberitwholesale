@@ -121,6 +121,7 @@ export class ThingService {
     console.log("Going to save Thing", toSave);
     
     // Convert any uploaded files into a friendly list we can save in the Thing
+    // TTODO When we do a saveThing in the backend we need to do a diff of `uploads` and determine if there's existing files we should delete
     if (options && options.uploadList &&
         Utility.hasItems(options.uploadList)) {
       toSave.uploads = options.uploadList.map(upload => {

@@ -66,6 +66,19 @@
   margin-bottom: 5px;
 }
 
+.upload-item-wrap {
+  position: relative;
+}
+
+.upload-new {
+  position: absolute;
+  right: 0;
+  bottom: 0;
+  padding: 2px 2px 2px 4px;
+  background-color: rgba(0,0,0,0.75);
+  border-top-left-radius: 5px;
+}
+
 .upload-item {
   cursor: not-allowed;
   text-align: center;

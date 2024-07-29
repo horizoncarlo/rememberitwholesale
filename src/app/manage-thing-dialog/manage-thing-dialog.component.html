@@ -97,8 +97,14 @@
               <div class="upload-results">
                 <div class="upload-files">
                   @for (upload of getUploadListOfFiles(); track $index) {
-                    <p-chip (click)="removeUpload(upload, uploadList)" class="upload-item"
-                            title="Click to remove this file">{{upload.data}}</p-chip>
+                    @if (upload.data) {
+                      <p-chip (click)="removeUpload(upload, uploadList)" class="upload-item"
+                              title="Click to remove this file">{{upload.data}}</p-chip>
+                    }
+                    @else if (upload.name && actOn.uploads) {
+                      <p-chip (click)="removeUpload(upload, actOn.uploads)" class="upload-item"
+                              title="Click to remove this file">{{upload.name}}</p-chip>
+                    }
                   }
                 </div>
                 @for (upload of getUploadListOfImages(); track $index) {

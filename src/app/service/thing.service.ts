@@ -34,6 +34,7 @@ export class ThingService {
   remindersOverdue: Thing[] = []; // Reminders that are a day or less old
   remindersCleanup: any[] = []; // List of setTimeout references for tracking and clearing
   shownReminders: string[] = []; // List of recently overdue reminders we've shown, to prevent spamming the user
+  cachedLimitDate: number | undefined;
   
   constructor(public backend: StorageService,
               public userService: UserService) { }
@@ -121,16 +122,25 @@ export class ThingService {
     console.log("Going to save Thing", toSave);
     
     // Convert any uploaded files into a friendly list we can save in the Thing
-    // TTODO When we do a saveThing in the backend we need to do a diff of `uploads` and determine if there's existing files we should delete
+    // Note we maintain our existing upload list, so that on the backend we can tell if there are any changes/deletions
     if (options && options.uploadList &&
         Utility.hasItems(options.uploadList)) {
-      toSave.uploads = options.uploadList.map(upload => {
+      const newUploads = options.uploadList.map(upload => {
         return {
           name: upload.file?.name,
           size: upload.file?.size,
           type: upload.type
         } as SimpleUpload;
       });
+      
+      // Concat if we have an existing list
+      if (Utility.hasItems(toSave.uploads) && toSave.uploads) {
+        // TTODO As part of the uploading loading improvements, make sure the bug here is fixed: on an existing Thing with files that we add files to, we briefly see the wrong count in the gallery due to this concat
+        toSave.uploads = toSave.uploads?.concat(newUploads);
+      }
+      else {
+        toSave.uploads = newUploads;
+      }
     }
     
     this.markLoading();
@@ -144,7 +154,8 @@ export class ThingService {
           Utility.showSuccess('Successfully saved your Thing', toSave.name);
         }
         
-        if (options?.refreshFromServer) {
+        // Force reloading from the server when images are added to ensure we have updated links, or when the flag is requested
+        if (options?.refreshFromServer || Utility.hasItems(toSave.uploads)) {
           this.getAllThings();
         }
         // If we don't want to do a full refresh, just update our local list instead
@@ -329,6 +340,14 @@ export class ThingService {
   }
 
   getAllThings(limitDate?: number): void {
+    // Use any incoming limit date, otherwise use the previously cached limit date
+    if (typeof limitDate === 'number') {
+      this.cachedLimitDate = limitDate;
+    }
+    else if (typeof this.cachedLimitDate === 'number') {
+      limitDate = this.cachedLimitDate;
+    }
+    
     this.preGetAllThings();
     this.backend.getAllThings(limitDate).subscribe({
       next: res => {

@@ -184,6 +184,17 @@ function getGalleryPath(authUsername, thingId) {
   return path.join(uploadDirectory, thingId);
 }
 
+function removeGalleryDirectory(authUsername, thingId) {
+  fs.rmSync(getGalleryPath(authUsername, thingId),
+    { recursive: true, force: true },
+    callback => {});
+}
+
+function removeGalleryFile(authUsername, thingId, fileName) {
+  fs.rmSync(path.join(getGalleryPath(authUsername, thingId), fileName), {},
+    callback => {});
+}
+
 function addURLsToThings(authUsername, things) {
   // Dynamically append a URL for any gallery items
   // We don't save this to the Things file as we want to be more flexible on changing it
@@ -699,21 +710,51 @@ app.get("/pdownload/:thingId", async (req, res) => {
 });
 
 app.post("/things", (req, res) => {
-  log("POST Thing", req.body);
-  if (hasInvalidFields(req.body.id, req.body.name, req.body.templateType)) { return res.status(400).end(); }
+  const toSave = req.body;
+  log("POST Thing", toSave);
+  if (hasInvalidFields(toSave.id, toSave.name, toSave.templateType)) { return res.status(400).end(); }
   
   // Determine if our object exists by ID or not
   let justAdd = true;
   const things = getInMemoryThings(getAuthUsername(req));
   for (let i = things.length-1; i >= 0; i--) {
-    if (req.body.id === things[i].id) {
+    if (toSave.id === things[i].id) {
+      try{
+        // If we're editing an existing Thing determine if incoming uploads differs from saved uploads
+        if (Array.isArray(things[i].uploads) && things[i].uploads.length > 0) {
+          // Case 1: Existing Thing has uploads, but incoming has none = delete all uploads
+          if (!Array.isArray(toSave.uploads) || toSave.uploads.length === 0) {
+            removeGalleryDirectory(getAuthUsername(req), things[i].id);
+          }
+          // Case 2: Both existing and incoming Thing have uploads, so check for differences
+          else {
+            // Loop through our existing uploads and ensure they are still present in the latest incoming version
+            // If not we'll aim to delete them
+            things[i].uploads.forEach(existingUpload => {
+              let stillExists = toSave.uploads.filter(incomingUpload => {
+                return incomingUpload.name === existingUpload.name &&
+                       incomingUpload.size === existingUpload.size &&
+                       incomingUpload.type === existingUpload.type;
+              }).length > 0;
+              
+              if (!stillExists) {
+                removeGalleryFile(getAuthUsername(req), things[i].id, existingUpload.name);
+              }
+            });
+          }
+        }
+      }catch (err) {
+        // On error we don't want to prevent our Thing update, so just note the problem
+        error('Upload diff failed for Thing ID=' + things[i].id, err);
+      }
+      
       justAdd = false;
-      things.splice(i, 1, req.body);
+      things.splice(i, 1, toSave);
     }
   }
   
   if (justAdd) {
-    getInMemoryThings(getAuthUsername(req)).push(req.body);
+    getInMemoryThings(getAuthUsername(req)).push(toSave);
   }
   
   saveThingsMemoryToFile(getAuthUsername(req));
@@ -739,9 +780,7 @@ app.post("/things/delete", (req, res) => {
             try {
               if (toWork[checkIndex].gallery ||
                   (toWork[checkIndex].uploads || Array.isArray(toWork[checkIndex].uploads) || toWork[checkIndex].uploads.length > 0)) {
-                fs.rmSync(getGalleryPath(getAuthUsername(req), toWork[checkIndex].id),
-                          { recursive: true, force: true },
-                          callback => {});
+                removeGalleryDirectory(getAuthUsername(req), toWork[checkIndex].id);
               }
             // Even more safety, as we can potentially end up with leftover directories, but still want to remove the Thing
             }catch (ignored) { }

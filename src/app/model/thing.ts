@@ -198,11 +198,17 @@ export class Thing {
     // Set in our updated date
     this.updated = new Date();
     
-    // Can slightly trim down the object by removing false/empty values
+    // Can slightly trim down the object by removing false/empty values and UI specific flags
     if (!this.reminder) { delete this.reminder; }
     if (!this.public) { delete this.public; }
     if (!this.gallery) { delete this.gallery; }
     if (!this.uploads) { delete this.uploads; }
+    else {
+      this.uploads = this.uploads.map(upload => {
+        delete upload.url; // UI specific property
+        return upload;
+      });
+    }
     if (Utility.hasItems(this.fields)) {
       this.fields?.forEach((currentField) => {
         if (!Utility.isDefinedNotNull(currentField.value)) {

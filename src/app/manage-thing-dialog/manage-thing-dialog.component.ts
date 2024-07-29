@@ -211,8 +211,6 @@ export class ManageThingDialogComponent implements OnDestroy {
     this.things.saveThing(this.actOn, {
       uploadList: this.uploadList,
       onSuccess: () => {
-        // TTODO Technically after saving a new Thing we don't re-fetch the Things, so our `uploads` list won't be populated, which means editing the Thing won't have the images right away
-        
         this.uploadLoading = false;
         this.toggleThingDialog();
         
@@ -354,8 +352,8 @@ export class ManageThingDialogComponent implements OnDestroy {
       if (Utility.hasItems(this.actOn.uploads)) {
         toReturn = toReturn.concat((this.actOn.uploads as any).filter((upload: any) => upload.type === 'title'));
       }
-      
     }
+    
     return toReturn;
   }
   
@@ -437,7 +435,7 @@ export class ManageThingDialogComponent implements OnDestroy {
         const context = canvas.getContext('2d');
         context?.drawImage(image, 0, 0, newWidth, newHeight);
         
-        this.uploadList.push({ file: file, data: canvas.toDataURL(file.type), type: 'image' });
+        this._addToUploadList({ file: file, data: canvas.toDataURL(file.type), type: 'image' });
       }
       
       image.onerror = (err) => {
@@ -447,8 +445,21 @@ export class ManageThingDialogComponent implements OnDestroy {
     }
     // Add files to our upload list as they don't need extra processing
     else {
-      this.uploadList.push({ file: file, data: file.name, type: 'title' });
+      this._addToUploadList({ file: file, data: file.name, name: file.name, type: 'title' });
     }
+  }
+  
+  private _addToUploadList(toAdd: SimpleUpload): void {
+    // If we have an existing file in our upload list with the same name, we remove it so this uploaded version will replace it
+    if (Utility.hasItems(this.actOn.uploads) && this.actOn.uploads) {
+      for (let i = this.actOn.uploads.length-1; i >= 0; i--) {
+        if (toAdd.name === this.actOn.uploads[i].name) {
+          this.actOn.uploads.splice(i, 1);
+        }
+      }
+    }
+    
+    this.uploadList.push(toAdd);
   }
 }
 

@@ -547,6 +547,12 @@ export class DatatableComponent implements OnInit, OnDestroy {
     return 'Name (' + Utility.formatNumber(total) + ')';
   }
   
+  clickTemplateColumn(data: Thing): void {
+    if (data && data.public) {
+      data.copyPublicLink();
+    }
+  }
+  
   isFavoriteByName(name: string): boolean {
     return (Utility.isValidString(name) &&
             name.indexOf('Favorite - ') === 0);

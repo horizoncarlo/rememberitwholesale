@@ -146,13 +146,16 @@
             <span class="pi pi-heart-fill" style="font-size: 0.75rem"></span>
           }
           {{ data.name }}
+          @if (data.gallery) {
+            &nbsp;<span class="pi pi-images" [pTooltip]="'Thing has a Gallery of ' + data.uploads.length + ' item(s)'"></span>
+          }
         </span>
       </td>
       <td>
-        <span [style]="'color:' + data.color">
+        <span [style]="'color:' + data.color" (click)="clickTemplateColumn(data)">
           {{ data.templateType }}
           @if (data.public) {
-            &nbsp;<span class="pi pi-globe" pTooltip="Thing is Public" (click)="data.copyPublicLink()"></span>
+            &nbsp;<span class="pi pi-globe" pTooltip="Thing is Public - click to copy the shareable link"></span>
           }
         </span>
       </td>

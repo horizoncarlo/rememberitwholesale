@@ -53,21 +53,26 @@
           <td colspan="2">
             <p-panel [toggleable]="true" class="no-panel-pad">
               <ng-template pTemplate="header">
-                <b>Gallery Uploads</b>
-                @if (hasUploads()) {
-                  &nbsp;({{uploadCount()}})
-                }
-              </ng-template>
-              <div [class]="'drop-area ' + (dropHighlight ? 'drop-highlight' : '')"
-                   (dragenter)="handleDragEnter($event)"
-                   (dragleave)="handleDragLeave($event)"
-                   (dragover)="$event.preventDefault()"
-                   (drop)="handleDraggedFiles($event)"
-                   >
                 @if (uploadLoading) {
-                  <p-progressSpinner/>
+                  <b>Processing Uploads...</b>
                 }
                 @else {
+                  <b>Gallery Uploads</b>
+                  @if (hasUploads()) {
+                    &nbsp;({{uploadCount()}})
+                  }
+                }
+              </ng-template>
+              @if (uploadLoading) {
+                <p-progressSpinner/>
+              }
+              @else {
+                <div [class]="'drop-area ' + (dropHighlight ? 'drop-highlight' : '')"
+                    (dragenter)="handleDragEnter($event)"
+                    (dragleave)="handleDragLeave($event)"
+                    (dragover)="$event.preventDefault()"
+                    (drop)="handleDraggedFiles($event)"
+                    >
                   <span class="text-label">
                     <i class="pi pi-folder-open"></i> Drag and drop files here or use the buttons to add uploads
                   </span>
@@ -91,40 +96,40 @@
                   @if (hasUploads()) {
                     <div class="upload-remove-note">(Click any file or image to remove upload)</div>
                   }
-                }
-              </div>
-              
-              <div class="upload-results">
-                <div class="upload-files">
-                  @for (upload of getUploadListOfFiles(); track $index) {
-                    @if (upload.data) {
-                      <p-chip (click)="removeUpload(upload, uploadList)" class="upload-item"
-                              title="Click to remove this file">{{upload.data}}</p-chip>
+                </div>
+                
+                <div class="upload-results">
+                  <div class="upload-files">
+                    @for (upload of getUploadListOfFiles(); track $index) {
+                      @if (upload.data) {
+                        <p-chip (click)="removeUpload(upload, uploadList)" class="upload-item"
+                                title="Click to remove this file">{{upload.data}}</p-chip>
+                      }
+                      @else if (upload.name && actOn.uploads) {
+                        <p-chip (click)="removeUpload(upload, actOn.uploads)" class="upload-item"
+                                title="Click to remove this file">{{upload.name}}</p-chip>
+                      }
                     }
-                    @else if (upload.name && actOn.uploads) {
-                      <p-chip (click)="removeUpload(upload, actOn.uploads)" class="upload-item"
-                              title="Click to remove this file">{{upload.name}}</p-chip>
+                  </div>
+                  @for (upload of getUploadListOfImages(); track $index) {
+                    @if (upload.data) {
+                      <span class="upload-item-wrap">
+                        <img (click)="removeUpload(upload, uploadList)" class="upload-item"
+                            [src]="upload.data"
+                            title="Click to remove this image"/>
+                        <span class="upload-new">New</span>
+                      </span>
+                    }
+                    @else if (upload.url && actOn.uploads) {
+                      <img (click)="removeUpload(upload, actOn.uploads)" class="upload-item"
+                          [src]="makeFullGalleryURL(upload.url)"
+                          [title]="'Click to remove: ' + upload.name"
+                          [style.maxWidth]="imageMaxWidth + 'px'"
+                          [style.maxHeight]="imageMaxHeight + 'px'" />
                     }
                   }
                 </div>
-                @for (upload of getUploadListOfImages(); track $index) {
-                  @if (upload.data) {
-                    <span class="upload-item-wrap">
-                      <img (click)="removeUpload(upload, uploadList)" class="upload-item"
-                          [src]="upload.data"
-                          title="Click to remove this image"/>
-                      <span class="upload-new">New</span>
-                    </span>
-                  }
-                  @else if (upload.url && actOn.uploads) {
-                    <img (click)="removeUpload(upload, actOn.uploads)" class="upload-item"
-                         [src]="makeFullGalleryURL(upload.url)"
-                         [title]="'Click to remove: ' + upload.name"
-                         [style.maxWidth]="imageMaxWidth + 'px'"
-                         [style.maxHeight]="imageMaxHeight + 'px'" />
-                  }
-                }
-              </div>
+              }
             </p-panel>
           </td>
         </tr>

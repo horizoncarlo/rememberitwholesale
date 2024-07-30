@@ -435,7 +435,7 @@ export class ManageThingDialogComponent implements OnDestroy {
         const context = canvas.getContext('2d');
         context?.drawImage(image, 0, 0, newWidth, newHeight);
         
-        this._addToUploadList({ file: file, data: canvas.toDataURL(file.type), type: 'image' });
+        this._addToUploadList({ file: file, name: file.name, data: canvas.toDataURL(file.type), type: 'image' });
       }
       
       image.onerror = (err) => {
@@ -462,4 +462,3 @@ export class ManageThingDialogComponent implements OnDestroy {
     this.uploadList.push(toAdd);
   }
 }
-

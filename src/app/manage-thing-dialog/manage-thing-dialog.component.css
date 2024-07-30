@@ -68,6 +68,7 @@
 
 .upload-item-wrap {
   position: relative;
+  vertical-align: bottom;
 }
 
 .upload-new {
@@ -82,6 +83,7 @@
 .upload-item {
   cursor: not-allowed;
   text-align: center;
+  vertical-align: bottom;
 }
 
 :host ::ng-deep .upload-item .p-chip {

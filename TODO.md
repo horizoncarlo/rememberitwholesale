@@ -13,6 +13,7 @@
   - Add additional download option for lower quality images as a ZIP, so like a 70mb full res, 40mb half res, etc.
 
 ### Other important
+- BUG: VT chooser Thing on prod doesn't work anymore?
 - Need a better and smoother and less manual process for deploying the app to prod environment
 - Put an app version scheme somewhere, and show on Profile dialog?
 - Allow Edit of Templates - doesn't retroactively change Thing data, just going forward uses the new version

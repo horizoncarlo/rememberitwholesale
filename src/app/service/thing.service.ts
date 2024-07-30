@@ -135,7 +135,6 @@ export class ThingService {
       
       // Concat if we have an existing list
       if (Utility.hasItems(toSave.uploads) && toSave.uploads) {
-        // TTODO As part of the uploading loading improvements, make sure the bug here is fixed: on an existing Thing with files that we add files to, we briefly see the wrong count in the gallery due to this concat
         toSave.uploads = toSave.uploads?.concat(newUploads);
       }
       else {

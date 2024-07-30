@@ -1,10 +1,6 @@
 # TODO
 ### Priority: Gallery concept
 - BUG: Zip file of images doesn't seem to open on Windows with the default unzipper
-- Handle loading/editing of existing images in main app for a Thing
- - What do we want to do on uploading a duplicate file? Currently adds to thing.uploads, but doesn't make a second copy in the directory
-   - Likely just overwrite duplicate in array and on filesystem, so more of a replacement
-- See the TTODO for loading indicator, as a non-local setup we just kind of spin with no progress indicator on upload. Remember TTODO to simulate latency locally
 - Let the user customize public gallery page with options outlined in TTODO in the public CSS - just store choices in local storage
 - Preload the next and previous public carousel gallery image (via hidden <img> tag)
 - Do a "select images for download" button where you can check/select images and get a ZIP of them, instead of just Download All
@@ -17,7 +13,6 @@
 - Need a better and smoother and less manual process for deploying the app to prod environment
 - Put an app version scheme somewhere, and show on Profile dialog?
 - Allow Edit of Templates - doesn't retroactively change Thing data, just going forward uses the new version
-- When selecting multiple things leave Edit Thing enabled, just edit the last selected item?
 - Touch to edit cancel the timer on touch move so that slow scrolling doesn't trigger it?
 - What about a "pin" concept that keeps a certain Thing at the top of the list regardless of sorting
 - Save inputs as local storage or something? Because if a save of a Thing fails the inputs end up cleared which is crazy frustrating

@@ -54,17 +54,20 @@
             <p-panel [toggleable]="true" class="no-panel-pad">
               <ng-template pTemplate="header">
                 @if (uploadLoading) {
-                  <b>Processing Uploads...</b>
+                  <b>Processing {{uploadProgress()}} of {{uploadTotal()}} Uploads...</b>
+                  <p-progressSpinner />
                 }
                 @else {
                   <b>Gallery Uploads</b>
                   @if (hasUploads()) {
-                    &nbsp;({{uploadCount()}})
+                    &nbsp;({{currentGalleryCount()}})
                   }
                 }
               </ng-template>
               @if (uploadLoading) {
-                <p-progressSpinner/>
+                <p-progressBar [value]="uploadProgress() / uploadTotal() * 100.0">
+                  <ng-template pTemplate="content" />
+                </p-progressBar>
               }
               @else {
                 <div [class]="'drop-area ' + (dropHighlight ? 'drop-highlight' : '')"
@@ -102,8 +105,13 @@
                   <div class="upload-files">
                     @for (upload of getUploadListOfFiles(); track $index) {
                       @if (upload.data) {
-                        <p-chip (click)="removeUpload(upload, uploadList)" class="upload-item"
-                                title="Click to remove this file">{{upload.data}}</p-chip>
+                        <span class="upload-item-wrap">
+                          <p-chip (click)="removeUpload(upload, uploadList)" class="upload-item"
+                                  title="Click to remove this file" [style.position]="'relative'">
+                            {{upload.data}}
+                          </p-chip>
+                          <span class="upload-new upload-new-title">New</span>
+                        </span>
                       }
                       @else if (upload.name && actOn.uploads) {
                         <p-chip (click)="removeUpload(upload, actOn.uploads)" class="upload-item"

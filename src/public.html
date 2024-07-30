@@ -442,7 +442,7 @@
         🔒
       </div>
     </div>
-    <!-- TTODO Loading indicator <p-progressBar [mode]="thingLoading ? 'indeterminate' : 'determinate'" class="loading-bar" /> -->
+    <!-- TODO Loading indicator, likely on each individual image? Old Angular approach: <p-progressBar [mode]="thingLoading ? 'indeterminate' : 'determinate'" class="loading-bar" /> -->
       
     <template x-if="invalidLink">
       <div class="main-error">
@@ -515,7 +515,7 @@
                        @contextmenu="if (!isMobileSize()) { scale = Math.max(scale-0.5, 1.75); if (scale !== 1.75) $event.preventDefault() }"
                        @mouseover="if (!isMobileSize()) scale = 1.75"
                        @mouseout="if (!isMobileSize()) scale = 1">
-                      <!-- TTODO Because the page height is 0 while loading, lazy considers ALL images to be in view, so they all load at once
+                      <!-- TODO Because the page height is 0 while loading, lazy considers ALL images to be in view, so they all load at once
                                  Realistically we need to stagger these somehow, so that as the first page full loads the rest are lazy for later -->
                       <img loading="lazy" :alt="upload.name" :src="upload.url"
                            :title="`${upload.name} (size ${readableSize(upload.size)})`"

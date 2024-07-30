@@ -1,4 +1,4 @@
-import { Component, EventEmitter, HostListener, OnDestroy, Output, ViewChild } from '@angular/core';
+import { Component, EventEmitter, HostListener, OnDestroy, Output, signal, ViewChild, WritableSignal } from '@angular/core';
 import { ConfirmationService } from 'primeng/api';
 import { Button } from 'primeng/button';
 import { Dialog } from 'primeng/dialog';
@@ -30,6 +30,8 @@ export class ManageThingDialogComponent implements OnDestroy {
   fieldTypes = TemplateField.TYPES;
   uploadList: SimpleUpload[] = [];
   uploadLoading: boolean = false;
+  uploadProgress: WritableSignal<number> = signal(0);
+  uploadTotal: WritableSignal<number> = signal(0);
   private dragDropCounter: number = 0; // Since dragleave fires when mousing over child elements, we track our drag enter vs leave counter and change our highlight based on that
   @ViewChild('manageThingDialog') manageThingDialog!: Dialog;
   @ViewChild('templateDropdown') templateDropdown!: TemplateDropdownComponent;
@@ -206,10 +208,16 @@ export class ManageThingDialogComponent implements OnDestroy {
       this.onEdit.emit(this.actOn);
     }
     
-    // TTODO Better loading indicator, perhaps hide the thing dialog and show a main overlay, or change thing dialog state. Likely use a signal to get a count of done files
+    // Setup our loading progress tracker
     this.uploadLoading = Utility.hasItems(this.uploadList);
+    if (this.uploadLoading) {
+      this.uploadProgress.set(0);
+      this.uploadTotal.set(this.uploadList.length);
+    }
+    
     this.things.saveThing(this.actOn, {
       uploadList: this.uploadList,
+      uploadProgress: this.uploadProgress,
       onSuccess: () => {
         this.uploadLoading = false;
         this.toggleThingDialog();
@@ -293,7 +301,14 @@ export class ManageThingDialogComponent implements OnDestroy {
     }
     
     if (files) {
-      this.uploadLoading = true;
+      // Much nicer experience locally or on a fast connection
+      // Instead of flashing the loading indicator and changing the dialog size
+      //  we instead wait a second to see if the upload will just process
+      const localWait = setTimeout(() => {
+        this.uploadLoading = true;
+        this.uploadProgress.set(0);
+        this.uploadTotal.set(files.length);
+      }, 1000);
       
       const promises = [];
       for (let i = 0; i < files.length; i++) {
@@ -306,6 +321,9 @@ export class ManageThingDialogComponent implements OnDestroy {
         Utility.showError('Failed to upload files');
         console.error(err);
       }).finally(() => {
+        if (localWait) {
+          clearInterval(localWait);
+        }
         this.uploadLoading = false;
         
         // Reset the field so that future onchange events will continue to fire
@@ -322,7 +340,7 @@ export class ManageThingDialogComponent implements OnDestroy {
     return Utility.hasItems(this.uploadList);
   }
   
-  uploadCount(): number {
+  currentGalleryCount(): number {
     let toReturn = 0;
     toReturn += Utility.hasItems(this.uploadList) ? this.uploadList.length : 0;
     toReturn += Utility.hasItems(this.actOn.uploads) ? (this.actOn.uploads as any).length : 0; // Annoyingly getting around TS not detecting hasItems validates array existence
@@ -392,6 +410,8 @@ export class ManageThingDialogComponent implements OnDestroy {
       else {
         reader.readAsArrayBuffer(file);
       }
+    }).finally(() => {
+      this.uploadProgress.update(value => value+1);
     });
   }
   
@@ -445,7 +465,7 @@ export class ManageThingDialogComponent implements OnDestroy {
     }
     // Add files to our upload list as they don't need extra processing
     else {
-      this._addToUploadList({ file: file, data: file.name, name: file.name, type: 'title' });
+      this._addToUploadList({ file: file, name: file.name, data: file.name, type: 'title' });
     }
   }
   
@@ -456,6 +476,13 @@ export class ManageThingDialogComponent implements OnDestroy {
         if (toAdd.name === this.actOn.uploads[i].name) {
           this.actOn.uploads.splice(i, 1);
         }
+      }
+    }
+    
+    // Also an equally rare case, but uploading the same file without saving
+    for (let i = this.uploadList.length-1; i >= 0; i--) {
+      if (toAdd.name === this.uploadList[i].name) {
+        this.uploadList.splice(i, 1);
       }
     }
     

@@ -477,11 +477,12 @@ export class DatatableComponent implements OnInit, OnDestroy {
   }
   
   requestEditSelected(): void {
-    if (this.hasOneSelectedRow()) {
-      this.manageThingDialog.showEdit(this.selectedRows);
+    if (this.hasSelectedRows()) {
+      // If we have multiple rows to edit, just use the last one in the list, as that's last clicked by the user and feels most natural
+      this.manageThingDialog.showEdit(this.hasOneSelectedRow() ? this.selectedRows : [this.selectedRows[this.selectedRows.length-1]]);
     }
     else {
-      Utility.showWarn('Select a single row to edit');
+      Utility.showWarn('Select a row to edit');
     }
   }
   

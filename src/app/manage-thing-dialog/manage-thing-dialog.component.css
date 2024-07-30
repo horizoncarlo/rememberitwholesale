@@ -68,6 +68,7 @@
 
 .upload-item-wrap {
   position: relative;
+  text-align: center;
   vertical-align: bottom;
 }
 
@@ -78,6 +79,17 @@
   padding: 2px 2px 2px 4px;
   background-color: rgba(0,0,0,0.75);
   border-top-left-radius: 5px;
+  z-index: 1;
+}
+
+.upload-new-title {
+  top: -15px;
+  left: 40%;
+  right: 40%;
+  bottom: auto;
+  background-color: rgba(0,0,0,0.4);
+  border-radius: 15px;
+  width: 60px;
 }
 
 .upload-item {

@@ -824,14 +824,14 @@ app.post('/upload-thing/:thingId', async (req, res) => {
   
   // Move our uploaded file to the final path
   await toUpload.mv(finalFinalPath, function(err) {
-    // setTimeout(() => { // TTODO Can be used to simulate upload latency to test a loading indicator
+    // setTimeout(() => { // TODO Can be used to simulate upload latency to test a loading indicator
     if (err) {
       error("Error while trying to move uploaded file to ", finalFinalPath);
       return res.status(500).end();
     }
     
     return res.status(200).end();
-    // }, 3000);
+    // }, Math.random() * 10000);
   });
 });
 

@@ -94,6 +94,9 @@ p-columnfilterformelement .p-inputtext {
 .manage-template-dialog .p-dialog {
   width: 1200px; /* Stop the view from jumping when going between template operations */
 }
+.manage-thing-dialog .p-dialog {
+  max-width: 75vw; /* Setting min-content is a lot less jarring with galleries, but also wastes a lot of available space */
+}
 .p-dialog,
 .p-confirm-dialog {
   max-width: 95vw;

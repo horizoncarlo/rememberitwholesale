@@ -1,4 +1,4 @@
-import { Injectable } from '@angular/core';
+import { Injectable, WritableSignal } from '@angular/core';
 import { addDays, differenceInMilliseconds, differenceInMinutes, formatDistanceToNow, isAfter, subDays } from 'date-fns';
 import { lastValueFrom } from 'rxjs';
 import { Template } from '../model/template';
@@ -55,7 +55,7 @@ export class ThingService {
     return lastValueFrom(this.backend.uploadThing(thingId, toUpload));
   }
   
-  async uploadAllFiles(attachedThing: Thing, uploadList: SimpleUpload[]) {
+  async uploadAllFiles(attachedThing: Thing, uploadList: SimpleUpload[], progress?: WritableSignal<number>) {
     // Upload any files
     if (Utility.hasItems(uploadList)) {
       // We want to batch our uploads to not overwhelm the server
@@ -83,6 +83,10 @@ export class ThingService {
               errorCount++;
               console.error("Failed to upload a file", err);
               return reject(err);
+            }finally {
+              if (progress) {
+                progress.update(value => value+1);
+              }
             }
           });
         });
@@ -109,7 +113,8 @@ export class ThingService {
               silent?: boolean,
               refreshFromServer?: boolean,
               onSuccess?: Function,
-              uploadList?: SimpleUpload[]
+              uploadList?: SimpleUpload[],
+              uploadProgress?: WritableSignal<number>
             }): void {
     if (toSave && toSave.isValid()) {
       toSave.prepareForSave();
@@ -145,9 +150,10 @@ export class ThingService {
     this.markLoading();
     this.backend.submitThing(toSave).subscribe({
       next: async res => {
+        // TODO If an upload is cancelled in progress, we DO warn the user, but this process will still continue and show success, so we should abort it (likely with an AbortController)
         if (options && options.uploadList &&
             Utility.hasItems(options.uploadList)) {
-          await this.uploadAllFiles(toSave, options.uploadList);
+          await this.uploadAllFiles(toSave, options.uploadList, options?.uploadProgress);
         }
         else if (!options?.silent) {
           Utility.showSuccess('Successfully saved your Thing', toSave.name);

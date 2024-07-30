@@ -378,6 +378,7 @@ export class ManageThingDialogComponent implements OnDestroy {
   removeUpload(toRemove: SimpleUpload, fromList: any[]) {
     const removeIndex = fromList?.indexOf(toRemove);
     if (typeof removeIndex === 'number' && removeIndex >= 0) {
+      // TTODO If we remove an upload but don't save the Thing and instead cancel the dialog, then go back to edit, the upload is still removed. Likely need a proper fetch-from-server-on-cancel approach
       fromList.splice(removeIndex, 1);
     }
   }

@@ -1,6 +1,7 @@
 # TODO
 ### Priority: Gallery concept
 - BUG: Zip file of images doesn't seem to open on Windows with the default unzipper
+- BUG: Gallery carousel on actual mobile doesn't fit width/height of screen
 - Let the user customize public gallery page with options outlined in TTODO in the public CSS - just store choices in local storage
 - Preload the next and previous public carousel gallery image (via hidden <img> tag)
 - Do a "select images for download" button where you can check/select images and get a ZIP of them, instead of just Download All

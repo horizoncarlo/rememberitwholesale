@@ -661,6 +661,11 @@
                   if (upload.type === 'title') {
                     state.hasUploadedTitles = true;
                   }
+                  else if (upload.type === 'file') {
+                    // Also by default auto-scale our images so they load faster and don't waste bandwidth
+                    // TODO Customize the scaling, perhaps have a capSize=1200 (px) or similar param the user can customize
+                    upload.url += '?scale=auto';
+                  }
                 }
               });
               

@@ -12,6 +12,7 @@ const { v4: uuidv4 } = require('uuid');
 const rateLimiter = require('express-rate-limit');
 const { add } = require("date-fns");
 const path = require("path");
+const sharp = require("sharp")
 const fileUpload = require("express-fileupload");
 
 // Set some default templates for a new user
@@ -50,6 +51,7 @@ const THINGS_FILE = 'things.json';
 const FAVORITE_FILE = 'favorite.json';
 const SETTINGS_FILE = 'settings.json';
 const AUTH_FILE = 'auth.json';
+const MAX_AUTOSCALE = 1200; // Number of pixels before we attempt to autoscale an image
 
 // Setup express-rate-limit (https://express-rate-limit.mintlify.app/reference/configuration)
 // We want a global limiter for all endpoints, and then a more restrictive one for each public endpoint
@@ -95,7 +97,6 @@ app.use(cors());
 app.use(globalLimiter);
 app.use(express.json());
 app.use(fileUpload());
-app.use(`/${STATIC_PATH}`, staticLimiter, express.static(FILE_DIR, { maxAge: 1000*60*60*24*30 })); // Host static files directly, and cache for 30 days
 
 // To prevent needless favicon.ico logging for our static files we just return NO CONTENT for the request
 // Of course the app itself can manage a proper favicon, we just want to skip this default browser behaviour
@@ -128,6 +129,57 @@ app.use((req, res, next) => {
     next();
   }
 });
+
+/**
+ * Give the ability to resize an image on the fly when passed a wscale/hscale (width and height PERCENT scaling)
+ * The requester could also pass scale=auto, which means we determine if any scaling is needed dynamically
+ * Otherwise we fall back to our standard Static image handling
+ */
+app.get(`/${STATIC_PATH}/*`, async (req, res, next) => {
+  const { wscale, hscale, scale } = req.query;
+  const isAutoScale = scale && scale.toLowerCase() === 'auto';
+  
+  if (wscale || hscale || isAutoScale) {
+    try{
+      const filePath = path.join(FILE_DIR, req.params[0]);
+      if (fs.existsSync(filePath)) {
+        // Leverage the Sharp library to grab our current dimensions and resize based on the requested precent
+        const image = sharp(filePath);
+        const metadata = await image.metadata();
+        let transform = {};
+        
+        // If we're trying to automatically scale base it purely on how big our image is to begin with, and reduce accordingly
+        if (isAutoScale) {
+          if (metadata.width > MAX_AUTOSCALE) {
+            transform.width = MAX_AUTOSCALE;
+            transform.height = Math.round(metadata.height * (transform.width / metadata.width));
+          }
+        }
+        else {
+          if (wscale) {
+            let safeCheck = Math.round(metadata.width * (parseFloat(wscale) / 100));
+            if (typeof safeCheck === 'number' && !isNaN(safeCheck)) { transform.width = safeCheck; }
+          }
+          if (hscale) {
+            let safeCheck = Math.round(metadata.height * (parseFloat(hscale) / 100));
+            if (typeof safeCheck === 'number' && !isNaN(safeCheck)) { transform.height = safeCheck; }
+          }
+        }
+        
+        // If we have a valid resize do so now, otherwise let the fallback static processing handle it
+        if (transform.width || transform.height) {
+          res.type(metadata.format);
+          return image.resize(transform).pipe(res);
+        }
+      }
+    }catch (err) {
+      console.error(req.params[0], err);
+    }
+  }
+  
+  return next();
+});
+app.use(`/${STATIC_PATH}`, staticLimiter, express.static(FILE_DIR, { maxAge: 1000*60*60*24*30 })); // Host static files directly, and cache for 30 days
 
 // Maintain our JSON data in memory, and read/write as needed as a whole chunk. Realistically don't need to overthink appending or streaming files for the sizes involved
 // Each file should correspond to a "table" in our JSON pseudo-database. Just assuming singleton access per user to avoid a lot of complexity and over engineering

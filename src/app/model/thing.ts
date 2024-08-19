@@ -91,10 +91,7 @@ export class Thing {
       return defaultLink.replace('<a', '<a target="_blank"');
     };
     
-    marked.use({
-      useNewRenderer: true,
-      renderer: renderer
-    });
+    marked.use({ renderer: renderer });
   }
   
   static cloneFrom(source: Thing): Thing {

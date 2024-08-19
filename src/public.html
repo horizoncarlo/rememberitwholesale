@@ -710,10 +710,7 @@
         return defaultLink.replace('<a', '<a target="_blank"');
       };
       
-      marked.use({
-        useNewRenderer: true,
-        renderer: renderer
-      });
+      marked.use({ renderer: renderer });
     }
     
     async function _fetchWithLoading(url, body) {

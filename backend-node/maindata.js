@@ -148,8 +148,8 @@ app.get(`/${STATIC_PATH}/*`, async (req, res, next) => {
       if (fs.existsSync(filePath)) {
         // Create a cache key based on the file path and query parameters
         const cacheKey = `${filePath}-${wscale}-${hscale}-${isAutoScale}`;
-        if (imageResizeCache[cacheKey]) {
-          return res.end(imageResizeCache[cacheKey]);
+        if (imageResizeCache.get(cacheKey)) {
+          return res.end(imageResizeCache.get(cacheKey));
         }
         
         // Leverage the Sharp library to grab our current dimensions and resize based on the requested precent
@@ -177,9 +177,11 @@ app.get(`/${STATIC_PATH}/*`, async (req, res, next) => {
         
         // If we have a valid resize do so now, otherwise let the fallback static processing handle it
         if (transform.width || transform.height) {
-          res.type(metadata.format);
+          res.setHeader('Cache-Control', 'public, max-age=' + 60*60*24*30); // 30 days for caching
+          
           const imageBuffer = await image
             .resize(transform)
+            // .toFormat('jpeg', { quality: 80 }) // TODO Can also convert to a JPG to further save on file size - toggleable by user perhaps? Start on lowest setting and they can choose to go higher?
             .withMetadata() // Preserve metadata including orientation
             .toBuffer();
             
@@ -199,7 +201,7 @@ app.get(`/${STATIC_PATH}/*`, async (req, res, next) => {
   
   return next();
 });
-app.use(`/${STATIC_PATH}`, staticLimiter, express.static(FILE_DIR, { maxAge: 1000*60*60*24*30 })); // Host static files directly, and cache for 30 days
+app.use(`/${STATIC_PATH}`, staticLimiter, express.static(FILE_DIR, { maxAge: '30d' })); // Host static files directly, and cache for a good amount of time (default is no caching)
 
 // Maintain our JSON data in memory, and read/write as needed as a whole chunk. Realistically don't need to overthink appending or streaming files for the sizes involved
 // Each file should correspond to a "table" in our JSON pseudo-database. Just assuming singleton access per user to avoid a lot of complexity and over engineering
@@ -767,8 +769,7 @@ app.get("/pdownload/:thingId", async (req, res) => {
     
     zipFile.outputStream.pipe(res);
     res.setHeader('Content-Type', 'application/zip');
-    res.setHeader('Content-Disposition', `attachment; filename="${downloadFilename}"`);
-    
+    res.attachment(downloadFilename);
     zipFile.end(); // Don't need to return `res` itself as closing the stream via our library will achieve the same
     log('Download ZIP file ' + downloadFilename + ' from ' + username + ' and Thing ' + thingId);
   }catch (err) {

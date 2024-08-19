@@ -8,6 +8,7 @@ const mailjet = require('node-mailjet');
 const config = require('config');
 const crypto = require('crypto');
 const archiver = require('archiver');
+const zipper = require('yazl')
 const { v4: uuidv4 } = require('uuid');
 const rateLimiter = require('express-rate-limit');
 const { add } = require("date-fns");
@@ -655,6 +656,71 @@ app.get("/pthing/:thingId", (req, res) => {
   return res.status(400).end();
 });
 
+app.get("/pdownload/old/:thingId", async (req, res) => {
+  try{
+    // We have the desired Thing ID as a param, and the Username to look in as a query string
+    const thingId = req.params?.thingId;
+    const username = req.query?.username;
+    
+    if (!thingId || !username) {
+      throw new Error('Missing Thing ID or User');
+    }
+    
+    log("GET Download Public Thing", thingId, username);
+    
+    // Pull in the Things for the desired user, then find our matching ID and ensure we're valid to ZIP
+    let downloadFilename = null;
+    let downloadPath = null;
+    const userThings = getInMemoryThings(username);
+    if (userThings && userThings.length > 0) {
+      let checkThings = userThings.filter(thing => thing.id === thingId);
+      if (checkThings && checkThings.length > 0 &&
+          checkThings[0].public && checkThings[0].gallery &&
+          Array.isArray(checkThings[0].uploads) && checkThings[0].uploads.length > 0) {
+        downloadPath = getGalleryPath(username, thingId);
+        downloadFilename = checkThings[0].name + '.zip';
+      }
+    }
+    
+    // If we couldn't find a valid Thing to try to download, error out
+    if (!downloadPath || !downloadFilename) {
+      error("Download path or filename is invalid when trying to get a ZIP");
+      return res.status(400).end();
+    }
+    
+    // const zipFile = new zipper.ZipFile();
+    // // Add an entire directory recursively
+    // fs.readdirSync(downloadPath).forEach(file => {
+    //     zipFile.addFile(path.join(downloadPath, file), file);
+    // });
+    
+    // zipFile.outputStream.pipe(res);
+    // res.setHeader('Content-Type', 'application/zip');
+    // res.setHeader('Content-Disposition', `attachment; filename="${downloadFilename}"`);
+    
+    // zipFile.end();
+    
+    res.attachment(downloadFilename);
+    res.setHeader('Content-Type', 'application/zip');
+    const archive = archiver('zip', { zlib: 0, store: true });
+    
+    archive.on('error', (err) => {
+      console.error("ERROR MAKING ZIP FILE"); // QUIDEL
+      throw err;
+    });
+    
+    // Pipe to our return stream so the browser can download, then zip the contents and finalize
+    archive.pipe(res);
+    archive.directory(downloadPath, false);
+    
+    await archive.finalize();
+    log('Download ZIP file ' + downloadFilename + ' from ' + username + ' and Thing ' + thingId);
+  }catch (err) {
+    error(err);
+    return res.status(400).end();
+  }
+});
+
 app.get("/pdownload/:thingId", async (req, res) => {
   try{
     // We have the desired Thing ID as a param, and the Username to look in as a query string
@@ -687,26 +753,37 @@ app.get("/pdownload/:thingId", async (req, res) => {
       return res.status(400).end();
     }
     
-    res.attachment(downloadFilename);
-    res.setHeader('Content-Type', 'application/zip');
-    
-    const archive = archiver('zip');
-    
-    archive.on('error', (err) => {
-      throw err;
+    const zipFile = new zipper.ZipFile();
+    // Add an entire directory recursively
+    fs.readdirSync(downloadPath).forEach(file => {
+        zipFile.addFile(path.join(downloadPath, file), file);
     });
     
-    // Pipe to our return stream so the browser can download, then zip the contents and finalize
-    archive.pipe(res);
-    archive.directory(downloadPath, false);
+    zipFile.outputStream.pipe(res);
+    res.setHeader('Content-Type', 'application/zip');
+    res.setHeader('Content-Disposition', `attachment; filename="${downloadFilename}"`);
     
-    await archive.finalize();
+    zipFile.end();
+    
+    // res.attachment(downloadFilename);
+    // res.setHeader('Content-Type', 'application/zip');
+    // const archive = archiver('zip', { zlib: 0, store: true });
+    
+    // archive.on('error', (err) => {
+    //   console.error("ERROR MAKING ZIP FILE"); // QUIDEL
+    //   throw err;
+    // });
+    
+    // // Pipe to our return stream so the browser can download, then zip the contents and finalize
+    // archive.pipe(res);
+    // archive.directory(downloadPath, false);
+    
+    // await archive.finalize();
     log('Download ZIP file ' + downloadFilename + ' from ' + username + ' and Thing ' + thingId);
   }catch (err) {
     error(err);
+    return res.status(400).end();
   }
-  
-  return res.status(400).end();
 });
 
 app.post("/things", (req, res) => {

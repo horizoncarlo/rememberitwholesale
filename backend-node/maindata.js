@@ -52,6 +52,9 @@ const FAVORITE_FILE = 'favorite.json';
 const SETTINGS_FILE = 'settings.json';
 const AUTH_FILE = 'auth.json';
 const MAX_AUTOSCALE = 1200; // Number of pixels before we attempt to autoscale an image
+const MAX_RESIZE_CACHE = 50; // Number of resized images to cache
+
+const imageResizeCache = new Map(); // In-memory cache of recently resized images
 
 // Setup express-rate-limit (https://express-rate-limit.mintlify.app/reference/configuration)
 // We want a global limiter for all endpoints, and then a more restrictive one for each public endpoint
@@ -143,6 +146,12 @@ app.get(`/${STATIC_PATH}/*`, async (req, res, next) => {
     try{
       const filePath = path.join(FILE_DIR, req.params[0]);
       if (fs.existsSync(filePath)) {
+        // Create a cache key based on the file path and query parameters
+        const cacheKey = `${filePath}-${wscale}-${hscale}-${isAutoScale}`;
+        if (imageResizeCache[cacheKey]) {
+          return res.end(imageResizeCache[cacheKey]);
+        }
+        
         // Leverage the Sharp library to grab our current dimensions and resize based on the requested precent
         const image = sharp(filePath);
         const metadata = await image.metadata();
@@ -169,7 +178,18 @@ app.get(`/${STATIC_PATH}/*`, async (req, res, next) => {
         // If we have a valid resize do so now, otherwise let the fallback static processing handle it
         if (transform.width || transform.height) {
           res.type(metadata.format);
-          return image.resize(transform).pipe(res);
+          const imageBuffer = await image
+            .resize(transform)
+            .withMetadata() // Preserve metadata including orientation
+            .toBuffer();
+            
+          // Store in our cache, up to a cap (at which point we remove our oldest key)
+          if (imageResizeCache.size >= MAX_RESIZE_CACHE) {
+            imageResizeCache.delete(imageResizeCache.keys().next().value);
+          }
+          imageResizeCache.set(cacheKey, imageBuffer);
+          
+          return res.end(imageBuffer);
         }
       }
     }catch (err) {

@@ -485,8 +485,7 @@
               <template x-if="isMobileSize()">
                 <div><br/></div>
               </template>
-              <button @click="downloadZIP" title="Download all images and files as a single ZIP file - may be slow">📂 Download All Files (<span x-text="Math.max((availablePageData.totalSize/1024/1024).toFixed(1), 0.1)"></span>mb zip)</button>
-              <button @click="downloadZIPOld" title="Download all images and files as a single ZIP file - may be slow">📂 OLD Download All Files (<span x-text="Math.max((availablePageData.totalSize/1024/1024).toFixed(1), 0.1)"></span>mb zip)</button>
+              <button @click="downloadZIP" title="Download all images and files as a single ZIP file - may be slow">📂 Download All Files (<span x-text="Math.max((availablePageData.totalSize/1024/1024 / 2).toFixed(1), 0.1)"></span>mb zip)</button>
             </div>
           </template>
           
@@ -700,14 +699,21 @@
     
     function setupMarkedParsing() {
       const renderer = new marked.Renderer();
-      
+    
       // Append a blank target to all our links so we ensure they open in a new window/tab
-      renderer.link = (href, title, text) => {
+      // TODO Have had issues in the past with this from Marked, especially switching from v12 to v13 when a new renderer was introduced
+      // Alternative method signatures:
+      // renderer.link = ({ href, text, title } : any): string => {
+      // renderer.link = (href: string | null, title: string | null, text: string): string => {
+      renderer.link = ({ href, text, title }) => {
         const defaultLink = `<a href="${href}"${title ? ` title="${title}"` : ''}>${text}</a>`;
         return defaultLink.replace('<a', '<a target="_blank"');
       };
       
-      marked.use({ renderer });
+      marked.use({
+        useNewRenderer: true,
+        renderer: renderer
+      });
     }
     
     async function _fetchWithLoading(url, body) {
@@ -812,10 +818,6 @@
       window.open(`${BACKEND_API}/pdownload/${state.thing.id}?username=${state.username}`, '_blank');
     }
 
-    function downloadZIPOld() {
-      window.open(`${BACKEND_API}/pdownload/old/${state.thing.id}?username=${state.username}`, '_blank');
-    }
-    
     function handleKeyLeft() {
       // If we're showing the slideshow, utilize that, otherwise try to paginate
       if (state.slideshowNum !== SLIDESHOW_HIDE) {

@@ -86,12 +86,15 @@ export class Thing {
     const renderer = new marked.Renderer();
     
     // Append a blank target to all our links so we ensure they open in a new window/tab
-    renderer.link = ({ href, text, title} : any): string => {
+    renderer.link = ({ href, text, title } : any): string => {
       const defaultLink = `<a href="${href}"${title ? ` title="${title}"` : ''}>${text}</a>`;
       return defaultLink.replace('<a', '<a target="_blank"');
     };
     
-    marked.use({ renderer });
+    marked.use({
+      useNewRenderer: true,
+      renderer: renderer
+    });
   }
   
   static cloneFrom(source: Thing): Thing {

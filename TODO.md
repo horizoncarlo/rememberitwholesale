@@ -1,6 +1,5 @@
 # TODO
 ### Priority: Gallery concept
-- BUG: Zip file of images doesn't seem to open on Windows with the default unzipper
 - BUG: Gallery carousel on actual mobile doesn't fit width/height of screen
 - Let the user customize public gallery page with options outlined in TTODO in the public CSS - just store choices in local storage
 - Preload the next and previous public carousel gallery image (via hidden <img> tag)
@@ -10,7 +9,6 @@
   - Add additional download option for lower quality images as a ZIP, so like a 70mb full res, 40mb half res, etc.
 
 ### Other important
-- BUG: VT chooser Thing on prod doesn't work anymore?
 - Need a better and smoother and less manual process for deploying the app to prod environment
 - Put an app version scheme somewhere, and show on Profile dialog?
 - Allow Edit of Templates - doesn't retroactively change Thing data, just going forward uses the new version

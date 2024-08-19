@@ -178,7 +178,8 @@
         border-radius: 20px;
         box-shadow: 0 0 20px black;
         width: 95%;
-        height: 95vh;
+        height: 95%;
+        max-height: 95%;
         user-select: none; /* Prevent accidental highlighting/selection when clicking rapidly */
         display: flex;
         justify-content: center;
@@ -399,8 +400,12 @@
         }
         
         .slideshow-box {
+          top: 0;
+          left: 0;
+          transform: none;
           width: 100%;
-          height: 100vh;
+          height: 100%;
+          max-height: 100%;
           border-radius: 0;
           outline: 1px solid var(--primary-color);
         }
@@ -443,7 +448,46 @@
       </div>
     </div>
     <!-- TODO Loading indicator, likely on each individual image? Old Angular approach: <p-progressBar [mode]="thingLoading ? 'indeterminate' : 'determinate'" class="loading-bar" /> -->
-      
+
+    <template x-if="!invalidLink && !thingLoading && hasUploads() && slideshowNum !== SLIDESHOW_HIDE">
+      <div class="slideshow-box"
+           @keydown.page-up.window.throttle.200ms="prevSlideshow(5)"
+           @keydown.page-down.window.throttle.200ms="nextSlideshow(5)"
+           @keyup.home.window="slideshowNum = 0"
+           @keyup.end.window="slideshowNum = thing.uploads.length-1"
+           @keyup.escape.window="closeSlideshow()"
+           x-data="{ upload: null }"
+           x-effect="upload = thing.uploads[slideshowNum]">
+        <div class="slideshow-buttons">
+          <button @click="toggleAutoSlideshow()" title="Automatically move through the slideshow every little bit"
+                  x-text="slideshowAuto ? '⏹ Stop Auto' : '⏯ Play Auto'"></button>
+          <button @click="closeSlideshow()">❌ Close</button>
+        </div>
+        
+        <span class="slideshow-count" x-text="`${slideshowNum+1} / ${thing.uploads.length}`"></span>
+        
+        <span class="slideshow-name" x-text="stripExtension(upload.name)"></span>
+        
+        <div @click="prevSlideshow()" class="chevron-left"></div>
+        <template x-if="upload.type === 'image'">
+          <img :alt="upload.name" :src="upload.url"
+              :title="`${upload.name} (size ${readableSize(upload.size)})`"
+              @error="$el.classList.add('giw-e');"/>
+        </template>
+        <template x-if="preloadSlideshow(slideshowNum) !== null">
+          <img :src="preloadSlideshow(slideshowNum).url" x-show="false"/>
+        </template>
+        <template x-if="upload.type === 'title'">
+          <span class="gfw gfw-slideshow">
+            File:<br/>
+            <a :href="upload.url" target="_blank" x-text="upload.name"></a>
+            <span x-text="`(size ${readableSize(upload.size)})`" class="smaller-text"></span>
+          </span>
+        </template>
+        <div @click="nextSlideshow()" class="chevron-right"></div>
+      </div>
+    </template>
+    
     <template x-if="invalidLink">
       <div class="main-error">
         <i class="pi pi-exclamation-triangle"></i>
@@ -485,7 +529,7 @@
               <template x-if="isMobileSize()">
                 <div><br/></div>
               </template>
-              <button @click="downloadZIP" title="Download all images and files as a single ZIP file - may be slow">📂 Download All Files (<span x-text="Math.max((availablePageData.totalSize/1024/1024 / 2).toFixed(1), 0.1)"></span>mb zip)</button>
+              <button @click="downloadZIP" title="Download all images and files as a single ZIP file - may be slow">📂 Download All Files (<span x-text="Math.max((availablePageData.totalSize/1024/1024).toFixed(1), 0.1)"></span>mb zip)</button>
             </div>
           </template>
           
@@ -550,42 +594,6 @@
         <span @click="lastPage()">⏭</span>
       </div>
     </div>
-    </template>
-    
-    <template x-if="!invalidLink && !thingLoading && hasUploads() && slideshowNum !== SLIDESHOW_HIDE">
-      <div class="slideshow-box"
-           @keydown.page-up.window.throttle.200ms="prevSlideshow(5)"
-           @keydown.page-down.window.throttle.200ms="nextSlideshow(5)"
-           @keyup.home.window="slideshowNum = 0"
-           @keyup.end.window="slideshowNum = thing.uploads.length-1"
-           @keyup.escape.window="closeSlideshow()"
-           x-data="{ upload: null }"
-           x-effect="upload = thing.uploads[slideshowNum]">
-        <div class="slideshow-buttons">
-          <button @click="toggleAutoSlideshow()" title="Automatically move through the slideshow every little bit"
-                  x-text="slideshowAuto ? '⏹ Stop Auto' : '⏯ Play Auto'"></button>
-          <button @click="closeSlideshow()">❌ Close</button>
-        </div>
-        
-        <span class="slideshow-count" x-text="`${slideshowNum+1} / ${thing.uploads.length}`"></span>
-        
-        <span class="slideshow-name" x-text="stripExtension(upload.name)"></span>
-        
-        <div @click="prevSlideshow()" class="chevron-left"></div>
-        <template x-if="upload.type === 'image'">
-          <img :alt="upload.name" :src="upload.url"
-              :title="`${upload.name} (size ${readableSize(upload.size)})`"
-              @error="$el.classList.add('giw-e');"/>
-        </template>
-        <template x-if="upload.type === 'title'">
-          <span class="gfw gfw-slideshow">
-            File:<br/>
-            <a :href="upload.url" target="_blank" x-text="upload.name"></a>
-            <span x-text="`(size ${readableSize(upload.size)})`" class="smaller-text"></span>
-          </span>
-        </template>
-        <div @click="nextSlideshow()" class="chevron-right"></div>
-      </div>
     </template>
   </body>
   <script>
@@ -872,6 +880,14 @@
       if (state.slideshowNum > state.thing.uploads.length-1) {
         state.slideshowNum = 0;
       }
+    }
+    
+    function preloadSlideshow(currentSlideshowNum = 0) {
+      currentSlideshowNum++;
+      if (currentSlideshowNum > state.thing.uploads.length-1) {
+        return null;
+      }
+      return state.thing.uploads[currentSlideshowNum];
     }
     
     function _genericPageChange() {

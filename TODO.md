@@ -1,10 +1,8 @@
 # TODO
 ### Priority: Gallery concept
-- BUG: Gallery carousel on actual mobile doesn't fit width/height of screen
 - Let the user customize public gallery page with options outlined in TTODO in the public CSS - just store choices in local storage
-- Preload the next and previous public carousel gallery image (via hidden <img> tag)
 - Do a "select images for download" button where you can check/select images and get a ZIP of them, instead of just Download All
-- Perhaps have a way to scale images automatically from /static to get a thumbnail version on the fly? Desperately needed for editing/managing existing Thing on creator side
+- Definitely need a way to scale images automatically from /static to get a thumbnail version on the fly? Desperately needed for editing/managing existing Thing on creator side
   - Could leverage Sharp? https://sharp.pixelplumbing.com/
   - Add additional download option for lower quality images as a ZIP, so like a 70mb full res, 40mb half res, etc.
 

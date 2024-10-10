@@ -5,7 +5,6 @@
 - RIW change gallery term to Transfer or Files or Attachments
 - RIW how so we handle video uploads in public gallery?
 - RIW bug in mobile text area scrolling again?
-- RIW - **script** opening tag should be inside **body** in public gallery
 - RIW - Look at navigator.share feature https://developer.mozilla.org/en-US/docs/Web/API/Navigator/share
 
 ### Priority: Gallery concept

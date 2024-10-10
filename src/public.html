@@ -595,408 +595,409 @@
       </div>
     </div>
     </template>
-  </body>
-  <script>
-    const PUBLIC_THING_PARAM = 't';
-    const PUBLIC_USER_PARAM = 'u';
-    const BACKEND_API = `${window.location.protocol}//${window.location.hostname}:4333`;
-    const PAGE_SIZE = 20;
-    const SLIDESHOW_HIDE = -1;
-    const SLIDESHOW_AUTO_SPEED_MS = 2500;
-    const MAX_SIZE_BEFORE_PROMPT = 5*1024*1024; // Maximum size of potential uploads before prompting the user to load them
     
-    var state = {
-      bodyReady: false,
-      showScrollTop: false,
-      hasUploadedTitles: false, // Mark if we have non-image uploads as well
-      thingLoading: false,
-      invalidLink: null, // Could be 'true' or 'empty'
-      username: null,
-      thing: null,
-      slideshowNum: SLIDESHOW_HIDE, // If >= 0 we're in slideshow mode and are tracking what image/file we're viewing
-      slideshowAuto: false, // true to automatically move through the slideshow
-      pageNum: 0,
-      pageData: [], // 2D array of images, split from thing.uploads, set when the user requests it (based on size)
-      availablePageData: {
-        totalSize: 0,
-        totalSizeImages: 0,
-        uploads: []
-      }
-    }
-    var slideshowInterval = null;
-    
-    function main() {
-      setupMarkedParsing();
+    <script>
+      const PUBLIC_THING_PARAM = 't';
+      const PUBLIC_USER_PARAM = 'u';
+      const BACKEND_API = `${window.location.protocol}//${window.location.hostname}:4333`;
+      const PAGE_SIZE = 20;
+      const SLIDESHOW_HIDE = -1;
+      const SLIDESHOW_AUTO_SPEED_MS = 2500;
+      const MAX_SIZE_BEFORE_PROMPT = 5*1024*1024; // Maximum size of potential uploads before prompting the user to load them
       
-      document.addEventListener('alpine:initialized', () => {
-        state = Alpine.reactive(state);
+      var state = {
+        bodyReady: false,
+        showScrollTop: false,
+        hasUploadedTitles: false, // Mark if we have non-image uploads as well
+        thingLoading: false,
+        invalidLink: null, // Could be 'true' or 'empty'
+        username: null,
+        thing: null,
+        slideshowNum: SLIDESHOW_HIDE, // If >= 0 we're in slideshow mode and are tracking what image/file we're viewing
+        slideshowAuto: false, // true to automatically move through the slideshow
+        pageNum: 0,
+        pageData: [], // 2D array of images, split from thing.uploads, set when the user requests it (based on size)
+        availablePageData: {
+          totalSize: 0,
+          totalSizeImages: 0,
+          uploads: []
+        }
+      }
+      var slideshowInterval = null;
+      
+      function main() {
+        setupMarkedParsing();
         
-        const queryParams = new URLSearchParams(window.location.search);
-        const toLoadId = queryParams && isValidString(queryParams.get(PUBLIC_THING_PARAM)) ? queryParams.get(PUBLIC_THING_PARAM) : null;
-        const username = queryParams && isValidString(queryParams.get(PUBLIC_USER_PARAM)) ? queryParams.get(PUBLIC_USER_PARAM) : null;
-        if (toLoadId && username) {
-          loadPublicThing(toLoadId, username).then(res => {
-            console.log("Load link results", res);
-            state.username = username;
-            state.thing = res;
-            state.thing.fieldsAsString = convertFieldsToString();
-            
-            // Update our page title
-            document.title = state.thing.name + ' - RIW';
-            
-            // Update our primary color to match the thing, if possible
-            if (state.thing.color) {
-              const rootStyle = document.querySelector(':root');
-              rootStyle?.style.setProperty('--primary-color', state.thing.color);
-            }
-            
-            // Apply our base URL to the path provided by any uploaded file
-            if (hasUploads()) {
-              state.thing.uploads.forEach(upload => {
-                if (upload) {
-                  if (upload.url) {
-                    upload.url = `${BACKEND_API}/${upload.url}`;
-                  }
-                  
-                  if (upload.type === 'title') {
-                    state.hasUploadedTitles = true;
-                  }
-                  else if (upload.type === 'image') {
-                    // Also by default auto-scale our images so they load faster and don't waste bandwidth
-                    // TODO Customize the scaling, perhaps have a capSize=1200 (px) or similar param the user can customize
-                    upload.url += '?scale=auto';
-                  }
-                }
-              });
+        document.addEventListener('alpine:initialized', () => {
+          state = Alpine.reactive(state);
+          
+          const queryParams = new URLSearchParams(window.location.search);
+          const toLoadId = queryParams && isValidString(queryParams.get(PUBLIC_THING_PARAM)) ? queryParams.get(PUBLIC_THING_PARAM) : null;
+          const username = queryParams && isValidString(queryParams.get(PUBLIC_USER_PARAM)) ? queryParams.get(PUBLIC_USER_PARAM) : null;
+          if (toLoadId && username) {
+            loadPublicThing(toLoadId, username).then(res => {
+              console.log("Load link results", res);
+              state.username = username;
+              state.thing = res;
+              state.thing.fieldsAsString = convertFieldsToString();
               
-              // Sort with non-images first
-              state.thing.uploads.sort((a, b) => {
-                if (a.type === 'title' && b.type !== 'title') {
-                  return -1;
-                } else if (a.type !== 'title' && b.type === 'title') {
-                  return 1;
-                } else {
-                  return 0;
-                }
-              });
+              // Update our page title
+              document.title = state.thing.name + ' - RIW';
               
-              // Determine if we should auto-load the files or let the user request them
-              state.availablePageData.totalSize = state.thing.uploads.reduce((data, item) => data + item.size, 0); 
-              state.availablePageData.totalSizeImages = state.thing.uploads.reduce((data, item) => { if (item.type === 'image') { return data + item.size } return data; }, 0); 
-              state.availablePageData.uploads = state.thing.uploads.reduce((data, item, index) => {
-                const pageIndex = Math.floor(index / PAGE_SIZE);
-                if (!data[pageIndex]) {
-                  data[pageIndex] = [];
-                }
-                data[pageIndex].push(item);
-                
-                return data;
-              }, []);
-              
-              // If we're under our cap just auto-load the files
-              if (state.availablePageData.totalSizeImages <= MAX_SIZE_BEFORE_PROMPT) {
-                state.pageData = state.availablePageData.uploads;
+              // Update our primary color to match the thing, if possible
+              if (state.thing.color) {
+                const rootStyle = document.querySelector(':root');
+                rootStyle?.style.setProperty('--primary-color', state.thing.color);
               }
-            }
-          }).catch(err => {
-            state.invalidLink = 'true';
-            console.error("Failed to load link", err);
-          });
+              
+              // Apply our base URL to the path provided by any uploaded file
+              if (hasUploads()) {
+                state.thing.uploads.forEach(upload => {
+                  if (upload) {
+                    if (upload.url) {
+                      upload.url = `${BACKEND_API}/${upload.url}`;
+                    }
+                    
+                    if (upload.type === 'title') {
+                      state.hasUploadedTitles = true;
+                    }
+                    else if (upload.type === 'image') {
+                      // Also by default auto-scale our images so they load faster and don't waste bandwidth
+                      // TODO Customize the scaling, perhaps have a capSize=1200 (px) or similar param the user can customize
+                      upload.url += '?scale=auto';
+                    }
+                  }
+                });
+                
+                // Sort with non-images first
+                state.thing.uploads.sort((a, b) => {
+                  if (a.type === 'title' && b.type !== 'title') {
+                    return -1;
+                  } else if (a.type !== 'title' && b.type === 'title') {
+                    return 1;
+                  } else {
+                    return 0;
+                  }
+                });
+                
+                // Determine if we should auto-load the files or let the user request them
+                state.availablePageData.totalSize = state.thing.uploads.reduce((data, item) => data + item.size, 0); 
+                state.availablePageData.totalSizeImages = state.thing.uploads.reduce((data, item) => { if (item.type === 'image') { return data + item.size } return data; }, 0); 
+                state.availablePageData.uploads = state.thing.uploads.reduce((data, item, index) => {
+                  const pageIndex = Math.floor(index / PAGE_SIZE);
+                  if (!data[pageIndex]) {
+                    data[pageIndex] = [];
+                  }
+                  data[pageIndex].push(item);
+                  
+                  return data;
+                }, []);
+                
+                // If we're under our cap just auto-load the files
+                if (state.availablePageData.totalSizeImages <= MAX_SIZE_BEFORE_PROMPT) {
+                  state.pageData = state.availablePageData.uploads;
+                }
+              }
+            }).catch(err => {
+              state.invalidLink = 'true';
+              console.error("Failed to load link", err);
+            });
+          }
+          else {
+            state.invalidLink = 'empty';
+          }
+        });
+      }
+      main();
+      
+      function setupMarkedParsing() {
+        const renderer = new marked.Renderer();
+      
+        // Append a blank target to all our links so we ensure they open in a new window/tab
+        // TODO Have had issues in the past with this from Marked, especially switching from v12 to v13 when a new renderer was introduced
+        // Alternative method signatures:
+        // renderer.link = ({ href, text, title } : any): string => {
+        // renderer.link = (href: string | null, title: string | null, text: string): string => {
+        renderer.link = ({ href, text, title }) => {
+          const defaultLink = `<a href="${href}"${title ? ` title="${title}"` : ''}>${text}</a>`;
+          return defaultLink.replace('<a', '<a target="_blank"');
+        };
+        
+        marked.use({ renderer: renderer });
+      }
+      
+      async function _fetchWithLoading(url, body) {
+        state.thingLoading = true;
+        try {
+          const options = {
+            method: 'GET'
+          };
+          if (body) {
+            options.body = body;
+          }
+          
+          const response = await fetch(url, options);
+          if (response.ok) {
+            return response.json();
+          }
+          
+          throw new Error(response.status + ": " + response.statusText);
+        }catch (error) {
+          throw error;
+        }finally {
+          state.thingLoading = false;
+        }
+      }
+      
+      function loadPublicThing(thingId, username) {
+        return _fetchWithLoading(
+          `${BACKEND_API}/pthing/${thingId}?username=${username}`
+        );
+      }
+      
+      function getUpdated(thing, longForm) {
+        if (thing) {
+          let toReturn = dateFns.formatDistanceStrict(thing.updated, new Date(), { addSuffix: true });
+          
+          // If we're at "seconds", just return simple text instead
+          if (toReturn.indexOf('second') !== -1) {
+            return 'Now';
+          }
+          
+          if (!longForm) {
+            // Otherwise shorthand format
+            toReturn = toReturn.replace(' minute', 'm');
+            toReturn = toReturn.replace(' hour', 'h');
+            toReturn = toReturn.replace(' day', 'd');
+            toReturn = toReturn.replace(' month', 'mon');
+            toReturn = toReturn.replace(' year', 'y');
+          
+            // Then remove any plural leftovers
+            toReturn = toReturn.replace('s', '');
+          }
+          
+          return toReturn;
+        }
+        return '?';
+      }
+      
+      function startSlideshow() {
+        // If we're already on a later page, start from there
+        if (state.pageData.length > 0) {
+          state.slideshowNum = PAGE_SIZE * state.pageNum;
         }
         else {
-          state.invalidLink = 'empty';
+          state.slideshowNum = 0;
         }
-      });
-    }
-    main();
-    
-    function setupMarkedParsing() {
-      const renderer = new marked.Renderer();
-    
-      // Append a blank target to all our links so we ensure they open in a new window/tab
-      // TODO Have had issues in the past with this from Marked, especially switching from v12 to v13 when a new renderer was introduced
-      // Alternative method signatures:
-      // renderer.link = ({ href, text, title } : any): string => {
-      // renderer.link = (href: string | null, title: string | null, text: string): string => {
-      renderer.link = ({ href, text, title }) => {
-        const defaultLink = `<a href="${href}"${title ? ` title="${title}"` : ''}>${text}</a>`;
-        return defaultLink.replace('<a', '<a target="_blank"');
-      };
+      }
       
-      marked.use({ renderer: renderer });
-    }
-    
-    async function _fetchWithLoading(url, body) {
-      state.thingLoading = true;
-      try {
-        const options = {
-          method: 'GET'
-        };
-        if (body) {
-          options.body = body;
+      function closeSlideshow() {
+        stopAutoSlideshow();
+        state.slideshowNum = SLIDESHOW_HIDE;
+      }
+      
+      function toggleAutoSlideshow() {
+        state.slideshowAuto ? stopAutoSlideshow() : startAutoSlideshow();
+      }
+      
+      function startAutoSlideshow() {
+        stopAutoSlideshow(); // Stop any previous interval
+        
+        state.slideshowAuto = true;
+        
+        // Give the user some feedback right away by moving to the next slide
+        setTimeout(() => {
+          nextSlideshow();
+        }, 200);
+        
+        slideshowInterval = setInterval(() => {
+          nextSlideshow();
+        }, SLIDESHOW_AUTO_SPEED_MS);
+      }
+      
+      function stopAutoSlideshow() {
+        state.slideshowAuto = false;
+        
+        if (slideshowInterval) {
+          clearInterval(slideshowInterval);
+          slideshowInterval = null;
         }
-        
-        const response = await fetch(url, options);
-        if (response.ok) {
-          return response.json();
-        }
-        
-        throw new Error(response.status + ": " + response.statusText);
-      }catch (error) {
-        throw error;
-      }finally {
-        state.thingLoading = false;
       }
-    }
-    
-    function loadPublicThing(thingId, username) {
-      return _fetchWithLoading(
-        `${BACKEND_API}/pthing/${thingId}?username=${username}`
-      );
-    }
-    
-    function getUpdated(thing, longForm) {
-      if (thing) {
-        let toReturn = dateFns.formatDistanceStrict(thing.updated, new Date(), { addSuffix: true });
-        
-        // If we're at "seconds", just return simple text instead
-        if (toReturn.indexOf('second') !== -1) {
-          return 'Now';
-        }
-        
-        if (!longForm) {
-          // Otherwise shorthand format
-          toReturn = toReturn.replace(' minute', 'm');
-          toReturn = toReturn.replace(' hour', 'h');
-          toReturn = toReturn.replace(' day', 'd');
-          toReturn = toReturn.replace(' month', 'mon');
-          toReturn = toReturn.replace(' year', 'y');
-        
-          // Then remove any plural leftovers
-          toReturn = toReturn.replace('s', '');
-        }
-        
-        return toReturn;
-      }
-      return '?';
-    }
-    
-    function startSlideshow() {
-      // If we're already on a later page, start from there
-      if (state.pageData.length > 0) {
-        state.slideshowNum = PAGE_SIZE * state.pageNum;
-      }
-      else {
-        state.slideshowNum = 0;
-      }
-    }
-    
-    function closeSlideshow() {
-      stopAutoSlideshow();
-      state.slideshowNum = SLIDESHOW_HIDE;
-    }
-    
-    function toggleAutoSlideshow() {
-      state.slideshowAuto ? stopAutoSlideshow() : startAutoSlideshow();
-    }
-    
-    function startAutoSlideshow() {
-      stopAutoSlideshow(); // Stop any previous interval
       
-      state.slideshowAuto = true;
-      
-      // Give the user some feedback right away by moving to the next slide
-      setTimeout(() => {
-        nextSlideshow();
-      }, 200);
-      
-      slideshowInterval = setInterval(() => {
-        nextSlideshow();
-      }, SLIDESHOW_AUTO_SPEED_MS);
-    }
-    
-    function stopAutoSlideshow() {
-      state.slideshowAuto = false;
-      
-      if (slideshowInterval) {
-        clearInterval(slideshowInterval);
-        slideshowInterval = null;
+      function downloadZIP() {
+        window.open(`${BACKEND_API}/pdownload/${state.thing.id}?username=${state.username}`, '_blank');
       }
-    }
-    
-    function downloadZIP() {
-      window.open(`${BACKEND_API}/pdownload/${state.thing.id}?username=${state.username}`, '_blank');
-    }
 
-    function handleKeyLeft() {
-      // If we're showing the slideshow, utilize that, otherwise try to paginate
-      if (state.slideshowNum !== SLIDESHOW_HIDE) {
-        prevSlideshow(1);
+      function handleKeyLeft() {
+        // If we're showing the slideshow, utilize that, otherwise try to paginate
+        if (state.slideshowNum !== SLIDESHOW_HIDE) {
+          prevSlideshow(1);
+        }
+        else {
+          prevPage();
+        }
       }
-      else {
-        prevPage();
+      
+      function handleKeyRight() {
+        if (state.slideshowNum !== SLIDESHOW_HIDE) {
+          nextSlideshow(1);
+        }
+        else {
+          nextPage();
+        }
       }
-    }
-    
-    function handleKeyRight() {
-      if (state.slideshowNum !== SLIDESHOW_HIDE) {
-        nextSlideshow(1);
-      }
-      else {
-        nextPage();
-      }
-    }
-    
-    function firstPage() {
-      state.pageNum = 0;
-      _genericPageChange();
-    }
-    
-    function prevPage() {
-      state.pageNum--;
-      if (state.pageNum < 0) {
+      
+      function firstPage() {
         state.pageNum = 0;
+        _genericPageChange();
       }
-      _genericPageChange();
-    }
-    
-    function nextPage() {
-      state.pageNum++;
-      if (state.pageNum > state.pageData.length-1) {
+      
+      function prevPage() {
+        state.pageNum--;
+        if (state.pageNum < 0) {
+          state.pageNum = 0;
+        }
+        _genericPageChange();
+      }
+      
+      function nextPage() {
+        state.pageNum++;
+        if (state.pageNum > state.pageData.length-1) {
+          state.pageNum = state.pageData.length-1;
+        }
+        _genericPageChange();
+      }
+      
+      function lastPage() {
         state.pageNum = state.pageData.length-1;
+        _genericPageChange();
       }
-      _genericPageChange();
-    }
-    
-    function lastPage() {
-      state.pageNum = state.pageData.length-1;
-      _genericPageChange();
-    }
-    
-    function prevSlideshow(count = 1) {
-      state.slideshowNum -= count;
-      if (state.slideshowNum < 0) {
-        state.slideshowNum = state.thing.uploads.length-1; // Loop to end
+      
+      function prevSlideshow(count = 1) {
+        state.slideshowNum -= count;
+        if (state.slideshowNum < 0) {
+          state.slideshowNum = state.thing.uploads.length-1; // Loop to end
+        }
       }
-    }
-    
-    function nextSlideshow(count = 1) {
-      state.slideshowNum += count;
-      if (state.slideshowNum > state.thing.uploads.length-1) {
-        state.slideshowNum = 0;
+      
+      function nextSlideshow(count = 1) {
+        state.slideshowNum += count;
+        if (state.slideshowNum > state.thing.uploads.length-1) {
+          state.slideshowNum = 0;
+        }
       }
-    }
-    
-    function preloadSlideshow(currentSlideshowNum = 0) {
-      currentSlideshowNum++;
-      if (currentSlideshowNum > state.thing.uploads.length-1) {
-        return null;
+      
+      function preloadSlideshow(currentSlideshowNum = 0) {
+        currentSlideshowNum++;
+        if (currentSlideshowNum > state.thing.uploads.length-1) {
+          return null;
+        }
+        return state.thing.uploads[currentSlideshowNum];
       }
-      return state.thing.uploads[currentSlideshowNum];
-    }
-    
-    function _genericPageChange() {
-      document.documentElement.scrollTop = 0;
-    }
-    
-    // Utility functions
-    function isMobileSize() {
-      return window.matchMedia("(max-width: 850px)").matches;
-    }    
-    
-    function isValidString(str) {
-      return !!(str && typeof str === 'string' && str.trim().length > 0);
-    }
-    
-    function readableSize(size) {
-      const i = size == 0 ? 0 : Math.floor(Math.log(size) / Math.log(1024));
-      return +((size / Math.pow(1024, i)).toFixed(2)) * 1 + ' ' + ['B', 'kB', 'MB', 'GB', 'TB'][i];
-    }
-    
-    function hasUploads() {
-      return state && state.thing && state.thing.uploads &&
-             Array.isArray(state.thing.uploads) &&
-             state.thing.uploads.length > 0;
-    }
-    
-    function stripExtension(filename) {
-      if (filename && filename.indexOf('.') !== -1) {
-        return filename.substring(0, filename.indexOf('.'));
+      
+      function _genericPageChange() {
+        document.documentElement.scrollTop = 0;
       }
-      return filename;
-    }
-    
-    function anchorUrlsInText(text) {
-      const urlRegex = /(\b(https?):\/\/[-A-Z0-9+&@#\/%?=~_|!:,.;]*[-A-Z0-9+&@#\/%=~_|])/ig;
-      return text.replace(urlRegex, url => {
-        return '<a href="' + url + '" target="_blank">' + url + '</a>';
-      });
-    }
-    
-    function convertFieldsToString() {
-      // TODO Determine a way to share the convertFieldsToString between main Angular code (in thing.ts) and public Alpine code here
-      if (state.thing && state.thing.fields &&
-          Array.isArray(state.thing.fields) &&
-          state.thing.fields.length > 0) {
-        // Some tough choices overall on how to display the custom fields in a usable way
-        let toReturn = state.thing.fields.map((field) => {
-          if (typeof field.value !== 'undefined' && field.value !== null) {
-            let textLabel = null;
-            // Special case just for Notes, where we don't need a header
-            if (field.label === 'Notes' &&
-                state.thing.length === 1 &&
-                field.type === 'textarea') {
-              textLabel = '';
-            }
-            else {
-              // If our label ends with a question mark, don't put a colon
-              let suffix = field.label?.endsWith('?') ? ' ' : ': ';
-              
-              // If the field is a text area, use a breakline so it's more like a header
-              let useBreakline = false;
-              if (field.type === 'textarea') {
-                suffix = '';
-                useBreakline = true;
+      
+      // Utility functions
+      function isMobileSize() {
+        return window.matchMedia("(max-width: 850px)").matches;
+      }    
+      
+      function isValidString(str) {
+        return !!(str && typeof str === 'string' && str.trim().length > 0);
+      }
+      
+      function readableSize(size) {
+        const i = size == 0 ? 0 : Math.floor(Math.log(size) / Math.log(1024));
+        return +((size / Math.pow(1024, i)).toFixed(2)) * 1 + ' ' + ['B', 'kB', 'MB', 'GB', 'TB'][i];
+      }
+      
+      function hasUploads() {
+        return state && state.thing && state.thing.uploads &&
+              Array.isArray(state.thing.uploads) &&
+              state.thing.uploads.length > 0;
+      }
+      
+      function stripExtension(filename) {
+        if (filename && filename.indexOf('.') !== -1) {
+          return filename.substring(0, filename.indexOf('.'));
+        }
+        return filename;
+      }
+      
+      function anchorUrlsInText(text) {
+        const urlRegex = /(\b(https?):\/\/[-A-Z0-9+&@#\/%?=~_|!:,.;]*[-A-Z0-9+&@#\/%=~_|])/ig;
+        return text.replace(urlRegex, url => {
+          return '<a href="' + url + '" target="_blank">' + url + '</a>';
+        });
+      }
+      
+      function convertFieldsToString() {
+        // TODO Determine a way to share the convertFieldsToString between main Angular code (in thing.ts) and public Alpine code here
+        if (state.thing && state.thing.fields &&
+            Array.isArray(state.thing.fields) &&
+            state.thing.fields.length > 0) {
+          // Some tough choices overall on how to display the custom fields in a usable way
+          let toReturn = state.thing.fields.map((field) => {
+            if (typeof field.value !== 'undefined' && field.value !== null) {
+              let textLabel = null;
+              // Special case just for Notes, where we don't need a header
+              if (field.label === 'Notes' &&
+                  state.thing.length === 1 &&
+                  field.type === 'textarea') {
+                textLabel = '';
+              }
+              else {
+                // If our label ends with a question mark, don't put a colon
+                let suffix = field.label?.endsWith('?') ? ' ' : ': ';
+                
+                // If the field is a text area, use a breakline so it's more like a header
+                let useBreakline = false;
+                if (field.type === 'textarea') {
+                  suffix = '';
+                  useBreakline = true;
+                }
+                
+                textLabel = '<b>' + field?.label + '</b>' + suffix +
+                            (useBreakline ? '<br/>' : '');
               }
               
-              textLabel = '<b>' + field?.label + '</b>' + suffix +
-                          (useBreakline ? '<br/>' : '');
+              // If we're a Markdown type, convert to HTML
+              let textValue = field.value + '';
+              if (field.type === 'markdown') {
+                textValue = marked.parse(textValue);
+              }
+              // If we're a plain string replace any \n and \t, such as textareas, so they maintain their formatting
+              // Don't do this for Markdown as we already have converted it
+              else if (typeof field.value === 'string') {
+                textValue = textValue.replaceAll("\n", "<br/>");
+                textValue = textValue.replaceAll("\t", "    ");
+              }
+              
+              // Convert our boolean to Yes/No for readability
+              if (typeof field.value === 'boolean') {
+                textValue = field.value ? 'Yes' : 'No';
+              }
+              // Check for any links and automatically parse them to clickable versions
+              // Except, again, for Markdown, which does it automatically
+              else if (field.type !== 'markdown') {
+                textValue = anchorUrlsInText(textValue);
+              }
+              
+              // Since we can't rely on Angular's built in XSS prevention, we need to use DOMPurify to do so
+              // Allow 'target' for our links to open in a _blank new window
+              textValue = DOMPurify.sanitize(textValue, { ADD_ATTR: ['target'] });
+              
+              return textLabel + textValue;
             }
-            
-            // If we're a Markdown type, convert to HTML
-            let textValue = field.value + '';
-            if (field.type === 'markdown') {
-              textValue = marked.parse(textValue);
-            }
-            // If we're a plain string replace any \n and \t, such as textareas, so they maintain their formatting
-            // Don't do this for Markdown as we already have converted it
-            else if (typeof field.value === 'string') {
-              textValue = textValue.replaceAll("\n", "<br/>");
-              textValue = textValue.replaceAll("\t", "    ");
-            }
-            
-            // Convert our boolean to Yes/No for readability
-            if (typeof field.value === 'boolean') {
-              textValue = field.value ? 'Yes' : 'No';
-            }
-            // Check for any links and automatically parse them to clickable versions
-            // Except, again, for Markdown, which does it automatically
-            else if (field.type !== 'markdown') {
-              textValue = anchorUrlsInText(textValue);
-            }
-            
-            // Since we can't rely on Angular's built in XSS prevention, we need to use DOMPurify to do so
-            // Allow 'target' for our links to open in a _blank new window
-            textValue = DOMPurify.sanitize(textValue, { ADD_ATTR: ['target'] });
-            
-            return textLabel + textValue;
-          }
-          return null;
-        }).filter(Boolean).join('<br/>'); // Strip empty results and add a breakline
-        
-        return toReturn;
+            return null;
+          }).filter(Boolean).join('<br/>'); // Strip empty results and add a breakline
+          
+          return toReturn;
+        }
+        return '';
       }
-      return '';
-    }
-  </script>
+    </script>
+  </body>
 </html>

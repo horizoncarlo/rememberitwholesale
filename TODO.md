@@ -2,7 +2,6 @@
 
 ### Current
 - Have an "expiry" option for Public to auto-non-public it later
-- Track visits to public.html / requests for the thing as a guest counter stat that is shown in the Thing?
 - Admin side needs scaling options added for editing a Thing, and <object> support
 - Add mouse over tooltip to Date column to say what calendar named day (like Monday) it was, and also maybe how many days ago it was
 

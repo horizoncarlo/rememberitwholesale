@@ -156,6 +156,9 @@
           {{ data.templateType }}
           @if (data.public) {
             &nbsp;<span class="pi pi-globe" pTooltip="Thing is Public - click to copy the shareable link"></span>
+            @if (hasViewCount(data)) {
+              <span class="updated-col-cell">{{ data.viewCount }} views</span>
+            }
           }
         </span>
       </td>

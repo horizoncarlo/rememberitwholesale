@@ -722,6 +722,10 @@ export class DatatableComponent implements OnInit, OnDestroy {
     return this.hasSelectedRows() && this.selectedRows.length === 1;
   }
   
+  hasViewCount(thing: Thing): boolean {
+    return thing && typeof thing.viewCount === 'number' && thing.viewCount > 0;
+  }
+  
   getEmptyMessageClass(): string {
     // If we're on mobile pin the message so it stick as you scroll
     if (Utility.isMobileSize()) {

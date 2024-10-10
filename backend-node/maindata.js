@@ -715,10 +715,18 @@ app.get("/pthing/:thingId", (req, res) => {
     // Pull in the Things for the desired user, then find our matching ID
     const userThings = getInMemoryThings(username);
     if (userThings && userThings.length > 0) {
-      let toReturn = userThings.filter(thing => thing.id === thingId);
-      if (toReturn && toReturn.length > 0 &&
-          toReturn[0].public) {
-        toReturn = addURLsToThings(username, toReturn);
+      const matchingArray = userThings.filter(thing => thing.id === thingId);
+      if (matchingArray && matchingArray.length > 0 &&
+          matchingArray[0].public) {
+        // Increase our view count and save the changes, in a separate thread to not block the page load
+        setTimeout(() => {
+          const matchingThing = matchingArray[0];
+          matchingThing.viewCount = (typeof matchingThing.viewCount === 'number') ? matchingThing.viewCount+1 : 1;
+          saveThingsMemoryToFile(username);
+        });
+        
+        // Clone what we're going to return so the modified URLs don't save
+        const toReturn = addURLsToThings(username, [ JSON.parse(JSON.stringify(matchingArray[0])) ]);
         return res.send(toReturn[0]).end();
       }
     }

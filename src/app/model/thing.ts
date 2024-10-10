@@ -19,6 +19,7 @@ export class Thing {
   id: string;
   time?: Date;
   color?: string;
+  viewCount?: number;
   reminder?: boolean;
   public?: boolean = false;
   gallery?: boolean = false;
@@ -34,6 +35,7 @@ export class Thing {
                 id?: string,
                 color?: string,
                 time?: Date,
+                viewCount?: number,
                 reminder?: boolean,
                 public?: boolean,
                 gallery?: boolean,
@@ -47,6 +49,7 @@ export class Thing {
     this.templateType = templateType;
     this.id = (options && options.id) ? options.id : DEFAULT_ID;
     this.color = options && options.color || 'inherit';
+    this.viewCount = (options && typeof options.viewCount === 'number') ? options.viewCount : 0;
     this.reminder = options && options.reminder || false;
     this.public = options && options.public || false;
     this.gallery = options && options.gallery || false;
@@ -100,6 +103,7 @@ export class Thing {
                      { id: source.id,
                       color: source.color,
                       time: source.time,
+                      viewCount: source.viewCount,
                       reminder: source.reminder,
                       public: source.public,
                       gallery: source.gallery,
@@ -200,6 +204,7 @@ export class Thing {
     this.updated = new Date();
     
     // Can slightly trim down the object by removing false/empty values and UI specific flags
+    if (typeof this.viewCount !== 'number' || this.viewCount === 0) { delete this.viewCount; }
     if (!this.reminder) { delete this.reminder; }
     if (!this.public) { delete this.public; }
     if (!this.gallery) { delete this.gallery; }

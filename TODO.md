@@ -1,17 +1,18 @@
 # TODO
 
-### Priority: Attachments concept
-- How do we handle video uploads in public gallery?
-- Add additional download option for lower quality images as a ZIP, so like a 70mb full res, 40mb half res, etc.
-- Admin side needs scaling options added for editing a Thing
-- Let the user customize public attachments page with options outlined in TTODO in the public CSS - just store choices in local storage
-- Do a "select images for download" button where you can check/select images and get a ZIP of them, instead of just Download All
+### Current
+- On public, only paginate if second page has 5+ images (or a quarter of page cap), otherwise just split evenly into 2 pages. So 21 images is 11 and 10, or just 1 page of 21, current would be 20 and 1
 - Have an "expiry" option for Public to auto-non-public it later
 - Track visits to public.html / requests for the thing as a guest counter stat that is shown in the Thing?
+- Admin side needs scaling options added for editing a Thing, and <object> support
+- Add mouse over tooltip to Date column to say what calendar named day (like Monday) it was, and also maybe how many days ago it was
+
+### Priority: Attachments concept
+- Add additional download option for lower quality images as a ZIP, so like a 70mb full res, 40mb half res, etc.
+- Let the user customize public attachments page with options outlined in TTODO in the public CSS - just store choices in local storage
+- Do a "select images for download" button where you can check/select images and get a ZIP of them, instead of just Download All
 
 ### Other important
-- On public, only paginate if second page has 5+ images (or a quarter of page cap), otherwise just split evenly into 2 pages. So 21 images is 11 and 10, or just 1 page of 21, current would be 20 and 1
-- Add mouse over tooltip to Date column to say what calendar named day (like Monday) it was, and also maybe how many days ago it was
 - Need a better and smoother and less manual process for deploying the app to prod environment
 - Put an app version scheme somewhere, and show on Profile dialog?
 - Allow Edit of Templates - doesn't retroactively change Thing data, just going forward uses the new version

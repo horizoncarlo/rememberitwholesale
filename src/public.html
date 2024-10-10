@@ -278,7 +278,7 @@
         cursor: zoom-in;
       }
       
-      .giw img {
+      .giw img, .gfw object {
         border-radius: 5px;
         box-shadow: 0 0 5px var(--shadowy-color);
         max-width: 100%;
@@ -305,6 +305,7 @@
       }
       
       .gfw { /* Attachment gallery file wrapper */
+        display: inline-block;
         margin: 10px;
         border-radius: 5px;
         background-color: black;
@@ -482,6 +483,10 @@
             File:<br/>
             <a :href="upload.url" target="_blank" x-text="upload.name"></a>
             <span x-text="`(size ${readableSize(upload.size)})`" class="smaller-text"></span>
+            <br/>
+            <template x-if="isUploadObject(upload)">
+              <object :data="upload.url"></object>
+            </template>
           </span>
         </template>
         <div @click="nextSlideshow()" class="chevron-right"></div>
@@ -543,10 +548,14 @@
                   <div class="upload-title-text">Attached Files:</div>
                   <template x-for="upload in pageData[pageNum]">
                     <template x-if="upload.type === 'title'">
-                      <span class="gfw">
+                      <div class="gfw">
                         <a :href="upload.url" target="_blank" x-text="upload.name"></a>
                         <span x-text="`(size ${readableSize(upload.size)})`" class="smaller-text"></span>
-                      </span>
+                        <br/>
+                        <template x-if="isUploadObject(upload)">
+                          <object :data="upload.url"></object>
+                        </template>
+                      </div>
                     </template>
                   </template>
                 </div>
@@ -917,6 +926,24 @@
         return state && state.thing && state.thing.uploads &&
               Array.isArray(state.thing.uploads) &&
               state.thing.uploads.length > 0;
+      }
+      
+      function isUploadObject(upload) {
+        if (upload && isValidString(upload.url)) {
+          const asLower = upload.url.toLowerCase();
+          // Support various formats for the <object> tag, but don't just blindly use it
+          //  since for example we don't want to auto-download a .py or .odt file or whatever
+          if (asLower.endsWith('.mp4') ||
+              asLower.endsWith('.ogg') ||
+              asLower.endsWith('.webm') ||
+              asLower.endsWith('.mp3') ||
+              asLower.endsWith('.wav') ||
+              asLower.endsWith('.pdf') ||
+              asLower.endsWith('.txt')) {
+            return true;
+          }
+        }
+        return false;
       }
       
       function stripExtension(filename) {

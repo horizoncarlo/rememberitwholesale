@@ -7,6 +7,7 @@ import { Utility } from '../util/utility';
 import { Template } from './template';
 import { TemplateField } from './template-field';
 
+// TODO Should we split public.html to have separate CSS and JS files?
 export const PUBLIC_THING_PAGE = 'public.html';
 export const PUBLIC_THING_PARAM = 't';
 export const PUBLIC_USER_PARAM = 'u';

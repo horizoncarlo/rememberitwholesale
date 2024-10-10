@@ -1,16 +1,10 @@
 # TODO
 
-### New ideas
-- RIW public split into CSS and JS?
-- RIW change gallery term to Transfer or Files or Attachments
-- RIW how so we handle video uploads in public gallery?
-- RIW bug in mobile text area scrolling again?
-- RIW - Look at navigator.share feature https://developer.mozilla.org/en-US/docs/Web/API/Navigator/share
-
-### Priority: Gallery concept
+### Priority: Attachments concept
+- How do we handle video uploads in public gallery?
 - Add additional download option for lower quality images as a ZIP, so like a 70mb full res, 40mb half res, etc.
 - Admin side needs scaling options added for editing a Thing
-- Let the user customize public gallery page with options outlined in TTODO in the public CSS - just store choices in local storage
+- Let the user customize public attachments page with options outlined in TTODO in the public CSS - just store choices in local storage
 - Do a "select images for download" button where you can check/select images and get a ZIP of them, instead of just Download All
 - Have an "expiry" option for Public to auto-non-public it later
 - Track visits to public.html / requests for the thing as a guest counter stat that is shown in the Thing?
@@ -26,6 +20,7 @@
 - Save inputs as local storage or something? Because if a save of a Thing fails the inputs end up cleared which is crazy frustrating
 - Maintain scroll / paginator after deleting an item
 - Reorder columns, notes right after name, then type and date?
+- Look at navigator.share feature https://developer.mozilla.org/en-US/docs/Web/API/Navigator/share
 - Split package.json for Angular and Node project instead of having them combined (...yaaaay build stuff)
 
 ## OLDER NOTES

@@ -244,33 +244,33 @@ function error(message, ...extra) {
 }
 
 /**
- * Create a gallery URL path for an uploaded file
+ * Create an attachment URL path for an uploaded file
  * For example /static/[username]/uploads/[thing-id]/[fileName]
  * Later the reference to this backend API can be prefixed to make a direct link to the file
  */
-function makeGalleryURL(authUsername, thingId, fileName) {
+function makeAttachmentURL(authUsername, thingId, fileName) {
   return path.join(STATIC_PATH, authUsername, UPLOADS_DIR, thingId, fileName);
 }
 
-function getGalleryPath(authUsername, thingId) {
+function getAttachmentPath(authUsername, thingId) {
   const userDirectory = path.join(FILE_DIR, authUsername);
   const uploadDirectory = path.join(userDirectory, UPLOADS_DIR);
   return path.join(uploadDirectory, thingId);
 }
 
-function removeGalleryDirectory(authUsername, thingId) {
-  fs.rmSync(getGalleryPath(authUsername, thingId),
+function removeAttachmentDirectory(authUsername, thingId) {
+  fs.rmSync(getAttachmentPath(authUsername, thingId),
     { recursive: true, force: true },
     callback => {});
 }
 
-function removeGalleryFile(authUsername, thingId, fileName) {
-  fs.rmSync(path.join(getGalleryPath(authUsername, thingId), fileName), {},
+function removeAttachmentFile(authUsername, thingId, fileName) {
+  fs.rmSync(path.join(getAttachmentPath(authUsername, thingId), fileName), {},
     callback => {});
 }
 
 function addURLsToThings(authUsername, things) {
-  // Dynamically append a URL for any gallery items
+  // Dynamically append a URL for any attachment items
   // We don't save this to the Things file as we want to be more flexible on changing it
   if (things && Array.isArray(things)) {
     things.forEach(thing => {
@@ -281,7 +281,7 @@ function addURLsToThings(authUsername, things) {
         //   and they can properly delete or reupload or _deal_ with it somehow
         thing.uploads.forEach(upload => {
           if (upload && upload.name) {
-            upload.url = makeGalleryURL(authUsername, thing.id, upload.name);
+            upload.url = makeAttachmentURL(authUsername, thing.id, upload.name);
           }
         });
       }
@@ -750,7 +750,7 @@ app.get("/pdownload/:thingId", async (req, res) => {
       if (checkThings && checkThings.length > 0 &&
           checkThings[0].public && checkThings[0].gallery &&
           Array.isArray(checkThings[0].uploads) && checkThings[0].uploads.length > 0) {
-        downloadPath = getGalleryPath(username, thingId);
+        downloadPath = getAttachmentPath(username, thingId);
         downloadFilename = checkThings[0].name + '.zip';
       }
     }
@@ -793,7 +793,7 @@ app.post("/things", (req, res) => {
         if (Array.isArray(things[i].uploads) && things[i].uploads.length > 0) {
           // Case 1: Existing Thing has uploads, but incoming has none = delete all uploads
           if (!Array.isArray(toSave.uploads) || toSave.uploads.length === 0) {
-            removeGalleryDirectory(getAuthUsername(req), things[i].id);
+            removeAttachmentDirectory(getAuthUsername(req), things[i].id);
           }
           // Case 2: Both existing and incoming Thing have uploads, so check for differences
           else {
@@ -807,7 +807,7 @@ app.post("/things", (req, res) => {
               }).length > 0;
               
               if (!stillExists) {
-                removeGalleryFile(getAuthUsername(req), things[i].id, existingUpload.name);
+                removeAttachmentFile(getAuthUsername(req), things[i].id, existingUpload.name);
               }
             });
           }
@@ -849,7 +849,7 @@ app.post("/things/delete", (req, res) => {
             try {
               if (toWork[checkIndex].gallery ||
                   (toWork[checkIndex].uploads || Array.isArray(toWork[checkIndex].uploads) || toWork[checkIndex].uploads.length > 0)) {
-                removeGalleryDirectory(getAuthUsername(req), toWork[checkIndex].id);
+                removeAttachmentDirectory(getAuthUsername(req), toWork[checkIndex].id);
               }
             // Even more safety, as we can potentially end up with leftover directories, but still want to remove the Thing
             }catch (ignored) { }
@@ -881,7 +881,7 @@ app.post('/upload-thing/:thingId', async (req, res) => {
   
   log('POST Upload File "' + toUpload.name + '" for ' + authUsername);
   
-  const finalDirectory = getGalleryPath(authUsername, thingId);
+  const finalDirectory = getAttachmentPath(authUsername, thingId);
   try{
     fs.mkdirSync(finalDirectory, { recursive: true });
   }catch (err) {

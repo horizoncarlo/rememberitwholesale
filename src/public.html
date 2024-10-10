@@ -261,7 +261,7 @@
         font-size: 125px;
       }
       
-      .giw { /* Gallery image wrapper */
+      .giw { /* Attachment gallery image wrapper */
         /* TTODO Tweaks
          - Set max-width: 15% instead of width to avoid horizontal square
          - Set max-height: 25vh and remove line-height to avoid vertical square
@@ -304,7 +304,7 @@
         background-color: darkred !important;
       }
       
-      .gfw { /* Gallery file wrapper */
+      .gfw { /* Attachment gallery file wrapper */
         margin: 10px;
         border-radius: 5px;
         background-color: black;
@@ -515,11 +515,11 @@
             <div class="upload-controls">
               <template x-if="pageData.length === 0">
                 <span>
-                  Uploads Available:&nbsp;
+                  Attachments Available:&nbsp;
                   <template x-if="isMobileSize()">
                     <div><br/></div>
                   </template>
-                  <button @click="pageData = availablePageData.uploads" title="Begin loading the gallery of images and files">🔍 Show <b x-text="thing.uploads.length"></b> Files</button>
+                  <button @click="pageData = availablePageData.uploads" title="Begin loading the attached images and files">🔍 Show <b x-text="thing.uploads.length"></b> Files</button>
                   <template x-if="isMobileSize()">
                     <div><br/></div>
                   </template>

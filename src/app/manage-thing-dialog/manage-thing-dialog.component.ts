@@ -343,7 +343,7 @@ export class ManageThingDialogComponent implements OnDestroy {
     return Utility.hasItems(this.uploadList);
   }
   
-  currentGalleryCount(): number {
+  currentAttachmentCount(): number {
     let toReturn = 0;
     toReturn += Utility.hasItems(this.uploadList) ? this.uploadList.length : 0;
     toReturn += Utility.hasItems(this.actOn.uploads) ? (this.actOn.uploads as any).length : 0; // Annoyingly getting around TS not detecting hasItems validates array existence
@@ -386,7 +386,7 @@ export class ManageThingDialogComponent implements OnDestroy {
     }
   }
   
-  makeFullGalleryURL(basePath: string): string {
+  makeFullAttachmentURL(basePath: string): string {
     return `${window.location.protocol}//${window.location.hostname}:4333/${basePath}`
   }
   

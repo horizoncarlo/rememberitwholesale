@@ -9,8 +9,8 @@
           <p-checkbox [(ngModel)]="actOn.public" [binary]="true" [label]="(isMobileSize() ? '' : ' 🌐 ') + 'Public'"
                       (onChange)="publicCheckboxChanged()"
                       pTooltip="Make this Thing public and generate a shareable link that can be given to anyone to view just this Thing, without needing a login" showDelay="750" />
-          <p-checkbox [(ngModel)]="actOn.gallery" [binary]="true" [label]="(isMobileSize() ? '' : ' 🖼 ') + 'Gallery'"
-                      pTooltip="Make this Thing include a gallery of uploaded images and files" showDelay="750" />
+          <p-checkbox [(ngModel)]="actOn.gallery" [binary]="true" [label]="(isMobileSize() ? '' : ' 🖼 ') + 'Attachments'"
+                      pTooltip="Make this Thing include attachments of uploaded images and files" showDelay="750" />
           <p-checkbox [(ngModel)]="actOn.reminder" [binary]="true" [label]="(isMobileSize() ? '' : ' 🕒 ') + 'Reminder'"
                       (onChange)="reminderCheckboxChanged()"
                       pTooltip="Make this Thing a reminder that will display time left and notify you when due" showDelay="750" />
@@ -58,9 +58,9 @@
                   <p-progressSpinner />
                 }
                 @else {
-                  <b>Gallery Uploads</b>
+                  <b>Attachments</b>
                   @if (hasUploads()) {
-                    &nbsp;({{currentGalleryCount()}})
+                    &nbsp;({{currentAttachmentCount()}})
                   }
                 }
               </ng-template>
@@ -77,7 +77,7 @@
                     (drop)="handleDraggedFiles($event)"
                     >
                   <span class="text-label">
-                    <i class="pi pi-folder-open"></i> Drag and drop files here or use the buttons to add uploads
+                    <i class="pi pi-folder-open"></i> Drag and drop files here or use the buttons to add attachments
                   </span>
                   <p-button label="Upload Files" size="small" severity="help" (onClick)="fileUpload.click()"/>
                   <p-button label="Upload Images" size="small" severity="help" (onClick)="imageUpload.click()"/>
@@ -130,7 +130,7 @@
                     }
                     @else if (upload.url && actOn.uploads) {
                       <img (click)="removeUpload(upload, actOn.uploads)" class="upload-item"
-                          [src]="makeFullGalleryURL(upload.url)"
+                          [src]="makeFullAttachmentURL(upload.url)"
                           [title]="'Click to remove: ' + upload.name"
                           [style.maxWidth]="imageMaxWidth + 'px'"
                           [style.maxHeight]="imageMaxHeight + 'px'" />

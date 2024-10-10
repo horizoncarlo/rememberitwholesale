@@ -74,9 +74,9 @@ p-columnfilterformelement .p-inputtext {
   max-width: 750px;
 }
 
-/* Let the auto-resizing text area scroll properly */
+/* Let the auto-resizing text area scroll properly - this has been a consistent bug where on mobile the textarea won't be scrollable */
 .p-inputtextarea {
-  overflow-y: auto !important;
+  overflow: auto !important;
 }
 
 /* Consistent width on the manage template dialog submit buttons */

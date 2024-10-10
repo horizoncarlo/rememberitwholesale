@@ -163,7 +163,7 @@
         </span>
       </td>
       <td class="time-col-td">
-        <span [style]="'color:' + data.color">
+        <span [style]="'color:' + data.color" [pTooltip]="'Day of week: ' + (data.time | date: 'EEEE')">
           {{ data.time | date: 'MMM dd/yy hh:mm a' }}
           @if (data.hasFutureReminder() || things.isOverdueReminder(data)) {
             <div class="center">

@@ -1,11 +1,7 @@
 # TODO
 
-### Current
-- Have an "expiry" option for Public to auto-non-public it later
-- Admin side needs scaling options added for editing a Thing, and <object> support
-- Add mouse over tooltip to Date column to say what calendar named day (like Monday) it was, and also maybe how many days ago it was
-
 ### Priority: Attachments concept
+- Have an "expiry" option for Public to auto-non-public it later
 - Add additional download option for lower quality images as a ZIP, so like a 70mb full res, 40mb half res, etc.
 - Let the user customize public attachments page with options outlined in TTODO in the public CSS - just store choices in local storage
 - Do a "select images for download" button where you can check/select images and get a ZIP of them, instead of just Download All

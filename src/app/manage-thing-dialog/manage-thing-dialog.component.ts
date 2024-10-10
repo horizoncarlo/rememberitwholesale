@@ -387,7 +387,7 @@ export class ManageThingDialogComponent implements OnDestroy {
   }
   
   makeFullAttachmentURL(basePath: string): string {
-    return `${window.location.protocol}//${window.location.hostname}:4333/${basePath}`
+    return `${window.location.protocol}//${window.location.hostname}:4333/${basePath}?wscale=20`; // Pretty aggressive scaling for faster loading
   }
   
   private _readFile(file: File) {

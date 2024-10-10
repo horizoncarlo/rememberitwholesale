@@ -199,6 +199,9 @@ export class ManageThingDialogComponent implements OnDestroy {
       Utility.showError('Enter a name for this Thing');
       return;
     }
+    if (this.uploadLoading) {
+      return;
+    }
     
     // Set in our template type and color as well
     this.actOn.applyTemplateTo(this.selectedTemplate);

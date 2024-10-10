@@ -88,10 +88,10 @@
                   }
                   
                   <input #fileUpload [style.display]="'none'"
-                        type="file" multiple (change)="handleDraggedFiles($event)" />
+                         type="file" multiple (change)="handleDraggedFiles($event)" />
                   <input #imageUpload [style.display]="'none'"
-                        type="file" multiple (change)="handleDraggedFiles($event)"
-                        accept="image/*" />
+                         type="file" multiple (change)="handleDraggedFiles($event)"
+                         accept="image/*" />
                   <!-- TODO Does this reliably work on various devices, or is it not worth including? -->
                   <input #captureUpload [style.display]="'none'" capture="environment"
                          type="file" accept="image/*" />
@@ -162,10 +162,11 @@
             
             <!-- TODO Do we need any other field types for Things? Photos? Slider? Ongoing/Routine (aka infinite fields so you can keep adding to the same thing without flooding the table) -->
             @if (field.type === fieldTypes.Text || field.type === fieldTypes.Number) {
-              <input [id]="field.property" pInputText [type]="field.type" [required]="field.required || false" [(ngModel)]="field.value"/>
+              <input [id]="field.property" pInputText [type]="field.type" [required]="field.required || false" (keyup.enter)="submit()" [(ngModel)]="field.value"/>
             }
             @else if (field.type === fieldTypes.Textarea || field.type === fieldTypes.Markdown) {
               <textarea [id]="field.property" [rows]="3" [autoResize]="true" pInputTextarea
+                        (keydown.control.enter)="submit()"
                         [(ngModel)]="field.value" [required]="field.required || false" class="our-textarea"></textarea>
             }
             @else if (field.type === fieldTypes.Radio) {

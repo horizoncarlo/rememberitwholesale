@@ -8,6 +8,15 @@
   --mobile-breakpoint: 850px;
 }
 
+/* Standard recommendation for reduced motion */
+@media (prefers-reduced-motion) {
+  *, *::before, *::after {
+    animation-duration: 0s !important;
+    transition: none !important;
+    scroll-behavior: auto !important;
+  }
+}
+
 /* TODO Any place to use this cool old DOS-style console font?
 @font-face {
   font-family: FixedsysExcelsior301Regular;

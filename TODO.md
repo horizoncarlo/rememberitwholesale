@@ -1,4 +1,13 @@
 # TODO
+
+### New ideas
+- RIW public split into CSS and JS?
+- RIW change gallery term to Transfer or Files or Attachments
+- RIW how so we handle video uploads in public gallery?
+- RIW bug in mobile text area scrolling again?
+- RIW - **script** opening tag should be inside **body** in public gallery
+- RIW - Look at navigator.share feature https://developer.mozilla.org/en-US/docs/Web/API/Navigator/share
+
 ### Priority: Gallery concept
 - Add additional download option for lower quality images as a ZIP, so like a 70mb full res, 40mb half res, etc.
 - Admin side needs scaling options added for editing a Thing

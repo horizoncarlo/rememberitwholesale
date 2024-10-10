@@ -1,7 +1,6 @@
 # TODO
 
 ### Current
-- On public, only paginate if second page has 5+ images (or a quarter of page cap), otherwise just split evenly into 2 pages. So 21 images is 11 and 10, or just 1 page of 21, current would be 20 and 1
 - Have an "expiry" option for Public to auto-non-public it later
 - Track visits to public.html / requests for the thing as a guest counter stat that is shown in the Thing?
 - Admin side needs scaling options added for editing a Thing, and <object> support

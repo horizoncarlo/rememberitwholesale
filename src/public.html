@@ -524,7 +524,7 @@
                   <template x-if="isMobileSize()">
                     <div><br/></div>
                   </template>
-                  <button @click="pageData = availablePageData.uploads" title="Begin loading the attached images and files">🔍 Show <b x-text="thing.uploads.length"></b> Files</button>
+                  <button @click="loadPageData()" title="Begin loading the attached images and files">🔍 Show <b x-text="thing.uploads.length"></b> Files</button>
                   <template x-if="isMobileSize()">
                     <div><br/></div>
                   </template>
@@ -690,10 +690,27 @@
                 });
                 
                 // Determine if we should auto-load the files or let the user request them
-                state.availablePageData.totalSize = state.thing.uploads.reduce((data, item) => data + item.size, 0); 
-                state.availablePageData.totalSizeImages = state.thing.uploads.reduce((data, item) => { if (item.type === 'image') { return data + item.size } return data; }, 0); 
+                state.availablePageData.totalSize = state.thing.uploads.reduce((data, item) => data + item.size, 0);
+                state.availablePageData.totalSizeImages = state.thing.uploads.reduce((data, item) => { if (item.type === 'image') { return data + item.size } return data; }, 0);
+                
+                // By default we naturally split pagination based on the PAGE_SIZE
+                // However there are corner cases where it's better to just do a single page
+                // For example when PAGE_SIZE is 20 and we have 22 images we don't want 20+2 images over 2 pages
+                // So basically if our total size is within 1/4 of the PAGE_SIZE, we just combine into a single page
+                const singlePage = state.thing.uploads.length <= (PAGE_SIZE + Math.round(PAGE_SIZE/4));
+                // Similarly if we can more evenly split the pages, such as 28 images being 14+14 instead of 20+8, we do that
+                const evenSplit = state.thing.uploads.length % PAGE_SIZE <= (PAGE_SIZE/2);
+                
                 state.availablePageData.uploads = state.thing.uploads.reduce((data, item, index) => {
-                  const pageIndex = Math.floor(index / PAGE_SIZE);
+                  let pageIndex = Math.floor(index / PAGE_SIZE);
+                  
+                  if (singlePage) {
+                    pageIndex = 0;
+                  }
+                  else if (evenSplit) {
+                    pageIndex = index <= (state.thing.uploads.length/2) ? 0 : 1;
+                  }
+                  
                   if (!data[pageIndex]) {
                     data[pageIndex] = [];
                   }
@@ -704,7 +721,7 @@
                 
                 // If we're under our cap just auto-load the files
                 if (state.availablePageData.totalSizeImages <= MAX_SIZE_BEFORE_PROMPT) {
-                  state.pageData = state.availablePageData.uploads;
+                  loadPageData();
                 }
               }
             }).catch(err => {
@@ -762,6 +779,10 @@
         return _fetchWithLoading(
           `${BACKEND_API}/pthing/${thingId}?username=${username}`
         );
+      }
+      
+      function loadPageData() {
+        state.pageData = state.availablePageData.uploads
       }
       
       function getUpdated(thing, longForm) {

@@ -1,7 +1,6 @@
 # TODO
 
 ### Priority: Attachments concept
-- Have an "expiry" option for Public to auto-non-public it later
 - Faster way to transfer files, similar to Favorites concept
   - Could move Add Thing dialog to a FormControl and have a couple different paths to decide what to render instead of a bunch of toggled flags
 - Add additional download option for lower quality images as a ZIP, so like a 70mb full res, 40mb half res, etc.

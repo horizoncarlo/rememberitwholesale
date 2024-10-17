@@ -3,7 +3,7 @@ const app = express();
 const cors = require("cors");
 const fs = require("fs");
 const os = require("os");
-const { differenceInMinutes, subMinutes} = require("date-fns");
+const { differenceInHours, differenceInMinutes, subMinutes} = require("date-fns");
 const mailjet = require('node-mailjet');
 const config = require('config');
 const crypto = require('crypto');
@@ -53,6 +53,7 @@ const SETTINGS_FILE = 'settings.json';
 const AUTH_FILE = 'auth.json';
 const MAX_AUTOSCALE = 1200; // Number of pixels before we attempt to autoscale an image
 const MAX_RESIZE_CACHE = 50; // Number of resized images to cache
+const SCHEDULED_PUBLIC_EXPIRY_INTERVAL = 30*60*1000; // Every 30 minutes
 
 const imageResizeCache = new Map(); // In-memory cache of recently resized images
 
@@ -223,16 +224,24 @@ const EXPIRY_CHECK_INTERVAL_H = 4*60*60*1000; // 4 hours
 let lastExpiryCheck = 0;
 let checkingExpired = false;
 
+// Used for determining if any public expiry events triggered across ALL users
+let userList = [];
+let checkPublicExpiryInterval;
+
 // Fire up the server
 app.listen(PORT_NUM, () => {
   log("Server running on port " + PORT_NUM);
   
+  // Init processes
   afterStart();
 });
 
 function afterStart() {
   // Ensure our initial files are ready
-  readUserFile(GLOBAL_DATA, AUTH_FILE, 'auth', {});  
+  readUserFile(GLOBAL_DATA, AUTH_FILE, 'auth', {});
+  
+  // Schedule a check for expired public flags across all things for all users
+  scheduledCheckPublicExpiry();
 }
 
 function log(message, ...extra) {
@@ -310,6 +319,69 @@ function ensureUserInMemorySetup(authUsername, noReadFiles) {
         ensureUserFilesAreSetup(authUsername);
       }
     }
+  }
+}
+
+function scheduledCheckPublicExpiry() {
+  if (checkPublicExpiryInterval) {
+    clearInterval(checkPublicExpiryInterval);
+  }
+  checkPublicExpiryInterval = setInterval(() => {
+    checkPublicExpiry();
+  }, SCHEDULED_PUBLIC_EXPIRY_INTERVAL);
+  
+  // Do an initial check, in a separate thread to avoid blocking for this low priority task
+  setTimeout(() => {
+    checkPublicExpiry();
+  });
+}
+
+function checkPublicExpiry() {
+  // Don't want to cache the user list too aggressively, as there's a rare chance
+  //  we've added a user since starting the server, and want to ensure they're in the list too
+  buildUserFolderList();
+  
+  if (userList && userList.length > 0) {
+    userList.map((username) => {
+      const userThings = getInMemoryThings(username);
+      if (userThings && userThings.length > 0) {
+        const publicThings = userThings.filter(thing => thing.public && thing.publicExpiry);
+        if (publicThings && publicThings.length > 0) {
+          const now = new Date();
+          let needsSave = false;
+          publicThings.map(thing => {
+            if (thing.publicExpiry && differenceInHours(thing.publicExpiry, now) <= 0) {
+              thing.public = false;
+              delete thing.publicExpiry;
+              needsSave = true;
+            }
+          });
+          
+          if (needsSave) {
+            saveThingsMemoryToFile(username);
+          }
+        }
+      }
+    });
+  }
+}
+
+function buildUserFolderList() {
+  try{
+    const allFolders = fs.readdirSync(FILE_DIR, { withFileTypes: true });
+    if (allFolders && allFolders.length > 0) {
+      const filteredFolders = allFolders.filter((folder) => {
+        return folder.isDirectory() && folder.name !== GLOBAL_DATA && folder.name !== DEMO_DATA_DIR;
+      });
+      
+      if (filteredFolders && filteredFolders.length > 0) {
+        userList = filteredFolders.map(folder => {
+          return folder.name;
+        });
+      }
+    }
+  }catch(err) {
+    error("Failed to read user folder list for scheduled task", err);
   }
 }
 

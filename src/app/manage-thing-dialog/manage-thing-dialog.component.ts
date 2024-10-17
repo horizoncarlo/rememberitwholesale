@@ -32,6 +32,7 @@ export class ManageThingDialogComponent implements OnDestroy {
   uploadLoading: boolean = false;
   uploadProgress: WritableSignal<number> = signal(0);
   uploadTotal: WritableSignal<number> = signal(0);
+  uploadIgnoreRemove: boolean = false;
   private dragDropCounter: number = 0; // Since dragleave fires when mousing over child elements, we track our drag enter vs leave counter and change our highlight based on that
   @ViewChild('manageThingDialog') manageThingDialog!: Dialog;
   @ViewChild('templateDropdown') templateDropdown!: TemplateDropdownComponent;
@@ -379,6 +380,11 @@ export class ManageThingDialogComponent implements OnDestroy {
   }
   
   removeUpload(toRemove: SimpleUpload, fromList: any[]) {
+    if (this.uploadIgnoreRemove) {
+      this.uploadIgnoreRemove = false;
+      return;
+    }
+    
     const removeIndex = fromList?.indexOf(toRemove);
     if (typeof removeIndex === 'number' && removeIndex >= 0) {
       // TTODO If we remove an upload but don't save the Thing and instead cancel the dialog, then go back to edit, the upload is still removed. Likely need a proper fetch-from-server-on-cancel approach
@@ -386,8 +392,15 @@ export class ManageThingDialogComponent implements OnDestroy {
     }
   }
   
-  makeFullAttachmentURL(basePath: string): string {
-    return `${window.location.protocol}//${window.location.hostname}:4333/${basePath}?wscale=20`; // Pretty aggressive scaling for faster loading
+  downloadUpload(toDownload: SimpleUpload) {
+    this.uploadIgnoreRemove = true;
+    if (toDownload.url) {
+      window.open(this.makeFullAttachmentURL(toDownload.url, true));
+    }
+  }
+  
+  makeFullAttachmentURL(basePath: string, noScaling?: boolean): string {
+    return `${window.location.protocol}//${window.location.hostname}:4333/${basePath}${noScaling ? '' : '?wscale=20'}`; // Pretty aggressive scaling for faster loading
   }
   
   private _readFile(file: File) {

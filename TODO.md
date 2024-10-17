@@ -2,6 +2,8 @@
 
 ### Priority: Attachments concept
 - Have an "expiry" option for Public to auto-non-public it later
+- Faster way to transfer files, similar to Favorites concept
+  - Could move Add Thing dialog to a FormControl and have a couple different paths to decide what to render instead of a bunch of toggled flags
 - Add additional download option for lower quality images as a ZIP, so like a 70mb full res, 40mb half res, etc.
 - Let the user customize public attachments page with options outlined in TTODO in the public CSS - just store choices in local storage
 - Do a "select images for download" button where you can check/select images and get a ZIP of them, instead of just Download All
@@ -13,7 +15,6 @@
 - Touch to edit cancel the timer on touch move so that slow scrolling doesn't trigger it?
 - What about a "pin" concept that keeps a certain Thing at the top of the list regardless of sorting
 - Save inputs as local storage or something? Because if a save of a Thing fails the inputs end up cleared which is crazy frustrating
-- Maintain scroll / paginator after deleting an item
 - Reorder columns, notes right after name, then type and date?
 - Look at navigator.share feature https://developer.mozilla.org/en-US/docs/Web/API/Navigator/share
 - Split package.json for Angular and Node project instead of having them combined (...yaaaay build stuff)

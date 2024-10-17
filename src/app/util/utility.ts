@@ -6,7 +6,9 @@ export class Utility {
   static LS_AUTH_USERNAME: string = 'authUsername';
   static LS_AUTH_PASSWORD: string = 'authPassword';
   static numberFormatter: Intl.NumberFormat = new Intl.NumberFormat();
-  static tableScrollPos = 0; // Store our table scroll position to revert to after a delete/add/etc.
+  // Store our scroll positions to revert to after a delete/add/etc.
+  static windowScrollPos = 0;
+  static tableScrollPos = 0;
   
   static showSuccess(message: string, header?: string, sticky?: boolean): void {
     this._dispatchGenericShow('message-success', { message: message, header: header, sticky: sticky });
@@ -199,6 +201,13 @@ export class Utility {
   }
   
   private static _handleTableScrollPos(shouldSaveToVar?: boolean) {
+    if (shouldSaveToVar) {
+      this.windowScrollPos = document.documentElement.scrollHeight;
+    }
+    else {
+      document.documentElement.scrollTop = this.windowScrollPos;
+    }
+    
     const tableEles = document.getElementsByClassName('p-datatable-wrapper');
     if (this.hasItems(tableEles)) {
       if (shouldSaveToVar) {

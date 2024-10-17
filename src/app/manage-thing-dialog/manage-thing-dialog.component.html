@@ -115,7 +115,12 @@
                       }
                       @else if (upload.name && actOn.uploads) {
                         <p-chip (click)="removeUpload(upload, actOn.uploads)" class="upload-item"
-                                title="Click to remove this file">{{upload.name}}</p-chip>
+                                title="Click to remove this file">
+                          {{upload.name}}
+                          <p-button (onClick)="downloadUpload(upload)" [rounded]="true"
+                                    icon="pi pi-download" pTooltip="Download this file"
+                                    class="upload-download"></p-button>
+                        </p-chip>
                       }
                     }
                   </div>

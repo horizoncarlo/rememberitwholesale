@@ -1,4 +1,5 @@
 import { Component, EventEmitter, HostListener, OnDestroy, Output, signal, ViewChild, WritableSignal } from '@angular/core';
+import { addHours, differenceInHours } from 'date-fns';
 import { ConfirmationService } from 'primeng/api';
 import { Button } from 'primeng/button';
 import { Dialog } from 'primeng/dialog';
@@ -11,6 +12,10 @@ import { UserService } from '../service/user.service';
 import { TemplateDropdownComponent } from '../template-dropdown/template-dropdown.component';
 import { Utility } from '../util/utility';
 
+const dayHours = 24; // Last time I checked lol
+const weekHours = 24*7;
+const monthHours = 24*31;
+
 @Component({
   selector: 'riw-manage-thing-dialog',
   templateUrl: './manage-thing-dialog.component.html',
@@ -19,6 +24,12 @@ import { Utility } from '../util/utility';
 export class ManageThingDialogComponent implements OnDestroy {
   imageMaxWidth: number = 200 as const;
   imageMaxHeight: number = 200 as const;
+  publicExpiryTypeOptions: { value: number, label: string }[] = [
+    { value: 1, label: 'Hour(s)' },
+    { value: dayHours, label: 'Day(s)' },
+    { value: weekHours, label: 'Week(s)' },
+    { value: monthHours, label: 'Month(s)' }
+  ] as const;
   
   type: 'add' | 'edit' = 'add';
   actOn: Thing = new Thing('');
@@ -26,6 +37,9 @@ export class ManageThingDialogComponent implements OnDestroy {
   selectedTemplateName: string | null = null;
   isShowing: boolean = false;
   hasShownPublicNote: boolean = false;
+  publicExpiryShow: boolean = false;
+  publicExpiryAmount?: number;
+  publicExpiryType?: number;
   dropHighlight: boolean = false;
   fieldTypes = TemplateField.TYPES;
   uploadList: SimpleUpload[] = [];
@@ -61,6 +75,7 @@ export class ManageThingDialogComponent implements OnDestroy {
   showAdd(): void {
     this.type = 'add';
     this.actOn = new Thing('');
+    this._setupPublicExpiry();
     const defaultTemplate = this.templateService.getFirstDefaultTemplate();
     this.templateNameChanged(defaultTemplate ? defaultTemplate.name : null, { ignoreOldFields: true });
     this.show();
@@ -70,6 +85,7 @@ export class ManageThingDialogComponent implements OnDestroy {
     if (Utility.hasItems(selectedRows)) {
       this.type = 'edit';
       this.actOn = Thing.cloneFrom(selectedRows[0]);
+      this._setupPublicExpiry();
       this.selectedTemplateName = this.actOn.templateType;
       this.templateNameChanged(this.selectedTemplateName, { ignoreOldFields: true });
       this.show();
@@ -114,6 +130,10 @@ export class ManageThingDialogComponent implements OnDestroy {
   
   toggleThingDialog(): void {
     this.isShowing ? this.hide() : this.showAdd();
+  }
+  
+  togglePublicExpiryShow(): void {
+    this.publicExpiryShow = !this.publicExpiryShow;
   }
   
   isMobileSize(): boolean {
@@ -195,6 +215,37 @@ export class ManageThingDialogComponent implements OnDestroy {
     }
   }
   
+  private _setupPublicExpiry(): void {
+    // Convert our actual public expiry date to an approximation of what the dropdown values should be
+    if (this.actOn && this.actOn.public && this.actOn.publicExpiry) {
+      const converted = this._determinePublicExpiryAmount(this.actOn.publicExpiry);
+      this.publicExpiryAmount = converted.amount;
+      this.publicExpiryType = converted.type;
+      this.publicExpiryShow = true;
+    }
+    else {
+      // Default to 1 month
+      this.publicExpiryAmount = 1;
+      this.publicExpiryType = monthHours;
+      this.publicExpiryShow = false;
+    }
+  }
+  
+  private _determinePublicExpiryAmount(toDate: Date): { amount: number, type: number } {
+    // Determine if we have months, weeks, days, or hours left on the expiry, rounding up for simplicity
+    const hourDiff = differenceInHours(toDate, new Date());
+    if (hourDiff >= monthHours) {
+      return { amount: Math.ceil(hourDiff/monthHours), type: monthHours };
+    }
+    if (hourDiff >= weekHours) {
+      return { amount: Math.ceil(hourDiff/weekHours), type: weekHours };
+    }
+    if (hourDiff >= dayHours) {
+      return { amount: Math.ceil(hourDiff/dayHours), type: dayHours };
+    }
+    return { amount: hourDiff, type: 1 };
+  }
+  
   async submit() {
     if (!this.actOn || !this.actOn.isValid()) {
       Utility.showError('Enter a name for this Thing');
@@ -217,6 +268,15 @@ export class ManageThingDialogComponent implements OnDestroy {
     if (this.uploadLoading) {
       this.uploadProgress.set(0);
       this.uploadTotal.set(this.uploadList.length);
+    }
+    
+    // If we have a public expiry convert it into a real date
+    if (this.actOn.public && this.publicExpiryShow &&
+        typeof this.publicExpiryAmount === 'number' && typeof this.publicExpiryType === 'number') {
+      this.actOn.publicExpiry = addHours(new Date(), this.publicExpiryAmount*this.publicExpiryType);
+    }
+    else {
+      delete this.actOn.publicExpiry;
     }
     
     this.things.saveThing(this.actOn, {

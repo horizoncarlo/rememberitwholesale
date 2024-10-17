@@ -22,6 +22,7 @@ export class Thing {
   viewCount?: number;
   reminder?: boolean;
   public?: boolean = false;
+  publicExpiry?: Date | undefined;
   gallery?: boolean = false;
   uploads?: SimpleUpload[];
   updated: Date | undefined;
@@ -38,6 +39,7 @@ export class Thing {
                 viewCount?: number,
                 reminder?: boolean,
                 public?: boolean,
+                publicExpiry: Date | undefined,
                 gallery?: boolean,
                 uploads?: SimpleUpload[],
                 updated: Date | undefined,
@@ -76,6 +78,13 @@ export class Thing {
       delete this.updated;
     }
     
+    if (options && options.publicExpiry) {
+      this.publicExpiry = Utility.isValidString(options.publicExpiry) ? new Date(options.publicExpiry) : options.publicExpiry;
+    }
+    else {
+      delete this.publicExpiry;
+    }
+    
     // If we have fields get them as actual TemplateField objects
     if (Utility.hasItems(this.fields)) {
       this.fields = this.fields.map((field) => {
@@ -106,6 +115,7 @@ export class Thing {
                       viewCount: source.viewCount,
                       reminder: source.reminder,
                       public: source.public,
+                      publicExpiry: source.publicExpiry,
                       gallery: source.gallery,
                       uploads: source.uploads,
                       updated: source.updated,
@@ -207,6 +217,7 @@ export class Thing {
     if (typeof this.viewCount !== 'number' || this.viewCount === 0) { delete this.viewCount; }
     if (!this.reminder) { delete this.reminder; }
     if (!this.public) { delete this.public; }
+    if (!this.publicExpiry) { delete this.publicExpiry; }
     if (!this.gallery) { delete this.gallery; }
     if (!this.uploads) { delete this.uploads; }
     else {

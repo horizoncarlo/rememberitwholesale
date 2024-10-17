@@ -202,7 +202,7 @@ export class Utility {
   
   private static _handleTableScrollPos(shouldSaveToVar?: boolean) {
     if (shouldSaveToVar) {
-      this.windowScrollPos = document.documentElement.scrollHeight;
+      this.windowScrollPos = document.documentElement.scrollTop;
     }
     else {
       document.documentElement.scrollTop = this.windowScrollPos;

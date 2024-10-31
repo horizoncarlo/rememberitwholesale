@@ -58,6 +58,10 @@ html {
   margin-right: auto;
 }
 
+.mono-font {
+  font-family: monospace;
+}
+
 .pos-fixed {
   position: fixed;
 }

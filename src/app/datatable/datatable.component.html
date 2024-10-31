@@ -110,10 +110,9 @@
       <th class="control-col">
         <span (click)="clearSelectedRows()" [style.cursor]="'pointer'"
               pTooltip="Click to deselect all" tooltipPosition="bottom">
-          {{ rowSelectedCount() }} Sel<span class="hide-on-mobile">ected Rows</span>
-          @if (hasSelectedRows()) {
-            <span class="pi pi-ban header-tiny-button header-tiny-button-color header-clear-rows-button"></span>
-          }
+          <span class="mono-font">{{ rowSelectedCount() }}</span>&nbsp;Sel<span class="hide-on-mobile">ected Rows</span>
+          <span class="pi pi-ban header-tiny-button header-tiny-button-color header-clear-rows-button"
+                [style.visibility]="hasSelectedRows() ? 'visible' : 'hidden'"></span>
         </span>
         &nbsp;
         @if (!showFilters) {

@@ -100,7 +100,11 @@ const staticLimiter = rateLimiter({
 app.use(cors());
 app.use(globalLimiter);
 app.use(express.json());
-app.use(fileUpload());
+app.use(fileUpload({
+  useTempFiles: true, // To avoid `Array buffer allocation failed` with our limited ARM deploy we write to a temp file instead of RAM
+  tempFileDir : os.tmpdir(),
+  limits: { fileSize: 1024*1024*1024 } // Cap at 1gb file limit
+}));
 
 // To prevent needless favicon.ico logging for our static files we just return NO CONTENT for the request
 // Of course the app itself can manage a proper favicon, we just want to skip this default browser behaviour

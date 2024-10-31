@@ -1,35 +1,13 @@
 # TODO
 
 ### Priority: Attachments concept
+- On desktop, have a way to paste an image directly into upload? (like Copy Image from the browser and Ctrl+P paste)
 - Faster way to transfer files, similar to Favorites concept
   - Could move Add Thing dialog to a FormControl and have a couple different paths to decide what to render instead of a bunch of toggled flags
   - Maybe do as part of the Favorite dialog?
 - Add additional download option for lower quality images as a ZIP, so like a 70mb full res, 40mb half res, etc.
 - Let the user customize public attachments page with options outlined in TTODO in the public CSS - just store choices in local storage
 - Do a "select images for download" button where you can check/select images and get a ZIP of them, instead of just Download All
-
-### Recent Bugs
-Also tweak column reorder, put the update somewhere else on mobile
-
-Have a way to paste an image directly into upload? Better for fast transfer. For desktop
-
-Tried to upload the ~370mb Judge Dredd comic 1 file and got this in Node
-```node:internal/buffer:961
-    super(bufferOrLength, byteOffset, length);
-    ^
-
-RangeError: Array buffer allocation failed
-    at new ArrayBuffer (<anonymous>)
-    at new Uint8Array (<anonymous>)
-    at new FastBuffer (node:internal/buffer:961:5)
-    at createUnsafeBuffer (node:internal/buffer:1064:12)
-    at allocate (node:buffer:450:10)
-    at Function.allocUnsafe (node:buffer:415:10)
-    at Function.concat (node:buffer:592:25)
-    at getBuffer (/home/drone/hub/rememberitwholesale/node_modules/express-fileupload/lib/memHandler.js:17:34)
-    at complete (/home/drone/hub/rememberitwholesale/node_modules/express-fileupload/lib/memHandler.js:37:14)
-    at FileStream.<anonymous> (/home/drone/hub/rememberitwholesale/node_modules/express-fileupload/lib/processMultipart.js:135:17)
-```
 
 ### Other important
 - Need a better and smoother and less manual process for deploying the app to prod environment

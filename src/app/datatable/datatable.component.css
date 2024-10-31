@@ -26,6 +26,13 @@
   max-width: var(--standard-field-width);
 }
 
+.floating-refresh {
+  position: absolute;
+  bottom: 5px;
+  left: 0;
+  z-index: 2;
+}
+
 .thing-table {
   min-width: 50rem;
   --updated-col-width: 80px;

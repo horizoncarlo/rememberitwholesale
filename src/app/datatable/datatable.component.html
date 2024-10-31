@@ -80,9 +80,17 @@
          >
   <ng-template pTemplate="header">
     <tr>
+      @if (!isMobileSize()) {
+        <th pSortableColumn="updated" class="updated-col center" pTooltip="Last Updated">
+          <p-sortIcon field="updated" class="updated-col-sort"/>
+        </th>
+      }
       <th pSortableColumn="name" class="name-col">
         {{ getNameColumnHeader() }} <p-sortIcon field="name" />
       </th>
+      @if (!isMobileSize()) {
+        <th pSortableColumn="time" class="time-col">Date <p-sortIcon field="time" /></th>
+      }
       <th pSortableColumn="templateType" class="type-col">Type <p-sortIcon field="templateType" /></th>
       <th pSortableColumn="fieldsAsString" class="fields-col">
         Fields
@@ -115,25 +123,33 @@
           <span class="pi pi-filter-slash header-tiny-button header-tiny-button-color" (click)="toggleShowFilters()" pTooltip="Hide Filters"></span>
         }
       </th>
-      <th pSortableColumn="time" class="time-col">Date <p-sortIcon field="time" /></th>
-      <th pSortableColumn="updated" class="updated-col center" pTooltip="Last Updated">
-        <p-sortIcon field="updated" class="updated-col-sort"/>
-      </th>
+      @if (isMobileSize()) {
+        <th pSortableColumn="updated" class="updated-col center" pTooltip="Last Updated">
+          <p-sortIcon field="updated" class="updated-col-sort"/>
+        </th>
+      }
     </tr>
     @if (showFilters) {
       <tr>
-        <th><p-columnFilter type="text" field="name" matchMode="contains" /></th>
+        <th [attr.colspan]="isMobileSize() ? 1 : 2"><p-columnFilter type="text" field="name" matchMode="contains" /></th>
+        @if (!isMobileSize()) {
+          <th><p-columnFilter type="date" field="time" appendTo="body" /></th>
+        }
         <th><p-columnFilter type="text" field="templateType" matchMode="contains" /></th>
         <!-- TODO Could add a custom filter option of "Reminder=true/false" for the time column. Then can remove 'reminder' from supported global search fields on the table -->
-        <th colspan="3">
+        <th [attr.colspan]="isMobileSize() ? 4 : 3">
           <input pInputText type="text" (change)="filterFields($event)" class="header-filter-field" />
         </th>
-        <th colspan="2"><p-columnFilter type="date" field="time" appendTo="body" /></th>
       </tr>
     }
   </ng-template>
   <ng-template pTemplate="body" let-data let-rowIndex="rowIndex">
     <tr [pSelectableRow]="data" [pSelectableRowIndex]="rowIndex" (touchstart)="rowTouchStart(data)" (touchend)="rowTouchEnd(data)">
+      @if (!isMobileSize()) {
+        <td class="updated-col-cell" pTooltip="{{data.updated | date: 'medium'}}">
+          {{ data.getUpdated() }}
+        </td>
+      }
       <td>
         <span [style]="'color:' + data.color">
           @if (isFavoriteByName(data.name)) {
@@ -156,22 +172,26 @@
           }
         </span>
       </td>
+      @if (!isMobileSize()) {
+        <td class="time-col-td">
+          <span [style]="'color:' + data.color" [pTooltip]="'Day of week: ' + (data.time | date: 'EEEE')">
+            {{ data.time | date: 'MMM dd/yy hh:mm a' }}
+            @if (data.hasFutureReminder() || things.isOverdueReminder(data)) {
+              <div class="center">
+                <span class="pi pi-clock" pTooltip="Thing is a Reminder"></span>
+              </div>
+            }
+          </span>
+        </td>
+      }
       <td colspan="3" (click)="quickviewFields(data, $event)" [class]="data.hasFieldsAsString() ? 'quickview-zoom' : ''">
         <div class="fields-scroller" [innerHTML]="data.fieldsAsString"></div>
       </td>
-      <td class="time-col-td">
-        <span [style]="'color:' + data.color" [pTooltip]="'Day of week: ' + (data.time | date: 'EEEE')">
-          {{ data.time | date: 'MMM dd/yy hh:mm a' }}
-          @if (data.hasFutureReminder() || things.isOverdueReminder(data)) {
-            <div class="center">
-              <span class="pi pi-clock" pTooltip="Thing is a Reminder"></span>
-            </div>
-          }
-        </span>
-      </td>
-      <td class="updated-col-cell" pTooltip="{{data.updated | date: 'medium'}}">
-        {{ data.getUpdated() }}
-      </td>
+      @if (isMobileSize()) {
+        <td class="updated-col-cell" pTooltip="{{data.updated | date: 'medium'}}">
+          {{ data.getUpdated() }}
+        </td>
+      }
     </tr>
   </ng-template>
   @if (!things.loading) {

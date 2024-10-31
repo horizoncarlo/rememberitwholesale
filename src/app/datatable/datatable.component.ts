@@ -822,4 +822,8 @@ export class DatatableComponent implements OnInit, OnDestroy {
       clearTimeout(this.touchEditTimer);
     }
   }
+  
+  isMobileSize(): boolean {
+    return Utility.isMobileSize();
+  }
 }

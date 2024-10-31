@@ -142,7 +142,7 @@ export class DatatableComponent implements OnInit, OnDestroy {
     window.removeEventListener('resize', this.calcTableScrollHeight);
   }
   
-  @HostListener('window:keydown.shift.s', ['$event'])
+  @HostListener('window:keydown.shift.control.f', ['$event'])
   handleSlashKey(): void {
     setTimeout(() => { // Do a timeout so that we focus without putting the hotkey into the field
       document.getElementById('globalSearchIn')?.focus();

@@ -48,7 +48,8 @@
             <label htmlFor="time">Public Expiry</label>
           </td>
           <td>
-            in&nbsp;
+            <div class="hide-on-desktop">&nbsp;Public ends in<br/></div>
+            <span class="hide-on-mobile">in&nbsp;</span>
             <input pInputText [(ngModel)]="publicExpiryAmount"
                    type="number" min="1" max="50" style="width: 80px;"
                    onclick="this.select()"/>

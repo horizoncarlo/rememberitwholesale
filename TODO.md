@@ -15,6 +15,7 @@
 - What about a "pin" concept that keeps a certain Thing at the top of the list regardless of sorting
 - Save inputs as local storage or something? Because if a save of a Thing fails the inputs end up cleared which is crazy frustrating
 - Reorder columns, notes right after name, then type and date?
+- Consider whether PrimeNG can act like a native <select> on device mobile where the full list of options is shown as a built in popup - might be nicer
 - Look at navigator.share feature https://developer.mozilla.org/en-US/docs/Web/API/Navigator/share
 - Split package.json for Angular and Node project instead of having them combined (...yaaaay build stuff)
 

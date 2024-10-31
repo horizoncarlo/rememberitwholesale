@@ -65,5 +65,5 @@ export class NewAccountDialogComponent {
         console.error(err);
       }
     }).add(() => this.processing = false);
-  }  
+  }
 }

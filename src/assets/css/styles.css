@@ -140,7 +140,7 @@ html {
 
 @media (max-width: 850px) { /* var(--mobile-breakpoint) equivalent, just can't use in media queries */
   :root {
-    --standard-field-width: 175px;
+    --standard-field-width: 100%;
   }
   
   .hide-on-mobile {
@@ -160,7 +160,7 @@ html {
   }
   
   .our-textarea {
-    width: calc(95vw - 100px) !important;
+    width: 99% !important;
   }
   
   .field-label {

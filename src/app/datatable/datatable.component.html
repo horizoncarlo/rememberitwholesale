@@ -40,7 +40,7 @@
         }
         <span class="global-search-wrap p-input-icon-left p-input-icon-right" [hidden]="things.loading"> <!-- Use hidden instead of ngIf to maintain the user text state while loading -->
           <i class="pi pi-search"></i>
-          <input #globalSearchIn pInputText (input)="globalFilterTableByEvent($event)" placeholder="Search Things" />
+          <input id="globalSearchIn" #globalSearchIn pInputText (input)="globalFilterTableByEvent($event)" placeholder="Search Things" />
           <i class="pi pi-times-circle header-tiny-button" title="Clear the search input"
              (click)="clearGlobalFilter(globalSearchIn)"></i>
         </span>

@@ -1,4 +1,4 @@
-import { Component, OnDestroy, OnInit, ViewChild } from '@angular/core';
+import { Component, HostListener, OnDestroy, OnInit, ViewChild } from '@angular/core';
 import { addHours, formatDistanceToNow } from 'date-fns';
 import { Confirmation, ConfirmationService, MenuItem, PrimeNGConfig, SortEvent } from 'primeng/api';
 import { Table } from 'primeng/table';
@@ -140,6 +140,13 @@ export class DatatableComponent implements OnInit, OnDestroy {
   
   ngOnDestroy(): void {
     window.removeEventListener('resize', this.calcTableScrollHeight);
+  }
+  
+  @HostListener('window:keydown.shift.s', ['$event'])
+  handleSlashKey(): void {
+    setTimeout(() => { // Do a timeout so that we focus without putting the hotkey into the field
+      document.getElementById('globalSearchIn')?.focus();
+    });
   }
   
   refreshThings(): void {

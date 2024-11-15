@@ -1,23 +1,24 @@
 # TODO
-
-### Priority: Attachments concept
-- On desktop, have a way to paste an image directly into upload? (like Copy Image from the browser and Ctrl+P paste)
+- Need a better and smoother and less manual process for deploying the app to prod environment
+- Update Readme with file sharing feature notes
+  - Also a few screenshots of the app in general
+- Allow for multi-session log ins, instead of a single token? Would be nice for desktop to mobile swapping
+- BUG: Figure out false loading issue on mobile (where the browser SEEMS to load, or we get a partial progress bar...then nothing)
 - Faster way to transfer files, similar to Favorites concept
   - Could move Add Thing dialog to a FormControl and have a couple different paths to decide what to render instead of a bunch of toggled flags
   - Maybe do as part of the Favorite dialog?
-- Add additional download option for lower quality images as a ZIP, so like a 70mb full res, 40mb half res, etc.
 - Let the user customize public attachments page with options outlined in TTODO in the public CSS - just store choices in local storage
 - Do a "select images for download" button where you can check/select images and get a ZIP of them, instead of just Download All
-
-### Other important
-- Need a better and smoother and less manual process for deploying the app to prod environment
+- Maybe add Ctrl+Enter support for ALL fields - currently just text areas, but would be nice to be consistent for stuff like Name
+- Double click on desktop to edit a row immediately?
 - Put an app version scheme somewhere, and show on Profile dialog?
 - Allow Edit of Templates - doesn't retroactively change Thing data, just going forward uses the new version
 - Touch to edit cancel the timer on touch move so that slow scrolling doesn't trigger it?
+- Double click to edit a Thing on desktop?
+- Lazy loading pagination to allow all time but less bandwidth when just on first page?
+- Consider whether PrimeNG can act like a native <select> on device mobile where the full list of options is shown as a built in popup - might be nicer
 - What about a "pin" concept that keeps a certain Thing at the top of the list regardless of sorting
 - Save inputs as local storage or something? Because if a save of a Thing fails the inputs end up cleared which is crazy frustrating
-- Reorder columns, notes right after name, then type and date?
-- Consider whether PrimeNG can act like a native <select> on device mobile where the full list of options is shown as a built in popup - might be nicer
 - Look at navigator.share feature https://developer.mozilla.org/en-US/docs/Web/API/Navigator/share
 - Split package.json for Angular and Node project instead of having them combined (...yaaaay build stuff)
 
@@ -27,6 +28,7 @@
 - Reports with custom queries to generate, as well as charts (could be using ChartModule from PrimeNG)
   - Definitely just start with basic queries to get data and numbers, since we'll be using that for charts so having the text first is valuable and simpler
 - Self signed HTTPS certificate, and try to do native mobile push notifications for reminders? Also needed for copyToClipboard functionality
+  - Also for HTTPS: On desktop, have a way to paste an image directly into upload? (like Copy Image from the browser and Ctrl+P paste)
 
 - Try signals and NgRx data store for sharing between parts of app using Ang 17
 - Do a proper pass and componentize any elements that need it
@@ -61,6 +63,8 @@
 - Have specific utility calls, like "top right spinner on/off", that hide the logic in the loading service itself
 
 ## PRIMENG BUGS
+- November 2024: Color picker (for adding a new Template) is broken in PrimeNG v17.x, see https://github.com/primefaces/primeng/issues/16586
+
 - An autosizing text area inside a scrollable dialog causes the dialog to jump positions - see the Add Thing dialog with a complicated enough Template
   - For example typing in a Notes textarea on a Thing that is long enough to cause the dialog content to scroll - this will make the dialog scroll jump to the top when typing
 
@@ -68,10 +72,6 @@
 
 - Could use <p-iconField and <p-inputIcon from v17.3, but they require an up to date theme to style properly, which means we'd have to drop Lara v16 and go to the washed out v17 version
   - Likely will end up having to eventually as components are added/changed, but going to try to resist for a while
-
-- Table Ctrl+A fails with [rows] defined
-  - **FILED** - https://github.com/primefaces/primeng/issues/14634
-  - Got moved to https://github.com/primefaces/primeng/issues/14700
 
 - Speed Dial has an overlay that extends below the visible button by 44px
   - **FILED** - they marked WONTFIX: https://github.com/primefaces/primeng/issues/14330

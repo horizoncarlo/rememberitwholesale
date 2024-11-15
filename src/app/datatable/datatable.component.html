@@ -26,10 +26,10 @@
         @if (templateService.hasFavorite()) {
           <p-button (onClick)="quickfillFavoriteThing()" icon="pi pi-heart-fill" severity="help" pTooltip="Create a new Thing from your Favorite Template"/>
         }
-        <p-button (onClick)="clearSelectedRows(); manageTemplate.show()" icon="pi pi-list" [label]="getManageTemplateLabel()" />
-        <p-button (onClick)="clearSelectedRows(); manageThing.showAdd()" icon="pi pi-plus-circle" label="New Thing" />
+        <p-button (onClick)="clearSelectedRows(); manageTemplate.show()" severity="help" icon="pi pi-list" [label]="getManageTemplateLabel()" />
+        <p-button (onClick)="clearSelectedRows(); manageThing.showAdd()" severity="success" icon="pi pi-plus-circle" label="New Thing" />
         <p-button (onClick)="requestEditSelected()" icon="pi pi-pencil" label="Edit/View Thing" [disabled]="!hasSelectedRows()" />
-        <p-button (onClick)="confirmDeleteSelected($event)" icon="pi pi-trash" severity="danger" [label]="getDeleteLabel()" [disabled]="!hasSelectedRows()" />
+        <p-button (onClick)="confirmDeleteSelected($event)" icon="pi pi-trash" severity="danger" [label]="getDeleteLabel()" class="mono-font" [disabled]="!hasSelectedRows()" />
       </div>
       <div class="toolbar-right">
         @if (things.hasAnyReminders()) {

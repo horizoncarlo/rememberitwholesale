@@ -6,11 +6,13 @@
     <table cellpadding="10" class="thing-in-table">
       <tr>
         <td colspan="2" class="type-col">
-          <p-checkbox [(ngModel)]="actOn.public" [binary]="true" [label]="(isMobileSize() ? '' : ' 🌐 ') + 'Public'"
-                      (onChange)="publicCheckboxChanged()"
-                      pTooltip="Make this Thing public and generate a shareable link that can be given to anyone to view just this Thing, without needing a login" showDelay="750" />
-          <p-checkbox [(ngModel)]="actOn.gallery" [binary]="true" [label]="(isMobileSize() ? '' : ' 🖼 ') + 'Attachments'"
-                      pTooltip="Make this Thing include attachments of uploaded images and files" showDelay="750" />
+          @if (!authService.getAuth().isDemoAccount) {
+            <p-checkbox [(ngModel)]="actOn.public" [binary]="true" [label]="(isMobileSize() ? '' : ' 🌐 ') + 'Public'"
+                        (onChange)="publicCheckboxChanged()"
+                        pTooltip="Make this Thing public and generate a shareable link that can be given to anyone to view just this Thing, without needing a login" showDelay="750" />
+            <p-checkbox [(ngModel)]="actOn.gallery" [binary]="true" [label]="(isMobileSize() ? '' : ' 🖼 ') + 'Attachments'"
+                        pTooltip="Make this Thing include attachments of uploaded images and files" showDelay="750" />
+          }
           <p-checkbox [(ngModel)]="actOn.reminder" [binary]="true" [label]="(isMobileSize() ? '' : ' 🕒 ') + 'Reminder'"
                       (onChange)="reminderCheckboxChanged()"
                       pTooltip="Make this Thing a reminder that will display time left and notify you when due" showDelay="750" />

@@ -6,6 +6,7 @@ import { Dialog } from 'primeng/dialog';
 import { Template, TemplateEvent } from '../model/template';
 import { TemplateField } from '../model/template-field';
 import { Thing } from '../model/thing';
+import { AuthService } from '../service/auth.service';
 import { TemplateService } from '../service/template.service';
 import { SimpleUpload, ThingService } from '../service/thing.service';
 import { UserService } from '../service/user.service';
@@ -57,6 +58,7 @@ export class ManageThingDialogComponent implements OnDestroy {
   
   constructor(public things: ThingService,
               public templateService: TemplateService,
+              public authService: AuthService,
               public userService: UserService,
               private confirmationService: ConfirmationService) { }
   

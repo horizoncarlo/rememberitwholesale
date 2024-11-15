@@ -585,9 +585,9 @@ export class DatatableComponent implements OnInit, OnDestroy {
   }
   
   getDeleteLabel(): string {
-    let toReturn = 'Delete';
-    if (this.hasSelectedRows()) {
-      toReturn += ' ' + this.selectedRows.length + ' Thing' + Utility.plural(this.selectedRows);
+    let toReturn = 'Delete ';
+    if (!this.hasOneSelectedRow() && this.hasSelectedRows()) {
+      toReturn += this.selectedRows.length;
     }
     return toReturn;
   }

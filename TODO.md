@@ -1,9 +1,11 @@
 # TODO
+- BUG: Figure out false loading issue on mobile (where the browser SEEMS to load, or we get a partial progress bar...then nothing)
+- BUG: Opening the user dialog on desktop with a browser saved username/password account fills the username into the global Search field
+
 - Need a better and smoother and less manual process for deploying the app to prod environment
 - Update Readme with file sharing feature notes
   - Also a few screenshots of the app in general
 - Allow for multi-session log ins, instead of a single token? Would be nice for desktop to mobile swapping
-- BUG: Figure out false loading issue on mobile (where the browser SEEMS to load, or we get a partial progress bar...then nothing)
 - Faster way to transfer files, similar to Favorites concept
   - Could move Add Thing dialog to a FormControl and have a couple different paths to decide what to render instead of a bunch of toggled flags
   - Maybe do as part of the Favorite dialog?

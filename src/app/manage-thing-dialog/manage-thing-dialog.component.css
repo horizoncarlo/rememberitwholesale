@@ -98,9 +98,13 @@
   vertical-align: bottom;
 }
 
-.upload-download {
+.upload-download-chip {
   padding-left: 10px;
   margin-right: -20px;
+}
+
+.upload-download-image {
+  margin-left: -50px;
 }
 
 :host ::ng-deep .upload-item .p-chip {

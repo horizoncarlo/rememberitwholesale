@@ -458,8 +458,16 @@ export class DatatableComponent implements OnInit, OnDestroy {
     }
   }
   
-  clearGlobalFilter(inputEl: HTMLInputElement): void {
-    inputEl.value = '';
+  clearGlobalFilter(inputEl?: HTMLInputElement): void { // QUIDEL Wasn't optional before
+    if (inputEl) {
+      inputEl.value = '';
+    }
+    else {
+      const manualEle = document.getElementById('globalSearchIn');
+      if (manualEle) {
+        (manualEle as HTMLInputElement).value = '';
+      }
+    }
     this.globalFilterTable('');
   }
   
@@ -617,6 +625,14 @@ export class DatatableComponent implements OnInit, OnDestroy {
         icon: 'pi pi-exclamation-triangle',
         accept: () => {
           this.things.deleteThings(this.selectedRows);
+          
+          // Special case where we had searched to a specific thing and now deleted it
+          // Which means we want to clear our search as well
+          // this.clearSelectedRows();
+          if (this.selectedRows?.length === this.thingTable?.filteredValue?.length &&
+              this.selectedRows.every((row, index) => row.id === (this.thingTable.filteredValue as any[])[index].id)) {
+            this.clearGlobalFilter();
+          }
           this.clearSelectedRows();
           
           if (this.manageThingDialog) {

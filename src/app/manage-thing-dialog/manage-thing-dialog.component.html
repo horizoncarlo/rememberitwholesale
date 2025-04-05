@@ -10,7 +10,7 @@
             <p-checkbox [(ngModel)]="actOn.public" [binary]="true" [label]="(isMobileSize() ? '' : ' 🌐 ') + 'Public'"
                         (onChange)="publicCheckboxChanged()"
                         pTooltip="Make this Thing public and generate a shareable link that can be given to anyone to view just this Thing, without needing a login" showDelay="750" />
-            <p-checkbox [(ngModel)]="actOn.gallery" [binary]="true" [label]="(isMobileSize() ? '' : ' 🖼 ') + 'Attachments'"
+            <p-checkbox [(ngModel)]="actOn.gallery" [binary]="true" [label]="(isMobileSize() ? '' : ' 📎 ') + 'Attachments'"
                         pTooltip="Make this Thing include attachments of uploaded images and files" showDelay="750" />
           }
           <p-checkbox [(ngModel)]="actOn.reminder" [binary]="true" [label]="(isMobileSize() ? '' : ' 🕒 ') + 'Reminder'"
@@ -145,7 +145,7 @@
                           {{upload.name}}
                           <p-button (onClick)="downloadUpload(upload)" [rounded]="true"
                                     icon="pi pi-download" title="Download this file"
-                                    class="upload-download"></p-button>
+                                    class="upload-download-chip"></p-button>
                         </p-chip>
                       }
                     }
@@ -165,6 +165,9 @@
                           [title]="'Click to remove: ' + upload.name"
                           [style.maxWidth]="imageMaxWidth + 'px'"
                           [style.maxHeight]="imageMaxHeight + 'px'" />
+                      <p-button (onClick)="downloadUpload(upload)" [rounded]="true"
+                                icon="pi pi-download" title="Download this image"
+                                class="upload-download-image"></p-button>
                     }
                   }
                 </div>

@@ -156,7 +156,7 @@
           }
           {{ data.name }}
           @if (data.gallery) {
-            &nbsp;<span class="pi pi-images" [pTooltip]="'Thing has ' + data.uploads.length + ' attachment item(s)'"></span>
+            &nbsp;<span class="pi pi-paperclip" [pTooltip]="'Thing has ' + (data.uploads?.length ?? 0) + ' attachment item(s)'"></span>
           }
         </span>
       </td>

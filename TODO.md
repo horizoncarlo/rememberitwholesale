@@ -1,6 +1,7 @@
 # TODO
-- BUG: Figure out false loading issue on mobile (where the browser SEEMS to load, or we get a partial progress bar...then nothing)
-- BUG: Opening the user dialog on desktop with a browser saved username/password account fills the username into the global Search field
+- Mentioned before but Template Editing would be nice
+- Better support for ebook sharing? Maybe just improvements to normal sharing, such as being searchable on the public page. See https://smoores.dev/post/announcing_smoores_epub/
+- Use Fuse.js for fuzzy search for the main search bar / global search?
 
 - Need a better and smoother and less manual process for deploying the app to prod environment
 - Update Readme with file sharing feature notes
@@ -11,18 +12,21 @@
   - Maybe do as part of the Favorite dialog?
 - Let the user customize public attachments page with options outlined in TTODO in the public CSS - just store choices in local storage
 - Do a "select images for download" button where you can check/select images and get a ZIP of them, instead of just Download All
-- Maybe add Ctrl+Enter support for ALL fields - currently just text areas, but would be nice to be consistent for stuff like Name
-- Double click on desktop to edit a row immediately?
+- Double click on desktop to edit a Thing row immediately?
 - Put an app version scheme somewhere, and show on Profile dialog?
 - Allow Edit of Templates - doesn't retroactively change Thing data, just going forward uses the new version
 - Touch to edit cancel the timer on touch move so that slow scrolling doesn't trigger it?
-- Double click to edit a Thing on desktop?
 - Lazy loading pagination to allow all time but less bandwidth when just on first page?
+- Add an undo / trash can for deleted Things that can be restored and auto-delete after X days?
 - Consider whether PrimeNG can act like a native <select> on device mobile where the full list of options is shown as a built in popup - might be nicer
-- What about a "pin" concept that keeps a certain Thing at the top of the list regardless of sorting
+- What about a "pin" concept that keeps a certain Thing at the top of the list regardless of sorting (almost like a Star in Gmail)
+- Reference other Things dynamically with a link in a textbox? Like a PR reference in a bug tracking system
 - Save inputs as local storage or something? Because if a save of a Thing fails the inputs end up cleared which is crazy frustrating
-- Look at navigator.share feature https://developer.mozilla.org/en-US/docs/Web/API/Navigator/share
-- Split package.json for Angular and Node project instead of having them combined (...yaaaay build stuff)
+- Look at navigator.share feature https://developer.mozilla.org/en-US/docs/Web/API/Navigator/share which allows for easy mobile sharing to built-in targets
+
+### Unfortunate Version Churn
+- Update Angular and PrimeNG
+- Split package.json for Angular and Node project instead of having them combined
 
 ## OLDER NOTES
 - * Finish Demo account data

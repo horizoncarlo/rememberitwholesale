@@ -11,6 +11,8 @@ import { TemplateField } from './template-field';
 export const PUBLIC_THING_PAGE = 'public.html';
 export const PUBLIC_THING_PARAM = 't';
 export const PUBLIC_USER_PARAM = 'u';
+export const LOAD_ACTION = 'action';
+export const REQUEST_FAST_FAVORITE = 'ff';
 export const DEFAULT_ID = "progress";
 
 export class Thing {

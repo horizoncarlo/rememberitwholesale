@@ -16,7 +16,7 @@ export class AuthService {
       this._auth.checkStoredLogin().then(res => {
         // Stay on our public page instead of forcing to the app
         if (!this.router.url || !this.router.url.startsWith('/public')) {
-          this.router.navigate(['/']);
+          this.router.navigate(['/'], { queryParamsHandling: 'preserve' });
         }
       }).catch(ignored => {
         // Ignore any failure to retrieve a stored login

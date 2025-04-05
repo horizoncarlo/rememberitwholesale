@@ -69,7 +69,7 @@ export class LoginComponent {
           console.log("Logged in with authToken");
           
           this.authService.getAuth().setLoggedIn(res.authToken, res.password);
-          this.router.navigate(['/']);
+          this.router.navigate(['/'], { queryParamsHandling: 'preserve' });
         }
       },
       error: err => {

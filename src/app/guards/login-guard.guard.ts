@@ -33,11 +33,11 @@ export const LoginGuard: CanActivateFn = (route: ActivatedRouteSnapshot, state: 
   const isLoggedIn = inject(AuthService).getAuth().isLoggedIn;
   if (state.url.startsWith('/login')) {
     if (isLoggedIn) {
-      return inject(Router).navigate(['/']);
+      return inject(Router).navigate(['/'], { queryParams: route.queryParams });
     }
   }
   else if (!isLoggedIn) {
-    return inject(Router).navigate(['/login']);
+    return inject(Router).navigate(['/login'], { queryParams: route.queryParams });
   }
   return true;
 };

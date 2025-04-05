@@ -1,4 +1,5 @@
 import { Component, HostListener, OnDestroy, OnInit, ViewChild } from '@angular/core';
+import { Router } from '@angular/router';
 import { addHours, formatDistanceToNow } from 'date-fns';
 import { Confirmation, ConfirmationService, MenuItem, PrimeNGConfig, SortEvent } from 'primeng/api';
 import { Table } from 'primeng/table';
@@ -6,7 +7,7 @@ import { GlobalSearchDialogComponent } from '../global-search-dialog/global-sear
 import { ManageTemplateDialogComponent } from '../manage-template-dialog/manage-template-dialog.component';
 import { ManageThingDialogComponent } from '../manage-thing-dialog/manage-thing-dialog.component';
 import { TemplateField } from '../model/template-field';
-import { Thing } from '../model/thing';
+import { LOAD_ACTION, REQUEST_FAST_FAVORITE, Thing } from '../model/thing';
 import { UserSettings } from '../model/user-settings';
 import { QuickviewFieldsDialogComponent } from '../quick-view-fields-dialog/quick-view-fields-dialog.component';
 import { AuthService } from '../service/auth.service';
@@ -60,6 +61,7 @@ export class DatatableComponent implements OnInit, OnDestroy {
   
   constructor(private primengConfig: PrimeNGConfig,
               private confirmationService: ConfirmationService,
+              private router: Router,
               public authService: AuthService,
               public things: ThingService,
               public templateService: TemplateService,
@@ -115,6 +117,14 @@ export class DatatableComponent implements OnInit, OnDestroy {
           setTimeout(() => {
             this.refreshThings();
           }, 5000); // Simulate latency if requested
+        }
+        
+        // Check if we're asking directly for a Favorite from a quick use outside link
+        // Note a bit more verbose because we don't use an ActivateRoute here but grab it from the router instead to simplify imports
+        if (this.router.routerState?.root?.snapshot?.queryParams?.[LOAD_ACTION] === REQUEST_FAST_FAVORITE) {
+          this.quickfillFavoriteThing();
+          
+          this.router.navigate(['.']); // Clear our action param
         }
         
         // Determine if we should default to the speed dial or not based on our user settings
@@ -458,7 +468,7 @@ export class DatatableComponent implements OnInit, OnDestroy {
     }
   }
   
-  clearGlobalFilter(inputEl?: HTMLInputElement): void { // QUIDEL Wasn't optional before
+  clearGlobalFilter(inputEl?: HTMLInputElement): void {
     if (inputEl) {
       inputEl.value = '';
     }

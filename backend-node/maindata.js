@@ -7,7 +7,8 @@ const { differenceInHours, differenceInMinutes, subMinutes} = require("date-fns"
 const mailjet = require('node-mailjet');
 const config = require('config');
 const crypto = require('crypto');
-const zipper = require('yazl')
+const zipper = require('yazl');
+const compression = require('compression');
 const { v4: uuidv4 } = require('uuid');
 const rateLimiter = require('express-rate-limit');
 const { add } = require("date-fns");
@@ -99,6 +100,7 @@ const staticLimiter = rateLimiter({
 // Setup our middleware
 app.use(cors());
 app.use(globalLimiter);
+app.use(compression());
 app.use(express.json());
 app.use(fileUpload({
   useTempFiles: true, // To avoid `Array buffer allocation failed` with our limited ARM deploy we write to a temp file instead of RAM

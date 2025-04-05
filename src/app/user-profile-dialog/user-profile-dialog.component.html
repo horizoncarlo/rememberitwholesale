@@ -5,9 +5,9 @@
     @if (!authService.getAuth().isDemoAccount) {
       <div class="password-pad">
         <input pInputText [(ngModel)]="currentPassword" placeholder="Current Password" class="inline" (keyup.enter)="changePassword()"
-              type="password" autocomplete="current-password" autocorrect="off" autocapitalize="off"/>
+               type="password" autocomplete="current-password" autocorrect="off" autocapitalize="off"/>
         <span class="hide-on-mobile">New: </span><input pInputText [(ngModel)]="newPassword" placeholder="New Password" class="inline" (keyup.enter)="changePassword()"
-                    type="password" autocomplete="new-password" autocorrect="off" autocapitalize="off"/>
+               type="password" autocomplete="new-password" autocorrect="off" autocapitalize="off"/>
       </div>
       <p-button (onClick)="changePassword()" label="Change Password" icon="pi pi-shield" iconPost="left" severity="help"/>
     }

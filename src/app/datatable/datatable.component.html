@@ -40,9 +40,9 @@
         }
         <span class="global-search-wrap p-input-icon-left p-input-icon-right" [hidden]="things.loading"> <!-- Use hidden instead of ngIf to maintain the user text state while loading -->
           <i class="pi pi-search"></i>
-          <input id="globalSearchIn" #globalSearchIn pInputText (input)="globalFilterTableByEvent($event)" placeholder="Search Things" />
+          <input id="globalSearchIn" #globalSearchIn pInputText (input)="globalFilterTableByEvent($event)" placeholder="Search Things" autocomplete="off" [readonly]="userProfileDialog && userProfileDialog.isShowing ? true : false"/>
           <i class="pi pi-times-circle header-tiny-button" title="Clear the search input"
-             (click)="clearGlobalFilter(globalSearchIn)"></i>
+            (click)="clearGlobalFilter(globalSearchIn)"></i>
         </span>
         @if (things.loading) {
           <p-progressSpinner />
@@ -75,7 +75,7 @@
          [sortField]="getUser().tableSortColumn" [sortOrder]="getUser().tableSortOrder"
          [globalFilterFields]="['name', 'time', 'templateType', 'flagsAsString', 'fieldsAsString']"
          [paginator]="getUser().paginatorTable" [rows]="getUser().paginatorRows"
-         [pageLinks]="3" [alwaysShowPaginator]="false" [showFirstLastIcon]="false" [showCurrentPageReport]="true"
+         [pageLinks]="5" [alwaysShowPaginator]="false" [showFirstLastIcon]="false" [showCurrentPageReport]="true"
          [scrollable]="tableScrollable" [scrollHeight]="tableScrollHeight"
          >
   <ng-template pTemplate="header">
@@ -88,10 +88,10 @@
       <th pSortableColumn="name" class="name-col">
         {{ getNameColumnHeader() }} <p-sortIcon field="name" />
       </th>
+      <th pSortableColumn="templateType" class="type-col">Type <p-sortIcon field="templateType" /></th>
       @if (!isMobileSize()) {
         <th pSortableColumn="time" class="time-col">Date <p-sortIcon field="time" /></th>
       }
-      <th pSortableColumn="templateType" class="type-col">Type <p-sortIcon field="templateType" /></th>
       <th pSortableColumn="fieldsAsString" class="fields-col">
         Fields
         <p-sortIcon field="fields" />
@@ -260,7 +260,8 @@
             </label>
             @if (field.type === fieldTypes.Text || field.type === fieldTypes.Number) {
               <input [id]="field.property" pInputText [type]="field.type" [required]="field.required || false" [(ngModel)]="field.value"
-                     (keyup.enter)="templateService.favorite.hasOneField() && favoriteConfirmDialog.accept()"/>
+                     (keyup.enter)="templateService.favorite.hasOneField() && favoriteConfirmDialog.accept()"
+                     (keydown.control.enter)="templateService.favorite.hasOneField() && favoriteConfirmDialog.accept()"/>
             }
             @else if (field.type === fieldTypes.Textarea || field.type === fieldTypes.Markdown) {
               <textarea [id]="field.property" rows="3" [autoResize]="true" pInputTextarea

@@ -23,7 +23,7 @@
           <label htmlFor="name">Name</label>
         </td>
         <td>
-            <input id="name" #nameField pInputText [(ngModel)]="actOn.name" (keyup.enter)="submit()" [placeholder]="isMobileSize() ? 'Name' : ''"/>
+            <input id="name" #nameField pInputText [(ngModel)]="actOn.name" (keyup.enter)="submit()" (keydown.control.enter)="submit()" [placeholder]="isMobileSize() ? 'Name' : ''"/>
         </td>
       </tr>
       <tr>
@@ -193,7 +193,7 @@
             
             <!-- TODO Do we need any other field types for Things? Photos? Slider? Ongoing/Routine (aka infinite fields so you can keep adding to the same thing without flooding the table) -->
             @if (field.type === fieldTypes.Text || field.type === fieldTypes.Number) {
-              <input [id]="field.property" pInputText [type]="field.type" [required]="field.required || false" (keyup.enter)="submit()" [(ngModel)]="field.value"/>
+              <input [id]="field.property" pInputText [type]="field.type" [required]="field.required || false" (keyup.enter)="submit()" (keydown.control.enter)="submit()" [(ngModel)]="field.value"/>
             }
             @else if (field.type === fieldTypes.Textarea || field.type === fieldTypes.Markdown) {
               <textarea [id]="field.property" [rows]="3" [autoResize]="true" pInputTextarea

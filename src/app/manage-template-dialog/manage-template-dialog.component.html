@@ -36,7 +36,9 @@
           <tr>
             <td colspan="5">
               <p-floatLabel>
-                <input #nameField pInputText [(ngModel)]="actOn.name" (keyup.enter)="submit($event)"
+                <input #nameField pInputText [(ngModel)]="actOn.name"
+                      (keyup.enter)="submit($event)"
+                      (keydown.control.enter)="submit($event)"
                       (ngModelChange)="createNameChanged()" [autofocus]="true"/>
                 <label>Template Name</label>
                 @if (nameIsDuplicate) {

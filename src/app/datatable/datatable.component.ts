@@ -177,7 +177,7 @@ export class DatatableComponent implements OnInit, OnDestroy {
           }
         },
         {
-          visible: this.hasOneSelectedRow(),
+          visible: this.hasSelectedRows(),
           icon: "pi pi-pencil",
           command: () => {
               this.requestEditSelected();

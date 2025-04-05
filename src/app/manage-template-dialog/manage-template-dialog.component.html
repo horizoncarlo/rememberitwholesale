@@ -197,6 +197,10 @@
     }
   </div>
   <ng-template pTemplate="footer">
+    @if (operation === 'favorite') {
+      <span class="fleft">In addition to the app buttons, you can <a [href]="friendlyFavoriteLink()">directly open a new Favorite by using this link</a></span>
+    }
+    
     <p-button (onClick)="hide()" label="Cancel" icon="pi pi-times" iconPos="left" severity="secondary"/>
     <p-button (onClick)="submit($event)"
               [label]="getSubmitLabel()"

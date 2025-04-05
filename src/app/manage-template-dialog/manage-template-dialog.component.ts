@@ -6,6 +6,7 @@ import { Dialog } from 'primeng/dialog';
 import { Template, TemplateEvent } from '../model/template';
 import { TemplateFavorite } from '../model/template-favorite';
 import { TemplateField } from '../model/template-field';
+import { LOAD_ACTION, REQUEST_FAST_FAVORITE } from '../model/thing';
 import { TemplateService } from '../service/template.service';
 import { ThingService } from '../service/thing.service';
 import { UserService } from '../service/user.service';
@@ -166,6 +167,10 @@ export class ManageTemplateDialogComponent implements OnDestroy {
   
   favoriteTargetChanged(): void {
     this.favoriteNameSuffix = this.actOnName ? this.actOnName : 'quickfill';
+  }
+  
+  friendlyFavoriteLink(): string {
+    return `?${LOAD_ACTION}=${REQUEST_FAST_FAVORITE}`;
   }
   
   deleteTargetChanged(): void {

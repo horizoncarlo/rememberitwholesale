@@ -11,6 +11,12 @@
       <p-radioButton value="create" [(ngModel)]="operation" (onClick)="operationRadioClicked()" inputId="createIn"></p-radioButton>
       <label for="createIn"> Create</label>
       &nbsp;
+      <p-radioButton value="edit" [(ngModel)]="operation" (onClick)="operationRadioClicked()" inputId="editIn"></p-radioButton>
+      <label for="editIn"> Edit</label>
+      &nbsp;
+      @if (isMobileSize()) {
+        <br/><br/>
+      }
       <p-radioButton value="favorite" [(ngModel)]="operation" (onClick)="operationRadioClicked()" inputId="favoriteIn"></p-radioButton>
       <label for="favoriteIn"> Favorite</label>
       &nbsp;
@@ -19,37 +25,49 @@
     </div>
     <br/>
     
-    @if (operation === 'create') {
-      @if (userService.getUser().loginCount <= 100) {
+    @if (operation === 'create' || operation === 'edit') {
+      @if (operation ==='create' && userService.getUser().loginCount <= 100) {
         <p-panel header="How to Use" [toggleable]="true" [collapsed]="userService.getUser().loginCount > 10">
           Setup the <b>Name</b> of your template (must be unique between all templates).
           <p>Then you can add as many fields related to the template you want.<br/>
           Each field has a <b>Property/ID</b> which must be unique in this template, and won't be shown to the user.<br/>
           The <b>Label</b> is assigned to the input the user enters when using this template.</p>
           <p>Each template also automatically provides a name input for the user to fill in, and an optional date.</p>
-          Note for the sake of data integrity you cannot edit a template after creation.
         </p-panel>
       }
-      <br/>
+      
+      @if (operation === 'edit') {
+        <div class="section">
+          <p>Editing a template <b>will NOT</b> change any old or existing Things that use this template - only new Things going forward.</p>
+          <label>Template to Edit:&nbsp;</label>
+          <riw-template-dropdown [(selectedTemplateName)]="actOnName"
+                                 (selectedTemplateNameChange)="genericTemplateChanged($event)"
+                                 [hideControls]="true" />
+        </div>
+      }
+      
       @if (actOn) {
+        <br/>
         <table cellspacing="5" cellpading="0" class="template-table">
-          <tr>
-            <td colspan="5">
-              <p-floatLabel>
-                <input #nameField pInputText [(ngModel)]="actOn.name"
-                      (keyup.enter)="submit($event)"
-                      (keydown.control.enter)="submit($event)"
-                      (ngModelChange)="createNameChanged()" [autofocus]="true"/>
-                <label>Template Name</label>
-                @if (nameIsDuplicate) {
-                  <span class="red-error subtext">&nbsp;&nbsp;* Name exists already</span>
-                }
-                @else {
-                  <span class="green-success subtext">&nbsp;&nbsp;* Name is unique</span>
-                }
-              </p-floatLabel>
-            </td>
-          </tr>
+          @if (operation === 'create') {
+            <tr>
+              <td colspan="5">
+                <p-floatLabel>
+                  <input #nameField pInputText [(ngModel)]="actOn.name"
+                        (keyup.enter)="submit($event)"
+                        (keydown.control.enter)="submit($event)"
+                        (ngModelChange)="createNameChanged()" [autofocus]="true"/>
+                  <label>Template Name</label>
+                  @if (nameIsDuplicate) {
+                    <span class="red-error subtext">&nbsp;&nbsp;* Name exists already</span>
+                  }
+                  @else {
+                    <span class="green-success subtext">&nbsp;&nbsp;* Name is unique</span>
+                  }
+                </p-floatLabel>
+              </td>
+            </tr>
+          }
           <tr>
             <td colspan="5">
               <p-floatLabel>
@@ -179,15 +197,15 @@
     }
     @else if (operation === 'delete') {
       <div class="delete-wrap">
+        <p>Unless specified in the next step deleting a template <b>will NOT</b> remove or clear any related Things that used the template.</p>
         <label>Template to Delete:&nbsp;</label>
         <riw-template-dropdown [(selectedTemplateName)]="actOnName"
                                (selectedTemplateNameChange)="genericTemplateChanged($event); deleteTargetChanged();"
                                [hideDefaults]="true"
                                [hideControls]="true" />
         <br/>
-        <p>By default deleting a template <b>will NOT</b> remove or clear any related Things that used the template.</p>
         @if (actOn) {
-          <p>Note that you <i>can</i> choose to delete all related Things.<br/>Check a count of the selected template to see how far reaching this would be:</p>
+          <p>Now you <i>can</i> choose to delete all related Things using this template.<br/>Check a count of the selected template to see how far reaching this would be:</p>
           <p-button (onClick)="checkForThings()" label="Count Things" icon="pi pi-search" iconPos="left" severity="secondary"/>
           @if (lastCheckCount) {
             <p-checkbox [(ngModel)]="deleteThings" [binary]="true" [label]="'Delete ' + lastCheckCount + ' Things as well'" class="checkbox-label-on-left"/>
@@ -198,7 +216,7 @@
   </div>
   <ng-template pTemplate="footer">
     @if (operation === 'favorite') {
-      <span class="fleft">In addition to the app buttons, you can <a [href]="friendlyFavoriteLink()">directly open a new Favorite by using this link</a></span>
+      <span class="fleft hide-on-mobile">In addition to the app buttons, you can <a [href]="friendlyFavoriteLink()">directly open a new Favorite by using this link</a></span>
     }
     
     <p-button (onClick)="hide()" label="Cancel" icon="pi pi-times" iconPos="left" severity="secondary"/>

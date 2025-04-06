@@ -104,6 +104,10 @@ export class StorageService {
     return this.http.post(this.makeUrl('templates'), body, this.defaultHeaders);
   }
   
+  editTemplate(body: Template): Observable<any> {
+    return this.http.put(this.makeUrl('templates'), body, this.defaultHeaders);
+  }
+  
   getFavoriteTemplate(): Observable<any> {
     return this.http.get(this.makeUrl('templates/favorite'));
   }

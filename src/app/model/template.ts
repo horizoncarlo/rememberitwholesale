@@ -80,6 +80,6 @@ export class Template {
 }
 
 export interface TemplateEvent {
-  type: 'create' | 'favorite' | 'delete',
+  type: 'create' | 'edit' | 'favorite' | 'delete',
   actOn?: Template | null
 }

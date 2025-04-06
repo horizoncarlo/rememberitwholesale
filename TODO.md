@@ -1,7 +1,8 @@
 # TODO
-- Mentioned before but Template Editing would be nice
 - Better support for ebook sharing? Maybe just improvements to normal sharing, such as being searchable on the public page. See https://smoores.dev/post/announcing_smoores_epub/
 - Use Fuse.js for fuzzy search for the main search bar / global search?
+- ncu update packages, maybe Ang 19 & PrimeNG 19 & Express 5
+- Update to Node 22
 
 - Need a better and smoother and less manual process for deploying the app to prod environment
 - Update Readme with file sharing feature notes
@@ -22,6 +23,8 @@
 - What about a "pin" concept that keeps a certain Thing at the top of the list regardless of sorting (almost like a Star in Gmail)
 - Reference other Things dynamically with a link in a textbox? Like a PR reference in a bug tracking system
 - Save inputs as local storage or something? Because if a save of a Thing fails the inputs end up cleared which is crazy frustrating
+- For editing a template have an option to apply to old/existing Things (just like deleting prompts), since currently just applies to new things going forward
+  - Will need some kind of data reconciliation to ensure we don't lose/delete fields, or at least warn if we're going to
 - Look at navigator.share feature https://developer.mozilla.org/en-US/docs/Web/API/Navigator/share which allows for easy mobile sharing to built-in targets
 
 ### Unfortunate Version Churn

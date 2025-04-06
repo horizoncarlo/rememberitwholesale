@@ -793,18 +793,16 @@ app.get("/pthing/:thingId", (req, res) => {
     // Pull in the Things for the desired user, then find our matching ID
     const userThings = getInMemoryThings(username);
     if (userThings && userThings.length > 0) {
-      const matchingArray = userThings.filter(thing => thing.id === thingId);
-      if (matchingArray && matchingArray.length > 0 &&
-          matchingArray[0].public) {
+      const matchingThing = userThings.find(thing => thing.id === thingId);
+      if (matchingThing?.public) {
         // Increase our view count and save the changes, in a separate thread to not block the page load
         setTimeout(() => {
-          const matchingThing = matchingArray[0];
           matchingThing.viewCount = (typeof matchingThing.viewCount === 'number') ? matchingThing.viewCount+1 : 1;
           saveThingsMemoryToFile(username);
         });
         
         // Clone what we're going to return so the modified URLs don't save
-        const toReturn = addURLsToThings(username, [ JSON.parse(JSON.stringify(matchingArray[0])) ]);
+        const toReturn = addURLsToThings(username, [ JSON.parse(JSON.stringify(matchingThing[0])) ]);
         return res.send(toReturn[0]).end();
       }
     }
@@ -1008,6 +1006,23 @@ app.post("/templates", (req, res) => {
   getInMemoryTemplates(getAuthUsername(req)).push(req.body);
   saveTemplatesMemoryToFile(getAuthUsername(req));
   return res.status(200).end();
+});
+
+app.put("/templates", (req, res) => {
+  log("PUT Edit Template", req.body);
+  if (hasInvalidFields(req.body.name)) { return res.status(400).end(); }
+  
+  // Find our matching template and replace it
+  const templatesList = getInMemoryTemplates(getAuthUsername(req));
+  if (templatesList?.length) {
+    const matchingTemplateIndex = templatesList.findIndex(template => template.name === req.body.name);
+    if (matchingTemplateIndex > 0) {
+      templatesList[matchingTemplateIndex] = req.body;
+      saveTemplatesMemoryToFile(getAuthUsername(req));
+      return res.status(200).end();
+    }
+  }
+  return res.status(404).end();
 });
 
 app.get("/templates/favorite", (req, res) => {

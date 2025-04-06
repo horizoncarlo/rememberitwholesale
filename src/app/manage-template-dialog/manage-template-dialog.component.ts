@@ -109,6 +109,9 @@ export class ManageTemplateDialogComponent implements OnDestroy {
     if (this.operation === 'create') {
       this.actOn = new Template(DEFAULT_TEMPLATE_NAME);
     }
+    else if (this.operation === 'edit') {
+      this.actOn = null;
+    }
     else if (this.operation === 'favorite') {
       this.actOn = null;
     }
@@ -197,24 +200,29 @@ export class ManageTemplateDialogComponent implements OnDestroy {
   getSubmitLabel(): string {
     switch (this.operation) {
       case 'create': return 'Save New Template';
+      case 'edit': return 'Update Template';
       case 'favorite': return 'Favorite Template';
       case 'delete': return 'Delete Template';
+      default: return 'Submit';
     }
   }
   
   getSubmitSeverity(): any {
     switch (this.operation) {
-      case 'create': return 'primary';
+      case 'create': case 'edit': return 'primary';
       case 'favorite': return 'help';
       case 'delete': return 'danger';
+      default: return 'primary';
     }
   }
   
   getSubmitIcon(): string {
     switch (this.operation) {
       case 'create': return 'pi-check';
+      case 'edit': return 'pi-pencil';
       case 'favorite': return 'pi-heart-fill';
       case 'delete': return 'pi-trash';
+      default: return '';
     }
   }
   
@@ -224,8 +232,9 @@ export class ManageTemplateDialogComponent implements OnDestroy {
     }
     
     // Determine what part of CRUD were doing and apply the persistence changes
-    if (this.operation ==='create') {
-      if (!this.templateService.isNameUnique(this.actOn.name)) {
+    if (this.operation ==='create' || this.operation === 'edit') {
+      const isEdit = this.operation ==='edit';
+      if (!isEdit && !this.templateService.isNameUnique(this.actOn.name)) {
         return Utility.showError("Template name must be unique");
       }
       
@@ -244,7 +253,7 @@ export class ManageTemplateDialogComponent implements OnDestroy {
         };
       }
       
-      this.templateService.saveNew(this.actOn);
+      this.templateService.saveChanges(this.actOn, { isEdit: isEdit });
       this.hide();
     }
     else if (this.operation === 'favorite') {

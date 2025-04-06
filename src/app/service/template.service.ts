@@ -117,26 +117,27 @@ export class TemplateService  {
     }).add(() => this.loading = false);
   }
   
-  saveNew(toAdd: Template): void {
-    if (toAdd && toAdd.isValid()) {
-      toAdd.prepareForSave();
+  saveChanges(changedTemplate: Template, params?: { isEdit?: boolean }): void {
+    if (changedTemplate && changedTemplate.isValid()) {
+      changedTemplate.prepareForSave();
     }
     else {
       Utility.showError('Invalid Template, ensure all fields are filled');
       return;
     }
     
-    console.log("Going to save new Template", toAdd);
+    console.log("Going to save Template changes", changedTemplate);
     
     this.loading = true;
-    this.backend.submitTemplate(toAdd).subscribe({
+    const toCall = params?.isEdit ? this.backend.editTemplate.bind(this.backend) : this.backend.submitTemplate.bind(this.backend);
+    toCall(changedTemplate).subscribe({
       next: res => {
-        Utility.showSuccess('Successfully saved your new Template', toAdd.name);
+        Utility.showSuccess(`Successfully ${params?.isEdit ? 'updated your' : 'saved your new'} Template`, changedTemplate.name);
         this.hasCached = false;
         this.getAllTemplates();
       },
       error: err => {
-        Utility.showError('Failed to save your new Template');
+        Utility.showError(`Failed to save your ${params?.isEdit ? 'updated Template' : 'new Template'}`);
         console.error(err);
       }
     }).add(() => this.loading = false);

@@ -4,8 +4,6 @@
 - ncu update packages, maybe Ang 19 & PrimeNG 19 & Express 5
 - Update to Node 22
 - Need a better and smoother and less manual process for deploying the app to prod environment
-- Update Readme with file sharing feature notes
-  - Also a few screenshots of the app in general
 
 - Faster way to transfer files, similar to Favorites concept
   - Could move Add Thing dialog to a FormControl and have a couple different paths to decide what to render instead of a bunch of toggled flags

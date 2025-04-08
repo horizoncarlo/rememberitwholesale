@@ -795,14 +795,14 @@ app.get("/pthing/:thingId", (req, res) => {
     if (userThings && userThings.length > 0) {
       const matchingThing = userThings.find(thing => thing.id === thingId);
       if (matchingThing?.public) {
-        // Increase our view count and save the changes, in a separate thread to not block the page load
+        // Increase our view count and save the changes, off the main thread to not block the page load
         setTimeout(() => {
           matchingThing.viewCount = (typeof matchingThing.viewCount === 'number') ? matchingThing.viewCount+1 : 1;
           saveThingsMemoryToFile(username);
         });
         
         // Clone what we're going to return so the modified URLs don't save
-        const toReturn = addURLsToThings(username, [ JSON.parse(JSON.stringify(matchingThing[0])) ]);
+        const toReturn = addURLsToThings(username, [ JSON.parse(JSON.stringify(matchingThing)) ]);
         return res.send(toReturn[0]).end();
       }
     }

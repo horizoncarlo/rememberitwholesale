@@ -1,6 +1,6 @@
 # Remember It Wholesale
 
-A handy way to organize points of interest and pieces of data in your life
+A handy way to organize points of interest and pieces of data in your life. Is available online at **http://riw.us.to/**
 
 <a href="./src/assets/images/screenshot-main.jpg" target="_blank"><img style="width: 400px;" src="./src/assets/images/screenshot-main.jpg"/></a>
 
@@ -16,11 +16,11 @@ Data is fully searchable with table-level filters and a global search.
 
 The app looks great on mobile too and is very easy to access and make quick notes while on the go.
 
-<a href="./src/assets/images/screenshot-mobile.jpg" target="_blank"><img src="./src/assets/images/screenshot-mobile.jpg"/></a>
+<a href="./src/assets/images/screenshot-mobile.jpg" target="_blank"><img style="height: 250px;" src="./src/assets/images/screenshot-mobile.jpg"/></a>
 
 There's more features planned, see `TODO.md` for details.
 
-### Setup and Running
+## Setup and Running
 
 For simplicity and future proofing for my own deployment, no database is used, just flat JSON files in `~/.rememberitwholesale/`
 

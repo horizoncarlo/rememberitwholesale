@@ -3,7 +3,6 @@
 - Use Fuse.js for fuzzy search for the main search bar / global search?
 - ncu update packages, maybe Ang 19 & PrimeNG 19 & Express 5
 - Update to Node 22
-- Need a better and smoother and less manual process for deploying the app to prod environment
 
 - Faster way to transfer files, similar to Favorites concept
   - Could move Add Thing dialog to a FormControl and have a couple different paths to decide what to render instead of a bunch of toggled flags
@@ -13,7 +12,6 @@
 - Do a "select images for download" button where you can check/select images and get a ZIP of them, instead of just Download All
 - Double click on desktop to edit a Thing row immediately?
 - Put an app version scheme somewhere, and show on Profile dialog?
-- Allow Edit of Templates - doesn't retroactively change Thing data, just going forward uses the new version
 - Touch to edit cancel the timer on touch move so that slow scrolling doesn't trigger it?
 - Lazy loading pagination to allow all time but less bandwidth when just on first page?
 - Add an undo / trash can for deleted Things that can be restored and auto-delete after X days?

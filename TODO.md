@@ -1,8 +1,6 @@
 # TODO
 - Better support for ebook sharing? Maybe just improvements to normal sharing, such as being searchable on the public page. See https://smoores.dev/post/announcing_smoores_epub/
 - Use Fuse.js for fuzzy search for the main search bar / global search?
-- ncu update packages, maybe Ang 19 & PrimeNG 19 & Express 5
-- Update to Node 22
 
 - Faster way to transfer files, similar to Favorites concept
   - Could move Add Thing dialog to a FormControl and have a couple different paths to decide what to render instead of a bunch of toggled flags
@@ -24,17 +22,15 @@
 - Look at navigator.share feature https://developer.mozilla.org/en-US/docs/Web/API/Navigator/share which allows for easy mobile sharing to built-in targets
 
 ### Unfortunate Version Churn
-- Update Angular and PrimeNG
+- Update Angular 19 and PrimeNG 19 and Express 5 and Node 22 and other minor packages via `ncu`
 - Split package.json for Angular and Node project instead of having them combined
 
 ## OLDER NOTES
-- * Finish Demo account data
-
+- Finish Demo account data
 - Reports with custom queries to generate, as well as charts (could be using ChartModule from PrimeNG)
   - Definitely just start with basic queries to get data and numbers, since we'll be using that for charts so having the text first is valuable and simpler
 - Self signed HTTPS certificate, and try to do native mobile push notifications for reminders? Also needed for copyToClipboard functionality
   - Also for HTTPS: On desktop, have a way to paste an image directly into upload? (like Copy Image from the browser and Ctrl+P paste)
-
 - Try signals and NgRx data store for sharing between parts of app using Ang 17
 - Do a proper pass and componentize any elements that need it
   - Also make sure existing components are "standalone: true" where possible (or at least consistent)
@@ -44,7 +40,6 @@
 - Eventually segment data files by year? To prevent giant files of 10k+ records? Then date limit filter could integrate with that (by having like 2021, 2022, etc. instead of "2 years ago")
 - Basic calendar view that translates Dates from Things onto it?
 - Probably could rewrite to use https://github.com/typicode/lowdb instead of manual JSON files?
-
 - Cap max storage size of /uploads/ file by user, default a value in their settings under the hood, but also can manually change in the filesystem directly (no endpoint or overall admin thing needed)
   - Not huge priority given the user count
   - Can show this in the User Profile dialog?
@@ -55,16 +50,12 @@
   - This is while we're getting the user settings and so on
     - "isInitialized"
 - Remember to use 'cursor: wait' styling
-
 - Progress bar should always show, for ALL loading
   - Maybe a general "has any loading" feature that combines our various rxjs to one result?
-
 - Has a per-service init & loading flags: things for refresh button, templates for Manage X Templates, etc.
   - tableLoading ties to this (blocks main table, but keeps header, equivalent to current things.loading)
 - Each service registers themselves in loadingService
-
 - Should also disable or use the "loading" attribute of a lot of buttons we want to avoid exposing while something is happening
-
 - Have specific utility calls, like "top right spinner on/off", that hide the logic in the loading service itself
 
 ## PRIMENG BUGS

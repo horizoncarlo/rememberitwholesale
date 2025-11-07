@@ -87,6 +87,8 @@
                   <b>Attachments</b>
                   @if (hasUploads()) {
                     &nbsp;({{currentAttachmentCount()}})
+                    &nbsp;-&nbsp;<p-checkbox [(ngModel)]="actOn.downscale" [binary]="true" label="Low Res" showDelay="750"
+                                             pTooltip="Downscale any images by 50% - useful for simple reference images where resolution doesn't matter as much" />
                   }
                 }
               </ng-template>
@@ -259,7 +261,7 @@
     <p-button (onClick)="hide()" label="Cancel" icon="pi pi-times" iconPos="left" severity="secondary"/>
     <p-button #submitButton (onClick)="submit()" [label]="(hasNewUploads() ? ('Upload ' + uploadList.length + ' Files and ') : '') + 'Save Thing'"
               [icon]="'pi pi-' + (hasNewUploads() ? 'arrow-circle-up' : 'check')" iconPos="left"
-              [disabled]="uploadLoading"/>
+              [disabled]="uploadLoading || saveLoading"/>
     <p-confirmPopup />
   </ng-template>
 </p-dialog>

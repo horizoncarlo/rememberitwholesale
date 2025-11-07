@@ -49,10 +49,10 @@ export class ThingService {
     Utility.loadTableScrollPos();
   }
   
-  uploadSingleFile(thingId: string, file: File): Promise<any> {
+  uploadSingleFile(thingId: string, file: File, downscale?: boolean): Promise<any> {
     const toUpload = new FormData();
     toUpload.append('file', file, file.name);
-    return lastValueFrom(this.backend.uploadThing(thingId, toUpload));
+    return lastValueFrom(this.backend.uploadThing(thingId, toUpload, downscale));
   }
   
   async uploadAllFiles(attachedThing: Thing, uploadList: SimpleUpload[], progress?: WritableSignal<number>) {
@@ -76,7 +76,7 @@ export class ThingService {
         const batchPromises = currentBatchArray.map((currentFile: SimpleUpload) => {
           return new Promise(async (resolve, reject) => {
             try{
-              await things.uploadSingleFile(attachedThing.id, currentFile.file as File);
+              await things.uploadSingleFile(attachedThing.id, currentFile.file as File, attachedThing.downscale);
               successCount++;
               resolve(successCount);
             }catch(err) {
@@ -113,6 +113,7 @@ export class ThingService {
               silent?: boolean,
               refreshFromServer?: boolean,
               onSuccess?: Function,
+              onError?: Function,
               uploadList?: SimpleUpload[],
               uploadProgress?: WritableSignal<number>
             }): void {
@@ -184,6 +185,10 @@ export class ThingService {
       error: err => {
         Utility.showError('Failed to save your Thing');
         console.error(err);
+        
+        if (options?.onError && typeof options?.onError === 'function') {
+          options.onError(err);
+        }
       }
     }).add(() => this.doneLoading());
   }

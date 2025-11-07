@@ -117,7 +117,7 @@ export class TemplateService  {
     }).add(() => this.loading = false);
   }
   
-  saveChanges(changedTemplate: Template, params?: { isEdit?: boolean }): void {
+  saveChanges(changedTemplate: Template, params?: { isEdit?: boolean, fetchThingsAfter?: boolean }): void {
     if (changedTemplate && changedTemplate.isValid()) {
       changedTemplate.prepareForSave();
     }
@@ -135,6 +135,10 @@ export class TemplateService  {
         Utility.showSuccess(`Successfully ${params?.isEdit ? 'updated your' : 'saved your new'} Template`, changedTemplate.name);
         this.hasCached = false;
         this.getAllTemplates();
+        
+        if (params?.fetchThingsAfter) {
+          this.things.getAllThings();
+        }
       },
       error: err => {
         Utility.showError(`Failed to save your ${params?.isEdit ? 'updated Template' : 'new Template'}`);

@@ -81,8 +81,8 @@ export class StorageService {
     }, this.defaultHeaders);
   }
   
-  uploadThing(thingId: string, formData: FormData): Observable<any> {
-    return this.http.post(this.makeUrl('upload-thing/' + thingId), formData);
+  uploadThing(thingId: string, formData: FormData, downscale?: boolean): Observable<any> {
+    return this.http.post(this.makeUrl('upload-thing/' + thingId, (downscale ? 'downscale=true' : undefined)), formData);
   }
   
   submitThing(body: Thing): Observable<any> {

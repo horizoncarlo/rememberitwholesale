@@ -43,6 +43,7 @@ export class ManageThingDialogComponent implements OnDestroy {
   publicExpiryType?: number;
   dropHighlight: boolean = false;
   fieldTypes = TemplateField.TYPES;
+  saveLoading: boolean = false;
   uploadList: SimpleUpload[] = [];
   uploadLoading: boolean = false;
   uploadProgress: WritableSignal<number> = signal(0);
@@ -257,6 +258,8 @@ export class ManageThingDialogComponent implements OnDestroy {
       return;
     }
     
+    this.saveLoading = true;
+    
     // Set in our template type and color as well
     this.actOn.applyTemplateTo(this.selectedTemplate);
     
@@ -286,6 +289,7 @@ export class ManageThingDialogComponent implements OnDestroy {
       uploadProgress: this.uploadProgress,
       onSuccess: () => {
         this.uploadLoading = false;
+        this.saveLoading = false;
         this.toggleThingDialog();
         
         // Copy and show our public link right after creation for ease
@@ -293,6 +297,10 @@ export class ManageThingDialogComponent implements OnDestroy {
           this.actOn.copyPublicLink(true);
           Utility.showPublicLinkToast(this.actOn);
         }
+      },
+      onError: () => {
+        this.uploadLoading = false;
+        this.saveLoading = false;
       }
     });
   }

@@ -26,6 +26,7 @@ export class ManageTemplateDialogComponent implements OnDestroy {
   operation: TemplateEvent['type'] = 'create';
   actOn: Template | null = new Template(DEFAULT_TEMPLATE_NAME);
   actOnName: string | null = null;
+  actOnColor: string | undefined;
   isShowing: boolean = false;
   nameIsDuplicate: boolean = false; // Is a create new template Name unique or not?
   lastCheckCount: number = 0;
@@ -81,6 +82,7 @@ export class ManageTemplateDialogComponent implements OnDestroy {
         setTimeout(() => {
           if (this.actOn) { // Minor annoyance with TS even though we checked this already
             this.actOnName = this.actOn?.name;
+            this.actOnColor = this.actOn?.color;
           }
         });
       }
@@ -183,6 +185,7 @@ export class ManageTemplateDialogComponent implements OnDestroy {
   
   genericTemplateChanged(newName: string | null): void {
     this.actOn = this.templateService.getTemplateByName(newName);
+    this.actOnColor = this.actOn?.color;
   }
   
   checkForThings(): void {
@@ -253,7 +256,10 @@ export class ManageTemplateDialogComponent implements OnDestroy {
         };
       }
       
-      this.templateService.saveChanges(this.actOn, { isEdit: isEdit });
+      // If our color changed mark that we want to re-fetch our things
+      const fetchThingsAfter = this.actOn.color !== this.actOnColor;
+      
+      this.templateService.saveChanges(this.actOn, { isEdit: isEdit, fetchThingsAfter });
       this.hide();
     }
     else if (this.operation === 'favorite') {

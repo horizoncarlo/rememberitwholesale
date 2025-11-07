@@ -23,6 +23,7 @@ export class Thing {
   color?: string;
   viewCount?: number;
   reminder?: boolean;
+  downscale?: boolean = false;
   public?: boolean = false;
   publicExpiry?: Date | undefined;
   gallery?: boolean = false;
@@ -40,6 +41,7 @@ export class Thing {
                 time?: Date,
                 viewCount?: number,
                 reminder?: boolean,
+                downscale?: boolean,
                 public?: boolean,
                 publicExpiry: Date | undefined,
                 gallery?: boolean,
@@ -55,6 +57,7 @@ export class Thing {
     this.color = options && options.color || 'inherit';
     this.viewCount = (options && typeof options.viewCount === 'number') ? options.viewCount : 0;
     this.reminder = options && options.reminder || false;
+    this.downscale = options && options.downscale || false;
     this.public = options && options.public || false;
     this.gallery = options && options.gallery || false;
     if (options && options.uploads) {
@@ -116,6 +119,7 @@ export class Thing {
                       time: source.time,
                       viewCount: source.viewCount,
                       reminder: source.reminder,
+                      downscale: source.downscale,
                       public: source.public,
                       publicExpiry: source.publicExpiry,
                       gallery: source.gallery,
@@ -218,6 +222,7 @@ export class Thing {
     // Can slightly trim down the object by removing false/empty values and UI specific flags
     if (typeof this.viewCount !== 'number' || this.viewCount === 0) { delete this.viewCount; }
     if (!this.reminder) { delete this.reminder; }
+    if (!this.downscale) { delete this.downscale; }
     if (!this.public) { delete this.public; }
     if (!this.publicExpiry) { delete this.publicExpiry; }
     if (!this.gallery) { delete this.gallery; }

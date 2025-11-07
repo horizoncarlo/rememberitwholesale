@@ -54,6 +54,7 @@ const SETTINGS_FILE = 'settings.json';
 const AUTH_FILE = 'auth.json';
 const MAX_AUTOSCALE = 1200; // Number of pixels before we attempt to autoscale an image
 const MAX_RESIZE_CACHE = 50; // Number of resized images to cache
+const DOWNSCALE_PERCENT = 50;
 const SCHEDULED_PUBLIC_EXPIRY_INTERVAL = 30*60*1000; // Every 30 minutes
 
 const imageResizeCache = new Map(); // In-memory cache of recently resized images
@@ -159,44 +160,16 @@ app.get(`/${STATIC_PATH}/*`, async (req, res, next) => {
           return res.end(imageResizeCache.get(cacheKey));
         }
         
-        // Leverage the Sharp library to grab our current dimensions and resize based on the requested precent
-        const image = sharp(filePath);
-        const metadata = await image.metadata();
-        let transform = {};
-        
-        // If we're trying to automatically scale base it purely on how big our image is to begin with, and reduce accordingly
-        if (isAutoScale) {
-          if (metadata.width > MAX_AUTOSCALE) {
-            transform.width = MAX_AUTOSCALE;
-            transform.height = Math.round(metadata.height * (transform.width / metadata.width));
-          }
-        }
-        else {
-          if (wscale) {
-            let safeCheck = Math.round(metadata.width * (parseFloat(wscale) / 100));
-            if (typeof safeCheck === 'number' && !isNaN(safeCheck)) { transform.width = safeCheck; }
-          }
-          if (hscale) {
-            let safeCheck = Math.round(metadata.height * (parseFloat(hscale) / 100));
-            if (typeof safeCheck === 'number' && !isNaN(safeCheck)) { transform.height = safeCheck; }
-          }
-        }
-        
         // If we have a valid resize do so now, otherwise let the fallback static processing handle it
-        if (transform.width || transform.height) {
-          res.setHeader('Cache-Control', 'public, max-age=' + 60*60*24*30); // 30 days for caching
-          
-          const imageBuffer = await image
-            .resize(transform)
-            // .toFormat('jpeg', { quality: 80 }) // TODO Can also convert to a JPG to further save on file size - toggleable by user perhaps? Start on lowest setting and they can choose to go higher?
-            .withMetadata() // Preserve metadata including orientation
-            .toBuffer();
-            
+        const imageBuffer = await resizeImage(filePath, wscale, hscale, isAutoScale);
+        if (imageBuffer) {
           // Store in our cache, up to a cap (at which point we remove our oldest key)
           if (imageResizeCache.size >= MAX_RESIZE_CACHE) {
             imageResizeCache.delete(imageResizeCache.keys().next().value);
           }
           imageResizeCache.set(cacheKey, imageBuffer);
+          
+          res.setHeader('Cache-Control', 'public, max-age=' + 60*60*24*30); // 30 days for caching
           
           return res.end(imageBuffer);
         }
@@ -746,6 +719,47 @@ function cleanupDemoAccount(username, authData) {
   }
 }
 
+/**
+ * Resize the image at the passed path
+ * Can return a buffer (default) or a file if returnAsFile
+ * 
+ * Note: wscale and hscale are a percent to scale the image by
+ */
+async function resizeImage(imageFilePath, wscale, hscale, isAutoScale) {
+  // Leverage the Sharp library to grab our current dimensions and resize based on the requested percent
+  const image = sharp(imageFilePath);
+  const metadata = await image.metadata();
+  let transform = {};
+  
+  // If we're trying to automatically scale base it purely on how big our image is to begin with, and reduce accordingly
+  if (isAutoScale) {
+    if (metadata.width > MAX_AUTOSCALE) {
+      transform.width = MAX_AUTOSCALE;
+      transform.height = Math.round(metadata.height * (transform.width / metadata.width));
+    }
+  }
+  else {
+    if (wscale) {
+      let safeCheck = Math.round(metadata.width * (parseFloat(wscale) / 100));
+      if (typeof safeCheck === 'number' && !isNaN(safeCheck)) { transform.width = safeCheck; }
+    }
+    if (hscale) {
+      let safeCheck = Math.round(metadata.height * (parseFloat(hscale) / 100));
+      if (typeof safeCheck === 'number' && !isNaN(safeCheck)) { transform.height = safeCheck; }
+    }
+  }
+  
+  if (transform.width || transform.height) {
+    return await image
+      .resize(transform)
+      // .toFormat('jpeg', { quality: 80 }) // TODO Can also convert to a JPG to further save on file size - toggleable by user perhaps? Start on lowest setting and they can choose to go higher?
+      .withMetadata() // Preserve metadata including orientation
+      .toBuffer();
+  }
+  
+  return null;
+}
+
 /***** API Endpoints *****/
 app.get("/things", (req, res) => {
   log("GET Things", getInMemoryThings(getAuthUsername(req)).length);
@@ -973,18 +987,30 @@ app.post('/upload-thing/:thingId', async (req, res) => {
     return res.status(500).end();
   }
   
-  const finalFinalPath = path.join(finalDirectory, toUpload.name); // v1.1_FiNal_Extra_v2_FINAL for sure, lol just for fun
+  // v1.1_FiNal_Extra_v2_FINAL for sure, lol just for fun
+  const finalFinalPath = path.join(finalDirectory, toUpload.name);
+  
+  if (req.query.downscale) {
+    try {
+      const scaledImage = await resizeImage(toUpload.tempFilePath, DOWNSCALE_PERCENT, DOWNSCALE_PERCENT);
+      if (scaledImage) {
+        fs.writeFileSync(finalFinalPath, scaledImage);
+        
+        return res.status(200).end();
+      }
+    } catch (err) {
+      error("Error scaling an uploaded file for ", finalFinalPath, err);
+    }
+  }
   
   // Move our uploaded file to the final path
   await toUpload.mv(finalFinalPath, function(err) {
-    // setTimeout(() => { // TODO Can be used to simulate upload latency to test a loading indicator
     if (err) {
       error("Error while trying to move uploaded file to ", finalFinalPath);
       return res.status(500).end();
     }
     
     return res.status(200).end();
-    // }, Math.random() * 10000);
   });
 });
 
@@ -1017,6 +1043,20 @@ app.put("/templates", (req, res) => {
   if (templatesList?.length) {
     const matchingTemplateIndex = templatesList.findIndex(template => template.name === req.body.name);
     if (matchingTemplateIndex > 0) {
+      const existingTemplate = templatesList[matchingTemplateIndex];
+      if (existingTemplate.color !== req.body.color) {
+        const allThings = getInMemoryThings(getAuthUsername(req));
+        const changedThings = allThings.map((thing) => {
+          if (thing.templateType === existingTemplate.name &&
+              thing.color === existingTemplate.color) {
+            thing.color = req.body.color;
+          }
+          return thing;
+        });
+        setInMemoryUserData(getAuthUsername(req), 'things', changedThings);
+        saveThingsMemoryToFile(getAuthUsername(req));
+      }
+      
       templatesList[matchingTemplateIndex] = req.body;
       saveTemplatesMemoryToFile(getAuthUsername(req));
       return res.status(200).end();

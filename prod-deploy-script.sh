@@ -27,7 +27,7 @@ rmdir /home/drone/dist/ &&
 echo "Doing Node work" ;
 source /home/drone/.bashrc &&
 cd /home/drone/hub/rememberitwholesale/ &&
-nvm use 20 &&
+nvm use 22 &&
 echo "Pulling from Git" ;
 git pull &&
 echo "Doing npm i (a bit long)" ;

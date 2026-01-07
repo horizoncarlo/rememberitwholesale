@@ -14,7 +14,6 @@
 - Lazy loading pagination to allow all time but less bandwidth when just on first page?
 - Add an undo / trash can for deleted Things that can be restored and auto-delete after X days?
 - Consider whether PrimeNG can act like a native <select> on device mobile where the full list of options is shown as a built in popup - might be nicer
-- What about a "pin" concept that keeps a certain Thing at the top of the list regardless of sorting (almost like a Star in Gmail)
 - Reference other Things dynamically with a link in a textbox? Like a PR reference in a bug tracking system
 - Save inputs as local storage or something? Because if a save of a Thing fails the inputs end up cleared which is crazy frustrating
 - For editing a template have an option to apply to old/existing Things (just like deleting prompts), since currently just applies to new things going forward

@@ -146,13 +146,14 @@ app.use((req, res, next) => {
  * The requester could also pass scale=auto, which means we determine if any scaling is needed dynamically
  * Otherwise we fall back to our standard Static image handling
  */
-app.get(`/${STATIC_PATH}/*`, async (req, res, next) => {
+app.get(`/${STATIC_PATH}/{*path}`, async (req, res, next) => {
+  
   const { wscale, hscale, scale } = req.query;
   const isAutoScale = scale && scale.toLowerCase() === 'auto';
   
   if (wscale || hscale || isAutoScale) {
     try{
-      const filePath = path.join(FILE_DIR, req.params[0]);
+      const filePath = path.join(FILE_DIR, ...req.params.path);
       if (fs.existsSync(filePath)) {
         // Create a cache key based on the file path and query parameters
         const cacheKey = `${filePath}-${wscale}-${hscale}-${isAutoScale}`;
@@ -175,7 +176,7 @@ app.get(`/${STATIC_PATH}/*`, async (req, res, next) => {
         }
       }
     }catch (err) {
-      console.error(req.params[0], err);
+      console.error(req.params.path, err);
     }
   }
   

@@ -338,6 +338,20 @@ export class ThingService {
       return toReturn;
     });
     
+    // Ensure our pinned items are first
+    if (this.userService.getUser().tableSortOrder === -1) {
+      this.data = [
+        ...this.data.filter(thing => !thing.pinned),
+        ...this.data.filter(thing => thing.pinned).toSorted((a, b) => (a.updated ?? 0) < (b.updated ?? 0) ? -1 : 1),
+      ];
+    }
+    else {
+      this.data = [
+        ...this.data.filter(thing => thing.pinned).toSorted((a, b) => (a.updated ?? 0) < (b.updated ?? 0) ? -1 : 1),
+        ...this.data.filter(thing => !thing.pinned),
+      ];
+    }
+    
     // Sort our reminders with the closest to completion at the top
     this.reminders.sort((a, b) => { return (a.time && b.time) ? a.time?.getTime() - b.time?.getTime() : 0 });
     

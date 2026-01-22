@@ -131,10 +131,10 @@
     @if (showFilters) {
       <tr>
         <th [attr.colspan]="isMobileSize() ? 1 : 2"><p-columnFilter type="text" field="name" matchMode="contains" /></th>
+        <th><p-columnFilter type="text" field="templateType" matchMode="contains" /></th>
         @if (!isMobileSize()) {
           <th><p-columnFilter type="date" field="time" appendTo="body" /></th>
         }
-        <th><p-columnFilter type="text" field="templateType" matchMode="contains" /></th>
         <!-- TODO Could add a custom filter option of "Reminder=true/false" for the time column. Then can remove 'reminder' from supported global search fields on the table -->
         <th [attr.colspan]="isMobileSize() ? 4 : 3">
           <input pInputText type="text" (change)="filterFields($event)" class="header-filter-field" />
@@ -143,7 +143,8 @@
     }
   </ng-template>
   <ng-template pTemplate="body" let-data let-rowIndex="rowIndex">
-    <tr [pSelectableRow]="data" [pSelectableRowIndex]="rowIndex" (touchstart)="rowTouchStart(data)" (touchend)="rowTouchEnd(data)">
+    <tr [pSelectableRow]="data" [pSelectableRowIndex]="rowIndex" (touchstart)="rowTouchStart(data)" (touchend)="rowTouchEnd(data)"
+        [style]="data.pinned ? 'text-shadow: 0 0 20px var(--primary-color);' : ''">
       @if (!isMobileSize()) {
         <td class="updated-col-cell" pTooltip="{{data.updated | date: 'medium'}}">
           {{ data.getUpdated() }}
@@ -151,8 +152,11 @@
       }
       <td>
         <span [style]="'color:' + data.color">
+          @if (data.pinned) {
+            <span class="pi pi-thumbtack" style="font-size: 0.8rem; color: var(--primary-color);"></span>
+          }
           @if (isFavoriteByName(data.name)) {
-            <span class="pi pi-heart-fill" style="font-size: 0.75rem"></span>
+            <span class="pi pi-heart-fill" style="font-size: 0.75rem;"></span>
           }
           {{ data.name }}
           @if (data.gallery) {
@@ -184,7 +188,12 @@
         </td>
       }
       <td colspan="3" (click)="quickviewFields(data, $event)" [class]="data.hasFieldsAsString() ? 'quickview-zoom' : ''">
-        <div class="fields-scroller" [innerHTML]="data.fieldsAsString"></div>
+        @if (!data.pinned) {
+          <div class="fields-scroller" [innerHTML]="data.fieldsAsString"></div>
+        }
+        @else {
+          ...
+        }
       </td>
       @if (isMobileSize()) {
         <td class="updated-col-cell" pTooltip="{{data.updated | date: 'medium'}}">
@@ -230,7 +239,7 @@
 
 <riw-manage-thing-dialog #manageThing (manageTemplateEvent)="manageTemplate.show($event)"
                          (onDelete)="confirmDeleteSelected($event.event)"
-                         (onEdit)="doneEditThing($event)"/>
+                         (onEdit)="doneEditThing()"/>
 <riw-manage-template-dialog #manageTemplate />
 <riw-global-search-dialog #globalSearch [searchFunction]="globalFilterTable.bind(this)"/>
 <riw-user-profile-dialog #userProfile (onDialChanged)="dialChanged($event)"/>

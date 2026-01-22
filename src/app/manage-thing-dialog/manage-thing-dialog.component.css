@@ -11,6 +11,22 @@
   padding-left: 5%;
 }
 
+.header:hover {
+  background-color: var(--highlight-bg);
+  border-radius: 10px;
+}
+
+.header i.pi {
+  padding-left: 8px;
+  padding-right: 8px;
+  font-size: 1.25rem;
+}
+
+.is-pinned {
+  color: var(--primary-color);
+  transform: scale(1.5);
+}
+
 .thing-in-table {
   width: 100%;
 }

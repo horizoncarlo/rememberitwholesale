@@ -1,6 +1,21 @@
 <p-dialog #manageThingDialog
-          [header]="(isAdd() ? 'Add New' : 'Edit') + ' Thing'" [(visible)]="isShowing" [modal]="true" [maximizable]="true" class="manage-thing-dialog"
+          [(visible)]="isShowing" [modal]="true" [maximizable]="true" class="manage-thing-dialog"
           [focusOnShow]="false" (onShow)="handleFocus(nameField)">
+  <ng-template pTemplate="header">
+    <div class="p-dialog-title header" pTooltip="Pin this Thing so it always appears at the top of the list"
+         (click)="togglePinned()">
+      @if (isAdd()) {
+        Add New
+      }
+      @else {
+        Edit
+      }
+      Thing
+      
+      <i class="pi pi-thumbtack" [class]="actOn.pinned ? 'is-pinned' : ''"></i>
+    </div>
+  </ng-template>
+          
   <div class="content-form">
 
     <table cellpadding="10" class="thing-in-table">

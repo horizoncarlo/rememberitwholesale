@@ -782,7 +782,22 @@ app.get("/things", (req, res) => {
   }
   
   // Limit our Things and wrap the return with some metadata
-  const limitedThings = getInMemoryThings(getAuthUsername(req), limitDate);
+  let limitedThings = getInMemoryThings(getAuthUsername(req), limitDate);
+  
+  // Ensure our pinned items are first
+  if (getInMemorySettings(getAuthUsername(req))?.tableSortOrder === -1) {
+    limitedThings = [
+      ...limitedThings.filter(thing => !thing?.pinned),
+      ...limitedThings.filter(thing => thing?.pinned).toSorted((a, b) => (a.updated ?? 0) < (b.updated ?? 0) ? -1 : 1)
+    ];
+  }
+  else {
+    limitedThings = [
+      ...limitedThings.filter(thing => thing?.pinned).toSorted((a, b) => (a.updated ?? 0) < (b.updated ?? 0) ? -1 : 1),
+      ...limitedThings.filter(thing => !thing?.pinned)
+    ];
+  }
+  
   let toReturn = {
     metadata: {
       totalCount: getInMemoryThings(getAuthUsername(req)).length

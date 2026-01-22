@@ -497,7 +497,7 @@ export class DatatableComponent implements OnInit, OnDestroy {
       this.things.data.filter((thing: Thing) => thing.fieldsAsString?.toLocaleLowerCase().indexOf(event.target.value.toLowerCase()) !== -1);
   }
   
-  doneEditThing(toEdit: Thing): void {
+  doneEditThing(): void {
     this.clearSelectedRows();
   }
   
@@ -784,6 +784,10 @@ export class DatatableComponent implements OnInit, OnDestroy {
         const field: string = event.field as string;
         const value1 = thing1[field];
         const value2 = thing2[field];
+        
+        if (thing1.pinned || thing2.pinned) {
+          return event.order ?? -1;
+        }
         
         let result = null;
         

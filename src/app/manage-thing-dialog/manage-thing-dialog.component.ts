@@ -139,6 +139,12 @@ export class ManageThingDialogComponent implements OnDestroy {
     this.publicExpiryShow = !this.publicExpiryShow;
   }
   
+  togglePinned(): void {
+    if (this.actOn) {
+      this.actOn.pinned = !this.actOn.pinned;
+    }
+  }
+  
   isMobileSize(): boolean {
     return Utility.isMobileSize();
   }

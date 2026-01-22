@@ -28,6 +28,7 @@ export class Thing {
   publicExpiry?: Date | undefined;
   gallery?: boolean = false;
   uploads?: SimpleUpload[];
+  pinned?: boolean;
   updated: Date | undefined;
   fields: TemplateField[] = [];
   fieldsAsString: string | undefined; // TODO Convert fields to Angular Signals or RxJS so we can maintain a string version automatically instead of manually like we do now
@@ -45,6 +46,7 @@ export class Thing {
                 public?: boolean,
                 publicExpiry: Date | undefined,
                 gallery?: boolean,
+                pinned?: boolean,
                 uploads?: SimpleUpload[],
                 updated: Date | undefined,
                 fields?: TemplateField[],
@@ -57,16 +59,21 @@ export class Thing {
     this.color = options && options.color || 'inherit';
     this.viewCount = (options && typeof options.viewCount === 'number') ? options.viewCount : 0;
     this.reminder = options && options.reminder || false;
-    this.downscale = options && options.downscale || false;
     this.public = options && options.public || false;
     this.gallery = options && options.gallery || false;
-    if (options && options.uploads) {
+    if (options?.downscale) {
+      this.downscale = options.downscale;
+    }
+    if (options?.pinned) {
+      this.pinned = options.pinned;
+    }
+    if (options?.uploads) {
       this.uploads = options && options.uploads;
     }
     this.fields = options && options.fields || [];
     
     // If we have an existing date just cast it
-    if (options && options.time) {
+    if (options?.time) {
       this.time = Utility.isValidString(options.time) ? new Date(options.time) : options.time;
     }
     // Otherwise round down to the nearest hour on a new Date
@@ -75,7 +82,7 @@ export class Thing {
     }
     
     // Do the same casting for Updated
-    if (options && options.updated) {
+    if (options?.updated) {
       this.updated = Utility.isValidString(options.updated) ? new Date(options.updated) : options.updated;
     }
     // Otherwise use no date
@@ -83,7 +90,7 @@ export class Thing {
       delete this.updated;
     }
     
-    if (options && options.publicExpiry) {
+    if (options?.publicExpiry) {
       this.publicExpiry = Utility.isValidString(options.publicExpiry) ? new Date(options.publicExpiry) : options.publicExpiry;
     }
     else {
@@ -124,6 +131,7 @@ export class Thing {
                       publicExpiry: source.publicExpiry,
                       gallery: source.gallery,
                       uploads: source.uploads,
+                      pinned: source.pinned,
                       updated: source.updated,
                       fields: source.fields });
   }
@@ -226,6 +234,7 @@ export class Thing {
     if (!this.public) { delete this.public; }
     if (!this.publicExpiry) { delete this.publicExpiry; }
     if (!this.gallery) { delete this.gallery; }
+    if (!this.pinned) { delete this.pinned; }
     if (!this.uploads) { delete this.uploads; }
     else {
       this.uploads = this.uploads.map(upload => {

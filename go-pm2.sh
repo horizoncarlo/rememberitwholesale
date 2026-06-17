@@ -4,5 +4,6 @@ export NVM_DIR="$HOME/.nvm"
 [ -s "$NVM_DIR/nvm.sh" ] && \. "$NVM_DIR/nvm.sh"  # This loads nvm
 nvm use 24 &> /dev/null
 
-NODE_ENV=production pm2 start backend-node/maindata.js --watch &&
-screen -d -S pm2 -m pm2 logs
+NODE_ENV=production pm2 start backend-node/maindata.js --watch --name "riw" &&
+screen -d -m -S riw pm2 logs
+screen -r

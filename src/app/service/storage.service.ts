@@ -10,7 +10,7 @@ import { UserSettings } from '../model/user-settings';
 import { AuthService } from './auth.service';
 
 // Determine our base URL for all Node interactions
-const BASE_URL = window.location.protocol + "//" + window.location.hostname + ':4333/';
+const BASE_URL = window.location.protocol + "//" + window.location.hostname + '/api/';
 
 @Injectable({
   providedIn: 'root'

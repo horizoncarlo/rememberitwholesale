@@ -7,7 +7,7 @@
     "backend-dev": "NODE_ENV=development node --watch --watch-preserve-output backend-node/maindata.js",
     "backend": "NODE_ENV=production node --watch --watch-preserve-output backend-node/maindata.js",
     "build": "ng build --configuration production",
-    "postbuild": "minify src/public.html > dist/public.html || echo '> If minify failed, install it'"
+    "postbuild": "minify src/public.html > dist/public.html || echo '> If minify failed, install it from https://www.npmjs.com/package/minify'"
   },
   "engines": {
     "node": ">=22.0.0"

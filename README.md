@@ -1,6 +1,6 @@
 # Remember It Wholesale
 
-A handy way to organize points of interest and pieces of data in your life. Is available online at **http://riw.us.to/**
+A handy way to organize points of interest and pieces of data in your life. Is available online at **https://riw.gugs.dev/**
 
 <a href="./src/assets/images/screenshot-main.jpg" target="_blank"><img style="width: 400px;" src="./src/assets/images/screenshot-main.jpg"/></a>
 

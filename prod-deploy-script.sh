@@ -12,27 +12,13 @@
 rm -rf dist/
 rm -rf node_modules/
 npm i
-npm run build &&
-scp -P $thornport -r dist/ $thornh:/home/drone/ &&
-ssh $thorn '
-echo "Removing old backup" ;
-rm -rf /var/www/backup/html_old/ ;
-echo "Backing up current html/ folder" ;
-mv /var/www/backup/html/ /var/www/backup/html_old/ ;
-mkdir /var/www/backup/html/ ;
-mv /var/www/html/* /var/www/backup/html/ ;
-echo "Copying in new dist/ files" ;
-mv /home/drone/dist/* /var/www/html/ &&
-rmdir /home/drone/dist/ &&
-echo "Doing Node work" ;
-source /home/drone/.bashrc &&
-cd /home/drone/hub/rememberitwholesale/ &&
-nvm use 22 &&
-echo "Pulling from Git" ;
-git pull &&
-echo "Doing npm i (a bit long)" ;
-npm i &&
-echo "Restarting pm2" ;
-pm2 restart maindata &&
-echo "All done"
-'
+npm run build
+echo "Removing old backup"
+rm -rf /var/www/backup/riw_old/
+echo "Backing up current html/ folder"
+mv /var/www/backup/riw/ /var/www/backup/riw_old/
+mkdir /var/www/backup/riw/
+mv /var/www/riw/* /var/www/backup/riw/
+echo "Copying in new dist/ files"
+mv dist/* /var/www/riw/
+rmdir dist/

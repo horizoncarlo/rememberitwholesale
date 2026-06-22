@@ -47,5 +47,12 @@
     "@angular/cli": "^18.2.8",
     "@angular/compiler-cli": "^18.2.8",
     "typescript": "^5.5.4"
+  },
+  "allowScripts": {
+    "esbuild": true,
+    "lmdb": true,
+    "msgpackr-extract": true,
+    "nice-napi": true,
+    "sharp": true
   }
 }

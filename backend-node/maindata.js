@@ -728,9 +728,16 @@ function cleanupDemoAccount(username, authData) {
  */
 async function resizeImage(imageFilePath, wscale, hscale, isAutoScale) {
   // Leverage the Sharp library to grab our current dimensions and resize based on the requested percent
-  const image = sharp(imageFilePath);
-  const metadata = await image.metadata();
+  let image;
+  let metadata;
   let transform = {};
+  try {
+    image = sharp(imageFilePath);
+    metadata = await image.metadata();
+  } catch (err) {
+    log(`File ${imageFilePath} isn't an image, won't rescale`);
+    return null;
+  }
   
   // If we're trying to automatically scale base it purely on how big our image is to begin with, and reduce accordingly
   if (isAutoScale) {

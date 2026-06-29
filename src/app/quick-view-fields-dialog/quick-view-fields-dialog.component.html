@@ -1,4 +1,4 @@
-<p-dialog #quickviewDialog [header]="getHeader()" [(visible)]="isShowing" [maximizable]="true" [modal]="true">
+<p-dialog #quickviewDialog [header]="getHeader()" [(visible)]="isShowing" [maximizable]="true" [modal]="true" [focusOnShow]="true" [autofocus]="true">
   
   <span [innerHTML]="data?.fieldsAsString"></span>
   

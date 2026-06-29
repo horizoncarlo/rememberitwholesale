@@ -322,6 +322,13 @@ export class ManageThingDialogComponent implements OnDestroy {
   }
   
   handleFocus(inputEl: HTMLElement): void {
+    // We used to focus the Notes field intentionally on Edit, but over time Edit became more like a "View"
+    // And on mobile having the field focus and pop the on-screen keyboard up was annoying
+    // Old approach kept around as a reminder. Now we intentionally unfocus if editing
+    if (this.isEdit()) {
+      return;
+    }
+    /**
     // If we're Editing, try to focus any Notes field, as realistically that's what we'll change most of the time
     // If we can't find a Notes field, try to focus the first field
     if (this.isEdit()) {
@@ -341,6 +348,7 @@ export class ManageThingDialogComponent implements OnDestroy {
         }
       }
     }
+    */
     
     if (inputEl) {
       inputEl.focus();

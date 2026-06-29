@@ -6,6 +6,8 @@ import { Utility } from '../util/utility';
 import { StorageService } from './storage.service';
 import { ThingService } from './thing.service';
 
+export const FAVORITE_PREFIX = 'Favorite - ';
+
 @Injectable({
   providedIn: 'root'
 })

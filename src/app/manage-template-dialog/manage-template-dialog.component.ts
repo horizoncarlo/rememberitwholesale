@@ -7,7 +7,7 @@ import { Template, TemplateEvent } from '../model/template';
 import { TemplateFavorite } from '../model/template-favorite';
 import { TemplateField } from '../model/template-field';
 import { LOAD_ACTION, REQUEST_FAST_FAVORITE } from '../model/thing';
-import { TemplateService } from '../service/template.service';
+import { FAVORITE_PREFIX, TemplateService } from '../service/template.service';
 import { ThingService } from '../service/thing.service';
 import { UserService } from '../service/user.service';
 import { Utility } from '../util/utility';
@@ -198,6 +198,10 @@ export class ManageTemplateDialogComponent implements OnDestroy {
     if (this.actOn) {
       this.actOn.color = 'inherit';
     }
+  }
+  
+  getFavoritePrefix(): string {
+    return FAVORITE_PREFIX;
   }
   
   getSubmitLabel(): string {

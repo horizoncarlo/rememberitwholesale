@@ -5,6 +5,10 @@
   }
   <input id="search" #searchField pInputText [(ngModel)]="searchText" (keyup.enter)="performSearch()" placeholder="Enter your keywords"/>
   <ng-template pTemplate="footer">
+    @if (templateService.favorite && templateService.hasFavorite()) {
+      <p-button (onClick)="performFavoriteSearch()" label="Fave" icon="pi pi-heart-fill" iconPost="left" severity="help" class="fleft"/>
+    }
+    
     <p-button (onClick)="performReset()" label="Reset" icon="pi pi-delete-left" iconPos="left" severity="secondary"/>
     <p-button (onClick)="performSearch()" label="Search" icon="pi pi-check" iconPos="left"/>
   </ng-template>

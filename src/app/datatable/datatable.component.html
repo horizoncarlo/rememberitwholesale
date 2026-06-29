@@ -40,6 +40,9 @@
         }
         <span class="global-search-wrap p-input-icon-left p-input-icon-right" [hidden]="things.loading"> <!-- Use hidden instead of ngIf to maintain the user text state while loading -->
           <i class="pi pi-search"></i>
+          @if (templateService.favorite && templateService.hasFavorite()) {
+            <p-button (onClick)="globalFilterByFavorite(globalSearchIn)" icon="pi pi-heart" label="Faves" iconPost="left" severity="secondary" pTooltip="Toggle showing all your Favorites"/>
+          }
           <input id="globalSearchIn" #globalSearchIn pInputText (input)="globalFilterTableByEvent($event)" placeholder="Search Things" autocomplete="off" [readonly]="userProfileDialog && userProfileDialog.isShowing ? true : false"/>
           <i class="pi pi-times-circle header-tiny-button" title="Clear the search input"
             (click)="clearGlobalFilter(globalSearchIn)"></i>
@@ -251,7 +254,7 @@
 @if (templateService.favorite && templateService.hasFavorite()) {
   <p-confirmDialog #favoriteConfirmDialog key="favorite" class="favorite-dialog">
     <ng-template pTemplate="header">
-      <span class="p-dialog-title" [style.color]="templateService.favorite.color">Favorite - {{templateService.favorite.name}}</span>
+      <span class="p-dialog-title" [style.color]="templateService.favorite.color">{{getFavoritePrefix()}}{{templateService.favorite.name}}</span>
     </ng-template>
     <ng-template pTemplate="message">
       @if (!templateService.favorite.hasFields()) {
@@ -264,7 +267,7 @@
             <label [htmlFor]="field.property">
               {{ field.getLabel() }}
               @if (field.type === fieldTypes.Markdown) {
-                <div class="md-note inline">&nbsp;(Markdown)</div>
+                <div class="md-note inline">&nbsp;<a href="https://www.markdownguide.org/cheat-sheet/" target="_blank">(Markdown)</a></div>
               }
             </label>
             @if (field.type === fieldTypes.Text || field.type === fieldTypes.Number) {

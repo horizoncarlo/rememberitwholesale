@@ -11,7 +11,7 @@ import { LOAD_ACTION, REQUEST_FAST_FAVORITE, Thing } from '../model/thing';
 import { UserSettings } from '../model/user-settings';
 import { QuickviewFieldsDialogComponent } from '../quick-view-fields-dialog/quick-view-fields-dialog.component';
 import { AuthService } from '../service/auth.service';
-import { TemplateService } from '../service/template.service';
+import { FAVORITE_PREFIX, TemplateService } from '../service/template.service';
 import { ThingService } from '../service/thing.service';
 import { UserService } from '../service/user.service';
 import { UserProfileDialogComponent } from '../user-profile-dialog/user-profile-dialog.component';
@@ -468,6 +468,18 @@ export class DatatableComponent implements OnInit, OnDestroy {
     }
   }
   
+  globalFilterByFavorite(inputEl?: HTMLInputElement): void {
+    if (inputEl) {
+      if (inputEl.value && inputEl.value === FAVORITE_PREFIX) {
+        this.clearGlobalFilter();
+      }
+      else {
+        inputEl.value = FAVORITE_PREFIX;
+        this.globalFilterTable(inputEl.value);
+      }
+    }
+  }
+  
   clearGlobalFilter(inputEl?: HTMLInputElement): void {
     if (inputEl) {
       inputEl.value = '';
@@ -581,7 +593,7 @@ export class DatatableComponent implements OnInit, OnDestroy {
   
   isFavoriteByName(name: string): boolean {
     return (Utility.isValidString(name) &&
-            name.indexOf('Favorite - ') === 0);
+            name.indexOf(FAVORITE_PREFIX) === 0);
   }
   
   getThingsTableRecordCount(): number {
@@ -608,6 +620,10 @@ export class DatatableComponent implements OnInit, OnDestroy {
       toReturn += this.selectedRows.length;
     }
     return toReturn;
+  }
+  
+  getFavoritePrefix(): string {
+    return FAVORITE_PREFIX;
   }
   
   getReminderLabel(): string {
@@ -699,7 +715,7 @@ export class DatatableComponent implements OnInit, OnDestroy {
         key: 'favorite',
         accept: () => {
           // Construct a Thing from the settings in our Favorite Template and dialog
-          const toSave = new Thing('Favorite - ');
+          const toSave = new Thing(FAVORITE_PREFIX);
           toSave.name += Utility.isValidString(favorite.nameSuffix) ? favorite.nameSuffix : favorite.name;
           toSave.time = addHours(new Date(), typeof favorite.timeRange === 'undefined' ? 0 : favorite.timeRange);
           toSave.reminder = favorite.autoReminder;

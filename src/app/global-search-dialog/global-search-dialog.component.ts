@@ -1,4 +1,5 @@
 import { Component, HostListener, Input, OnDestroy, ViewChild } from '@angular/core';
+import { FAVORITE_PREFIX, TemplateService } from '../service/template.service';
 import { Utility } from '../util/utility';
 
 @Component({
@@ -12,6 +13,8 @@ export class GlobalSearchDialogComponent implements OnDestroy {
   searchText: string = '';
   resultCount: number | null = null;
   isShowing: boolean = false;
+  
+  constructor(public templateService: TemplateService) { }
   
   ngOnDestroy(): void {
     Utility.commonDialogDestory();
@@ -36,6 +39,11 @@ export class GlobalSearchDialogComponent implements OnDestroy {
   
   performReset(): void {
     this.searchText = '';
+    this.performSearch();
+  }
+  
+  performFavoriteSearch(): void {
+    this.searchText = FAVORITE_PREFIX;
     this.performSearch();
   }
   

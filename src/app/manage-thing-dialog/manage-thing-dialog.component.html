@@ -100,7 +100,7 @@
                 }
                 @else {
                   <b>Attachments</b>
-                  @if (hasUploads()) {
+                  @if (hasNewUploads()) {
                     &nbsp;({{currentAttachmentCount()}})
                     &nbsp;-&nbsp;<p-checkbox [(ngModel)]="actOn.downscale" [binary]="true" label="Low Res" showDelay="750"
                                              pTooltip="Downscale any images by 50% - useful for simple reference images where resolution doesn't matter as much" />
@@ -199,7 +199,7 @@
             <label [htmlFor]="field.property">
               {{ field.getLabel() }}
               @if (field.type === fieldTypes.Markdown) {
-                <div class="md-note">(Markdown)</div>
+                <div class="md-note"><a href="https://www.markdownguide.org/cheat-sheet/" target="_blank">(Markdown)</a></div>
               }
             </label>
           </td>
@@ -207,7 +207,7 @@
             <label [htmlFor]="field.property" class="field-label hide-on-desktop">
               <b>{{ field.getLabel() }}</b>
               @if (field.type === fieldTypes.Markdown) {
-                <div class="md-note inline">&nbsp;(Markdown)</div>
+                <div class="md-note inline">&nbsp;<a href="https://www.markdownguide.org/cheat-sheet/" target="_blank">(Markdown)</a></div>
               }
             </label>
             

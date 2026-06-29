@@ -168,7 +168,7 @@
           </div>
           <div><b>Generate Name:</b></div>
           <div class="indent">
-            Name will look like: <b>Favorite - <input pInputText [(ngModel)]="favoriteNameSuffix" (keyup.enter)="submit($event)"/></b>
+            Name will look like: <b>{{getFavoritePrefix()}}<input pInputText [(ngModel)]="favoriteNameSuffix" (keyup.enter)="submit($event)"/></b>
           </div>
           <div class="section">
             <div><b>Autofill Date:</b></div>

@@ -785,8 +785,15 @@ export class DatatableComponent implements OnInit, OnDestroy {
         const value1 = thing1[field];
         const value2 = thing2[field];
         
-        if (thing1.pinned || thing2.pinned) {
-          return event.order ?? -1;
+        // Keep our pinned items at the top regardless of sort order
+        if (thing1.pinned && thing2.pinned) {
+          return 0;
+        }
+        else if (thing1.pinned) {
+          return -1;
+        }
+        else if (thing2.pinned) {
+          return 1;
         }
         
         let result = null;

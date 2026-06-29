@@ -2,6 +2,7 @@ import { HttpClient } from '@angular/common/http';
 import { Injectable } from '@angular/core';
 import { Router } from '@angular/router';
 import { Observable } from 'rxjs';
+import { environment } from '../../environments/environment';
 import { Template } from '../model/template';
 import { TemplateFavorite } from '../model/template-favorite';
 import { Thing } from '../model/thing';
@@ -10,7 +11,8 @@ import { UserSettings } from '../model/user-settings';
 import { AuthService } from './auth.service';
 
 // Determine our base URL for all Node interactions
-const BASE_URL = window.location.protocol + "//" + window.location.hostname + '/api/';
+export const SUBDIR_API_URL = environment?.production ? '/api/' : ':4333/';
+export const BASE_API_URL = `${window.location.protocol}//${window.location.hostname}${SUBDIR_API_URL}`;
 
 @Injectable({
   providedIn: 'root'
@@ -52,7 +54,7 @@ export class StorageService {
   }
   
   makeUrl(endpoint: string, extraParams?: string): string {
-    return BASE_URL + endpoint + this.getAuthToken() +
+    return BASE_API_URL + endpoint + this.getAuthToken() +
            (extraParams ? `&${extraParams}` : '');
   }
   

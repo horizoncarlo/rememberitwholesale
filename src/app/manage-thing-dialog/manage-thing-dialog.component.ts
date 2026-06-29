@@ -7,6 +7,7 @@ import { Template, TemplateEvent } from '../model/template';
 import { TemplateField } from '../model/template-field';
 import { Thing } from '../model/thing';
 import { AuthService } from '../service/auth.service';
+import { BASE_API_URL } from '../service/storage.service';
 import { TemplateService } from '../service/template.service';
 import { SimpleUpload, ThingService } from '../service/thing.service';
 import { UserService } from '../service/user.service';
@@ -476,7 +477,7 @@ export class ManageThingDialogComponent implements OnDestroy {
   }
   
   makeFullAttachmentURL(basePath: string, noScaling?: boolean): string {
-    return `${window.location.protocol}//${window.location.hostname}/api/${basePath}${noScaling ? '' : '?wscale=20'}`; // Pretty aggressive scaling for faster loading
+    return BASE_API_URL + `${basePath}${noScaling ? '' : '?wscale=20'}`; // Pretty aggressive scaling for faster loading
   }
   
   private _readFile(file: File) {

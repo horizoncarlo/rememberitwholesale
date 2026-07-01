@@ -394,7 +394,10 @@ export class ManageThingDialogComponent implements OnDestroy {
     }
     // Clipboard paste
     else if (event?.clipboardData?.files?.length) {
-      files = event.clipboardData.files;
+      // Rename the pasted files with an index, so that multiple images can be pasted without preventing each other
+      files = [...event.clipboardData.files].map((originalFile: File) => {
+        return new File([originalFile], `pasted-${this.uploadList?.length}-${originalFile.name}`, { type: originalFile.type });
+      });
     }
     // Native file upload
     else if (event?.target?.files?.length) {

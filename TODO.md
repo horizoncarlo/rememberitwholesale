@@ -10,7 +10,6 @@
 - Do a "select images for download" button where you can check/select images and get a ZIP of them, instead of just Download All
 - Double click on desktop to edit a Thing row immediately?
 - Put an app version scheme somewhere, and show on Profile dialog?
-- Touch to edit cancel the timer on touch move so that slow scrolling doesn't trigger it?
 - Lazy loading pagination to allow all time but less bandwidth when just on first page?
 - Add an undo / trash can for deleted Things that can be restored and auto-delete after X days?
 - Consider whether PrimeNG can act like a native <select> on device mobile where the full list of options is shown as a built in popup - might be nicer
@@ -28,8 +27,6 @@
 - Finish Demo account data
 - Reports with custom queries to generate, as well as charts (could be using ChartModule from PrimeNG)
   - Definitely just start with basic queries to get data and numbers, since we'll be using that for charts so having the text first is valuable and simpler
-- Self signed HTTPS certificate, and try to do native mobile push notifications for reminders? Also needed for copyToClipboard functionality
-  - Also for HTTPS: On desktop, have a way to paste an image directly into upload? (like Copy Image from the browser and Ctrl+P paste)
 - Try signals and NgRx data store for sharing between parts of app using Ang 17
 - Do a proper pass and componentize any elements that need it
   - Also make sure existing components are "standalone: true" where possible (or at least consistent)

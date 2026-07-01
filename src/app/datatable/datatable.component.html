@@ -146,7 +146,7 @@
     }
   </ng-template>
   <ng-template pTemplate="body" let-data let-rowIndex="rowIndex">
-    <tr [pSelectableRow]="data" [pSelectableRowIndex]="rowIndex" (touchstart)="rowTouchStart(data)" (touchend)="rowTouchEnd(data)"
+    <tr [pSelectableRow]="data" [pSelectableRowIndex]="rowIndex" (touchstart)="rowTouchStart(data)" (touchend)="rowTouchEnd(data)" (touchmove)="rowTouchMove()"
         [style]="data.pinned ? 'text-shadow: 0 0 20px var(--primary-color);' : ''">
       @if (!isMobileSize()) {
         <td class="updated-col-cell" pTooltip="{{data.updated | date: 'medium'}}">

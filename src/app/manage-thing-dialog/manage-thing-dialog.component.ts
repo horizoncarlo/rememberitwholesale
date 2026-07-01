@@ -68,6 +68,11 @@ export class ManageThingDialogComponent implements OnDestroy {
     Utility.commonDialogDestory();
   }
   
+  ngOnInit(): void {
+    // Handle pasting into this dialog to upload as well
+    document.addEventListener("paste", this.handleDraggedFiles.bind(this));
+  }
+  
   isAdd(): boolean {
     return this.type === 'add';
   }
@@ -370,7 +375,13 @@ export class ManageThingDialogComponent implements OnDestroy {
   }
   
   handleDraggedFiles(event: any) {
+    // Ignore if we're not actually showing the dialog
+    if (!this.isShowing) {
+      return;
+    }
+    
     event.preventDefault();
+    
     this.dropHighlight = false;
     this.dragDropCounter = 0;
     
@@ -378,15 +389,19 @@ export class ManageThingDialogComponent implements OnDestroy {
     let files = null;
     
     // Drag and drop from something like a file explorer
-    if (event.dataTransfer && event.dataTransfer.files && event.dataTransfer.files.length > 0) {
+    if (event?.dataTransfer?.files?.length) {
       files = event.dataTransfer.files;
     }
+    // Clipboard paste
+    else if (event?.clipboardData?.files?.length) {
+      files = event.clipboardData.files;
+    }
     // Native file upload
-    else if (event.target && event.target.files && event.target.files.length > 0) {
+    else if (event?.target?.files?.length) {
       files = event.target.files;
     }
     else {
-      Utility.showWarn('Unknown drag and drop type requested');
+      Utility.showWarn('Unknown upload type requested');
     }
     
     if (files) {
@@ -406,6 +421,8 @@ export class ManageThingDialogComponent implements OnDestroy {
       
       Promise.allSettled(promises).then(res => {
         // Actual upload to the server isn't done until we save this Thing
+        // But we do automatically turn on Attachment mode if we aren't in it
+        this.actOn.gallery = true;
       }).catch(err => {
         Utility.showError('Failed to upload files');
         console.error(err);

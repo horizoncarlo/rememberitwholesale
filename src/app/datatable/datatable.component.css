@@ -2,6 +2,10 @@
   margin-top: var(--fixed-toolbar-height);
 }
 
+#globalSearchIn {
+  padding-left: 0.75rem;
+}
+
 .header-tiny-button {
   cursor: pointer;
   vertical-align: middle;

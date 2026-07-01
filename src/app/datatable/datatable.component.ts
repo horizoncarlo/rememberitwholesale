@@ -844,6 +844,8 @@ export class DatatableComponent implements OnInit, OnDestroy {
   touchEditTimer: any = null;
   readonly touchToEditMs: number = 1400;
   rowTouchStart(data: Thing) {
+    document.documentElement.style.userSelect = 'none';
+    
     // Store when our touch started, and the row we targetted
     this.touchEditStart = performance.now();
     this.touchEditRow = data;
@@ -860,6 +862,8 @@ export class DatatableComponent implements OnInit, OnDestroy {
   }
   
   rowTouchEnd(data: Thing) {
+    document.documentElement.style.userSelect = 'auto';
+    
     // Determine if we have a valid touch state to edit from
     if (this.touchEditRow && data &&
         this.touchEditRow === data &&
@@ -873,6 +877,14 @@ export class DatatableComponent implements OnInit, OnDestroy {
     this.touchEditRow = null;
     if (this.touchEditTimer) {
       clearTimeout(this.touchEditTimer);
+    }
+  }
+  
+  rowTouchMove() {
+    // Cancel the edit timer if the user is scrolling
+    if (this.touchEditTimer) {
+      clearTimeout(this.touchEditTimer);
+      this.touchEditTimer = null;
     }
   }
   

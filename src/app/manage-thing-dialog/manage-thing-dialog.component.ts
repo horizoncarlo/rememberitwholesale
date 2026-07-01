@@ -382,6 +382,7 @@ export class ManageThingDialogComponent implements OnDestroy {
     
     this.dropHighlight = false;
     this.dragDropCounter = 0;
+    let clearAfterProcess = false;
     
     // Get a list of files depending on our source
     let files = null;
@@ -401,17 +402,17 @@ export class ManageThingDialogComponent implements OnDestroy {
     else if (event?.target?.files?.length) {
       files = event.target.files;
       
-      // Reset the field so that future onchange events will continue to fire
-      (event.target as HTMLInputElement).value = '';
+      clearAfterProcess = true;
     }
     else {
-      // Abort and just let the paste be handled normally
+      // Abort and just let the paste be handled normally, this would be normal text for example
       return;
     }
     
-    event.preventDefault();
-    
     if (files) {
+      // Only prevent the default if we have files to process
+      event.preventDefault();
+      
       // Much nicer experience locally or on a fast connection
       // Instead of flashing the loading indicator and changing the dialog size
       //  we instead wait a second to see if the upload will just process
@@ -438,6 +439,11 @@ export class ManageThingDialogComponent implements OnDestroy {
           clearInterval(localWait);
         }
         this.uploadLoading = false;
+        
+        if (clearAfterProcess) {
+          // Reset the field so that future onchange events will continue to fire
+          (event.target as HTMLInputElement).value = '';
+        }
       });
     }
   }

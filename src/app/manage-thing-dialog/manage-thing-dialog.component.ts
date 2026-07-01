@@ -380,8 +380,6 @@ export class ManageThingDialogComponent implements OnDestroy {
       return;
     }
     
-    event.preventDefault();
-    
     this.dropHighlight = false;
     this.dragDropCounter = 0;
     
@@ -402,10 +400,16 @@ export class ManageThingDialogComponent implements OnDestroy {
     // Native file upload
     else if (event?.target?.files?.length) {
       files = event.target.files;
+      
+      // Reset the field so that future onchange events will continue to fire
+      (event.target as HTMLInputElement).value = '';
     }
     else {
-      Utility.showWarn('Unknown upload type requested');
+      // Abort and just let the paste be handled normally
+      return;
     }
+    
+    event.preventDefault();
     
     if (files) {
       // Much nicer experience locally or on a fast connection
@@ -434,9 +438,6 @@ export class ManageThingDialogComponent implements OnDestroy {
           clearInterval(localWait);
         }
         this.uploadLoading = false;
-        
-        // Reset the field so that future onchange events will continue to fire
-        (event.target as HTMLInputElement).value = '';
       });
     }
   }
